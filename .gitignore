@@ -36,3 +36,10 @@ desktop.ini
 # Misc
 *.log
 coverage/
+
+# NotebookLM
+notebooklm/
+NotebookLM/
+notebooklm_*/
+NotebookLM_*/
+*.zip
