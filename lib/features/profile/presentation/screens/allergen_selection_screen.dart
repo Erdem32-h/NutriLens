@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class AllergenSelectionScreen extends StatelessWidget {
   const AllergenSelectionScreen({super.key});
@@ -10,9 +11,16 @@ class AllergenSelectionScreen extends StatelessWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.allergens)),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: Text(l10n.allergens),
+        backgroundColor: Colors.transparent,
+      ),
       body: Center(
-        child: Text(l10n.allergenSelectionPhase),
+        child: Text(
+          l10n.allergenSelectionPhase,
+          style: const TextStyle(color: AppColors.textMuted),
+        ),
       ),
     );
   }
