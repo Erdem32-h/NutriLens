@@ -30,21 +30,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-
     await ref.read(authNotifierProvider.notifier).signInWithEmail(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
-
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
     if (mounted) {
       final authState = ref.read(authNotifierProvider);
       if (authState.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(authState.error.toString()),
-            backgroundColor: AppColors.error,
-          ),
+          SnackBar(content: Text(authState.error.toString())),
         );
+      } else {
+        context.goNamed(RouteNames.scanner);
       }
     }
   }
@@ -54,124 +51,254 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
     final l10n = context.l10n;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Icon(
-                    Icons.eco,
-                    size: 80,
-                    color: AppColors.primary,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'NutriLens',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.appSlogan,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                  const SizedBox(height: 48),
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: l10n.email,
-                      prefixIcon: const Icon(Icons.email_outlined),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return l10n.enterEmail;
-                      }
-                      if (!value.contains('@')) {
-                        return l10n.validEmail;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: l10n.password,
-                      prefixIcon: const Icon(Icons.lock_outlined),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return l10n.enterPassword;
-                      }
-                      if (value.length < 6) {
-                        return l10n.passwordMinLength;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: isLoading ? null : _handleLogin,
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(l10n.signIn),
-                  ),
-                  const SizedBox(height: 24),
-                  const SocialLoginButtons(),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '${l10n.noAccount} ',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      TextButton(
-                        onPressed: () => context.goNamed(RouteNames.register),
-                        child: Text(l10n.signUp),
-                      ),
-                    ],
-                  ),
-                ],
+      backgroundColor: AppColors.background,
+      body: Stack(
+        children: [
+          // Top glow
+          Positioned(
+            top: -60,
+            left: -60,
+            child: Container(
+              width: size.width * 0.6,
+              height: size.width * 0.6,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.12),
+                    Colors.transparent,
+                  ],
+                ),
               ),
             ),
           ),
-        ),
+
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 48),
+
+                    // Logo
+                    Row(
+                      children: [
+                        Container(
+                          width: 44, height: 44,
+                          decoration: BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.eco_rounded,
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'NutriLens',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 48),
+
+                    // Heading
+                    const Text(
+                      'Hoş geldin',
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        letterSpacing: -0.5,
+                        height: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.appSlogan,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textMuted,
+                        height: 1.5,
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // Email
+                    _buildLabel(l10n.email),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      style: const TextStyle(color: AppColors.textPrimary),
+                      decoration: const InputDecoration(
+                        hintText: 'ornek@email.com',
+                        prefixIcon: Icon(Icons.email_outlined),
+                      ),
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return l10n.enterEmail;
+                        if (!v.contains('@')) return l10n.validEmail;
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Password
+                    _buildLabel(l10n.password),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      style: const TextStyle(color: AppColors.textPrimary),
+                      decoration: InputDecoration(
+                        hintText: '••••••••',
+                        prefixIcon: const Icon(Icons.lock_outline_rounded),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                          ),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
+                        ),
+                      ),
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return l10n.enterPassword;
+                        if (v.length < 6) return l10n.passwordMinLength;
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Login button
+                    GestureDetector(
+                      onTap: isLoading ? null : _handleLogin,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: double.infinity,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: isLoading ? null : AppColors.primaryGradient,
+                          color: isLoading ? AppColors.surfaceCard2 : null,
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: isLoading
+                              ? []
+                              : [
+                                  BoxShadow(
+                                    color: AppColors.primary.withValues(alpha: 0.3),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                        ),
+                        alignment: Alignment.center,
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 22, height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: AppColors.primary,
+                                ),
+                              )
+                            : Text(
+                                l10n.signIn,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Divider
+                    Row(
+                      children: [
+                        const Expanded(child: Divider(color: AppColors.border)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: const Text(
+                            'ya da',
+                            style: TextStyle(
+                              color: AppColors.textMuted,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        const Expanded(child: Divider(color: AppColors.border)),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    const SocialLoginButtons(),
+
+                    const SizedBox(height: 32),
+
+                    // Register link
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Hesabın yok mu?',
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 14,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => context.goNamed(RouteNames.register),
+                          child: const Text(
+                            'Kayıt ol',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  Widget _buildLabel(String text) => Text(
+    text,
+    style: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textSecondary,
+      letterSpacing: 0.2,
+    ),
+  );
 }
