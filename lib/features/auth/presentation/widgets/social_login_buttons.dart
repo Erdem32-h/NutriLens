@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../providers/auth_provider.dart';
 
 class SocialLoginButtons extends ConsumerWidget {
@@ -8,6 +9,8 @@ class SocialLoginButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+
     return Column(
       children: [
         Row(
@@ -16,9 +19,9 @@ class SocialLoginButtons extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'veya',
+                l10n.or,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.shade500,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
               ),
             ),
@@ -31,7 +34,7 @@ class SocialLoginButtons extends ConsumerWidget {
             ref.read(authNotifierProvider.notifier).signInWithGoogle();
           },
           icon: const Icon(Icons.g_mobiledata, size: 24),
-          label: const Text('Google ile devam et'),
+          label: Text(l10n.continueWithGoogle),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, 48),
           ),
@@ -42,7 +45,7 @@ class SocialLoginButtons extends ConsumerWidget {
             ref.read(authNotifierProvider.notifier).signInWithApple();
           },
           icon: const Icon(Icons.apple, size: 24),
-          label: const Text('Apple ile devam et'),
+          label: Text(l10n.continueWithApple),
           style: OutlinedButton.styleFrom(
             minimumSize: const Size(double.infinity, 48),
           ),

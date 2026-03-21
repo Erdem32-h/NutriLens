@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
+
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favoriler'),
+        title: Text(l10n.favorites),
       ),
       body: Center(
         child: Column(
@@ -20,16 +24,16 @@ class FavoritesScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Henuz favori urun yok',
+              l10n.noFavoritesYet,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey.shade600,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Begendiginiz urunleri favorilere ekleyin',
+              l10n.addFavoritesHint,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey.shade500,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
           ],

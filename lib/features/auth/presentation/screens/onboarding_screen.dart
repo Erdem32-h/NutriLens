@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../config/router/route_names.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -15,27 +16,6 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
-
-  static const _pages = [
-    _OnboardingPage(
-      icon: Icons.qr_code_scanner,
-      title: 'Barkod Tara',
-      description:
-          'Urunun barkodunu tarayin ve saniyeler icinde saglik analizini gorun.',
-    ),
-    _OnboardingPage(
-      icon: Icons.analytics_outlined,
-      title: 'Saglik Puani',
-      description:
-          'NutriLens HP skoru ile urunun kimyasal yuku, risk faktoru ve beslenme degerini ogren.',
-    ),
-    _OnboardingPage(
-      icon: Icons.person_outlined,
-      title: 'Kisisel Filtreler',
-      description:
-          'Alerjenlerinizi, diyet tercihlerinizi ve kacindiginiz maddeleri belirleyin. Size ozel analiz alin.',
-    ),
-  ];
 
   Future<void> _completeOnboarding() async {
     final prefs = await SharedPreferences.getInstance();
@@ -53,6 +33,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
+    final pages = [
+      _OnboardingPage(
+        icon: Icons.qr_code_scanner,
+        title: l10n.scanBarcodeTitle,
+        description: l10n.scanBarcodeDescription,
+      ),
+      _OnboardingPage(
+        icon: Icons.analytics_outlined,
+        title: l10n.healthScoreTitle,
+        description: l10n.healthScoreDescription,
+      ),
+      _OnboardingPage(
+        icon: Icons.person_outlined,
+        title: l10n.personalFilters,
+        description: l10n.personalFiltersDescription,
+      ),
+    ];
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -61,20 +61,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               alignment: Alignment.topRight,
               child: TextButton(
                 onPressed: _completeOnboarding,
-                child: const Text('Atla'),
+                child: Text(l10n.skip),
               ),
             ),
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: _pages.length,
+                itemCount: pages.length,
                 onPageChanged: (index) {
                   setState(() {
                     _currentPage = index;
                   });
                 },
                 itemBuilder: (context, index) {
-                  final page = _pages[index];
+                  final page = pages[index];
                   return Padding(
                     padding: const EdgeInsets.all(32),
                     child: Column(
@@ -96,7 +96,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           page.description,
                           style:
                               Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Colors.grey.shade600,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                           textAlign: TextAlign.center,
                         ),
@@ -113,7 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   Row(
                     children: List.generate(
-                      _pages.length,
+                      pages.length,
                       (index) => Container(
                         margin: const EdgeInsets.only(right: 8),
                         height: 8,
@@ -127,10 +127,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
                   ),
-                  if (_currentPage == _pages.length - 1)
+                  if (_currentPage == pages.length - 1)
                     ElevatedButton(
                       onPressed: _completeOnboarding,
-                      child: const Text('Basla'),
+                      child: Text(l10n.start),
                     )
                   else
                     ElevatedButton(
@@ -140,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           curve: Curves.easeInOut,
                         );
                       },
-                      child: const Text('Devam'),
+                      child: Text(l10n.continueText),
                     ),
                 ],
               ),

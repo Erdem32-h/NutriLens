@@ -80,5 +80,6 @@ flutter:
   generate: true
 
   assets:
+    - .env
     - assets/additives/
     - assets/images/

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
+
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tarama Gecmisi'),
+        title: Text(l10n.scanHistory),
       ),
       body: Center(
         child: Column(
@@ -20,16 +24,16 @@ class HistoryScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Henuz tarama gecmisi yok',
+              l10n.noHistoryYet,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey.shade600,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Urunleri taradiginizda burada gorunecek',
+              l10n.productsWillAppearHere,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey.shade500,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
           ],

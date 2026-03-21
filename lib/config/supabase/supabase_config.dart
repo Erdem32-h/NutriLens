@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract final class SupabaseConfig {
   static late final SupabaseClient client;
+  static bool isInitialized = false;
 
   static Future<void> initialize() async {
     await dotenv.load(fileName: '.env');
@@ -19,5 +20,6 @@ abstract final class SupabaseConfig {
 
     await Supabase.initialize(url: url, anonKey: anonKey);
     client = Supabase.instance.client;
+    isInitialized = true;
   }
 }

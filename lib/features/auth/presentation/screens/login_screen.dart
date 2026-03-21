@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../config/router/route_names.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/social_login_buttons.dart';
@@ -52,6 +53,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
+    final l10n = context.l10n;
 
     return Scaffold(
       body: SafeArea(
@@ -80,26 +82,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Gidanizi taniyin, sagliginizi koruyun',
+                    l10n.appSlogan,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey.shade600,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   ),
                   const SizedBox(height: 48),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'E-posta',
-                      prefixIcon: Icon(Icons.email_outlined),
+                    decoration: InputDecoration(
+                      labelText: l10n.email,
+                      prefixIcon: const Icon(Icons.email_outlined),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'E-posta adresinizi girin';
+                        return l10n.enterEmail;
                       }
                       if (!value.contains('@')) {
-                        return 'Gecerli bir e-posta adresi girin';
+                        return l10n.validEmail;
                       }
                       return null;
                     },
@@ -109,7 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Sifre',
+                      labelText: l10n.password,
                       prefixIcon: const Icon(Icons.lock_outlined),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -126,10 +128,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Sifrenizi girin';
+                        return l10n.enterPassword;
                       }
                       if (value.length < 6) {
-                        return 'Sifre en az 6 karakter olmali';
+                        return l10n.passwordMinLength;
                       }
                       return null;
                     },
@@ -146,7 +148,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text('Giris Yap'),
+                        : Text(l10n.signIn),
                   ),
                   const SizedBox(height: 24),
                   const SocialLoginButtons(),
@@ -155,12 +157,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Hesabiniz yok mu? ',
+                        '${l10n.noAccount} ',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       TextButton(
                         onPressed: () => context.goNamed(RouteNames.register),
-                        child: const Text('Kayit Ol'),
+                        child: Text(l10n.signUp),
                       ),
                     ],
                   ),

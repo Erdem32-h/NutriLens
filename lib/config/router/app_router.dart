@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../supabase/supabase_config.dart';
 import '../../features/app_shell/app_shell_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
@@ -25,6 +26,14 @@ GoRouter createRouter() {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/scanner',
     redirect: (context, state) {
+      // Supabase başlatılmamışsa login'e yönlendir
+      if (!SupabaseConfig.isInitialized) {
+        final isAuthRoute = state.matchedLocation == '/login' ||
+            state.matchedLocation == '/register';
+        if (!isAuthRoute) return '/login';
+        return null;
+      }
+
       final session = Supabase.instance.client.auth.currentSession;
       final isLoggedIn = session != null;
       final isAuthRoute = state.matchedLocation == '/login' ||
