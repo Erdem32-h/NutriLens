@@ -10,20 +10,20 @@ class NutrimentTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rows = _buildRows();
+    final rows = _buildRows(context);
 
     if (rows.isEmpty) {
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceCard,
+          color: context.colors.surfaceCard,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.colors.border),
         ),
-        child: const Text(
+        child: Text(
           'Besin değeri bilgisi mevcut değil',
-          style: TextStyle(fontSize: 14, color: AppColors.textMuted),
+          style: TextStyle(fontSize: 14, color: context.colors.textMuted),
         ),
       );
     }
@@ -31,47 +31,47 @@ class NutrimentTable extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: context.colors.surfaceCard,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
             child: Text(
               'Besin Değerleri (100g)',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
           ),
           // Header row
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: AppColors.surfaceCard2,
+            color: context.colors.surfaceCard2,
             child: Row(
               children: [
-                const Expanded(
+                Expanded(
                   flex: 2,
                   child: Text(
                     'Besin',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textMuted,
+                      color: context.colors.textMuted,
                     ),
                   ),
                 ),
-                const Text(
+                Text(
                   'Miktar',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textMuted,
+                    color: context.colors.textMuted,
                   ),
                 ),
               ],
@@ -85,7 +85,7 @@ class NutrimentTable extends StatelessWidget {
               padding: const EdgeInsets.symmetric(
                 horizontal: 16, vertical: 10,
               ),
-              color: isEven ? Colors.transparent : AppColors.surfaceCard2,
+              color: isEven ? Colors.transparent : context.colors.surfaceCard2,
               child: Row(
                 children: [
                   Expanded(
@@ -103,9 +103,9 @@ class NutrimentTable extends StatelessWidget {
                           ),
                         Text(
                           item.label,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: AppColors.textPrimary,
+                            color: context.colors.textPrimary,
                           ),
                         ),
                       ],
@@ -113,10 +113,10 @@ class NutrimentTable extends StatelessWidget {
                   ),
                   Text(
                     '${item.value.toStringAsFixed(1)} ${item.unit}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
+                      color: context.colors.textSecondary,
                     ),
                   ),
                 ],
@@ -129,24 +129,24 @@ class NutrimentTable extends StatelessWidget {
     );
   }
 
-  List<_NutrimentRow> _buildRows() {
+  List<_NutrimentRow> _buildRows(BuildContext context) {
     final items = <_NutrimentRow>[];
 
     if (nutriments.energyKcal != null) {
       items.add(_NutrimentRow('Enerji', nutriments.energyKcal!, 'kcal', null));
     }
     if (nutriments.fat != null) {
-      items.add(_NutrimentRow('Yağ', nutriments.fat!, 'g', _fatLevel));
+      items.add(_NutrimentRow('Yağ', nutriments.fat!, 'g', _fatLevel(context)));
     }
     if (nutriments.saturatedFat != null) {
       items.add(_NutrimentRow(
-          'Doymuş Yağ', nutriments.saturatedFat!, 'g', _satFatLevel));
+          'Doymuş Yağ', nutriments.saturatedFat!, 'g', _satFatLevel(context)));
     }
     if (nutriments.sugars != null) {
-      items.add(_NutrimentRow('Şeker', nutriments.sugars!, 'g', _sugarLevel));
+      items.add(_NutrimentRow('Şeker', nutriments.sugars!, 'g', _sugarLevel(context)));
     }
     if (nutriments.salt != null) {
-      items.add(_NutrimentRow('Tuz', nutriments.salt!, 'g', _saltLevel));
+      items.add(_NutrimentRow('Tuz', nutriments.salt!, 'g', _saltLevel(context)));
     }
     if (nutriments.fiber != null) {
       items.add(_NutrimentRow('Lif', nutriments.fiber!, 'g', null));
@@ -159,32 +159,32 @@ class NutrimentTable extends StatelessWidget {
   }
 
   // WHO thresholds per 100g for color coding
-  Color? get _fatLevel {
+  Color? _fatLevel(BuildContext context) {
     final v = nutriments.fat ?? 0;
-    if (v <= 3) return AppColors.riskSafe;
-    if (v <= 17.5) return AppColors.riskModerate;
-    return AppColors.riskDangerous;
+    if (v <= 3) return context.colors.riskSafe;
+    if (v <= 17.5) return context.colors.riskModerate;
+    return context.colors.riskDangerous;
   }
 
-  Color? get _satFatLevel {
+  Color? _satFatLevel(BuildContext context) {
     final v = nutriments.saturatedFat ?? 0;
-    if (v <= 1.5) return AppColors.riskSafe;
-    if (v <= 5) return AppColors.riskModerate;
-    return AppColors.riskDangerous;
+    if (v <= 1.5) return context.colors.riskSafe;
+    if (v <= 5) return context.colors.riskModerate;
+    return context.colors.riskDangerous;
   }
 
-  Color? get _sugarLevel {
+  Color? _sugarLevel(BuildContext context) {
     final v = nutriments.sugars ?? 0;
-    if (v <= 5) return AppColors.riskSafe;
-    if (v <= 22.5) return AppColors.riskModerate;
-    return AppColors.riskDangerous;
+    if (v <= 5) return context.colors.riskSafe;
+    if (v <= 22.5) return context.colors.riskModerate;
+    return context.colors.riskDangerous;
   }
 
-  Color? get _saltLevel {
+  Color? _saltLevel(BuildContext context) {
     final v = nutriments.salt ?? 0;
-    if (v <= 0.3) return AppColors.riskSafe;
-    if (v <= 1.5) return AppColors.riskModerate;
-    return AppColors.riskDangerous;
+    if (v <= 0.3) return context.colors.riskSafe;
+    if (v <= 1.5) return context.colors.riskModerate;
+    return context.colors.riskDangerous;
   }
 }
 

@@ -22,13 +22,13 @@ class NovaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (novaGroup == null) return const SizedBox.shrink();
 
-    final accentColor = AppColors.novaColor(novaGroup!);
+    final accentColor = context.colors.novaColor(novaGroup!);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: context.colors.surfaceCard,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: accentColor.withValues(alpha: 0.3)),
       ),
@@ -40,22 +40,22 @@ class NovaCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'NOVA Grubu',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textMuted,
+                    color: context.colors.textMuted,
                     letterSpacing: 0.5,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _novaDescription(novaGroup!),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                     height: 1.4,
                   ),
                 ),

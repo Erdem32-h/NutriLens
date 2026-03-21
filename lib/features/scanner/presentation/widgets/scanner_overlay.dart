@@ -47,7 +47,7 @@ class ScannerOverlayBorder extends StatelessWidget {
         width: 280,
         height: 280,
         child: CustomPaint(
-          painter: _CornerPainter(),
+          painter: _CornerPainter(context.colors.primary),
         ),
       ),
     );
@@ -55,10 +55,14 @@ class ScannerOverlayBorder extends StatelessWidget {
 }
 
 class _CornerPainter extends CustomPainter {
+  final Color color;
+
+  _CornerPainter(this.color);
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.primary
+      ..color = color
       ..strokeWidth = 4
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;

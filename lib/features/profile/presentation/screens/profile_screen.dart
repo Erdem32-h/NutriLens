@@ -25,15 +25,15 @@ class ProfileScreen extends ConsumerWidget {
         .toUpperCase();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.background,
       appBar: AppBar(
         title: Text(l10n.profile),
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.logout_rounded,
-              color: AppColors.textMuted,
+              color: context.colors.textMuted,
             ),
             tooltip: l10n.signOut,
             onPressed: () async {
@@ -49,16 +49,16 @@ class ProfileScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.surfaceCard,
+              color: context.colors.surfaceCard,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: context.colors.border),
             ),
             child: Row(
               children: [
                 Container(
                   width: 64, height: 64,
                   decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
+                    gradient: context.colors.primaryGradient,
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
@@ -78,18 +78,18 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       Text(
                         user?.displayName ?? l10n.user,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: context.colors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         user?.email ?? '',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.textMuted,
+                          color: context.colors.textMuted,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -181,9 +181,9 @@ class ProfileScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => SimpleDialog(
-        backgroundColor: AppColors.surfaceCard2,
+        backgroundColor: context.colors.surfaceCard2,
         title: Text(l10n.theme,
-            style: const TextStyle(color: AppColors.textPrimary)),
+            style: TextStyle(color: context.colors.textPrimary)),
         children: [
           _buildDialogOption(
             context: context,
@@ -233,9 +233,9 @@ class ProfileScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => SimpleDialog(
-        backgroundColor: AppColors.surfaceCard2,
+        backgroundColor: context.colors.surfaceCard2,
         title: Text(l10n.language,
-            style: const TextStyle(color: AppColors.textPrimary)),
+            style: TextStyle(color: context.colors.textPrimary)),
         children: [
           _buildDialogOption(
             context: context,
@@ -279,7 +279,7 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           Icon(
             icon,
-            color: isSelected ? AppColors.primary : AppColors.textMuted,
+            color: isSelected ? context.colors.primary : context.colors.textMuted,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -288,12 +288,12 @@ class ProfileScreen extends ConsumerWidget {
               style: TextStyle(
                 fontWeight:
                     isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                color: isSelected ? context.colors.primary : context.colors.textPrimary,
               ),
             ),
           ),
           if (isSelected)
-            const Icon(Icons.check_rounded, color: AppColors.primary, size: 18),
+            Icon(Icons.check_rounded, color: context.colors.primary, size: 18),
         ],
       ),
     );
@@ -308,10 +308,10 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        color: AppColors.textMuted,
+        color: context.colors.textMuted,
         letterSpacing: 0.8,
       ),
     );
@@ -338,51 +338,51 @@ class _SettingsTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: AppColors.surfaceCard,
+          color: context.colors.surfaceCard,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.colors.border),
         ),
         child: Row(
           children: [
             Container(
               width: 36, height: 36,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.12),
+                color: context.colors.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 18, color: AppColors.primary),
+              child: Icon(icon, size: 18, color: context.colors.primary),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.surfaceCard2,
+                color: context.colors.surfaceCard2,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.colors.border),
               ),
               child: Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
+                  color: context.colors.textSecondary,
                 ),
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(
+            Icon(
               Icons.chevron_right_rounded,
-              color: AppColors.textMuted,
+              color: context.colors.textMuted,
               size: 18,
             ),
           ],

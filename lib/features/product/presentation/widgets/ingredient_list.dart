@@ -21,13 +21,13 @@ class _IngredientListState extends State<IngredientList> {
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceCard,
+          color: context.colors.surfaceCard,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.colors.border),
         ),
-        child: const Text(
+        child: Text(
           'İçerik bilgisi mevcut değil',
-          style: TextStyle(fontSize: 14, color: AppColors.textMuted),
+          style: TextStyle(fontSize: 14, color: context.colors.textMuted),
         ),
       );
     }
@@ -36,9 +36,9 @@ class _IngredientListState extends State<IngredientList> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: context.colors.surfaceCard,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,12 +46,12 @@ class _IngredientListState extends State<IngredientList> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'İçindekiler',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                 ),
               ),
               if (widget.ingredientsText!.length > 150)
@@ -59,10 +59,10 @@ class _IngredientListState extends State<IngredientList> {
                   onTap: () => setState(() => _expanded = !_expanded),
                   child: Text(
                     _expanded ? 'Daralt' : 'Genişlet',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
+                      color: context.colors.primary,
                     ),
                   ),
                 ),
@@ -74,17 +74,17 @@ class _IngredientListState extends State<IngredientList> {
               widget.ingredientsText!,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppColors.textSecondary,
+                color: context.colors.textSecondary,
                 height: 1.6,
               ),
             ),
             secondChild: Text(
               widget.ingredientsText!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppColors.textSecondary,
+                color: context.colors.textSecondary,
                 height: 1.6,
               ),
             ),

@@ -78,7 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.background,
       body: Stack(
         children: [
           // Background gradient blob
@@ -92,7 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.primary.withValues(alpha: 0.15),
+                    context.colors.primary.withValues(alpha: 0.15),
                     Colors.transparent,
                   ],
                 ),
@@ -115,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           Container(
                             width: 32, height: 32,
                             decoration: BoxDecoration(
-                              gradient: AppColors.primaryGradient,
+                              gradient: context.colors.primaryGradient,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(
@@ -125,12 +125,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             ),
                           ),
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             'NutriLens',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: context.colors.textPrimary,
                             ),
                           ),
                         ],
@@ -139,8 +139,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         onPressed: _completeOnboarding,
                         child: Text(
                           l10n.skip,
-                          style: const TextStyle(
-                            color: AppColors.textMuted,
+                          style: TextStyle(
+                            color: context.colors.textMuted,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
@@ -181,7 +181,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   borderRadius: BorderRadius.circular(40),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.primary.withValues(alpha: 0.3),
+                                      color: context.colors.primary.withValues(alpha: 0.3),
                                       blurRadius: 40,
                                       offset: const Offset(0, 16),
                                     ),
@@ -196,10 +196,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               const SizedBox(height: 48),
                               Text(
                                 page.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.textPrimary,
+                                  color: context.colors.textPrimary,
                                   letterSpacing: -0.5,
                                   height: 1.2,
                                 ),
@@ -208,10 +208,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               const SizedBox(height: 16),
                               Text(
                                 page.description,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: AppColors.textMuted,
+                                  color: context.colors.textMuted,
                                   height: 1.6,
                                 ),
                                 textAlign: TextAlign.center,
@@ -241,8 +241,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             width: isActive ? 28 : 6,
                             decoration: BoxDecoration(
                               color: isActive
-                                  ? AppColors.primary
-                                  : AppColors.border,
+                                  ? context.colors.primary
+                                  : context.colors.border,
                               borderRadius: BorderRadius.circular(3),
                             ),
                           );
@@ -259,11 +259,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           width: double.infinity,
                           height: 56,
                           decoration: BoxDecoration(
-                            gradient: AppColors.primaryGradient,
+                            gradient: context.colors.primaryGradient,
                             borderRadius: BorderRadius.circular(50),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withValues(alpha: 0.35),
+                                color: context.colors.primary.withValues(alpha: 0.35),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),

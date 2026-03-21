@@ -11,7 +11,7 @@ class OilFilterScreen extends StatelessWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.background,
       appBar: AppBar(
         title: Text(l10n.oilFilters),
         backgroundColor: Colors.transparent,
@@ -19,7 +19,7 @@ class OilFilterScreen extends StatelessWidget {
       body: Center(
         child: Text(
           l10n.oilFilterPhase,
-          style: const TextStyle(color: AppColors.textMuted),
+          style: TextStyle(color: context.colors.textMuted),
         ),
       ),
     );

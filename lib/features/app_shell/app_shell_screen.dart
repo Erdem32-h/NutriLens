@@ -25,13 +25,13 @@ class AppShellScreen extends StatelessWidget {
     const paths = ['/scanner', '/history', '/favorites', '/profile'];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.background,
       body: child,
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
+        decoration: BoxDecoration(
+          color: context.colors.surface,
           border: Border(
-            top: BorderSide(color: AppColors.border, width: 0.5),
+            top: BorderSide(color: context.colors.border, width: 0.5),
           ),
         ),
         child: NavigationBar(

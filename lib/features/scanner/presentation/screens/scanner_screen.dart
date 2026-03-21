@@ -132,7 +132,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                         Container(
                           width: 24, height: 24,
                           decoration: BoxDecoration(
-                            gradient: AppColors.primaryGradient,
+                            gradient: context.colors.primaryGradient,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Icon(
@@ -167,18 +167,18 @@ class _ScannerScreenState extends State<ScannerScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: isOn
-                                ? AppColors.primary.withValues(alpha: 0.25)
+                                ? context.colors.primary.withValues(alpha: 0.25)
                                 : Colors.black.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(50),
                             border: Border.all(
                               color: isOn
-                                  ? AppColors.primary.withValues(alpha: 0.6)
+                                  ? context.colors.primary.withValues(alpha: 0.6)
                                   : Colors.white.withValues(alpha: 0.15),
                             ),
                           ),
                           child: Icon(
                             isOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-                            color: isOn ? AppColors.primary : Colors.white,
+                            color: isOn ? context.colors.primary : Colors.white,
                             size: 20,
                           ),
                         ),
@@ -206,31 +206,31 @@ class _ScannerScreenState extends State<ScannerScreen> {
             Container(
               width: 96, height: 96,
               decoration: BoxDecoration(
-                color: AppColors.surfaceCard,
+                color: context.colors.surfaceCard,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.colors.border),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.no_photography_outlined,
                 size: 44,
-                color: AppColors.textMuted,
+                color: context.colors.textMuted,
               ),
             ),
             const SizedBox(height: 24),
             Text(
               l10n.cameraAccessDenied,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.enableCameraPermission,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textMuted,
+                color: context.colors.textMuted,
               ),
               textAlign: TextAlign.center,
             ),

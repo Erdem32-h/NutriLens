@@ -21,13 +21,13 @@ class ProductDetailScreen extends ConsumerWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.background,
       appBar: AppBar(
         title: Text(l10n.productDetail),
         backgroundColor: Colors.transparent,
       ),
       body: productAsync.when(
-        loading: () => _buildShimmer(),
+        loading: () => _buildShimmer(context),
         error: (error, _) => _buildError(context, ref, error),
         data: (product) {
           if (product == null) {
@@ -46,9 +46,9 @@ class ProductDetailScreen extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                   child: Text(
                     '${l10n.barcode}: ${product.barcode}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textMuted,
+                      color: context.colors.textMuted,
                     ),
                   ),
                 ),
@@ -61,10 +61,10 @@ class ProductDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShimmer() {
+  Widget _buildShimmer(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: AppColors.surfaceCard,
-      highlightColor: AppColors.surfaceCard2,
+      baseColor: context.colors.surfaceCard,
+      highlightColor: context.colors.surfaceCard2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -75,7 +75,7 @@ class ProductDetailScreen extends ConsumerWidget {
                 Container(
                   width: 100, height: 100,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceCard,
+                    color: context.colors.surfaceCard,
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
@@ -84,16 +84,16 @@ class ProductDetailScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(height: 20, color: AppColors.surfaceCard),
+                      Container(height: 20, color: context.colors.surfaceCard),
                       const SizedBox(height: 8),
                       Container(
                         height: 14, width: 120,
-                        color: AppColors.surfaceCard,
+                        color: context.colors.surfaceCard,
                       ),
                       const SizedBox(height: 8),
                       Container(
                         height: 28, width: 100,
-                        color: AppColors.surfaceCard,
+                        color: context.colors.surfaceCard,
                       ),
                     ],
                   ),
@@ -106,7 +106,7 @@ class ProductDetailScreen extends ConsumerWidget {
                 height: 80,
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceCard,
+                  color: context.colors.surfaceCard,
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
@@ -129,31 +129,31 @@ class ProductDetailScreen extends ConsumerWidget {
             Container(
               width: 96, height: 96,
               decoration: BoxDecoration(
-                color: AppColors.surfaceCard,
+                color: context.colors.surfaceCard,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.colors.border),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.error_outline_rounded,
                 size: 44,
-                color: AppColors.error,
+                color: context.colors.error,
               ),
             ),
             const SizedBox(height: 24),
             Text(
               l10n.productLoadFailed,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               error.toString(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textMuted,
+                color: context.colors.textMuted,
               ),
               textAlign: TextAlign.center,
             ),
@@ -165,7 +165,7 @@ class ProductDetailScreen extends ConsumerWidget {
                   horizontal: 24, vertical: 14,
                 ),
                 decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
+                  gradient: context.colors.primaryGradient,
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Row(
@@ -204,31 +204,31 @@ class ProductDetailScreen extends ConsumerWidget {
             Container(
               width: 96, height: 96,
               decoration: BoxDecoration(
-                color: AppColors.surfaceCard,
+                color: context.colors.surfaceCard,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.colors.border),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.search_off_rounded,
                 size: 44,
-                color: AppColors.textMuted,
+                color: context.colors.textMuted,
               ),
             ),
             const SizedBox(height: 24),
             Text(
               l10n.productNotFound,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.productNotFoundDetail,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textMuted,
+                color: context.colors.textMuted,
               ),
               textAlign: TextAlign.center,
             ),

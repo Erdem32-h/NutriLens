@@ -15,9 +15,9 @@ class ProductHeader extends StatelessWidget {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceCard,
+        color: context.colors.surfaceCard,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,31 +27,31 @@ class ProductHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Container(
               width: 100, height: 100,
-              color: AppColors.surfaceCard2,
+              color: context.colors.surfaceCard2,
               child: product.imageUrl != null
                   ? CachedNetworkImage(
                       imageUrl: product.imageUrl!,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => const Center(
+                      placeholder: (_, __) => Center(
                         child: Icon(
                           Icons.image_outlined,
                           size: 36,
-                          color: AppColors.textMuted,
+                          color: context.colors.textMuted,
                         ),
                       ),
-                      errorWidget: (_, __, ___) => const Center(
+                      errorWidget: (_, __, ___) => Center(
                         child: Icon(
                           Icons.broken_image_outlined,
                           size: 36,
-                          color: AppColors.textMuted,
+                          color: context.colors.textMuted,
                         ),
                       ),
                     )
-                  : const Center(
+                  : Center(
                       child: Icon(
                         Icons.inventory_2_outlined,
                         size: 36,
-                        color: AppColors.textMuted,
+                        color: context.colors.textMuted,
                       ),
                     ),
             ),
@@ -64,10 +64,10 @@ class ProductHeader extends StatelessWidget {
               children: [
                 Text(
                   product.productName ?? 'Bilinmeyen Ürün',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                     height: 1.3,
                   ),
                   maxLines: 2,
@@ -77,9 +77,9 @@ class ProductHeader extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     product.brands!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textMuted,
+                      color: context.colors.textMuted,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -102,14 +102,14 @@ class _NutriScoreBadge extends StatelessWidget {
 
   const _NutriScoreBadge({required this.grade});
 
-  Color _gradeColor() {
+  Color _gradeColor(BuildContext context) {
     return switch (grade.toLowerCase()) {
       'a' => const Color(0xFF038141),
       'b' => const Color(0xFF85BB2F),
       'c' => const Color(0xFFFECB02),
       'd' => const Color(0xFFEE8100),
       'e' => const Color(0xFFE63E11),
-      _ => AppColors.textMuted,
+      _ => context.colors.textMuted,
     };
   }
 
@@ -118,14 +118,14 @@ class _NutriScoreBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: _gradeColor().withValues(alpha: 0.15),
+        color: _gradeColor(context).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _gradeColor().withValues(alpha: 0.4)),
+        border: Border.all(color: _gradeColor(context).withValues(alpha: 0.4)),
       ),
       child: Text(
         'Nutri-Score ${grade.toUpperCase()}',
         style: TextStyle(
-          color: _gradeColor(),
+          color: _gradeColor(context),
           fontWeight: FontWeight.w700,
           fontSize: 12,
         ),

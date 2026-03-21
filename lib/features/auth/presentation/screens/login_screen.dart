@@ -54,7 +54,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.background,
       body: Stack(
         children: [
           // Top glow
@@ -68,7 +68,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.primary.withValues(alpha: 0.12),
+                    context.colors.primary.withValues(alpha: 0.12),
                     Colors.transparent,
                   ],
                 ),
@@ -92,7 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Container(
                           width: 44, height: 44,
                           decoration: BoxDecoration(
-                            gradient: AppColors.primaryGradient,
+                            gradient: context.colors.primaryGradient,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -102,12 +102,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        const Text(
+                        Text(
                           'NutriLens',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.textPrimary,
+                            color: context.colors.textPrimary,
                           ),
                         ),
                       ],
@@ -116,12 +116,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 48),
 
                     // Heading
-                    const Text(
+                    Text(
                       'Hoş geldin',
                       style: TextStyle(
                         fontSize: 34,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                         letterSpacing: -0.5,
                         height: 1.1,
                       ),
@@ -129,9 +129,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 8),
                     Text(
                       l10n.appSlogan,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
-                        color: AppColors.textMuted,
+                        color: context.colors.textMuted,
                         height: 1.5,
                       ),
                     ),
@@ -144,7 +144,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style: TextStyle(color: context.colors.textPrimary),
                       decoration: const InputDecoration(
                         hintText: 'ornek@email.com',
                         prefixIcon: Icon(Icons.email_outlined),
@@ -164,7 +164,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style: TextStyle(color: context.colors.textPrimary),
                       decoration: InputDecoration(
                         hintText: '••••••••',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -196,14 +196,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         width: double.infinity,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: isLoading ? null : AppColors.primaryGradient,
-                          color: isLoading ? AppColors.surfaceCard2 : null,
+                          gradient: isLoading ? null : context.colors.primaryGradient,
+                          color: isLoading ? context.colors.surfaceCard2 : null,
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: isLoading
                               ? []
                               : [
                                   BoxShadow(
-                                    color: AppColors.primary.withValues(alpha: 0.3),
+                                    color: context.colors.primary.withValues(alpha: 0.3),
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
                                   ),
@@ -211,11 +211,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         alignment: Alignment.center,
                         child: isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 22, height: 22,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
-                                  color: AppColors.primary,
+                                  color: context.colors.primary,
                                 ),
                               )
                             : Text(
@@ -235,18 +235,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // Divider
                     Row(
                       children: [
-                        const Expanded(child: Divider(color: AppColors.border)),
+                        Expanded(child: Divider(color: context.colors.border)),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: const Text(
+                          child: Text(
                             'ya da',
                             style: TextStyle(
-                              color: AppColors.textMuted,
+                              color: context.colors.textMuted,
                               fontSize: 13,
                             ),
                           ),
                         ),
-                        const Expanded(child: Divider(color: AppColors.border)),
+                        Expanded(child: Divider(color: context.colors.border)),
                       ],
                     ),
 
@@ -260,19 +260,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           'Hesabın yok mu?',
                           style: TextStyle(
-                            color: AppColors.textMuted,
+                            color: context.colors.textMuted,
                             fontSize: 14,
                           ),
                         ),
                         TextButton(
                           onPressed: () => context.goNamed(RouteNames.register),
-                          child: const Text(
+                          child: Text(
                             'Kayıt ol',
                             style: TextStyle(
-                              color: AppColors.primary,
+                              color: context.colors.primary,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -294,10 +294,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildLabel(String text) => Text(
     text,
-    style: const TextStyle(
+    style: TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.w600,
-      color: AppColors.textSecondary,
+      color: context.colors.textSecondary,
       letterSpacing: 0.2,
     ),
   );

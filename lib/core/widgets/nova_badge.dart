@@ -18,7 +18,7 @@ class NovaBadge extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: AppColors.novaColor(novaGroup),
+        color: context.colors.novaColor(novaGroup),
         shape: BoxShape.circle,
       ),
       child: Center(

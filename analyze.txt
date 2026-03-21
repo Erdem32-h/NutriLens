@@ -1,0 +1,21 @@
+Analyzing NutriLens...
+
+  error - lib\features\product\presentation\widgets\nutriment_table.dart:48:24 - Invalid constant value. - invalid_constant
+  error - lib\features\product\presentation\widgets\nutriment_table.dart:65:30 - Invalid constant value. - invalid_constant
+warning - lib\core\widgets\nova_badge.dart:4:8 - Duplicate import. Try removing all but one import of the library. - duplicate_import
+   info - fix_const.dart:48:12 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - fix_const.dart:48:18 - Use interpolation to compose strings and values. Try using string interpolation to build the composite string. - prefer_interpolation_to_compose_strings
+   info - fix_const.dart:48:60 - Use interpolation to compose strings and values. Try using string interpolation to build the composite string. - prefer_interpolation_to_compose_strings
+   info - fix_const.dart:55:3 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - fix_const.dart:55:9 - Use interpolation to compose strings and values. Try using string interpolation to build the composite string. - prefer_interpolation_to_compose_strings
+   info - migrate_colors.dart:6:5 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - migrate_colors.dart:26:23 - Use interpolation to compose strings and values. Try using string interpolation to build the composite string. - prefer_interpolation_to_compose_strings
+   info - migrate_colors.dart:35:3 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - test_login.dart:1:8 - The imported package 'supabase' isn't a dependency of the importing package. Try adding a dependency for 'supabase' in the 'pubspec.yaml' file. - depend_on_referenced_packages
+   info - test_login.dart:10:5 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - test_login.dart:15:5 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - test_login.dart:17:5 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - test_login.dart:18:5 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - test_login.dart:20:5 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+
+17 issues found.

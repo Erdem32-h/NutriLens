@@ -47,7 +47,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(authState.error.toString()),
-            backgroundColor: AppColors.error,
+            backgroundColor: context.colors.error,
           ),
         );
       } else {
@@ -64,7 +64,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.background,
       body: Stack(
         children: [
           // Top glow
@@ -78,7 +78,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.primary.withValues(alpha: 0.12),
+                    context.colors.primary.withValues(alpha: 0.12),
                     Colors.transparent,
                   ],
                 ),
@@ -99,9 +99,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     // Back button
                     IconButton(
                       onPressed: () => context.goNamed(RouteNames.login),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios_new_rounded,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                         size: 20,
                       ),
                       padding: EdgeInsets.zero,
@@ -112,10 +112,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     // Heading
                     Text(
                       l10n.createAccount,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 34,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                         letterSpacing: -0.5,
                         height: 1.1,
                       ),
@@ -123,9 +123,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const SizedBox(height: 8),
                     Text(
                       l10n.startHealthyJourney,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
-                        color: AppColors.textMuted,
+                        color: context.colors.textMuted,
                         height: 1.5,
                       ),
                     ),
@@ -137,7 +137,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _nameController,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style: TextStyle(color: context.colors.textPrimary),
                       decoration: const InputDecoration(
                         hintText: 'Ad Soyad',
                         prefixIcon: Icon(Icons.person_outline_rounded),
@@ -156,7 +156,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style: TextStyle(color: context.colors.textPrimary),
                       decoration: const InputDecoration(
                         hintText: 'ornek@email.com',
                         prefixIcon: Icon(Icons.email_outlined),
@@ -176,7 +176,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style: TextStyle(color: context.colors.textPrimary),
                       decoration: InputDecoration(
                         hintText: '••••••••',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -206,7 +206,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     TextFormField(
                       controller: _confirmPasswordController,
                       obscureText: true,
-                      style: const TextStyle(color: AppColors.textPrimary),
+                      style: TextStyle(color: context.colors.textPrimary),
                       decoration: const InputDecoration(
                         hintText: '••••••••',
                         prefixIcon: Icon(Icons.lock_outline_rounded),
@@ -229,14 +229,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         width: double.infinity,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: isLoading ? null : AppColors.primaryGradient,
-                          color: isLoading ? AppColors.surfaceCard2 : null,
+                          gradient: isLoading ? null : context.colors.primaryGradient,
+                          color: isLoading ? context.colors.surfaceCard2 : null,
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: isLoading
                               ? []
                               : [
                                   BoxShadow(
-                                    color: AppColors.primary.withValues(alpha: 0.3),
+                                    color: context.colors.primary.withValues(alpha: 0.3),
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
                                   ),
@@ -244,11 +244,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ),
                         alignment: Alignment.center,
                         child: isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 22, height: 22,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
-                                  color: AppColors.primary,
+                                  color: context.colors.primary,
                                 ),
                               )
                             : Text(
@@ -268,18 +268,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     // Divider
                     Row(
                       children: [
-                        const Expanded(child: Divider(color: AppColors.border)),
-                        const Padding(
+                        Expanded(child: Divider(color: context.colors.border)),
+                        Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             'ya da',
                             style: TextStyle(
-                              color: AppColors.textMuted,
+                              color: context.colors.textMuted,
                               fontSize: 13,
                             ),
                           ),
                         ),
-                        const Expanded(child: Divider(color: AppColors.border)),
+                        Expanded(child: Divider(color: context.colors.border)),
                       ],
                     ),
 
@@ -293,19 +293,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           'Zaten hesabın var mı?',
                           style: TextStyle(
-                            color: AppColors.textMuted,
+                            color: context.colors.textMuted,
                             fontSize: 14,
                           ),
                         ),
                         TextButton(
                           onPressed: () => context.goNamed(RouteNames.login),
-                          child: const Text(
+                          child: Text(
                             'Giriş yap',
                             style: TextStyle(
-                              color: AppColors.primary,
+                              color: context.colors.primary,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -327,10 +327,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Widget _buildLabel(String text) => Text(
     text,
-    style: const TextStyle(
+    style: TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.w600,
-      color: AppColors.textSecondary,
+      color: context.colors.textSecondary,
       letterSpacing: 0.2,
     ),
   );

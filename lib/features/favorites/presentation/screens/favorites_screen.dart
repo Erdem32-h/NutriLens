@@ -11,7 +11,7 @@ class FavoritesScreen extends StatelessWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.colors.background,
       appBar: AppBar(
         title: Text(l10n.favorites),
         backgroundColor: Colors.transparent,
@@ -23,31 +23,31 @@ class FavoritesScreen extends StatelessWidget {
             Container(
               width: 96, height: 96,
               decoration: BoxDecoration(
-                color: AppColors.surfaceCard,
+                color: context.colors.surfaceCard,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.colors.border),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.favorite_rounded,
                 size: 44,
-                color: AppColors.textMuted,
+                color: context.colors.textMuted,
               ),
             ),
             const SizedBox(height: 24),
             Text(
               l10n.noFavoritesYet,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.addFavoritesHint,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textMuted,
+                color: context.colors.textMuted,
               ),
               textAlign: TextAlign.center,
             ),
