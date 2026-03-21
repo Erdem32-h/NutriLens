@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
+
 class IngredientList extends StatefulWidget {
   final String? ingredientsText;
 
@@ -14,60 +16,84 @@ class _IngredientListState extends State<IngredientList> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     if (widget.ingredientsText == null || widget.ingredientsText!.isEmpty) {
-      return Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            'Icerik bilgisi mevcut degil',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade600,
-            ),
-          ),
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceCard,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: const Text(
+          'İçerik bilgisi mevcut değil',
+          style: TextStyle(fontSize: 14, color: AppColors.textMuted),
         ),
       );
     }
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Iceindekiler',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceCard,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'İçindekiler',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
                 ),
-                if (widget.ingredientsText!.length > 150)
-                  GestureDetector(
-                    onTap: () => setState(() => _expanded = !_expanded),
-                    child: Text(
-                      _expanded ? 'Daralt' : 'Genislet',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.primary,
-                      ),
+              ),
+              if (widget.ingredientsText!.length > 150)
+                GestureDetector(
+                  onTap: () => setState(() => _expanded = !_expanded),
+                  child: Text(
+                    _expanded ? 'Daralt' : 'Genişlet',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
                     ),
                   ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          AnimatedCrossFade(
+            firstChild: Text(
               widget.ingredientsText!,
-              maxLines: _expanded ? null : 3,
-              overflow: _expanded ? null : TextOverflow.ellipsis,
-              style: theme.textTheme.bodyMedium,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                height: 1.6,
+              ),
             ),
-          ],
-        ),
+            secondChild: Text(
+              widget.ingredientsText!,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                height: 1.6,
+              ),
+            ),
+            crossFadeState: _expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 250),
+          ),
+        ],
       ),
     );
   }
