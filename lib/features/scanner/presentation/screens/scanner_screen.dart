@@ -5,6 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../widgets/scanner_overlay.dart';
 
 class ScannerScreen extends StatefulWidget {
@@ -40,7 +41,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
     final value = barcode.rawValue;
     if (value == null || value.isEmpty) return;
 
-    // Debounce: ignore same barcode within scan debounce period
     final now = DateTime.now();
     if (_lastBarcode == value && _lastScanTime != null) {
       final elapsed = now.difference(_lastScanTime!).inMilliseconds;
@@ -51,10 +51,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
     _lastScanTime = now;
     _isNavigating = true;
 
-    // Haptic feedback
     HapticFeedback.mediumImpact();
 
-    // Navigate to product detail
     context.push('/product/$value').then((_) {
       if (mounted) {
         setState(() => _isNavigating = false);
@@ -67,6 +65,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     final l10n = context.l10n;
 
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           // Camera preview
@@ -77,61 +76,114 @@ class _ScannerScreenState extends State<ScannerScreen> {
               return _buildCameraError(context, error);
             },
           ),
+
           // Overlay
           const ScannerOverlay(),
           const ScannerOverlayBorder(),
-          // Bottom instruction text
+
+          // Bottom hint pill
           Positioned(
-            bottom: 120,
+            bottom: 130,
             left: 0,
             right: 0,
-            child: Text(
-              l10n.alignBarcodeInFrame,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.white,
-                    shadows: [
-                      const Shadow(
-                        blurRadius: 4,
-                        color: Colors.black54,
-                      ),
-                    ],
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.55),
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.15),
                   ),
+                ),
+                child: Text(
+                  l10n.alignBarcodeInFrame,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ),
           ),
-          // Top bar with flash toggle
+
+          // Top bar
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'NutriLens',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          shadows: [
-                            const Shadow(
-                              blurRadius: 4,
-                              color: Colors.black54,
-                            ),
-                          ],
-                        ),
-                  ),
-                  IconButton(
-                    onPressed: () => _controller.toggleTorch(),
-                    icon: ValueListenableBuilder<MobileScannerState>(
-                      valueListenable: _controller,
-                      builder: (context, state, child) {
-                        return Icon(
-                          state.torchState == TorchState.on
-                              ? Icons.flash_on
-                              : Icons.flash_off,
-                          color: Colors.white,
-                        );
-                      },
+                  // Logo
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8,
                     ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.15),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 24, height: 24,
+                          decoration: BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Icon(
+                            Icons.eco_rounded,
+                            color: Colors.black,
+                            size: 14,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'NutriLens',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Flash toggle pill button
+                  ValueListenableBuilder<MobileScannerState>(
+                    valueListenable: _controller,
+                    builder: (context, state, child) {
+                      final isOn = state.torchState == TorchState.on;
+                      return GestureDetector(
+                        onTap: () => _controller.toggleTorch(),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isOn
+                                ? AppColors.primary.withValues(alpha: 0.25)
+                                : Colors.black.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(
+                              color: isOn
+                                  ? AppColors.primary.withValues(alpha: 0.6)
+                                  : Colors.white.withValues(alpha: 0.15),
+                            ),
+                          ),
+                          child: Icon(
+                            isOn ? Icons.flash_on_rounded : Icons.flash_off_rounded,
+                            color: isOn ? AppColors.primary : Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -151,22 +203,35 @@ class _ScannerScreenState extends State<ScannerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.no_photography_outlined,
-              size: 64,
-              color: Colors.grey.shade400,
+            Container(
+              width: 96, height: 96,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceCard,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.border),
+              ),
+              child: const Icon(
+                Icons.no_photography_outlined,
+                size: 44,
+                color: AppColors.textMuted,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Text(
               l10n.cameraAccessDenied,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.enableCameraPermission,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textMuted,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
