@@ -6,18 +6,18 @@ import '../../../../core/network/network_info.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../datasources/product_local_datasource.dart';
-import '../datasources/product_remote_datasource.dart';
+import '../datasources/product_source.dart';
 
 final class ProductRepositoryImpl implements ProductRepository {
-  final ProductRemoteDataSource _remoteDataSource;
+  final ProductResolver _resolver;
   final ProductLocalDataSource _localDataSource;
   final NetworkInfo _networkInfo;
 
   const ProductRepositoryImpl({
-    required ProductRemoteDataSource remoteDataSource,
+    required ProductResolver resolver,
     required ProductLocalDataSource localDataSource,
     required NetworkInfo networkInfo,
-  })  : _remoteDataSource = remoteDataSource,
+  })  : _resolver = resolver,
         _localDataSource = localDataSource,
         _networkInfo = networkInfo;
 
@@ -29,19 +29,17 @@ final class ProductRepositoryImpl implements ProductRepository {
       if (cached != null) {
         final stale = await _localDataSource.isStale(barcode);
         if (!stale) {
-          // Fresh cache - return immediately
           return Right(cached);
         }
-
-        // Stale cache - try remote, fall back to stale
-        return _fetchRemoteWithFallback(barcode, staleCached: cached);
+        // Stale cache — try resolver, fall back to stale
+        return _resolveWithFallback(barcode, staleCached: cached);
       }
     } on CacheException {
-      // Cache read failed, try remote
+      // Cache read failed, continue to resolver
     }
 
-    // 2. No cache - must fetch from remote
-    return _fetchRemote(barcode);
+    // 2. No cache — resolve from remote sources
+    return _resolveFromSources(barcode);
   }
 
   @override
@@ -69,47 +67,43 @@ final class ProductRepositoryImpl implements ProductRepository {
     }
   }
 
-  Future<Either<Failure, ProductEntity>> _fetchRemoteWithFallback(
+  Future<Either<Failure, ProductEntity>> _resolveWithFallback(
     String barcode, {
     required ProductEntity staleCached,
   }) async {
     final isOnline = await _networkInfo.isConnected;
     if (!isOnline) {
-      // Offline but have stale cache - return it
       return Right(staleCached);
     }
 
     try {
-      final product = await _remoteDataSource.getProduct(barcode);
-      await _localDataSource.cacheProduct(product);
-      return Right(product);
-    } on NotFoundException {
-      // Product was removed from OFF - still return stale cache
-      return Right(staleCached);
-    } on RateLimitException {
+      final result = await _resolver.resolve(barcode);
+      if (result.isFound) {
+        await _localDataSource.cacheProduct(result.product!);
+        return Right(result.product!);
+      }
+      // Not found in any source — return stale cache
       return Right(staleCached);
     } catch (_) {
-      // Network error - return stale cache
       return Right(staleCached);
     }
   }
 
-  Future<Either<Failure, ProductEntity>> _fetchRemote(String barcode) async {
+  Future<Either<Failure, ProductEntity>> _resolveFromSources(
+    String barcode,
+  ) async {
     final isOnline = await _networkInfo.isConnected;
     if (!isOnline) {
       return const Left(NetworkFailure());
     }
 
     try {
-      final product = await _remoteDataSource.getProduct(barcode);
-      await _localDataSource.cacheProduct(product);
-      return Right(product);
-    } on NotFoundException catch (e) {
-      return Left(NotFoundFailure(e.message));
-    } on RateLimitException catch (e) {
-      return Left(RateLimitFailure(e.message));
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
+      final result = await _resolver.resolve(barcode);
+      if (result.isFound) {
+        await _localDataSource.cacheProduct(result.product!);
+        return Right(result.product!);
+      }
+      return const Left(NotFoundFailure());
     } catch (e) {
       return Left(ServerFailure('Unexpected error: $e'));
     }

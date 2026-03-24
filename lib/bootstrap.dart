@@ -30,8 +30,15 @@ Future<void> bootstrap() async {
   logger.i('Drift database initialized');
 
   try {
-    await SupabaseConfig.initialize();
-    logger.i('Supabase initialized successfully');
+    await SupabaseConfig.initialize().timeout(
+      const Duration(seconds: 10),
+      onTimeout: () {
+        logger.w('Supabase initialization timed out after 10s — continuing offline');
+      },
+    );
+    if (SupabaseConfig.isInitialized) {
+      logger.i('Supabase initialized successfully');
+    }
   } catch (e) {
     logger.e('Failed to initialize Supabase: $e');
   }

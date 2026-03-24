@@ -5,12 +5,11 @@ import 'package:nutrilens/core/error/exceptions.dart';
 import 'package:nutrilens/core/error/failures.dart';
 import 'package:nutrilens/core/network/network_info.dart';
 import 'package:nutrilens/features/product/data/datasources/product_local_datasource.dart';
-import 'package:nutrilens/features/product/data/datasources/product_remote_datasource.dart';
+import 'package:nutrilens/features/product/data/datasources/product_source.dart';
 import 'package:nutrilens/features/product/data/repositories/product_repository_impl.dart';
 import 'package:nutrilens/features/product/domain/entities/product_entity.dart';
 
-class MockProductRemoteDataSource extends Mock
-    implements ProductRemoteDataSource {}
+class MockProductResolver extends Mock implements ProductResolver {}
 
 class MockProductLocalDataSource extends Mock
     implements ProductLocalDataSource {}
@@ -21,7 +20,7 @@ class FakeProductEntity extends Fake implements ProductEntity {}
 
 void main() {
   late ProductRepositoryImpl repository;
-  late MockProductRemoteDataSource mockRemote;
+  late MockProductResolver mockResolver;
   late MockProductLocalDataSource mockLocal;
   late MockNetworkInfo mockNetwork;
 
@@ -30,11 +29,11 @@ void main() {
   });
 
   setUp(() {
-    mockRemote = MockProductRemoteDataSource();
+    mockResolver = MockProductResolver();
     mockLocal = MockProductLocalDataSource();
     mockNetwork = MockNetworkInfo();
     repository = ProductRepositoryImpl(
-      remoteDataSource: mockRemote,
+      resolver: mockResolver,
       localDataSource: mockLocal,
       networkInfo: mockNetwork,
     );
@@ -61,7 +60,7 @@ void main() {
         final result = await repository.getProduct('8690000000001');
 
         expect(result, const Right(product));
-        verifyNever(() => mockRemote.getProduct(any()));
+        verifyNever(() => mockResolver.resolve(any()));
         verifyNever(() => mockNetwork.isConnected);
       });
     });
@@ -74,10 +73,14 @@ void main() {
             .thenAnswer((_) async => true);
       });
 
-      test('fetches from remote when online', () async {
+      test('fetches from resolver when online', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
-            .thenAnswer((_) async => product);
+        when(() => mockResolver.resolve('8690000000001'))
+            .thenAnswer((_) async => ProductResolveResult(
+                  product: product,
+                  resolvedBy: 'off',
+                  triedSources: ['community', 'off'],
+                ));
         when(() => mockLocal.cacheProduct(any()))
             .thenAnswer((_) async {});
 
@@ -93,32 +96,26 @@ void main() {
         final result = await repository.getProduct('8690000000001');
 
         expect(result, const Right(staleProduct));
-        verifyNever(() => mockRemote.getProduct(any()));
+        verifyNever(() => mockResolver.resolve(any()));
       });
 
-      test('returns stale cache on NotFoundException from remote', () async {
+      test('returns stale cache when resolver finds nothing', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
-            .thenThrow(const NotFoundException());
+        when(() => mockResolver.resolve('8690000000001'))
+            .thenAnswer((_) async => ProductResolveResult(
+                  product: null,
+                  resolvedBy: null,
+                  triedSources: ['community', 'off', 'upcitemdb'],
+                ));
 
         final result = await repository.getProduct('8690000000001');
 
         expect(result, const Right(staleProduct));
       });
 
-      test('returns stale cache on RateLimitException from remote', () async {
+      test('returns stale cache on resolver exception', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
-            .thenThrow(const RateLimitException());
-
-        final result = await repository.getProduct('8690000000001');
-
-        expect(result, const Right(staleProduct));
-      });
-
-      test('returns stale cache on generic exception from remote', () async {
-        when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
+        when(() => mockResolver.resolve('8690000000001'))
             .thenThrow(Exception('Network error'));
 
         final result = await repository.getProduct('8690000000001');
@@ -133,10 +130,14 @@ void main() {
             .thenAnswer((_) async => null);
       });
 
-      test('fetches from remote and caches when online', () async {
+      test('resolves from sources and caches when online', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
-            .thenAnswer((_) async => product);
+        when(() => mockResolver.resolve('8690000000001'))
+            .thenAnswer((_) async => ProductResolveResult(
+                  product: product,
+                  resolvedBy: 'off',
+                  triedSources: ['community', 'off'],
+                ));
         when(() => mockLocal.cacheProduct(any()))
             .thenAnswer((_) async {});
 
@@ -158,10 +159,14 @@ void main() {
         );
       });
 
-      test('returns NotFoundFailure on NotFoundException', () async {
+      test('returns NotFoundFailure when resolver finds nothing', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
-            .thenThrow(const NotFoundException('Not found'));
+        when(() => mockResolver.resolve('8690000000001'))
+            .thenAnswer((_) async => ProductResolveResult(
+                  product: null,
+                  resolvedBy: null,
+                  triedSources: ['community', 'off', 'upcitemdb'],
+                ));
 
         final result = await repository.getProduct('8690000000001');
 
@@ -172,37 +177,9 @@ void main() {
         );
       });
 
-      test('returns RateLimitFailure on RateLimitException', () async {
-        when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
-            .thenThrow(const RateLimitException());
-
-        final result = await repository.getProduct('8690000000001');
-
-        expect(result.isLeft(), isTrue);
-        result.fold(
-          (failure) => expect(failure, isA<RateLimitFailure>()),
-          (_) => fail('Expected Left'),
-        );
-      });
-
-      test('returns ServerFailure on ServerException', () async {
-        when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
-            .thenThrow(const ServerException('Server error'));
-
-        final result = await repository.getProduct('8690000000001');
-
-        expect(result.isLeft(), isTrue);
-        result.fold(
-          (failure) => expect(failure, isA<ServerFailure>()),
-          (_) => fail('Expected Left'),
-        );
-      });
-
       test('returns ServerFailure on unexpected exception', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
+        when(() => mockResolver.resolve('8690000000001'))
             .thenThrow(Exception('Unknown'));
 
         final result = await repository.getProduct('8690000000001');
@@ -219,12 +196,16 @@ void main() {
     });
 
     group('when cache read throws CacheException', () {
-      test('falls through to remote fetch', () async {
+      test('falls through to resolver', () async {
         when(() => mockLocal.getProduct('8690000000001'))
             .thenThrow(const CacheException('DB error'));
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockRemote.getProduct('8690000000001'))
-            .thenAnswer((_) async => product);
+        when(() => mockResolver.resolve('8690000000001'))
+            .thenAnswer((_) async => ProductResolveResult(
+                  product: product,
+                  resolvedBy: 'off',
+                  triedSources: ['community', 'off'],
+                ));
         when(() => mockLocal.cacheProduct(any()))
             .thenAnswer((_) async {});
 

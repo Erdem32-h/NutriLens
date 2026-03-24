@@ -13,6 +13,10 @@ abstract final class RouteNames {
   // Product
   static const String productDetail = 'productDetail';
   static const String additiveDetail = 'additiveDetail';
+  static const String productNotFound = 'productNotFound';
+  static const String ingredientsCamera = 'ingredientsCamera';
+  static const String ingredientsVerification = 'ingredientsVerification';
+  static const String manualIngredients = 'manualIngredients';
 
   // Profile sub-screens
   static const String allergenSelection = 'allergenSelection';

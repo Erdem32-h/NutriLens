@@ -56,6 +56,8 @@ dependencies:
   logger: ^2.5.0
   path: ^1.9.1
   flutter_dotenv: ^5.2.1
+  google_mlkit_text_recognition: ^0.15.1
+  image_picker: ^1.2.1
 
 dev_dependencies:
   flutter_test:

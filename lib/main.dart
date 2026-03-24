@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,12 +24,30 @@ void main() async {
   );
 }
 
-class NutriLensApp extends ConsumerWidget {
+class NutriLensApp extends ConsumerStatefulWidget {
   const NutriLensApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final router = createRouter();
+  ConsumerState<NutriLensApp> createState() => _NutriLensAppState();
+}
+
+class _NutriLensAppState extends ConsumerState<NutriLensApp> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _router = createRouter();
+  }
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final locale = ref.watch(localeProvider);
 
@@ -38,7 +57,7 @@ class NutriLensApp extends ConsumerWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
-      routerConfig: router,
+      routerConfig: _router,
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [

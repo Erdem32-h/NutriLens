@@ -12,6 +12,10 @@ import '../../features/history/presentation/screens/history_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/product/presentation/screens/product_detail_screen.dart';
+import '../../features/product/presentation/screens/product_not_found_screen.dart';
+import '../../features/product/presentation/screens/ingredients_camera_screen.dart';
+import '../../features/product/presentation/screens/ingredients_verification_screen.dart';
+import '../../features/product/presentation/screens/manual_ingredients_screen.dart';
 import '../../features/profile/presentation/screens/allergen_selection_screen.dart';
 import '../../features/profile/presentation/screens/diet_filter_screen.dart';
 import '../../features/profile/presentation/screens/oil_filter_screen.dart';
@@ -120,6 +124,46 @@ GoRouter createRouter() {
         builder: (context, state) {
           final barcode = state.pathParameters['barcode']!;
           return ProductDetailScreen(barcode: barcode);
+        },
+      ),
+      GoRoute(
+        path: '/product/:barcode/not-found',
+        name: RouteNames.productNotFound,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final barcode = state.pathParameters['barcode']!;
+          return ProductNotFoundScreen(barcode: barcode);
+        },
+      ),
+      GoRoute(
+        path: '/product/:barcode/ocr',
+        name: RouteNames.ingredientsCamera,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final barcode = state.pathParameters['barcode']!;
+          return IngredientsCameraScreen(barcode: barcode);
+        },
+      ),
+      GoRoute(
+        path: '/product/:barcode/verify',
+        name: RouteNames.ingredientsVerification,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final barcode = state.pathParameters['barcode']!;
+          final extra = state.extra as Map<String, dynamic>?;
+          return IngredientsVerificationScreen(
+            barcode: barcode,
+            extra: extra,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/product/:barcode/manual',
+        name: RouteNames.manualIngredients,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final barcode = state.pathParameters['barcode']!;
+          return ManualIngredientsScreen(barcode: barcode);
         },
       ),
     ],

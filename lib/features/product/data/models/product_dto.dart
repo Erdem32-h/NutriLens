@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:openfoodfacts/openfoodfacts.dart';
 
+import '../../domain/entities/nutriments_entity.dart';
 import '../../domain/entities/product_entity.dart';
 import 'nutriments_dto.dart';
 
@@ -21,6 +22,40 @@ abstract final class ProductDto {
       nutriments: NutrimentsDto.fromOffNutriments(product.nutriments),
       categoriesTags: product.categoriesTags ?? const [],
       countriesTags: product.countriesTags ?? const [],
+    );
+  }
+
+  /// Maps a Supabase community_products row to [ProductEntity].
+  static ProductEntity fromCommunityRow(Map<String, dynamic> row) {
+    final additivesTags = (row['additives_tags'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        const [];
+
+    final nutrimentsMap = row['nutriments'] as Map<String, dynamic>? ?? {};
+
+    return ProductEntity(
+      barcode: row['barcode'] as String,
+      productName: row['product_name'] as String?,
+      brands: row['brand'] as String?,
+      imageUrl: row['image_url'] as String?,
+      ingredientsText: row['ingredients_text'] as String?,
+      additivesTags: additivesTags,
+      novaGroup: row['nova_group'] as int?,
+      nutriscoreGrade: row['nutriscore_grade'] as String?,
+      nutriments: NutrimentsEntity(
+        energyKcal: (nutrimentsMap['energy_kcal'] as num?)?.toDouble(),
+        fat: (nutrimentsMap['fat'] as num?)?.toDouble(),
+        saturatedFat: (nutrimentsMap['saturated_fat'] as num?)?.toDouble(),
+        sugars: (nutrimentsMap['sugars'] as num?)?.toDouble(),
+        salt: (nutrimentsMap['salt'] as num?)?.toDouble(),
+        fiber: (nutrimentsMap['fiber'] as num?)?.toDouble(),
+        proteins: (nutrimentsMap['proteins'] as num?)?.toDouble(),
+      ),
+      hpScore: (row['hp_score'] as num?)?.toDouble(),
+      hpChemicalLoad: (row['hp_chemical_load'] as num?)?.toDouble(),
+      hpRiskFactor: (row['hp_risk_factor'] as num?)?.toDouble(),
+      hpNutriFactor: (row['hp_nutri_factor'] as num?)?.toDouble(),
     );
   }
 

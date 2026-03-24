@@ -6,5 +6,9 @@ abstract final class ApiConstants {
   static const int offProductRateLimit = 100;
   static const int offSearchRateLimit = 10;
 
+  // UPC Item DB (free barcode lookup)
+  static const String upcItemDbBaseUrl =
+      'https://api.upcitemdb.com/prod/trial/lookup';
+
   static const Duration requestTimeout = Duration(seconds: 15);
 }
