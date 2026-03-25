@@ -13,6 +13,7 @@ import '../../data/datasources/product_local_datasource.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/datasources/product_source.dart';
 import '../../data/repositories/product_repository_impl.dart';
+import '../../../../core/error/failures.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../domain/usecases/get_product_usecase.dart';
@@ -96,7 +97,11 @@ final productByBarcodeProvider =
   final useCase = ref.watch(getProductUseCaseProvider);
   final result = await useCase(barcode);
   return result.fold(
-    (failure) => throw Exception(failure.message),
+    (failure) {
+      // NotFoundFailure → return null so UI redirects to not-found screen
+      if (failure is NotFoundFailure) return null;
+      throw Exception(failure.message);
+    },
     (product) => product,
   );
 });
