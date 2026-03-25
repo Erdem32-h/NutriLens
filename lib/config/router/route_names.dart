@@ -17,6 +17,7 @@ abstract final class RouteNames {
   static const String ingredientsCamera = 'ingredientsCamera';
   static const String ingredientsVerification = 'ingredientsVerification';
   static const String manualIngredients = 'manualIngredients';
+  static const String editProduct = 'editProduct';
 
   // Profile sub-screens
   static const String allergenSelection = 'allergenSelection';

@@ -697,6 +697,396 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'ALTERNATİF'**
   String get tabAlternative;
+
+  /// No description provided for @healthScoreLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'SAĞLIK PUANI'**
+  String get healthScoreLabel;
+
+  /// No description provided for @worstIsBad.
+  ///
+  /// In tr, this message translates to:
+  /// **'(5 EN KÖTÜ)'**
+  String get worstIsBad;
+
+  /// No description provided for @bestScore.
+  ///
+  /// In tr, this message translates to:
+  /// **'EN İYİ'**
+  String get bestScore;
+
+  /// No description provided for @worstScore.
+  ///
+  /// In tr, this message translates to:
+  /// **'EN KÖTÜ'**
+  String get worstScore;
+
+  /// No description provided for @contentAnalysis.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik Analizi'**
+  String get contentAnalysis;
+
+  /// No description provided for @eCodeAnalysis.
+  ///
+  /// In tr, this message translates to:
+  /// **'E-Kod Analizi'**
+  String get eCodeAnalysis;
+
+  /// No description provided for @risky.
+  ///
+  /// In tr, this message translates to:
+  /// **'RİSKLİ'**
+  String get risky;
+
+  /// No description provided for @caution.
+  ///
+  /// In tr, this message translates to:
+  /// **'DİKKAT'**
+  String get caution;
+
+  /// No description provided for @safeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'GÜVENLİ'**
+  String get safeLabel;
+
+  /// No description provided for @naturalLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'DOĞAL'**
+  String get naturalLabel;
+
+  /// No description provided for @ultraProcessed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ultra işlenmiş ve ultra katkılı ürün'**
+  String get ultraProcessed;
+
+  /// No description provided for @highSugar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aşırı şekerli !'**
+  String get highSugar;
+
+  /// No description provided for @moderateSugar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orta düzey şeker içeriği'**
+  String get moderateSugar;
+
+  /// No description provided for @highSaturatedFat.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çok fazla doymuş yağ !'**
+  String get highSaturatedFat;
+
+  /// No description provided for @containsPalmOil.
+  ///
+  /// In tr, this message translates to:
+  /// **'Palm yağı (Hurma yağı) içerir'**
+  String get containsPalmOil;
+
+  /// No description provided for @mayContainTransFat.
+  ///
+  /// In tr, this message translates to:
+  /// **'Trans yağ içerebilir'**
+  String get mayContainTransFat;
+
+  /// No description provided for @containsFlavoring.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aroma vericiler içerir'**
+  String get containsFlavoring;
+
+  /// No description provided for @highSalt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yüksek tuz içeriği'**
+  String get highSalt;
+
+  /// No description provided for @energyValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Enerji Değeri'**
+  String get energyValue;
+
+  /// No description provided for @fatLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'YAĞ'**
+  String get fatLabel;
+
+  /// No description provided for @sugarLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'ŞEKER'**
+  String get sugarLabel;
+
+  /// No description provided for @saturatedFatLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'DOYMUŞ YAĞ'**
+  String get saturatedFatLabel;
+
+  /// No description provided for @saltLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'TUZ'**
+  String get saltLabel;
+
+  /// No description provided for @lowLevel.
+  ///
+  /// In tr, this message translates to:
+  /// **'DÜŞÜK'**
+  String get lowLevel;
+
+  /// No description provided for @moderateLevel.
+  ///
+  /// In tr, this message translates to:
+  /// **'ORTA DERECE'**
+  String get moderateLevel;
+
+  /// No description provided for @highLevel.
+  ///
+  /// In tr, this message translates to:
+  /// **'YÜKSEK'**
+  String get highLevel;
+
+  /// No description provided for @criticalLevel.
+  ///
+  /// In tr, this message translates to:
+  /// **'KRİTİK'**
+  String get criticalLevel;
+
+  /// No description provided for @veryHighLevel.
+  ///
+  /// In tr, this message translates to:
+  /// **'ÇOK YÜKSEK'**
+  String get veryHighLevel;
+
+  /// No description provided for @dailyValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük Değer'**
+  String get dailyValue;
+
+  /// No description provided for @detailedContent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Detaylı İçerik (100g)'**
+  String get detailedContent;
+
+  /// No description provided for @fiberLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lif'**
+  String get fiberLabel;
+
+  /// No description provided for @proteinLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Protein'**
+  String get proteinLabel;
+
+  /// No description provided for @carbohydrateLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karbonhidrat'**
+  String get carbohydrateLabel;
+
+  /// No description provided for @dailyValueNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'* Yüzdelik değerler 2000 kalorilik bir yetişkin diyeti baz alınarak hesaplanmıştır.'**
+  String get dailyValueNote;
+
+  /// No description provided for @didYouKnow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Biliyor muydunuz?'**
+  String get didYouKnow;
+
+  /// No description provided for @alternativesTip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sağlık skoru 1 veya 2 olan ürünler, minimum işlenmiş ve en temiz içerikli seçeneklerdir. Daha düşük puanlı alternatiflere geçmek genel sağlığınızı belirgin şekilde iyileştirir.'**
+  String get alternativesTip;
+
+  /// No description provided for @alternativesComingSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha sağlıklı alternatifler yakında eklenecek'**
+  String get alternativesComingSoon;
+
+  /// No description provided for @noAdditives.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu üründe katkı maddesi bulunmuyor'**
+  String get noAdditives;
+
+  /// No description provided for @noNutrientData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besin değeri bilgisi mevcut değil'**
+  String get noNutrientData;
+
+  /// No description provided for @portion100g.
+  ///
+  /// In tr, this message translates to:
+  /// **'100g'**
+  String get portion100g;
+
+  /// No description provided for @foodCategory.
+  ///
+  /// In tr, this message translates to:
+  /// **'GIDA'**
+  String get foodCategory;
+
+  /// No description provided for @delete.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sil'**
+  String get delete;
+
+  /// No description provided for @edit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düzenle'**
+  String get edit;
+
+  /// No description provided for @addedToFavorites.
+  ///
+  /// In tr, this message translates to:
+  /// **'Favorilere eklendi'**
+  String get addedToFavorites;
+
+  /// No description provided for @removedFromFavorites.
+  ///
+  /// In tr, this message translates to:
+  /// **'Favorilerden çıkarıldı'**
+  String get removedFromFavorites;
+
+  /// No description provided for @deletedFromHistory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçmişten silindi'**
+  String get deletedFromHistory;
+
+  /// No description provided for @alreadyInFavorites.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zaten favorilerde'**
+  String get alreadyInFavorites;
+
+  /// No description provided for @editProduct.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ürün Bilgilerini Düzenle'**
+  String get editProduct;
+
+  /// No description provided for @productName.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ürün Adı'**
+  String get productName;
+
+  /// No description provided for @brandName.
+  ///
+  /// In tr, this message translates to:
+  /// **'Marka'**
+  String get brandName;
+
+  /// No description provided for @ingredientsTextLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler'**
+  String get ingredientsTextLabel;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraf Çek'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In tr, this message translates to:
+  /// **'Galeriden Seç'**
+  String get chooseFromGallery;
+
+  /// No description provided for @productPhoto.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ürün Fotoğrafı'**
+  String get productPhoto;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In tr, this message translates to:
+  /// **'Değişiklikleri Kaydet'**
+  String get saveChanges;
+
+  /// No description provided for @cancel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal'**
+  String get cancel;
+
+  /// No description provided for @saving.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydediliyor...'**
+  String get saving;
+
+  /// No description provided for @savedSuccessfully.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başarıyla kaydedildi'**
+  String get savedSuccessfully;
+
+  /// No description provided for @saveFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydetme başarısız'**
+  String get saveFailed;
+
+  /// No description provided for @missingInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Eksik bilgiler tamamlanabilir'**
+  String get missingInfo;
+
+  /// No description provided for @noProductName.
+  ///
+  /// In tr, this message translates to:
+  /// **'İsimsiz Ürün'**
+  String get noProductName;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu alan zorunludur'**
+  String get fieldRequired;
+
+  /// No description provided for @newProductHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ürün veritabanımızda yok. Bilgileri doldurarak ekleyebilirsiniz!'**
+  String get newProductHint;
+
+  /// No description provided for @completeProductInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bazı bilgiler eksik. Lütfen zorunlu alanları tamamlayın.'**
+  String get completeProductInfo;
+
+  /// No description provided for @saveAndView.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet ve Görüntüle'**
+  String get saveAndView;
 }
 
 class _AppLocalizationsDelegate

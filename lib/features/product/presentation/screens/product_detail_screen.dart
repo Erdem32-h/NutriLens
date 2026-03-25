@@ -8,22 +8,40 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../history/presentation/providers/history_provider.dart';
 import '../../domain/entities/product_entity.dart';
 import '../providers/product_provider.dart';
-import '../widgets/additive_classification.dart';
-import '../widgets/chemical_load_gauge.dart';
-import '../widgets/community_badge.dart';
-import '../widgets/ingredient_list.dart';
-import '../widgets/nova_card.dart';
-import '../widgets/nutriment_table.dart';
-import '../widgets/product_header.dart';
+import '../widgets/alternative_placeholder.dart';
+import '../widgets/bento_nutrition_grid.dart';
+import '../widgets/content_analysis_section.dart';
+import '../widgets/editorial_header.dart';
+import '../widgets/editorial_nutrient_table.dart';
+import '../widgets/health_score_bar.dart';
+import '../widgets/pill_tab_bar.dart';
 
-class ProductDetailScreen extends ConsumerWidget {
+class ProductDetailScreen extends ConsumerStatefulWidget {
   final String barcode;
 
   const ProductDetailScreen({super.key, required this.barcode});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final productAsync = ref.watch(productByBarcodeProvider(barcode));
+  ConsumerState<ProductDetailScreen> createState() =>
+      _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
+  int _selectedTab = 0;
+  bool _hasRedirected = false;
+
+  void _redirectToEdit() {
+    if (_hasRedirected) return;
+    _hasRedirected = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.pushReplacement('/product/${widget.barcode}/edit');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final productAsync = ref.watch(productByBarcodeProvider(widget.barcode));
     final l10n = context.l10n;
 
     return Scaffold(
@@ -31,28 +49,24 @@ class ProductDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.productDetail),
         backgroundColor: Colors.transparent,
-        bottom: TabBar(
-          labelColor: context.colors.primary,
-          unselectedLabelColor: context.colors.textMuted,
-          indicatorColor: context.colors.primary,
-          tabs: [
-            Tab(text: l10n.tabHealth),
-            Tab(text: l10n.tabNutrient),
-            Tab(text: l10n.tabAlternative),
-          ],
-        ),
       ),
       body: productAsync.when(
         loading: () => _buildShimmer(context),
-        error: (error, _) => _buildError(context, ref, error),
+        error: (error, _) => _buildError(context, error),
         data: (product) {
+          // Product not found anywhere -> redirect to edit (creation mode)
           if (product == null) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.go('/product/$barcode/not-found');
-            });
+            _redirectToEdit();
             return _buildShimmer(context);
           }
 
+          // Product found but missing essential data -> redirect to edit (completion mode)
+          if (!product.hasEssentialData) {
+            _redirectToEdit();
+            return _buildShimmer(context);
+          }
+
+          // Product is complete -> add to history and show detail
           WidgetsBinding.instance.addPostFrameCallback((_) {
             addScanToHistory(
               ref,
@@ -61,117 +75,70 @@ class ProductDetailScreen extends ConsumerWidget {
             );
           });
 
-          return Column(
-            children: [
-              ProductHeader(product: product),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _buildHealthTab(context, product),
-                    _buildNutrientTab(context, product),
-                    _buildAlternativeTab(context),
-                  ],
-                ),
-              ),
-            ],
-          );
+          return _buildProductDetail(product);
         },
       ),
     );
   }
 
-  Widget _buildHealthTab(BuildContext context, ProductEntity product) {
-    final l10n = context.l10n;
-    final isPartial =
-        product.hpRiskFactor == null &&
-        product.hpNutriFactor == null &&
-        product.hpChemicalLoad != null;
-
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 32),
-      children: [
-        if (isPartial) ...[
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: CommunityBadge(),
+  Widget _buildProductDetail(ProductEntity product) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          EditorialHeader(
+            product: product,
+            onEditPressed: () {
+              context.push('/product/${widget.barcode}/edit');
+            },
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ChemicalLoadGauge(
-              chemicalLoad: product.hpChemicalLoad!,
-              isPartial: true,
-            ),
+          PillTabBar(
+            selectedIndex: _selectedTab,
+            onTabChanged: (i) => setState(() => _selectedTab = i),
           ),
-        ] else if (product.hpChemicalLoad != null) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ChemicalLoadGauge(
-              chemicalLoad: product.hpChemicalLoad!,
-              isPartial: false,
-            ),
-          ),
+          const SizedBox(height: 16),
+          if (_selectedTab == 0) ..._buildHealthTab(product),
+          if (_selectedTab == 1) ..._buildNutritionTab(product),
+          if (_selectedTab == 2) ..._buildAlternativeTab(),
+          const SizedBox(height: 32),
         ],
-        NovaCard(novaGroup: product.novaGroup),
-        AdditiveClassification(product: product),
-        IngredientList(ingredientsText: product.ingredientsText),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      ),
+    );
+  }
+
+  List<Widget> _buildHealthTab(ProductEntity product) {
+    return [
+      HealthScoreBar(hpScore: product.hpScore),
+      const SizedBox(height: 8),
+      ContentAnalysisSection(product: product),
+      const SizedBox(height: 16),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Align(
+          alignment: Alignment.centerLeft,
           child: Text(
-            '${l10n.barcode}: ${product.barcode}',
-            style: TextStyle(fontSize: 12, color: context.colors.textMuted),
+            '${context.l10n.barcode}: ${product.barcode}',
+            style: TextStyle(
+              fontSize: 12,
+              color: context.colors.textMuted,
+            ),
           ),
         ),
-      ],
-    );
+      ),
+    ];
   }
 
-  Widget _buildNutrientTab(BuildContext context, ProductEntity product) {
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 32),
-      children: [NutrimentTable(nutriments: product.nutriments)],
-    );
+  List<Widget> _buildNutritionTab(ProductEntity product) {
+    return [
+      BentoNutritionGrid(nutriments: product.nutriments),
+      const SizedBox(height: 16),
+      EditorialNutrientTable(nutriments: product.nutriments),
+    ];
   }
 
-  Widget _buildAlternativeTab(BuildContext context) {
-    final l10n = context.l10n;
-
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Container(
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            color: context.colors.surfaceCard,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: context.colors.border),
-          ),
-          child: Column(
-            children: [
-              Icon(
-                Icons.swap_horiz_rounded,
-                size: 48,
-                color: context.colors.textMuted,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                l10n.alternatives,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Daha sağlıklı alternatifler yakında eklenecek',
-                style: TextStyle(fontSize: 14, color: context.colors.textMuted),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+  List<Widget> _buildAlternativeTab() {
+    return [
+      const AlternativePlaceholder(),
+    ];
   }
 
   Widget _buildShimmer(BuildContext context) {
@@ -183,47 +150,39 @@ class ProductDetailScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: context.colors.surfaceCard,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(height: 20, color: context.colors.surfaceCard),
-                      const SizedBox(height: 8),
-                      Container(
-                        height: 14,
-                        width: 120,
-                        color: context.colors.surfaceCard,
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        height: 28,
-                        width: 100,
-                        color: context.colors.surfaceCard,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            // Hero image placeholder
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: context.colors.surfaceCard,
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(height: 20, color: context.colors.surfaceCard),
+            const SizedBox(height: 8),
+            Container(
+              height: 14,
+              width: 120,
+              color: context.colors.surfaceCard,
             ),
             const SizedBox(height: 24),
+            // Tab bar placeholder
+            Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: context.colors.surfaceCard,
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            const SizedBox(height: 16),
             for (var i = 0; i < 3; i++) ...[
               Container(
                 height: 80,
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
                   color: context.colors.surfaceCard,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
             ],
@@ -233,7 +192,7 @@ class ProductDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildError(BuildContext context, WidgetRef ref, Object error) {
+  Widget _buildError(BuildContext context, Object error) {
     final l10n = context.l10n;
 
     return Center(
@@ -248,7 +207,6 @@ class ProductDetailScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: context.colors.surfaceCard,
                 shape: BoxShape.circle,
-                border: Border.all(color: context.colors.border),
               ),
               child: Icon(
                 Icons.error_outline_rounded,
@@ -268,12 +226,17 @@ class ProductDetailScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             Text(
               error.toString(),
-              style: TextStyle(fontSize: 14, color: context.colors.textMuted),
+              style: TextStyle(
+                fontSize: 14,
+                color: context.colors.textMuted,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             GestureDetector(
-              onTap: () => ref.invalidate(productByBarcodeProvider(barcode)),
+              onTap: () => ref.invalidate(
+                productByBarcodeProvider(widget.barcode),
+              ),
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,

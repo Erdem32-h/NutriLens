@@ -13,6 +13,7 @@ import '../../features/favorites/presentation/screens/favorites_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/product/presentation/screens/product_detail_screen.dart';
 import '../../features/product/presentation/screens/product_not_found_screen.dart';
+import '../../features/product/presentation/screens/edit_product_screen.dart';
 import '../../features/product/presentation/screens/ingredients_camera_screen.dart';
 import '../../features/product/presentation/screens/ingredients_verification_screen.dart';
 import '../../features/product/presentation/screens/manual_ingredients_screen.dart';
@@ -124,6 +125,15 @@ GoRouter createRouter() {
         builder: (context, state) {
           final barcode = state.pathParameters['barcode']!;
           return ProductDetailScreen(barcode: barcode);
+        },
+      ),
+      GoRoute(
+        path: '/product/:barcode/edit',
+        name: RouteNames.editProduct,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final barcode = state.pathParameters['barcode']!;
+          return EditProductScreen(barcode: barcode);
         },
       ),
       GoRoute(

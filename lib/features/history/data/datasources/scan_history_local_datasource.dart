@@ -38,6 +38,10 @@ abstract interface class ScanHistoryLocalDataSource {
   });
 
   Future<void> clearHistory(String userId);
+
+  Future<void> deleteScan(String id);
+
+  Future<void> updateScan(String id, {String? productName, String? barcode});
 }
 
 final class ScanHistoryLocalDataSourceImpl
@@ -127,7 +131,30 @@ final class ScanHistoryLocalDataSourceImpl
         ..where((t) => t.userId.equals(userId));
       await query.go();
     } catch (e) {
-      throw CacheException('Failed to clear scan history: $e');
+      throw CacheException('Failed to clear history: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteScan(String id) async {
+    try {
+      await (_db.delete(_db.scanHistory)..where((t) => t.id.equals(id))).go();
+    } catch (e) {
+      throw CacheException('Failed to delete scan: $e');
+    }
+  }
+
+  @override
+  Future<void> updateScan(String id, {String? productName, String? barcode}) async {
+    try {
+      await (_db.update(_db.scanHistory)..where((t) => t.id.equals(id))).write(
+        ScanHistoryCompanion(
+          barcode: barcode != null ? Value(barcode) : const Value.absent(),
+        ),
+      );
+      // Not: Ürün adı için food_products tablosunun güncellenmesi gerekebilir
+    } catch (e) {
+      throw CacheException('Failed to update scan: $e');
     }
   }
 }

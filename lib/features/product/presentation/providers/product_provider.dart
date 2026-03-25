@@ -13,6 +13,8 @@ import '../../data/datasources/product_local_datasource.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/datasources/product_source.dart';
 import '../../data/repositories/product_repository_impl.dart';
+import 'package:fpdart/fpdart.dart';
+
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/product_repository.dart';
@@ -91,12 +93,16 @@ final hpScoreCalculatorProvider = Provider<HpScoreCalculator>((ref) {
 // --- UI Providers ---
 
 /// Fetches product by barcode. Use `ref.watch(productByBarcodeProvider(barcode))`.
+/// Includes a 20-second timeout to prevent indefinite loading.
 final productByBarcodeProvider = FutureProvider.family<ProductEntity?, String>((
   ref,
   barcode,
 ) async {
   final useCase = ref.watch(getProductUseCaseProvider);
-  final result = await useCase(barcode);
+  final result = await useCase(barcode).timeout(
+    const Duration(seconds: 20),
+    onTimeout: () => const Left(ServerFailure('Request timed out')),
+  );
   return result.fold((failure) {
     // NotFoundFailure → return null so UI redirects to not-found screen
     if (failure is NotFoundFailure) return null;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/error/exceptions.dart';
@@ -77,7 +79,9 @@ final class ProductRepositoryImpl implements ProductRepository {
     }
 
     try {
-      final result = await _resolver.resolve(barcode);
+      final result = await _resolver.resolve(barcode).timeout(
+        const Duration(seconds: 16),
+      );
       if (result.isFound) {
         await _localDataSource.cacheProduct(result.product!);
         return Right(result.product!);
@@ -98,12 +102,16 @@ final class ProductRepositoryImpl implements ProductRepository {
     }
 
     try {
-      final result = await _resolver.resolve(barcode);
+      final result = await _resolver.resolve(barcode).timeout(
+        const Duration(seconds: 16),
+      );
       if (result.isFound) {
         await _localDataSource.cacheProduct(result.product!);
         return Right(result.product!);
       }
       return const Left(NotFoundFailure());
+    } on TimeoutException {
+      return const Left(ServerFailure('Product fetch timed out'));
     } catch (e) {
       return Left(ServerFailure('Unexpected error: $e'));
     }

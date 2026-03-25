@@ -28,7 +28,7 @@ class HistoryScreen extends ConsumerWidget {
         ),
         error: (error, _) => Center(
           child: Text(
-            'Geçmiş yüklenemedi',
+            'Gecmis yuklenemedi',
             style: TextStyle(color: context.colors.textMuted),
           ),
         ),
@@ -100,18 +100,19 @@ class HistoryScreen extends ConsumerWidget {
   }
 }
 
-class _HistoryTile extends StatelessWidget {
+class _HistoryTile extends ConsumerWidget {
   final ScanHistoryWithProduct item;
 
   const _HistoryTile({required this.item});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final dateFormat = DateFormat('dd MMM yyyy, HH:mm', 'tr');
     final displayName = item.productName ?? item.barcode;
     final subtitle = item.brands ?? item.barcode;
 
     return GestureDetector(
+      onLongPress: () => _showContextMenu(context, ref),
       onTap: () => context.push('/product/${item.barcode}'),
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -195,7 +196,8 @@ class _HistoryTile extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _scoreColor(item.hpScoreAtScan!).withValues(alpha: 0.15),
+                  color:
+                      _scoreColor(item.hpScoreAtScan!).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -219,6 +221,127 @@ class _HistoryTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showContextMenu(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.colors.surfaceCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: context.colors.textMuted.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+
+              // Delete
+              ListTile(
+                leading: Icon(Icons.delete_outline_rounded,
+                    color: context.colors.error),
+                title: Text(
+                  l10n.delete,
+                  style: TextStyle(color: context.colors.error),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _handleDelete(context, ref);
+                },
+              ),
+
+              // Add to Favorites
+              ListTile(
+                leading: const Icon(Icons.favorite_rounded,
+                    color: Color(0xFFE91E63)),
+                title: Text(l10n.addToFavorites),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _handleAddToFavorites(context, ref);
+                },
+              ),
+
+              // Edit
+              ListTile(
+                leading: Icon(Icons.edit_rounded,
+                    color: context.colors.primary),
+                title: Text(l10n.edit),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _handleEdit(context);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleDelete(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+
+    deleteScanFromHistory(ref, item.id);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.deletedFromHistory),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  Future<void> _handleAddToFavorites(
+      BuildContext context, WidgetRef ref) async {
+    final l10n = context.l10n;
+
+    // Check if already in favorites
+    final isFav = await ref.read(isFavoriteProvider(item.barcode).future);
+    if (!context.mounted) return;
+
+    if (isFav) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.alreadyInFavorites),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final success = await addToFavorites(ref, barcode: item.barcode);
+    if (!context.mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(success ? l10n.addedToFavorites : l10n.saveFailed),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _handleEdit(BuildContext context) {
+    context.push('/product/${item.barcode}/edit');
   }
 
   Color _scoreColor(double score) {

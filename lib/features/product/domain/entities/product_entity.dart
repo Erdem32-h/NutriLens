@@ -77,6 +77,17 @@ class ProductEntity extends Equatable {
     );
   }
 
+  /// Returns true if the product has enough data to display a meaningful detail page.
+  /// Required: productName, brands, ingredientsText, and energyKcal.
+  bool get hasEssentialData =>
+      productName != null &&
+      productName!.isNotEmpty &&
+      brands != null &&
+      brands!.isNotEmpty &&
+      ingredientsText != null &&
+      ingredientsText!.isNotEmpty &&
+      nutriments.energyKcal != null;
+
   @override
   List<Object?> get props => [
         barcode,

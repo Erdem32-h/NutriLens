@@ -315,4 +315,203 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tabAlternative => 'ALTERNATIVE';
+
+  @override
+  String get healthScoreLabel => 'HEALTH SCORE';
+
+  @override
+  String get worstIsBad => '(5 IS WORST)';
+
+  @override
+  String get bestScore => 'BEST';
+
+  @override
+  String get worstScore => 'WORST';
+
+  @override
+  String get contentAnalysis => 'Content Analysis';
+
+  @override
+  String get eCodeAnalysis => 'E-Code Analysis';
+
+  @override
+  String get risky => 'RISKY';
+
+  @override
+  String get caution => 'CAUTION';
+
+  @override
+  String get safeLabel => 'SAFE';
+
+  @override
+  String get naturalLabel => 'NATURAL';
+
+  @override
+  String get ultraProcessed => 'Ultra-processed and highly fortified product';
+
+  @override
+  String get highSugar => 'Very high sugar content!';
+
+  @override
+  String get moderateSugar => 'Moderate sugar content';
+
+  @override
+  String get highSaturatedFat => 'Very high saturated fat!';
+
+  @override
+  String get containsPalmOil => 'Contains palm oil';
+
+  @override
+  String get mayContainTransFat => 'May contain trans fat';
+
+  @override
+  String get containsFlavoring => 'Contains flavorings';
+
+  @override
+  String get highSalt => 'High salt content';
+
+  @override
+  String get energyValue => 'Energy Value';
+
+  @override
+  String get fatLabel => 'FAT';
+
+  @override
+  String get sugarLabel => 'SUGAR';
+
+  @override
+  String get saturatedFatLabel => 'SATURATED FAT';
+
+  @override
+  String get saltLabel => 'SALT';
+
+  @override
+  String get lowLevel => 'LOW';
+
+  @override
+  String get moderateLevel => 'MODERATE';
+
+  @override
+  String get highLevel => 'HIGH';
+
+  @override
+  String get criticalLevel => 'CRITICAL';
+
+  @override
+  String get veryHighLevel => 'VERY HIGH';
+
+  @override
+  String get dailyValue => 'Daily Value';
+
+  @override
+  String get detailedContent => 'Detailed Content (100g)';
+
+  @override
+  String get fiberLabel => 'Fiber';
+
+  @override
+  String get proteinLabel => 'Protein';
+
+  @override
+  String get carbohydrateLabel => 'Carbohydrate';
+
+  @override
+  String get dailyValueNote =>
+      '* Percent Daily Values are based on a 2,000 calorie adult diet.';
+
+  @override
+  String get didYouKnow => 'Did you know?';
+
+  @override
+  String get alternativesTip =>
+      'Products with a health score of 1 or 2 are minimally processed with the cleanest ingredients. Switching to lower-scored alternatives can significantly improve your overall health.';
+
+  @override
+  String get alternativesComingSoon => 'Healthier alternatives coming soon';
+
+  @override
+  String get noAdditives => 'No additives found in this product';
+
+  @override
+  String get noNutrientData => 'Nutritional information not available';
+
+  @override
+  String get portion100g => '100g';
+
+  @override
+  String get foodCategory => 'FOOD';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get addedToFavorites => 'Added to favorites';
+
+  @override
+  String get removedFromFavorites => 'Removed from favorites';
+
+  @override
+  String get deletedFromHistory => 'Deleted from history';
+
+  @override
+  String get alreadyInFavorites => 'Already in favorites';
+
+  @override
+  String get editProduct => 'Edit Product Info';
+
+  @override
+  String get productName => 'Product Name';
+
+  @override
+  String get brandName => 'Brand';
+
+  @override
+  String get ingredientsTextLabel => 'Ingredients';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from Gallery';
+
+  @override
+  String get productPhoto => 'Product Photo';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get saving => 'Saving...';
+
+  @override
+  String get savedSuccessfully => 'Saved successfully';
+
+  @override
+  String get saveFailed => 'Save failed';
+
+  @override
+  String get missingInfo => 'Missing info can be completed';
+
+  @override
+  String get noProductName => 'Unnamed Product';
+
+  @override
+  String get fieldRequired => 'This field is required';
+
+  @override
+  String get newProductHint =>
+      'This product is not in our database yet. Fill in the details to add it!';
+
+  @override
+  String get completeProductInfo =>
+      'Some information is missing. Please complete the required fields.';
+
+  @override
+  String get saveAndView => 'Save & View Product';
 }

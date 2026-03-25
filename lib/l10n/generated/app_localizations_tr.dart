@@ -313,4 +313,204 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get tabAlternative => 'ALTERNATİF';
+
+  @override
+  String get healthScoreLabel => 'SAĞLIK PUANI';
+
+  @override
+  String get worstIsBad => '(5 EN KÖTÜ)';
+
+  @override
+  String get bestScore => 'EN İYİ';
+
+  @override
+  String get worstScore => 'EN KÖTÜ';
+
+  @override
+  String get contentAnalysis => 'İçerik Analizi';
+
+  @override
+  String get eCodeAnalysis => 'E-Kod Analizi';
+
+  @override
+  String get risky => 'RİSKLİ';
+
+  @override
+  String get caution => 'DİKKAT';
+
+  @override
+  String get safeLabel => 'GÜVENLİ';
+
+  @override
+  String get naturalLabel => 'DOĞAL';
+
+  @override
+  String get ultraProcessed => 'Ultra işlenmiş ve ultra katkılı ürün';
+
+  @override
+  String get highSugar => 'Aşırı şekerli !';
+
+  @override
+  String get moderateSugar => 'Orta düzey şeker içeriği';
+
+  @override
+  String get highSaturatedFat => 'Çok fazla doymuş yağ !';
+
+  @override
+  String get containsPalmOil => 'Palm yağı (Hurma yağı) içerir';
+
+  @override
+  String get mayContainTransFat => 'Trans yağ içerebilir';
+
+  @override
+  String get containsFlavoring => 'Aroma vericiler içerir';
+
+  @override
+  String get highSalt => 'Yüksek tuz içeriği';
+
+  @override
+  String get energyValue => 'Enerji Değeri';
+
+  @override
+  String get fatLabel => 'YAĞ';
+
+  @override
+  String get sugarLabel => 'ŞEKER';
+
+  @override
+  String get saturatedFatLabel => 'DOYMUŞ YAĞ';
+
+  @override
+  String get saltLabel => 'TUZ';
+
+  @override
+  String get lowLevel => 'DÜŞÜK';
+
+  @override
+  String get moderateLevel => 'ORTA DERECE';
+
+  @override
+  String get highLevel => 'YÜKSEK';
+
+  @override
+  String get criticalLevel => 'KRİTİK';
+
+  @override
+  String get veryHighLevel => 'ÇOK YÜKSEK';
+
+  @override
+  String get dailyValue => 'Günlük Değer';
+
+  @override
+  String get detailedContent => 'Detaylı İçerik (100g)';
+
+  @override
+  String get fiberLabel => 'Lif';
+
+  @override
+  String get proteinLabel => 'Protein';
+
+  @override
+  String get carbohydrateLabel => 'Karbonhidrat';
+
+  @override
+  String get dailyValueNote =>
+      '* Yüzdelik değerler 2000 kalorilik bir yetişkin diyeti baz alınarak hesaplanmıştır.';
+
+  @override
+  String get didYouKnow => 'Biliyor muydunuz?';
+
+  @override
+  String get alternativesTip =>
+      'Sağlık skoru 1 veya 2 olan ürünler, minimum işlenmiş ve en temiz içerikli seçeneklerdir. Daha düşük puanlı alternatiflere geçmek genel sağlığınızı belirgin şekilde iyileştirir.';
+
+  @override
+  String get alternativesComingSoon =>
+      'Daha sağlıklı alternatifler yakında eklenecek';
+
+  @override
+  String get noAdditives => 'Bu üründe katkı maddesi bulunmuyor';
+
+  @override
+  String get noNutrientData => 'Besin değeri bilgisi mevcut değil';
+
+  @override
+  String get portion100g => '100g';
+
+  @override
+  String get foodCategory => 'GIDA';
+
+  @override
+  String get delete => 'Sil';
+
+  @override
+  String get edit => 'Düzenle';
+
+  @override
+  String get addedToFavorites => 'Favorilere eklendi';
+
+  @override
+  String get removedFromFavorites => 'Favorilerden çıkarıldı';
+
+  @override
+  String get deletedFromHistory => 'Geçmişten silindi';
+
+  @override
+  String get alreadyInFavorites => 'Zaten favorilerde';
+
+  @override
+  String get editProduct => 'Ürün Bilgilerini Düzenle';
+
+  @override
+  String get productName => 'Ürün Adı';
+
+  @override
+  String get brandName => 'Marka';
+
+  @override
+  String get ingredientsTextLabel => 'İçindekiler';
+
+  @override
+  String get takePhoto => 'Fotoğraf Çek';
+
+  @override
+  String get chooseFromGallery => 'Galeriden Seç';
+
+  @override
+  String get productPhoto => 'Ürün Fotoğrafı';
+
+  @override
+  String get saveChanges => 'Değişiklikleri Kaydet';
+
+  @override
+  String get cancel => 'İptal';
+
+  @override
+  String get saving => 'Kaydediliyor...';
+
+  @override
+  String get savedSuccessfully => 'Başarıyla kaydedildi';
+
+  @override
+  String get saveFailed => 'Kaydetme başarısız';
+
+  @override
+  String get missingInfo => 'Eksik bilgiler tamamlanabilir';
+
+  @override
+  String get noProductName => 'İsimsiz Ürün';
+
+  @override
+  String get fieldRequired => 'Bu alan zorunludur';
+
+  @override
+  String get newProductHint =>
+      'Bu ürün veritabanımızda yok. Bilgileri doldurarak ekleyebilirsiniz!';
+
+  @override
+  String get completeProductInfo =>
+      'Bazı bilgiler eksik. Lütfen zorunlu alanları tamamlayın.';
+
+  @override
+  String get saveAndView => 'Kaydet ve Görüntüle';
 }
