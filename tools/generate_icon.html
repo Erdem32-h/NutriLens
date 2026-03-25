@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriLens Icon Generator</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0a0a0a; color: #e0e0e0;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 20px; min-height: 100vh;
+  }
+  h1 { color: #4ADE80; margin-bottom: 8px; font-size: 28px; }
+  .subtitle { color: #666; margin-bottom: 32px; font-size: 14px; }
+  .preview-row {
+    display: flex; gap: 32px; flex-wrap: wrap;
+    justify-content: center; margin-bottom: 40px;
+  }
+  .preview-box {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .preview-box canvas {
+    border: 1px solid #222; border-radius: 12px;
+    background: repeating-conic-gradient(#1a1a1a 0% 25%, #111 0% 50%) 50% / 20px 20px;
+  }
+  .preview-box span { font-size: 12px; color: #888; }
+  .buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  button {
+    background: linear-gradient(135deg, #16A34A, #0F4A24);
+    color: white; border: none; padding: 12px 24px;
+    border-radius: 10px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: transform 0.1s, box-shadow 0.2s;
+  }
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(74, 222, 128, 0.3);
+  }
+  button:active { transform: translateY(0); }
+  button.secondary {
+    background: linear-gradient(135deg, #333, #222);
+    border: 1px solid #444;
+  }
+  .info { color: #555; font-size: 12px; margin-top: 24px; max-width: 600px; text-align: center; line-height: 1.6; }
+  .info code { color: #4ADE80; background: #1a2e1a; padding: 2px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<h1>NutriLens Icon Generator</h1>
+<p class="subtitle">Modern app icon with leaf + scan line design</p>
+
+<div class="preview-row">
+  <div class="preview-box">
+    <canvas id="preview-full" width="256" height="256"></canvas>
+    <span>Full Icon (preview)</span>
+  </div>
+  <div class="preview-box">
+    <canvas id="preview-fg" width="256" height="256"></canvas>
+    <span>Adaptive Foreground</span>
+  </div>
+  <div class="preview-box">
+    <canvas id="preview-small" width="64" height="64"></canvas>
+    <span>48dp preview</span>
+  </div>
+</div>
+
+<div class="buttons">
+  <button onclick="download('full', 1024)">Download Full Icon (1024px)</button>
+  <button onclick="download('foreground', 1024)">Download Foreground (1024px)</button>
+  <button class="secondary" onclick="download('full', 512)">512px</button>
+  <button class="secondary" onclick="download('full', 192)">192px</button>
+  <button class="secondary" onclick="downloadAll()">Download All</button>
+</div>
+
+<p class="info">
+  After downloading, place <code>icon.png</code> in <code>assets/icon/</code> then run:<br>
+  <code>dart run flutter_launcher_icons</code>
+</p>
+
+<!-- Hidden export canvases -->
+<canvas id="export" width="1024" height="1024" style="display:none"></canvas>
+
+<script>
+// ─── Drawing Functions ───────────────────────────────────────────
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawLeaf(ctx, s) {
+  ctx.beginPath();
+  ctx.moveTo(512 * s, 195 * s);
+  ctx.bezierCurveTo(648*s, 275*s, 718*s, 405*s, 718*s, 500*s);
+  ctx.bezierCurveTo(718*s, 625*s, 628*s, 735*s, 512*s, 768*s);
+  ctx.bezierCurveTo(396*s, 735*s, 306*s, 625*s, 306*s, 500*s);
+  ctx.bezierCurveTo(306*s, 405*s, 376*s, 275*s, 512*s, 195*s);
+  ctx.closePath();
+}
+
+function drawVeins(ctx, s) {
+  ctx.strokeStyle = 'rgba(15, 74, 36, 0.16)';
+  ctx.lineWidth = 5.5 * s;
+  ctx.lineCap = 'round';
+
+  // Center vein
+  ctx.beginPath();
+  ctx.moveTo(512*s, 268*s);
+  ctx.lineTo(512*s, 706*s);
+  ctx.stroke();
+
+  // Side veins
+  ctx.lineWidth = 3.5 * s;
+  ctx.strokeStyle = 'rgba(15, 74, 36, 0.11)';
+
+  const veins = [
+    // y, leftCtrlX, leftCtrlY, leftEndX, leftEndY, rightCtrlX, rightCtrlY, rightEndX, rightEndY
+    [370, 462, 342, 406, 358, 562, 342, 618, 358],
+    [475, 454, 448, 374, 472, 570, 448, 650, 472],
+    [578, 462, 554, 394, 575, 562, 554, 630, 575],
+  ];
+
+  for (const v of veins) {
+    // Left vein
+    ctx.beginPath();
+    ctx.moveTo(512*s, v[0]*s);
+    ctx.quadraticCurveTo(v[1]*s, v[2]*s, v[3]*s, v[4]*s);
+    ctx.stroke();
+    // Right vein
+    ctx.beginPath();
+    ctx.moveTo(512*s, v[0]*s);
+    ctx.quadraticCurveTo(v[5]*s, v[6]*s, v[7]*s, v[8]*s);
+    ctx.stroke();
+  }
+}
+
+function drawScanLine(ctx, s, size) {
+  const y = 485 * s;
+
+  // Scan line gradient
+  const scanGrad = ctx.createLinearGradient(140*s, 0, 884*s, 0);
+  scanGrad.addColorStop(0, 'rgba(74, 222, 128, 0)');
+  scanGrad.addColorStop(0.12, 'rgba(74, 222, 128, 0.85)');
+  scanGrad.addColorStop(0.88, 'rgba(74, 222, 128, 0.85)');
+  scanGrad.addColorStop(1, 'rgba(74, 222, 128, 0)');
+
+  // Outer glow
+  ctx.save();
+  ctx.filter = `blur(${10 * s}px)`;
+  ctx.strokeStyle = scanGrad;
+  ctx.lineWidth = 24 * s;
+  ctx.beginPath();
+  ctx.moveTo(140*s, y);
+  ctx.lineTo(884*s, y);
+  ctx.stroke();
+  ctx.restore();
+
+  // Core bright line
+  ctx.strokeStyle = scanGrad;
+  ctx.lineWidth = 4.5 * s;
+  ctx.beginPath();
+  ctx.moveTo(140*s, y);
+  ctx.lineTo(884*s, y);
+  ctx.stroke();
+
+  // Intersection dots
+  ctx.fillStyle = 'rgba(74, 222, 128, 0.6)';
+  ctx.beginPath();
+  ctx.arc(306*s, y, 4*s, 0, Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(718*s, y, 4*s, 0, Math.PI*2);
+  ctx.fill();
+}
+
+function drawBackground(ctx, size, s) {
+  // Main gradient
+  const bgGrad = ctx.createLinearGradient(0, 0, size, size);
+  bgGrad.addColorStop(0, '#072A12');
+  bgGrad.addColorStop(0.45, '#0F4A24');
+  bgGrad.addColorStop(1, '#1A7A3A');
+
+  roundRect(ctx, 0, 0, size, size, 224 * s);
+  ctx.fillStyle = bgGrad;
+  ctx.fill();
+
+  // Radial glow
+  const glowGrad = ctx.createRadialGradient(
+    size * 0.5, size * 0.44, 0,
+    size * 0.5, size * 0.44, size * 0.42
+  );
+  glowGrad.addColorStop(0, 'rgba(46, 173, 94, 0.22)');
+  glowGrad.addColorStop(1, 'rgba(7, 42, 18, 0)');
+
+  roundRect(ctx, 0, 0, size, size, 224 * s);
+  ctx.fillStyle = glowGrad;
+  ctx.fill();
+}
+
+function drawFullIcon(ctx, size) {
+  const s = size / 1024;
+  ctx.clearRect(0, 0, size, size);
+
+  drawBackground(ctx, size, s);
+
+  // Leaf with shadow
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.25)';
+  ctx.shadowBlur = 16 * s;
+  ctx.shadowOffsetY = 6 * s;
+  drawLeaf(ctx, s);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.94)';
+  ctx.fill();
+  ctx.restore();
+
+  drawVeins(ctx, s);
+  drawScanLine(ctx, s, size);
+}
+
+function drawForeground(ctx, size) {
+  const s = size / 1024;
+  ctx.clearRect(0, 0, size, size);
+
+  // Leaf (no shadow for adaptive, system handles it)
+  drawLeaf(ctx, s);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.94)';
+  ctx.fill();
+
+  drawVeins(ctx, s);
+  drawScanLine(ctx, s, size);
+}
+
+// ─── Init Previews ───────────────────────────────────────────────
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Full preview
+  const fullCtx = document.getElementById('preview-full').getContext('2d');
+  drawFullIcon(fullCtx, 256);
+
+  // Foreground preview
+  const fgCtx = document.getElementById('preview-fg').getContext('2d');
+  drawForeground(fgCtx, 256);
+
+  // Small preview
+  const smCtx = document.getElementById('preview-small').getContext('2d');
+  drawFullIcon(smCtx, 64);
+});
+
+// ─── Download ────────────────────────────────────────────────────
+
+function download(type, size) {
+  const canvas = document.getElementById('export');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  if (type === 'foreground') {
+    drawForeground(ctx, size);
+  } else {
+    drawFullIcon(ctx, size);
+  }
+
+  const link = document.createElement('a');
+  link.download = type === 'foreground'
+    ? `nutrilens_foreground_${size}.png`
+    : `nutrilens_icon_${size}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function downloadAll() {
+  download('full', 1024);
+  setTimeout(() => download('foreground', 1024), 300);
+  setTimeout(() => download('full', 512), 600);
+  setTimeout(() => download('full', 192), 900);
+}
+</script>
+</body>
+</html>

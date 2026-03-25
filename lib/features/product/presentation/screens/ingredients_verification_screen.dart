@@ -43,8 +43,12 @@ class _IngredientsVerificationScreenState
     _ingredientsController = TextEditingController(
       text: extra['cleanedText'] as String? ?? '',
     );
-    _productNameController = TextEditingController();
-    _brandController = TextEditingController();
+    _productNameController = TextEditingController(
+      text: extra['productName'] as String? ?? '',
+    );
+    _brandController = TextEditingController(
+      text: extra['brand'] as String? ?? '',
+    );
     _detectedAdditives =
         List<String>.from(extra['detectedAdditives'] as List? ?? []);
     _unmatchedAdditives =

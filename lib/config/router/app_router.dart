@@ -141,7 +141,8 @@ GoRouter createRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final barcode = state.pathParameters['barcode']!;
-          return IngredientsCameraScreen(barcode: barcode);
+          final extra = state.extra as Map<String, dynamic>?;
+          return IngredientsCameraScreen(barcode: barcode, productInfo: extra);
         },
       ),
       GoRoute(
@@ -163,7 +164,11 @@ GoRouter createRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final barcode = state.pathParameters['barcode']!;
-          return ManualIngredientsScreen(barcode: barcode);
+          final extra = state.extra as Map<String, dynamic>?;
+          return ManualIngredientsScreen(
+            barcode: barcode,
+            productInfo: extra,
+          );
         },
       ),
     ],

@@ -12,8 +12,13 @@ import '../widgets/chemical_load_gauge.dart';
 
 class ManualIngredientsScreen extends ConsumerStatefulWidget {
   final String barcode;
+  final Map<String, dynamic>? productInfo;
 
-  const ManualIngredientsScreen({super.key, required this.barcode});
+  const ManualIngredientsScreen({
+    super.key,
+    required this.barcode,
+    this.productInfo,
+  });
 
   @override
   ConsumerState<ManualIngredientsScreen> createState() =>
@@ -22,14 +27,27 @@ class ManualIngredientsScreen extends ConsumerStatefulWidget {
 
 class _ManualIngredientsScreenState
     extends ConsumerState<ManualIngredientsScreen> {
-  final _ingredientsController = TextEditingController();
-  final _productNameController = TextEditingController();
-  final _brandController = TextEditingController();
+  late TextEditingController _ingredientsController;
+  late TextEditingController _productNameController;
+  late TextEditingController _brandController;
   final _eCodeController = TextEditingController();
 
   final _manualECodes = <String>[];
   HpScoreResult? _scoreResult;
   bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final info = widget.productInfo ?? {};
+    _ingredientsController = TextEditingController();
+    _productNameController = TextEditingController(
+      text: info['productName'] as String? ?? '',
+    );
+    _brandController = TextEditingController(
+      text: info['brand'] as String? ?? '',
+    );
+  }
 
   @override
   void dispose() {

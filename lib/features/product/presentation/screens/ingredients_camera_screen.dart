@@ -8,8 +8,13 @@ import '../providers/ocr_provider.dart';
 
 class IngredientsCameraScreen extends ConsumerStatefulWidget {
   final String barcode;
+  final Map<String, dynamic>? productInfo;
 
-  const IngredientsCameraScreen({super.key, required this.barcode});
+  const IngredientsCameraScreen({
+    super.key,
+    required this.barcode,
+    this.productInfo,
+  });
 
   @override
   ConsumerState<IngredientsCameraScreen> createState() =>
@@ -50,22 +55,22 @@ class _IngredientsCameraScreenState
       if (!mounted) return;
 
       if (result.confidence < 0.1) {
-        // OCR failed — show retry dialog
         _showOcrFailedDialog();
         return;
       }
 
-      // Navigate to verification screen with result
-      context.go(
-        '/product/${widget.barcode}/verify',
-        extra: {
-          'cleanedText': result.cleanedText,
-          'detectedAdditives': result.detectedAdditives,
-          'unmatchedAdditives': result.unmatchedAdditives,
-          'confidence': result.confidence,
-          'imagePath': image.path,
-        },
-      );
+      // Merge product info from not-found screen with OCR result
+      final extra = <String, dynamic>{
+        'cleanedText': result.cleanedText,
+        'detectedAdditives': result.detectedAdditives,
+        'unmatchedAdditives': result.unmatchedAdditives,
+        'confidence': result.confidence,
+        'imagePath': image.path,
+        // Carry forward product info from not-found screen
+        if (widget.productInfo != null) ...widget.productInfo!,
+      };
+
+      context.go('/product/${widget.barcode}/verify', extra: extra);
     } catch (e) {
       if (mounted) _showOcrFailedDialog();
     } finally {
@@ -90,7 +95,10 @@ class _IngredientsCameraScreenState
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-              context.go('/product/${widget.barcode}/manual');
+              context.go(
+                '/product/${widget.barcode}/manual',
+                extra: widget.productInfo,
+              );
             },
             child: Text(
               'Manuel Gir',

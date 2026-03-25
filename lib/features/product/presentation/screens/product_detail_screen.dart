@@ -5,7 +5,9 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../history/presentation/providers/history_provider.dart';
 import '../providers/product_provider.dart';
+import '../widgets/chemical_load_gauge.dart';
 import '../widgets/community_badge.dart';
 import '../widgets/ingredient_list.dart';
 import '../widgets/nova_card.dart';
@@ -40,6 +42,15 @@ class ProductDetailScreen extends ConsumerWidget {
             return _buildShimmer(context);
           }
 
+          // Save to scan history
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            addScanToHistory(
+              ref,
+              barcode: product.barcode,
+              hpScore: product.hpScore,
+            );
+          });
+
           final isPartial = product.hpRiskFactor == null &&
               product.hpNutriFactor == null &&
               product.hpChemicalLoad != null;
@@ -49,12 +60,23 @@ class ProductDetailScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ProductHeader(product: product),
-                // Community badge for partial/community products
-                if (isPartial)
+                // Community badge + chemical load for partial/community products
+                if (isPartial) ...[
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     child: CommunityBadge(),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: ChemicalLoadGauge(
+                      chemicalLoad: product.hpChemicalLoad!,
+                      isPartial: true,
+                    ),
+                  ),
+                ],
                 NovaCard(novaGroup: product.novaGroup),
                 NutrimentTable(nutriments: product.nutriments),
                 IngredientList(ingredientsText: product.ingredientsText),
