@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'bootstrap.dart';
 import 'config/router/app_router.dart';
@@ -14,10 +15,13 @@ import 'features/product/presentation/providers/product_provider.dart';
 void main() async {
   await bootstrap();
 
+  final sharedPreferences = await SharedPreferences.getInstance();
+
   runApp(
     ProviderScope(
       overrides: [
         appDatabaseProvider.overrideWithValue(database),
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ],
       child: const NutriLensApp(),
     ),

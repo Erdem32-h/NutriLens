@@ -30,19 +30,18 @@ final networkInfoProvider = Provider<NetworkInfo>((ref) {
 
 // --- Data Sources ---
 
-final productRemoteDataSourceProvider =
-    Provider<ProductRemoteDataSource>((ref) {
+final productRemoteDataSourceProvider = Provider<ProductRemoteDataSource>((
+  ref,
+) {
   return ProductRemoteDataSourceImpl();
 });
 
-final productLocalDataSourceProvider =
-    Provider<ProductLocalDataSource>((ref) {
+final productLocalDataSourceProvider = Provider<ProductLocalDataSource>((ref) {
   final db = ref.watch(appDatabaseProvider);
   return ProductLocalDataSourceImpl(db);
 });
 
-final communityProductSourceProvider =
-    Provider<CommunityProductSource>((ref) {
+final communityProductSourceProvider = Provider<CommunityProductSource>((ref) {
   final client = Supabase.instance.client;
   return CommunityProductSource(client);
 });
@@ -92,26 +91,57 @@ final hpScoreCalculatorProvider = Provider<HpScoreCalculator>((ref) {
 // --- UI Providers ---
 
 /// Fetches product by barcode. Use `ref.watch(productByBarcodeProvider(barcode))`.
-final productByBarcodeProvider =
-    FutureProvider.family<ProductEntity?, String>((ref, barcode) async {
+final productByBarcodeProvider = FutureProvider.family<ProductEntity?, String>((
+  ref,
+  barcode,
+) async {
   final useCase = ref.watch(getProductUseCaseProvider);
   final result = await useCase(barcode);
-  return result.fold(
-    (failure) {
-      // NotFoundFailure → return null so UI redirects to not-found screen
-      if (failure is NotFoundFailure) return null;
-      throw Exception(failure.message);
-    },
-    (product) => product,
-  );
+  return result.fold((failure) {
+    // NotFoundFailure → return null so UI redirects to not-found screen
+    if (failure is NotFoundFailure) return null;
+    throw Exception(failure.message);
+  }, (product) => product);
 });
 
 // --- Submit Community Product ---
 
 final submitCommunityProductUseCaseProvider =
     Provider<SubmitCommunityProductUseCase>((ref) {
-  return SubmitCommunityProductUseCase(
-    communitySource: ref.watch(communityProductSourceProvider),
-    localDataSource: ref.watch(productLocalDataSourceProvider),
-  );
-});
+      return SubmitCommunityProductUseCase(
+        communitySource: ref.watch(communityProductSourceProvider),
+        localDataSource: ref.watch(productLocalDataSourceProvider),
+      );
+    });
+
+// --- Additives ---
+
+final additivesByCodesProvider =
+    FutureProvider.family<Map<String, int>, List<String>>((ref, codes) async {
+      if (codes.isEmpty) return {};
+
+      final db = ref.watch(appDatabaseProvider);
+      final result = <String, int>{};
+
+      try {
+        final query = db.select(db.additives)
+          ..where((t) => t.eNumber.isIn(codes));
+        final rows = await query.get();
+
+        for (final row in rows) {
+          result[row.eNumber] = row.riskLevel;
+        }
+
+        for (final code in codes) {
+          if (!result.containsKey(code)) {
+            result[code] = 3;
+          }
+        }
+      } catch (_) {
+        for (final code in codes) {
+          result[code] = 3;
+        }
+      }
+
+      return result;
+    });

@@ -679,6 +679,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'English'**
   String get english;
+
+  /// No description provided for @tabHealth.
+  ///
+  /// In tr, this message translates to:
+  /// **'SAĞLIK'**
+  String get tabHealth;
+
+  /// No description provided for @tabNutrient.
+  ///
+  /// In tr, this message translates to:
+  /// **'BESİN'**
+  String get tabNutrient;
+
+  /// No description provided for @tabAlternative.
+  ///
+  /// In tr, this message translates to:
+  /// **'ALTERNATİF'**
+  String get tabAlternative;
 }
 
 class _AppLocalizationsDelegate

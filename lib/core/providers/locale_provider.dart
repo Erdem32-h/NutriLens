@@ -4,20 +4,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const _localePrefKey = 'locale';
 
-final localeProvider =
-    StateNotifierProvider<LocaleNotifier, Locale>((ref) {
-  return LocaleNotifier();
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError('SharedPreferences must be initialized before use');
 });
 
-class LocaleNotifier extends StateNotifier<Locale> {
-  LocaleNotifier() : super(const Locale('tr')) {
-    _loadLocale();
-  }
+final localeProvider =
+    NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
 
-  Future<void> _loadLocale() async {
-    final prefs = await SharedPreferences.getInstance();
+class LocaleNotifier extends Notifier<Locale> {
+  @override
+  Locale build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
     final languageCode = prefs.getString(_localePrefKey) ?? 'tr';
-    state = Locale(languageCode);
+    return Locale(languageCode);
   }
 
   Future<void> setLocale(Locale locale) async {

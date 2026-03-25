@@ -306,4 +306,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get english => 'English';
+
+  @override
+  String get tabHealth => 'HEALTH';
+
+  @override
+  String get tabNutrient => 'NUTRIENT';
+
+  @override
+  String get tabAlternative => 'ALTERNATIVE';
 }
