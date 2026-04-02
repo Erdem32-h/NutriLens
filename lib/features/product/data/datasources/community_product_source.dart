@@ -45,32 +45,35 @@ final class CommunityProductSource implements ProductSource {
     required String userId,
     String source = 'community',
   }) async {
-    await _client.from('community_products').upsert({
-      'barcode': product.barcode,
-      'product_name': product.productName,
-      'brand': product.brands,
-      'image_url': product.imageUrl,
-      'ingredients_text': product.ingredientsText,
-      'additives_tags': product.additivesTags,
-      'nutriments': {
-        'energy_kcal': product.nutriments.energyKcal,
-        'fat': product.nutriments.fat,
-        'saturated_fat': product.nutriments.saturatedFat,
-        'sugars': product.nutriments.sugars,
-        'salt': product.nutriments.salt,
-        'fiber': product.nutriments.fiber,
-        'proteins': product.nutriments.proteins,
+    await _client.from('community_products').upsert(
+      {
+        'barcode': product.barcode,
+        'product_name': product.productName,
+        'brand': product.brands,
+        'image_url': product.imageUrl,
+        'ingredients_text': product.ingredientsText,
+        'additives_tags': product.additivesTags,
+        'nutriments': {
+          'energy_kcal': product.nutriments.energyKcal,
+          'fat': product.nutriments.fat,
+          'saturated_fat': product.nutriments.saturatedFat,
+          'sugars': product.nutriments.sugars,
+          'salt': product.nutriments.salt,
+          'fiber': product.nutriments.fiber,
+          'proteins': product.nutriments.proteins,
+        },
+        'nova_group': product.novaGroup,
+        'nutriscore_grade': product.nutriscoreGrade,
+        'hp_score': product.hpScore,
+        'hp_chemical_load': product.hpChemicalLoad,
+        'hp_risk_factor': product.hpRiskFactor,
+        'hp_nutri_factor': product.hpNutriFactor,
+        'source': source,
+        'ingredients_photo_url': ingredientsPhotoUrl,
+        'added_by': userId,
       },
-      'nova_group': product.novaGroup,
-      'nutriscore_grade': product.nutriscoreGrade,
-      'hp_score': product.hpScore,
-      'hp_chemical_load': product.hpChemicalLoad,
-      'hp_risk_factor': product.hpRiskFactor,
-      'hp_nutri_factor': product.hpNutriFactor,
-      'source': source,
-      'ingredients_photo_url': ingredientsPhotoUrl,
-      'added_by': userId,
-    });
+      onConflict: 'barcode',
+    );
   }
 
   /// Report or verify a community product.

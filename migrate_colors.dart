@@ -23,7 +23,7 @@ void main() {
       if (content != oldContent) {
         // Ensure app_colors.dart is imported
         if (!content.contains('core/theme/app_colors.dart')) {
-            content = "import 'package:nutrilens/core/theme/app_colors.dart';\n" + content;
+            content = "import 'package:nutrilens/core/theme/app_colors.dart';\n$content";
         }
 
         file.writeAsStringSync(content);

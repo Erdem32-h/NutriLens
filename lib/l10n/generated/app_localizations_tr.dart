@@ -513,4 +513,218 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get saveAndView => 'Kaydet ve Görüntüle';
+
+  @override
+  String get invalidBarcode =>
+      'Bu bir ürün barkodu değil. Lütfen bir ürün barkodu tarayın.';
+
+  @override
+  String get ingredientsPhoto => 'İçindekiler Fotoğrafı';
+
+  @override
+  String get ingredientsPhotoHint =>
+      'Ambalajdaki içindekiler listesinin fotoğrafını çekin';
+
+  @override
+  String get nutritionPhoto => 'Besin Değerleri Fotoğrafı';
+
+  @override
+  String get nutritionPhotoHint =>
+      'Ambalajdaki besin değerleri tablosunun fotoğrafını çekin';
+
+  @override
+  String get photoAdded => 'Fotoğraf eklendi';
+
+  @override
+  String get tapToAddPhoto => 'Fotoğraf eklemek için dokunun';
+
+  @override
+  String get scanIngredients => 'İçindekileri Fotoğraftan Tara';
+
+  @override
+  String get scanNutrition => 'Besin Değerlerini Fotoğraftan Tara';
+
+  @override
+  String get ocrProcessing => 'Fotoğraftan metin okunuyor...';
+
+  @override
+  String get ocrSuccess => 'Metin başarıyla çıkarıldı';
+
+  @override
+  String get ocrFailed => 'Fotoğraftan metin okunamadı. Lütfen elle girin.';
+
+  @override
+  String get ocrNoText =>
+      'Fotoğrafta metin bulunamadı. Daha net bir fotoğraf deneyin.';
+
+  @override
+  String get saveFailedAuth => 'Kaydetmek için giriş yapmalısınız.';
+
+  @override
+  String get saveFailedUpload => 'Ürün fotoğrafı yüklenemedi.';
+
+  @override
+  String get saveFailedDatabase =>
+      'Veritabanına kaydedilemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get saveFailedNetwork =>
+      'Ağ hatası. Bağlantınızı kontrol edip tekrar deneyin.';
+
+  @override
+  String get filterGluten => 'Gluten';
+
+  @override
+  String get filterGlutenDesc =>
+      'Buğday, arpa, yulaf, çavdar içeriklerini filtreler.';
+
+  @override
+  String get filterLactose => 'Laktoz';
+
+  @override
+  String get filterLactoseDesc => 'Süt ürünleri içerdiğinde uyarır.';
+
+  @override
+  String get filterPeanut => 'Yer Fıstığı';
+
+  @override
+  String get filterPeanutDesc => 'Yer fıstığı içerdiğinde uyarır.';
+
+  @override
+  String get filterSoy => 'Soya';
+
+  @override
+  String get filterSoyDesc => 'Soya ve soya lesitini içeriklerini filtreler.';
+
+  @override
+  String get filterEgg => 'Yumurta';
+
+  @override
+  String get filterEggDesc => 'Yumurta içerdiğinde uyarır.';
+
+  @override
+  String get filterFish => 'Balık ve Deniz Ürünleri';
+
+  @override
+  String get filterFishDesc =>
+      'Balık, karides ve diğer su ürünlerini belirtir.';
+
+  @override
+  String get filterVegan => 'Vegan';
+
+  @override
+  String get filterVeganDesc =>
+      'Hayvansal içerikleri (süt, et, bal, yumurta) engeller.';
+
+  @override
+  String get filterVegetarian => 'Vejetaryen';
+
+  @override
+  String get filterVegetarianDesc => 'Tüm et ürünlerini filtreler.';
+
+  @override
+  String get filterHalal => 'Helal Hassasiyeti';
+
+  @override
+  String get filterHalalDesc =>
+      'Domuz ürünleri ve alkol içeriklerini filtreler.';
+
+  @override
+  String get filterPalmOil => 'Palm Yağı';
+
+  @override
+  String get filterPalmOilDesc => 'Palm / Hurma yağı içeriklerini filtreler.';
+
+  @override
+  String get filterTransFat => 'Trans Yağ / Margarin';
+
+  @override
+  String get filterTransFatDesc => 'Trans ve hidrojene yağları filtreler.';
+
+  @override
+  String get filterCanola => 'Kanola Yağı';
+
+  @override
+  String get filterCanolaDesc => 'Kanola / Kolza yağını filtreler.';
+
+  @override
+  String get filterMsg => 'Çin Tuzu (MSG)';
+
+  @override
+  String get filterMsgDesc => 'Monosodyum glutamat vb. aroma artırıcılar.';
+
+  @override
+  String get filterAspartame => 'Yapay Tatlandırıcı (Aspartam vb.)';
+
+  @override
+  String get filterAspartameDesc =>
+      'Aspartam, sukraloz, asesülfam vb. tatlandırıcılar.';
+
+  @override
+  String get filterHfcs => 'Nişasta Bazlı Şeker (NBŞ)';
+
+  @override
+  String get filterHfcsDesc => 'Mısır şurubu, glikoz-fruktoz şurubu.';
+
+  @override
+  String get filterNitrite => 'Nitrit / Nitrat (Koruyucular)';
+
+  @override
+  String get filterNitriteDesc => 'E250 vb. işlenmiş et koruyucuları.';
+
+  @override
+  String get filterColorant => 'Yapay Renklendiriciler';
+
+  @override
+  String get filterColorantDesc => 'E1 serisi renklendiriciler ve boyalar.';
+
+  @override
+  String get personalFilterWarning => 'Kişisel Filtre Uyarısı';
+
+  @override
+  String containsFilteredItem(Object filterName) {
+    return '\"$filterName\" içerir.';
+  }
+
+  @override
+  String get tabBarcode => 'Barkod';
+
+  @override
+  String get tabAiAnalysis => 'AI Analiz';
+
+  @override
+  String get aiAnalysisHint => 'Yemeği çerçeve içine alın';
+
+  @override
+  String get aiAnalyzing => 'AI analiz ediyor...';
+
+  @override
+  String get aiAnalysisResult => 'AI Analiz Sonucu';
+
+  @override
+  String get aiEstimatedPortion => 'Tahmini porsiyon';
+
+  @override
+  String get aiConfidence => 'Güven';
+
+  @override
+  String get aiSaveToHistory => 'Geçmişe Kaydet';
+
+  @override
+  String get aiRetake => 'Tekrar Çek';
+
+  @override
+  String get aiSaved => 'AI analiz sonucu kaydedildi';
+
+  @override
+  String get aiFailed => 'AI analiz başarısız oldu. Tekrar deneyin.';
+
+  @override
+  String get aiLowConfidence => 'Düşük güven — sonuçlar tahminidir';
+
+  @override
+  String get aiEstimate => 'AI Tahmin';
+
+  @override
+  String get carbohydrates => 'Karbonhidrat';
 }

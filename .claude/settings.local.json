@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dart pub:*)",
+      "Bash(flutter pub:*)",
+      "Bash(flutter gen-l10n:*)",
+      "Bash(flutter analyze:*)",
+      "mcp__76d35973-5244-45f3-8538-8a96e12f4807__list_tables",
+      "Bash(xargs grep:*)",
+      "Bash(grep -rn \"InputImage\\\\|processImage\\\\|close\\(\\)\" /c/Users/m_fat/OneDrive/Desktop/Github/NutriLens/lib --include=*.dart)"
+    ]
+  }
+}

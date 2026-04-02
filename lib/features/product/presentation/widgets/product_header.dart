@@ -32,14 +32,14 @@ class ProductHeader extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: product.imageUrl!,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Center(
+                      placeholder: (_, _) => Center(
                         child: Icon(
                           Icons.image_outlined,
                           size: 36,
                           color: context.colors.textMuted,
                         ),
                       ),
-                      errorWidget: (_, __, ___) => Center(
+                      errorWidget: (_, _, _) => Center(
                         child: Icon(
                           Icons.broken_image_outlined,
                           size: 36,

@@ -32,7 +32,7 @@ class EditorialHeader extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: product.imageUrl!,
                   fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
+                  placeholder: (_, _) => Container(
                     color: colors.surfaceCard,
                     child: Center(
                       child: Icon(
@@ -42,7 +42,7 @@ class EditorialHeader extends StatelessWidget {
                       ),
                     ),
                   ),
-                  errorWidget: (_, __, ___) => Container(
+                  errorWidget: (_, _, _) => Container(
                     color: colors.surfaceCard,
                     child: Center(
                       child: Icon(

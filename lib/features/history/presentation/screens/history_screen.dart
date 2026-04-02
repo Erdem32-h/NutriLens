@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/datasources/scan_history_local_datasource.dart';
@@ -91,7 +92,7 @@ class HistoryScreen extends ConsumerWidget {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: history.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final item = history[index];
         return _HistoryTile(item: item);
@@ -108,8 +109,11 @@ class _HistoryTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dateFormat = DateFormat('dd MMM yyyy, HH:mm', 'tr');
+    final isAiFood = item.barcode.startsWith('ai_');
     final displayName = item.productName ?? item.barcode;
-    final subtitle = item.brands ?? item.barcode;
+    final subtitle = isAiFood
+        ? context.l10n.aiEstimate
+        : (item.brands ?? item.barcode);
 
     return GestureDetector(
       onLongPress: () => _showContextMenu(context, ref),
@@ -133,22 +137,28 @@ class _HistoryTile extends ConsumerWidget {
                 color: context.colors.background,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: item.imageUrl != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        item.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Icon(
+              child: isAiFood
+                  ? Icon(
+                      Icons.smart_toy_rounded,
+                      color: context.colors.primary,
+                      size: 28,
+                    )
+                  : item.imageUrl != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            item.imageUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => Icon(
+                              Icons.inventory_2_outlined,
+                              color: context.colors.textMuted,
+                            ),
+                          ),
+                        )
+                      : Icon(
                           Icons.inventory_2_outlined,
                           color: context.colors.textMuted,
                         ),
-                      ),
-                    )
-                  : Icon(
-                      Icons.inventory_2_outlined,
-                      color: context.colors.textMuted,
-                    ),
             ),
             const SizedBox(width: 12),
 
@@ -189,26 +199,29 @@ class _HistoryTile extends ConsumerWidget {
               ),
             ),
 
-            // HP Score badge
-            if (item.hpScoreAtScan != null) ...[
+            // HP Score badge (1-5 gauge)
+            if (item.effectiveHpScore != null) ...[
               const SizedBox(width: 8),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color:
-                      _scoreColor(item.hpScoreAtScan!).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  item.hpScoreAtScan!.toStringAsFixed(0),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: _scoreColor(item.hpScoreAtScan!),
+              Builder(builder: (context) {
+                final gauge = ScoreConstants.hpToGauge(item.effectiveHpScore!);
+                final color = context.colors.gaugeColor(gauge);
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ),
-              ),
+                  child: Text(
+                    '$gauge/5',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                    ),
+                  ),
+                );
+              }),
             ],
 
             const SizedBox(width: 4),
@@ -344,9 +357,4 @@ class _HistoryTile extends ConsumerWidget {
     context.push('/product/${item.barcode}/edit');
   }
 
-  Color _scoreColor(double score) {
-    if (score >= 70) return const Color(0xFF4CAF50);
-    if (score >= 40) return const Color(0xFFFFC107);
-    return const Color(0xFFF44336);
-  }
 }

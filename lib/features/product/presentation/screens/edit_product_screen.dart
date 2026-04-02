@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/services/ocr_text_processor.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/nutriments_entity.dart';
 import '../../domain/entities/product_entity.dart';
@@ -39,6 +41,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
   File? _selectedImage;
   bool _saving = false;
+  bool _ocrProcessing = false;
   ProductEntity? _existingProduct;
   bool _isNewProduct = false;
 
@@ -124,7 +127,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         loading: () => Center(
           child: CircularProgressIndicator(color: context.colors.primary),
         ),
-        error: (_, __) {
+        error: (_, _) {
           // Error loading = treat as new product
           _isNewProduct = true;
           return _buildForm(context, null);
@@ -239,6 +242,15 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
               return null;
             },
           ),
+          const SizedBox(height: 8),
+
+          // OCR Scan Ingredients button
+          _buildOcrButton(
+            context,
+            label: l10n.scanIngredients,
+            icon: Icons.document_scanner_rounded,
+            onTap: () => _scanWithOcr(_OcrTarget.ingredients),
+          ),
           const SizedBox(height: 24),
 
           // Nutrition Section Header
@@ -259,6 +271,15 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             ),
           ),
           const SizedBox(height: 12),
+
+          // OCR Scan Nutrition button
+          _buildOcrButton(
+            context,
+            label: l10n.scanNutrition,
+            icon: Icons.document_scanner_rounded,
+            onTap: () => _scanWithOcr(_OcrTarget.nutrition),
+          ),
+          const SizedBox(height: 16),
 
           // Nutrition Fields - 2 columns
           Row(
@@ -387,6 +408,369 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     );
   }
 
+  // ── OCR ──────────────────────────────────────────────────────────────
+
+  Widget _buildOcrButton(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: _ocrProcessing ? null : onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: context.colors.surfaceCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: context.colors.primary.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_ocrProcessing)
+              SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: context.colors.primary,
+                ),
+              )
+            else
+              Icon(icon, size: 20, color: context.colors.primary),
+            const SizedBox(width: 10),
+            Text(
+              _ocrProcessing ? context.l10n.ocrProcessing : label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: context.colors.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _scanWithOcr(_OcrTarget target) async {
+    final l10n = context.l10n;
+
+    // Pick image from camera or gallery
+    final source = await _showOcrSourcePicker();
+    if (source == null) return;
+
+    XFile? xFile;
+    try {
+      xFile = await _picker.pickImage(
+        source: source,
+        maxWidth: 2048,
+        maxHeight: 2048,
+        imageQuality: 95,
+      );
+    } catch (_) {
+      return;
+    }
+    if (xFile == null) return;
+
+    setState(() => _ocrProcessing = true);
+
+    try {
+      final inputImage = InputImage.fromFilePath(xFile.path);
+      final textRecognizer =
+          TextRecognizer(script: TextRecognitionScript.latin);
+      final recognizedText = await textRecognizer.processImage(inputImage);
+      await textRecognizer.close();
+
+      if (!mounted) return;
+
+      if (recognizedText.text.trim().isEmpty) {
+        _showMessage(l10n.ocrNoText);
+        return;
+      }
+
+      // Process with multi-language support and artifact cleanup
+      const processor = OcrTextProcessor();
+
+      switch (target) {
+        case _OcrTarget.ingredients:
+          final mlKitResult = processor.processIngredients(recognizedText);
+          if (mlKitResult.text.isEmpty) {
+            _showMessage(l10n.ocrNoText);
+            return;
+          }
+
+          // Try AI improvement (silent — fallback to ML Kit result on failure)
+          final aiService = ref.read(geminiAiServiceProvider);
+          final aiImproved =
+              await aiService.improveIngredientsOcr(mlKitResult.text);
+
+          setState(() {
+            _ingredientsController.text = aiImproved ?? mlKitResult.text;
+          });
+          debugPrint('[OCR] ingredients ai=${aiImproved != null}, '
+              'lang=${mlKitResult.language}');
+          _showMessage(l10n.ocrSuccess);
+
+        case _OcrTarget.nutrition:
+          final mlKitResult = processor.processNutrition(recognizedText);
+          if (mlKitResult.text.isEmpty) {
+            _showMessage(l10n.ocrNoText);
+            return;
+          }
+
+          // Try AI improvement for structured data
+          final aiService = ref.read(geminiAiServiceProvider);
+          final aiResult =
+              await aiService.improveNutritionOcr(mlKitResult.text);
+
+          if (aiResult != null) {
+            // AI returned structured data — fill fields directly
+            setState(() {
+              if (aiResult.energyKcal != null &&
+                  _energyController.text.isEmpty) {
+                _energyController.text =
+                    aiResult.energyKcal!.toStringAsFixed(1);
+              }
+              if (aiResult.fat != null && _fatController.text.isEmpty) {
+                _fatController.text = aiResult.fat!.toStringAsFixed(1);
+              }
+              if (aiResult.saturatedFat != null &&
+                  _saturatedFatController.text.isEmpty) {
+                _saturatedFatController.text =
+                    aiResult.saturatedFat!.toStringAsFixed(1);
+              }
+              if (aiResult.sugars != null && _sugarsController.text.isEmpty) {
+                _sugarsController.text = aiResult.sugars!.toStringAsFixed(1);
+              }
+              if (aiResult.salt != null && _saltController.text.isEmpty) {
+                _saltController.text = aiResult.salt!.toStringAsFixed(3);
+              }
+              if (aiResult.fiber != null && _fiberController.text.isEmpty) {
+                _fiberController.text = aiResult.fiber!.toStringAsFixed(1);
+              }
+              if (aiResult.protein != null && _proteinController.text.isEmpty) {
+                _proteinController.text =
+                    aiResult.protein!.toStringAsFixed(1);
+              }
+            });
+          } else {
+            // AI failed — fallback to regex-based parsing
+            _parseNutritionFromOcr(mlKitResult.text);
+          }
+          debugPrint('[OCR] nutrition ai=${aiResult != null}');
+          _showMessage(l10n.ocrSuccess);
+      }
+    } catch (e) {
+      debugPrint('[OCR] error: $e');
+      if (mounted) _showMessage(l10n.ocrFailed);
+    } finally {
+      if (mounted) setState(() => _ocrProcessing = false);
+    }
+  }
+
+  /// Parse OCR text to extract nutrition values and fill the fields.
+  /// Handles both Turkish and English nutrition labels.
+  /// Detects units (mg, mcg/µg) and converts to grams automatically.
+  void _parseNutritionFromOcr(String text) {
+    final lower = text.toLowerCase();
+
+    // Helper: find a numeric value near a keyword.
+    // Detects unit (g, mg, mcg, µg, kcal, kj) and converts to grams.
+    // Returns the value in grams (or kcal for energy).
+    String? findValue(List<String> keywords, {bool isEnergy = false}) {
+      for (final keyword in keywords) {
+        // Find all occurrences of the keyword
+        int startIdx = 0;
+        while (true) {
+          final idx = lower.indexOf(keyword, startIdx);
+          if (idx == -1) break;
+          startIdx = idx + 1;
+
+          // Look for numbers after the keyword within ~60 chars
+          final searchEnd =
+              (idx + keyword.length + 60).clamp(0, lower.length);
+          final after = lower.substring(idx + keyword.length, searchEnd);
+
+          // Match number + optional unit: "1500 mg", "3,5 g", "0.03g"
+          final match = RegExp(
+            r'(\d+[.,]?\d*)\s*(mg|mcg|µg|μg|g|kcal|kj)?',
+          ).firstMatch(after);
+          if (match != null) {
+            final raw = match.group(1);
+            final unit = match.group(2)?.toLowerCase();
+            if (raw != null) {
+              final normalized = raw.replaceAll(',', '.');
+              var value = double.tryParse(normalized);
+              if (value == null || value >= 10000) continue;
+
+              // Convert units to grams (skip conversion for energy)
+              if (!isEnergy && unit != null) {
+                switch (unit) {
+                  case 'mg':
+                    value = value / 1000.0;
+                  case 'mcg' || 'µg' || 'μg':
+                    value = value / 1000000.0;
+                  case 'g':
+                    break; // already grams
+                  default:
+                    break;
+                }
+              }
+
+              // For energy with kJ unit, convert to kcal (1 kcal ≈ 4.184 kJ)
+              if (isEnergy && unit == 'kj') {
+                value = value / 4.184;
+              }
+
+              // Return with appropriate precision
+              if (value >= 1) {
+                return value.toStringAsFixed(1);
+              } else {
+                return value.toStringAsFixed(3);
+              }
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    setState(() {
+      // Energy (kcal) — Turkish labels often show kJ first, then kcal
+      final energy = findValue([
+        'kcal',
+        'kalori',
+        'enerji',
+        'energy',
+        'calories',
+      ], isEnergy: true);
+      if (energy != null && _energyController.text.isEmpty) {
+        _energyController.text = energy;
+      }
+
+      // Total fat
+      final fat = findValue([
+        'toplam yağ',
+        'total fat',
+        'yağ',
+        'fat',
+      ]);
+      if (fat != null && _fatController.text.isEmpty) {
+        _fatController.text = fat;
+      }
+
+      // Saturated fat — search BEFORE total fat to avoid matching "fat" alone
+      final saturated = findValue([
+        'doymuş yağ',
+        'doymuş',
+        'of which saturates',
+        'saturated fat',
+        'saturated',
+      ]);
+      if (saturated != null && _saturatedFatController.text.isEmpty) {
+        _saturatedFatController.text = saturated;
+      }
+
+      // Sugars
+      final sugars = findValue([
+        'şekerler',
+        'şeker',
+        'of which sugars',
+        'sugars',
+        'sugar',
+      ]);
+      if (sugars != null && _sugarsController.text.isEmpty) {
+        _sugarsController.text = sugars;
+      }
+
+      // Salt / Sodium — convert sodium to salt if needed (salt = sodium * 2.5)
+      // findValue already converts mg→g, so sodium value is in grams here
+      final salt = findValue(['tuz', 'salt']);
+      if (salt != null && _saltController.text.isEmpty) {
+        _saltController.text = salt;
+      } else if (_saltController.text.isEmpty) {
+        final sodium = findValue(['sodyum', 'sodium']);
+        if (sodium != null) {
+          final sodiumVal = double.tryParse(sodium);
+          if (sodiumVal != null) {
+            // sodium is already in grams (mg→g converted by findValue)
+            final saltVal = sodiumVal * 2.5;
+            _saltController.text = saltVal >= 1
+                ? saltVal.toStringAsFixed(1)
+                : saltVal.toStringAsFixed(3);
+          }
+        }
+      }
+
+      // Fiber
+      final fiber = findValue([
+        'lif',
+        'dietary fiber',
+        'dietary fibre',
+        'fiber',
+        'fibre',
+      ]);
+      if (fiber != null && _fiberController.text.isEmpty) {
+        _fiberController.text = fiber;
+      }
+
+      // Protein
+      final protein = findValue(['protein', 'protei̇n']);
+      if (protein != null && _proteinController.text.isEmpty) {
+        _proteinController.text = protein;
+      }
+    });
+  }
+
+  Future<ImageSource?> _showOcrSourcePicker() async {
+    final l10n = context.l10n;
+
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: context.colors.surfaceCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: context.colors.textMuted.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.camera_alt_rounded,
+                    color: context.colors.primary),
+                title: Text(l10n.takePhoto),
+                onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library_rounded,
+                    color: context.colors.primary),
+                title: Text(l10n.chooseFromGallery),
+                onTap: () => Navigator.pop(sheetContext, ImageSource.gallery),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── UI Builders ─────────────────────────────────────────────────────
+
   Widget _buildInfoBanner(
     BuildContext context, {
     required IconData icon,
@@ -463,7 +847,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
                         child: Image.network(
                           existingImageUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
+                          errorBuilder: (_, _, _) =>
                               _buildPhotoPlaceholder(context),
                         ),
                       )
@@ -598,6 +982,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     );
   }
 
+  // ── Image Picker ────────────────────────────────────────────────────
+
   void _showImagePickerOptions() {
     final l10n = context.l10n;
 
@@ -665,6 +1051,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     }
   }
 
+  // ── Save ────────────────────────────────────────────────────────────
+
   bool _hasMissingInfo(ProductEntity? product) {
     if (product == null) return true;
     return !product.hasEssentialData;
@@ -687,19 +1075,47 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     setState(() => _saving = true);
 
     try {
+      // Step 1: Auth check
       final userId = Supabase.instance.client.auth.currentUser?.id;
       if (userId == null) {
-        _showMessage(l10n.saveFailed);
+        _showMessage(l10n.saveFailedAuth);
         return;
       }
 
-      // Upload image if selected
+      // Step 2: Upload product photo (optional, non-fatal)
       String? imageUrl = _existingProduct?.imageUrl;
       if (_selectedImage != null) {
-        imageUrl = await _uploadImage(userId);
+        final uploadedPath = await _uploadImage(userId);
+        if (uploadedPath != null) {
+          imageUrl = uploadedPath;
+        }
+        // If uploadedPath is null, it failed. 
+        // We log error but proceed with previous image or gracefully handle it.
       }
 
-      // Build updated product
+      // Step 3: Build nutriments and calculate HP Score
+      final ingredientsText = _ingredientsController.text.isNotEmpty
+          ? _ingredientsController.text
+          : null;
+      final nutriments = NutrimentsEntity(
+        energyKcal: _parseDouble(_energyController.text),
+        fat: _parseDouble(_fatController.text),
+        saturatedFat: _parseDouble(_saturatedFatController.text),
+        sugars: _parseDouble(_sugarsController.text),
+        salt: _parseDouble(_saltController.text),
+        fiber: _parseDouble(_fiberController.text),
+        proteins: _parseDouble(_proteinController.text),
+      );
+
+      // Calculate HP Score with full data
+      final calculator = ref.read(hpScoreCalculatorProvider);
+      final hpResult = await calculator.calculateFull(
+        additivesTags: _existingProduct?.additivesTags ?? const [],
+        nutriments: nutriments,
+        novaGroup: _existingProduct?.novaGroup,
+        ingredientsText: ingredientsText,
+      );
+
       final updatedProduct = ProductEntity(
         barcode: widget.barcode,
         productName:
@@ -707,53 +1123,75 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         brands:
             _brandController.text.isNotEmpty ? _brandController.text : null,
         imageUrl: imageUrl,
-        ingredientsText: _ingredientsController.text.isNotEmpty
-            ? _ingredientsController.text
-            : null,
+        ingredientsText: ingredientsText,
         allergensTags: _existingProduct?.allergensTags ?? const [],
         additivesTags: _existingProduct?.additivesTags ?? const [],
         novaGroup: _existingProduct?.novaGroup,
         nutriscoreGrade: _existingProduct?.nutriscoreGrade,
-        nutriments: NutrimentsEntity(
-          energyKcal: _parseDouble(_energyController.text),
-          fat: _parseDouble(_fatController.text),
-          saturatedFat: _parseDouble(_saturatedFatController.text),
-          sugars: _parseDouble(_sugarsController.text),
-          salt: _parseDouble(_saltController.text),
-          fiber: _parseDouble(_fiberController.text),
-          proteins: _parseDouble(_proteinController.text),
-        ),
+        nutriments: nutriments,
         categoriesTags: _existingProduct?.categoriesTags ?? const [],
         countriesTags: _existingProduct?.countriesTags ?? const [],
-        hpScore: _existingProduct?.hpScore,
-        hpChemicalLoad: _existingProduct?.hpChemicalLoad,
-        hpRiskFactor: _existingProduct?.hpRiskFactor,
-        hpNutriFactor: _existingProduct?.hpNutriFactor,
+        hpScore: hpResult.hpScore,
+        hpChemicalLoad: hpResult.chemicalLoad,
+        hpRiskFactor: hpResult.riskFactor,
+        hpNutriFactor: hpResult.nutriFactor,
       );
 
-      // Save to community_products via CommunityProductSource
-      final communitySource = ref.read(communityProductSourceProvider);
-      await communitySource.addProduct(
-        product: updatedProduct,
-        userId: userId,
-        source: _isNewProduct ? 'user_created' : 'user_edit',
-      );
+      // Step 4: Save to Supabase community_products
+      try {
+        final communitySource = ref.read(communityProductSourceProvider);
+        await communitySource.addProduct(
+          product: updatedProduct,
+          userId: userId,
+          source: _isNewProduct ? 'user_created' : 'user_edit',
+        );
+      } on SocketException {
+        if (mounted) _showMessage(l10n.saveFailedNetwork);
+        return;
+      } catch (e) {
+        debugPrint('[EditProduct] Supabase save error: $e');
+        if (mounted) _showMessage(l10n.saveFailedDatabase);
+        return;
+      }
 
-      // Also update local cache
-      final localDS = ref.read(productLocalDataSourceProvider);
-      await localDS.cacheProduct(updatedProduct);
+      // Step 5: Update local cache (non-fatal)
+      try {
+        final localDS = ref.read(productLocalDataSourceProvider);
+        await localDS.cacheProduct(updatedProduct);
+      } catch (_) {
+        // Cache write failed — proceed without it
+      }
 
-      // Invalidate the product provider to refresh data
+      // Step 6: Invalidate and navigate
       ref.invalidate(productByBarcodeProvider(widget.barcode));
 
       if (!mounted) return;
-      _showMessage(l10n.savedSuccessfully);
 
-      // Navigate to product detail (replace edit screen in stack)
+      // Capture messenger BEFORE navigation disposes this Scaffold
+      final messenger = ScaffoldMessenger.of(context);
+
+      // Navigate first — pushReplacement disposes this screen
       context.pushReplacement('/product/${widget.barcode}');
+
+      // Show success message on the NEW screen's scaffold via root messenger
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.savedSuccessfully),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return; // skip finally setState — screen is already disposed
     } catch (e) {
+      debugPrint('[EditProduct] unexpected save error: $e');
       if (!mounted) return;
-      _showMessage(l10n.saveFailed);
+      if (e is SocketException) {
+        _showMessage(l10n.saveFailedNetwork);
+      } else {
+        _showMessage(l10n.saveFailedDatabase);
+      }
     } finally {
       if (mounted) {
         setState(() => _saving = false);
@@ -765,18 +1203,42 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     if (_selectedImage == null) return null;
 
     try {
+      final fileSize = await _selectedImage!.length();
+      debugPrint('[Upload] file: ${_selectedImage!.path}');
+      debugPrint('[Upload] size: $fileSize bytes (${(fileSize / 1024).toStringAsFixed(1)} KB)');
+
       final ext = _selectedImage!.path.split('.').last;
-      final path = 'products/${widget.barcode}_$userId.$ext';
+      final safeExt = (ext.length > 5 || ext.contains(RegExp(r'[^a-zA-Z0-9]')))
+          ? 'jpg'
+          : ext;
+      debugPrint('[Upload] extension: "$ext" → "$safeExt"');
+
+      final sanitizedBarcode =
+          widget.barcode.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      final path = 'products/${sanitizedBarcode}_$userId.$safeExt';
+      debugPrint('[Upload] storage path: "$path"');
+      debugPrint('[Upload] barcode: "${widget.barcode}" → sanitized: "$sanitizedBarcode"');
+
+      // Check file exists and is readable
+      if (!await _selectedImage!.exists()) {
+        debugPrint('[Upload] ERROR: file does not exist at path!');
+        return null;
+      }
 
       await Supabase.instance.client.storage
           .from('product-images')
           .upload(path, _selectedImage!,
               fileOptions: const FileOptions(upsert: true));
 
-      return Supabase.instance.client.storage
+      final publicUrl = Supabase.instance.client.storage
           .from('product-images')
           .getPublicUrl(path);
-    } catch (_) {
+
+      debugPrint('[Upload] SUCCESS → $publicUrl');
+      return publicUrl;
+    } catch (e, stack) {
+      debugPrint('[Upload] ERROR: $e');
+      debugPrint('[Upload] stack: $stack');
       return null;
     }
   }
@@ -793,3 +1255,5 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     );
   }
 }
+
+enum _OcrTarget { ingredients, nutrition }

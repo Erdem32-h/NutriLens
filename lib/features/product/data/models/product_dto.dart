@@ -27,36 +27,82 @@ abstract final class ProductDto {
 
   /// Maps a Supabase community_products row to [ProductEntity].
   static ProductEntity fromCommunityRow(Map<String, dynamic> row) {
-    final additivesTags = (row['additives_tags'] as List<dynamic>?)
-            ?.map((e) => e.toString())
-            .toList() ??
-        const [];
-
-    final nutrimentsMap = row['nutriments'] as Map<String, dynamic>? ?? {};
+    final additivesTags = _safeListFromRow(row['additives_tags']);
+    final nutrimentsMap = _safeMapFromRow(row['nutriments']);
 
     return ProductEntity(
-      barcode: row['barcode'] as String,
-      productName: row['product_name'] as String?,
-      brands: row['brand'] as String?,
-      imageUrl: row['image_url'] as String?,
-      ingredientsText: row['ingredients_text'] as String?,
+      barcode: row['barcode']?.toString() ?? '',
+      productName: row['product_name']?.toString(),
+      brands: row['brand']?.toString(),
+      imageUrl: row['image_url']?.toString(),
+      ingredientsText: row['ingredients_text']?.toString(),
       additivesTags: additivesTags,
-      novaGroup: row['nova_group'] as int?,
-      nutriscoreGrade: row['nutriscore_grade'] as String?,
+      novaGroup: _safeInt(row['nova_group']),
+      nutriscoreGrade: row['nutriscore_grade']?.toString(),
       nutriments: NutrimentsEntity(
-        energyKcal: (nutrimentsMap['energy_kcal'] as num?)?.toDouble(),
-        fat: (nutrimentsMap['fat'] as num?)?.toDouble(),
-        saturatedFat: (nutrimentsMap['saturated_fat'] as num?)?.toDouble(),
-        sugars: (nutrimentsMap['sugars'] as num?)?.toDouble(),
-        salt: (nutrimentsMap['salt'] as num?)?.toDouble(),
-        fiber: (nutrimentsMap['fiber'] as num?)?.toDouble(),
-        proteins: (nutrimentsMap['proteins'] as num?)?.toDouble(),
+        energyKcal: _safeDouble(nutrimentsMap['energy_kcal']),
+        fat: _safeDouble(nutrimentsMap['fat']),
+        saturatedFat: _safeDouble(nutrimentsMap['saturated_fat']),
+        sugars: _safeDouble(nutrimentsMap['sugars']),
+        salt: _safeDouble(nutrimentsMap['salt']),
+        fiber: _safeDouble(nutrimentsMap['fiber']),
+        proteins: _safeDouble(nutrimentsMap['proteins']),
       ),
-      hpScore: (row['hp_score'] as num?)?.toDouble(),
-      hpChemicalLoad: (row['hp_chemical_load'] as num?)?.toDouble(),
-      hpRiskFactor: (row['hp_risk_factor'] as num?)?.toDouble(),
-      hpNutriFactor: (row['hp_nutri_factor'] as num?)?.toDouble(),
+      hpScore: _safeDouble(row['hp_score']),
+      hpChemicalLoad: _safeDouble(row['hp_chemical_load']),
+      hpRiskFactor: _safeDouble(row['hp_risk_factor']),
+      hpNutriFactor: _safeDouble(row['hp_nutri_factor']),
     );
+  }
+
+  /// Safely extracts a List<String> from a dynamic Supabase value.
+  /// Handles: List, JSON string, null.
+  static List<String> _safeListFromRow(dynamic value) {
+    if (value == null) return const [];
+    if (value is List) return value.map((e) => e.toString()).toList();
+    if (value is String) {
+      try {
+        final decoded = jsonDecode(value);
+        if (decoded is List) return decoded.map((e) => e.toString()).toList();
+      } catch (_) {
+        // Not valid JSON
+      }
+    }
+    return const [];
+  }
+
+  /// Safely extracts a Map<String, dynamic> from a dynamic Supabase value.
+  /// Handles: Map, JSON string, null.
+  static Map<String, dynamic> _safeMapFromRow(dynamic value) {
+    if (value == null) return const {};
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    if (value is String) {
+      try {
+        final decoded = jsonDecode(value);
+        if (decoded is Map) return Map<String, dynamic>.from(decoded);
+      } catch (_) {
+        // Not valid JSON
+      }
+    }
+    return const {};
+  }
+
+  /// Safely parses a double from a dynamic value.
+  static double? _safeDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
+
+  /// Safely parses an int from a dynamic value.
+  static int? _safeInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 
   /// Converts lists to JSON string for Drift storage.

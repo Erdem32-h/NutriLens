@@ -1,10 +1,12 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../config/drift/app_database.dart';
 import '../../../../core/network/network_info.dart';
+import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/services/hp_score_calculator.dart';
 import '../../data/datasources/barcode_lookup_source.dart';
 import '../../data/datasources/community_product_source.dart';
@@ -90,6 +92,12 @@ final hpScoreCalculatorProvider = Provider<HpScoreCalculator>((ref) {
   return HpScoreCalculator(db);
 });
 
+// --- AI Service ---
+
+final geminiAiServiceProvider = Provider<GeminiAiService>((ref) {
+  return GeminiAiService(Supabase.instance.client);
+});
+
 // --- UI Providers ---
 
 /// Fetches product by barcode. Use `ref.watch(productByBarcodeProvider(barcode))`.
@@ -98,16 +106,26 @@ final productByBarcodeProvider = FutureProvider.family<ProductEntity?, String>((
   ref,
   barcode,
 ) async {
+  debugPrint('[Provider] productByBarcode($barcode) → fetching...');
   final useCase = ref.watch(getProductUseCaseProvider);
   final result = await useCase(barcode).timeout(
     const Duration(seconds: 20),
-    onTimeout: () => const Left(ServerFailure('Request timed out')),
+    onTimeout: () {
+      debugPrint('[Provider] productByBarcode($barcode) → TIMEOUT');
+      return const Left(ServerFailure('Request timed out'));
+    },
   );
   return result.fold((failure) {
-    // NotFoundFailure → return null so UI redirects to not-found screen
+    debugPrint('[Provider] productByBarcode($barcode) → failure: '
+        '${failure.runtimeType} - ${failure.message}');
+    // NotFoundFailure → return null so UI redirects to edit screen
     if (failure is NotFoundFailure) return null;
     throw Exception(failure.message);
-  }, (product) => product);
+  }, (product) {
+    debugPrint('[Provider] productByBarcode($barcode) → found: '
+        'name=${product.productName}, hasEssential=${product.hasEssentialData}');
+    return product;
+  });
 });
 
 // --- Submit Community Product ---

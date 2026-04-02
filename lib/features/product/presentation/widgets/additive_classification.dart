@@ -19,7 +19,7 @@ class AdditiveClassification extends ConsumerWidget {
 
     return additivesAsync.when(
       loading: () => _buildLoading(context),
-      error: (_, __) => _buildWithDefaults(context),
+      error: (_, _) => _buildWithDefaults(context),
       data: (additives) => _buildContent(context, additives),
     );
   }

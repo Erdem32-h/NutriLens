@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/constants/score_constants.dart';
 import 'nutriments_entity.dart';
 
 class ProductEntity extends Equatable {
@@ -87,6 +88,18 @@ class ProductEntity extends Equatable {
       ingredientsText != null &&
       ingredientsText!.isNotEmpty &&
       nutriments.energyKcal != null;
+
+  // Returns the cached hpScore, overriding it dynamically if the item contains critical ingredients
+  double? get calculatedHpScore {
+    if (ingredientsText == null) return hpScore;
+    
+    final t = ScoreConstants.normalizeTurkish(ingredientsText!);
+    final bool hasCriticalIngredients =
+        ScoreConstants.criticalPatterns.any((pattern) => t.contains(pattern));
+
+    if (hasCriticalIngredients) return 10.0;
+    return hpScore;
+  }
 
   @override
   List<Object?> get props => [

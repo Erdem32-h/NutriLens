@@ -45,12 +45,12 @@ void main() {
           }
         }
         if (!found) {
-           print('Could not find const for ' + file.path + ' at line ' + lineNum.toString());
+           print('Could not find const for ${file.path} at line $lineNum');
         }
       }
     }
     file.writeAsStringSync(fileLines.join('\n'));
   }
 
-  print('Fixed another ' + errors.length.toString() + ' files structurally.');
+  print('Fixed another ${errors.length} files structurally.');
 }

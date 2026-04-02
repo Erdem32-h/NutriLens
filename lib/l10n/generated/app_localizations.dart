@@ -1087,6 +1087,408 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kaydet ve Görüntüle'**
   String get saveAndView;
+
+  /// No description provided for @invalidBarcode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu bir ürün barkodu değil. Lütfen bir ürün barkodu tarayın.'**
+  String get invalidBarcode;
+
+  /// No description provided for @ingredientsPhoto.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler Fotoğrafı'**
+  String get ingredientsPhoto;
+
+  /// No description provided for @ingredientsPhotoHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ambalajdaki içindekiler listesinin fotoğrafını çekin'**
+  String get ingredientsPhotoHint;
+
+  /// No description provided for @nutritionPhoto.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besin Değerleri Fotoğrafı'**
+  String get nutritionPhoto;
+
+  /// No description provided for @nutritionPhotoHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ambalajdaki besin değerleri tablosunun fotoğrafını çekin'**
+  String get nutritionPhotoHint;
+
+  /// No description provided for @photoAdded.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraf eklendi'**
+  String get photoAdded;
+
+  /// No description provided for @tapToAddPhoto.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraf eklemek için dokunun'**
+  String get tapToAddPhoto;
+
+  /// No description provided for @scanIngredients.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekileri Fotoğraftan Tara'**
+  String get scanIngredients;
+
+  /// No description provided for @scanNutrition.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besin Değerlerini Fotoğraftan Tara'**
+  String get scanNutrition;
+
+  /// No description provided for @ocrProcessing.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraftan metin okunuyor...'**
+  String get ocrProcessing;
+
+  /// No description provided for @ocrSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Metin başarıyla çıkarıldı'**
+  String get ocrSuccess;
+
+  /// No description provided for @ocrFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraftan metin okunamadı. Lütfen elle girin.'**
+  String get ocrFailed;
+
+  /// No description provided for @ocrNoText.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğrafta metin bulunamadı. Daha net bir fotoğraf deneyin.'**
+  String get ocrNoText;
+
+  /// No description provided for @saveFailedAuth.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydetmek için giriş yapmalısınız.'**
+  String get saveFailedAuth;
+
+  /// No description provided for @saveFailedUpload.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ürün fotoğrafı yüklenemedi.'**
+  String get saveFailedUpload;
+
+  /// No description provided for @saveFailedDatabase.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veritabanına kaydedilemedi. Lütfen tekrar deneyin.'**
+  String get saveFailedDatabase;
+
+  /// No description provided for @saveFailedNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ağ hatası. Bağlantınızı kontrol edip tekrar deneyin.'**
+  String get saveFailedNetwork;
+
+  /// No description provided for @filterGluten.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gluten'**
+  String get filterGluten;
+
+  /// No description provided for @filterGlutenDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Buğday, arpa, yulaf, çavdar içeriklerini filtreler.'**
+  String get filterGlutenDesc;
+
+  /// No description provided for @filterLactose.
+  ///
+  /// In tr, this message translates to:
+  /// **'Laktoz'**
+  String get filterLactose;
+
+  /// No description provided for @filterLactoseDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süt ürünleri içerdiğinde uyarır.'**
+  String get filterLactoseDesc;
+
+  /// No description provided for @filterPeanut.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yer Fıstığı'**
+  String get filterPeanut;
+
+  /// No description provided for @filterPeanutDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yer fıstığı içerdiğinde uyarır.'**
+  String get filterPeanutDesc;
+
+  /// No description provided for @filterSoy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soya'**
+  String get filterSoy;
+
+  /// No description provided for @filterSoyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soya ve soya lesitini içeriklerini filtreler.'**
+  String get filterSoyDesc;
+
+  /// No description provided for @filterEgg.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yumurta'**
+  String get filterEgg;
+
+  /// No description provided for @filterEggDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yumurta içerdiğinde uyarır.'**
+  String get filterEggDesc;
+
+  /// No description provided for @filterFish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Balık ve Deniz Ürünleri'**
+  String get filterFish;
+
+  /// No description provided for @filterFishDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Balık, karides ve diğer su ürünlerini belirtir.'**
+  String get filterFishDesc;
+
+  /// No description provided for @filterVegan.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vegan'**
+  String get filterVegan;
+
+  /// No description provided for @filterVeganDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hayvansal içerikleri (süt, et, bal, yumurta) engeller.'**
+  String get filterVeganDesc;
+
+  /// No description provided for @filterVegetarian.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vejetaryen'**
+  String get filterVegetarian;
+
+  /// No description provided for @filterVegetarianDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm et ürünlerini filtreler.'**
+  String get filterVegetarianDesc;
+
+  /// No description provided for @filterHalal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Helal Hassasiyeti'**
+  String get filterHalal;
+
+  /// No description provided for @filterHalalDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Domuz ürünleri ve alkol içeriklerini filtreler.'**
+  String get filterHalalDesc;
+
+  /// No description provided for @filterPalmOil.
+  ///
+  /// In tr, this message translates to:
+  /// **'Palm Yağı'**
+  String get filterPalmOil;
+
+  /// No description provided for @filterPalmOilDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Palm / Hurma yağı içeriklerini filtreler.'**
+  String get filterPalmOilDesc;
+
+  /// No description provided for @filterTransFat.
+  ///
+  /// In tr, this message translates to:
+  /// **'Trans Yağ / Margarin'**
+  String get filterTransFat;
+
+  /// No description provided for @filterTransFatDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Trans ve hidrojene yağları filtreler.'**
+  String get filterTransFatDesc;
+
+  /// No description provided for @filterCanola.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kanola Yağı'**
+  String get filterCanola;
+
+  /// No description provided for @filterCanolaDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kanola / Kolza yağını filtreler.'**
+  String get filterCanolaDesc;
+
+  /// No description provided for @filterMsg.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çin Tuzu (MSG)'**
+  String get filterMsg;
+
+  /// No description provided for @filterMsgDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Monosodyum glutamat vb. aroma artırıcılar.'**
+  String get filterMsgDesc;
+
+  /// No description provided for @filterAspartame.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay Tatlandırıcı (Aspartam vb.)'**
+  String get filterAspartame;
+
+  /// No description provided for @filterAspartameDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aspartam, sukraloz, asesülfam vb. tatlandırıcılar.'**
+  String get filterAspartameDesc;
+
+  /// No description provided for @filterHfcs.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nişasta Bazlı Şeker (NBŞ)'**
+  String get filterHfcs;
+
+  /// No description provided for @filterHfcsDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mısır şurubu, glikoz-fruktoz şurubu.'**
+  String get filterHfcsDesc;
+
+  /// No description provided for @filterNitrite.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nitrit / Nitrat (Koruyucular)'**
+  String get filterNitrite;
+
+  /// No description provided for @filterNitriteDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'E250 vb. işlenmiş et koruyucuları.'**
+  String get filterNitriteDesc;
+
+  /// No description provided for @filterColorant.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay Renklendiriciler'**
+  String get filterColorant;
+
+  /// No description provided for @filterColorantDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'E1 serisi renklendiriciler ve boyalar.'**
+  String get filterColorantDesc;
+
+  /// No description provided for @personalFilterWarning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kişisel Filtre Uyarısı'**
+  String get personalFilterWarning;
+
+  /// No description provided for @containsFilteredItem.
+  ///
+  /// In tr, this message translates to:
+  /// **'\"{filterName}\" içerir.'**
+  String containsFilteredItem(Object filterName);
+
+  /// No description provided for @tabBarcode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Barkod'**
+  String get tabBarcode;
+
+  /// No description provided for @tabAiAnalysis.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI Analiz'**
+  String get tabAiAnalysis;
+
+  /// No description provided for @aiAnalysisHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yemeği çerçeve içine alın'**
+  String get aiAnalysisHint;
+
+  /// No description provided for @aiAnalyzing.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI analiz ediyor...'**
+  String get aiAnalyzing;
+
+  /// No description provided for @aiAnalysisResult.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI Analiz Sonucu'**
+  String get aiAnalysisResult;
+
+  /// No description provided for @aiEstimatedPortion.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahmini porsiyon'**
+  String get aiEstimatedPortion;
+
+  /// No description provided for @aiConfidence.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güven'**
+  String get aiConfidence;
+
+  /// No description provided for @aiSaveToHistory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçmişe Kaydet'**
+  String get aiSaveToHistory;
+
+  /// No description provided for @aiRetake.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar Çek'**
+  String get aiRetake;
+
+  /// No description provided for @aiSaved.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI analiz sonucu kaydedildi'**
+  String get aiSaved;
+
+  /// No description provided for @aiFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI analiz başarısız oldu. Tekrar deneyin.'**
+  String get aiFailed;
+
+  /// No description provided for @aiLowConfidence.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düşük güven — sonuçlar tahminidir'**
+  String get aiLowConfidence;
+
+  /// No description provided for @aiEstimate.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI Tahmin'**
+  String get aiEstimate;
+
+  /// No description provided for @carbohydrates.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karbonhidrat'**
+  String get carbohydrates;
 }
 
 class _AppLocalizationsDelegate

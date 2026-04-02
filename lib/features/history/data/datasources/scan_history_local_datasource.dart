@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../config/drift/app_database.dart';
+import '../../../../core/constants/score_constants.dart';
 import '../../../../core/error/exceptions.dart';
 
 /// A record combining scan history with cached product info.
@@ -13,6 +14,8 @@ class ScanHistoryWithProduct {
   final String? productName;
   final String? brands;
   final String? imageUrl;
+  final String? ingredientsText;
+  final double? currentHpScore;
 
   const ScanHistoryWithProduct({
     required this.id,
@@ -22,7 +25,22 @@ class ScanHistoryWithProduct {
     this.productName,
     this.brands,
     this.imageUrl,
+    this.ingredientsText,
+    this.currentHpScore,
   });
+
+  /// Returns HP score adjusted for critical ingredients, matching
+  /// ProductEntity.calculatedHpScore logic.
+  double? get effectiveHpScore {
+    final baseScore = currentHpScore ?? hpScoreAtScan;
+    if (ingredientsText == null || ingredientsText!.isEmpty) {
+      return baseScore;
+    }
+    final t = ScoreConstants.normalizeTurkish(ingredientsText!);
+    final hasCritical = ScoreConstants.criticalPatterns.any((p) => t.contains(p));
+    if (hasCritical) return 10.0;
+    return baseScore;
+  }
 }
 
 abstract interface class ScanHistoryLocalDataSource {
@@ -117,6 +135,8 @@ final class ScanHistoryLocalDataSourceImpl
           productName: product?.productName,
           brands: product?.brands,
           imageUrl: product?.imageUrl,
+          ingredientsText: product?.ingredientsText,
+          currentHpScore: product?.hpScore,
         );
       }).toList();
     } catch (e) {

@@ -514,4 +514,216 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveAndView => 'Save & View Product';
+
+  @override
+  String get invalidBarcode =>
+      'This is not a product barcode. Please scan a product barcode.';
+
+  @override
+  String get ingredientsPhoto => 'Ingredients Photo';
+
+  @override
+  String get ingredientsPhotoHint =>
+      'Take a photo of the ingredients list on the packaging';
+
+  @override
+  String get nutritionPhoto => 'Nutrition Facts Photo';
+
+  @override
+  String get nutritionPhotoHint =>
+      'Take a photo of the nutrition facts table on the packaging';
+
+  @override
+  String get photoAdded => 'Photo added';
+
+  @override
+  String get tapToAddPhoto => 'Tap to add photo';
+
+  @override
+  String get scanIngredients => 'Scan Ingredients from Photo';
+
+  @override
+  String get scanNutrition => 'Scan Nutrition from Photo';
+
+  @override
+  String get ocrProcessing => 'Reading text from photo...';
+
+  @override
+  String get ocrSuccess => 'Text extracted successfully';
+
+  @override
+  String get ocrFailed =>
+      'Could not read text from photo. Please enter manually.';
+
+  @override
+  String get ocrNoText => 'No text found in photo. Try a clearer image.';
+
+  @override
+  String get saveFailedAuth => 'You must be logged in to save.';
+
+  @override
+  String get saveFailedUpload => 'Failed to upload product photo.';
+
+  @override
+  String get saveFailedDatabase =>
+      'Failed to save to database. Please try again.';
+
+  @override
+  String get saveFailedNetwork =>
+      'Network error. Check your connection and try again.';
+
+  @override
+  String get filterGluten => 'Gluten';
+
+  @override
+  String get filterGlutenDesc => 'Filters wheat, barley, oats, and rye.';
+
+  @override
+  String get filterLactose => 'Lactose';
+
+  @override
+  String get filterLactoseDesc => 'Warns when dairy products are present.';
+
+  @override
+  String get filterPeanut => 'Peanut';
+
+  @override
+  String get filterPeanutDesc => 'Warns when peanuts are present.';
+
+  @override
+  String get filterSoy => 'Soy';
+
+  @override
+  String get filterSoyDesc => 'Filters soy and soy lecithin.';
+
+  @override
+  String get filterEgg => 'Egg';
+
+  @override
+  String get filterEggDesc => 'Warns when eggs are present.';
+
+  @override
+  String get filterFish => 'Fish and Seafood';
+
+  @override
+  String get filterFishDesc => 'Indicates fish, shrimp, and other seafood.';
+
+  @override
+  String get filterVegan => 'Vegan';
+
+  @override
+  String get filterVeganDesc =>
+      'Blocks animal-based ingredients (milk, meat, honey, eggs).';
+
+  @override
+  String get filterVegetarian => 'Vegetarian';
+
+  @override
+  String get filterVegetarianDesc => 'Filters all meat products.';
+
+  @override
+  String get filterHalal => 'Halal Sensitivity';
+
+  @override
+  String get filterHalalDesc => 'Filters pork products and alcohol.';
+
+  @override
+  String get filterPalmOil => 'Palm Oil';
+
+  @override
+  String get filterPalmOilDesc => 'Filters palm oil ingredients.';
+
+  @override
+  String get filterTransFat => 'Trans Fat / Margarine';
+
+  @override
+  String get filterTransFatDesc => 'Filters trans and hydrogenated fats.';
+
+  @override
+  String get filterCanola => 'Canola Oil';
+
+  @override
+  String get filterCanolaDesc => 'Filters canola / rapeseed oil.';
+
+  @override
+  String get filterMsg => 'MSG';
+
+  @override
+  String get filterMsgDesc =>
+      'Monosodium glutamate and similar flavor enhancers.';
+
+  @override
+  String get filterAspartame => 'Artificial Sweetener';
+
+  @override
+  String get filterAspartameDesc => 'Aspartame, sucralose, acesulfame, etc.';
+
+  @override
+  String get filterHfcs => 'High Fructose Corn Syrup';
+
+  @override
+  String get filterHfcsDesc => 'Corn syrup, glucose-fructose syrup.';
+
+  @override
+  String get filterNitrite => 'Nitrite / Nitrate (Preservatives)';
+
+  @override
+  String get filterNitriteDesc =>
+      'E250 and similar processed meat preservatives.';
+
+  @override
+  String get filterColorant => 'Artificial Colorants';
+
+  @override
+  String get filterColorantDesc => 'E1 series colorants and dyes.';
+
+  @override
+  String get personalFilterWarning => 'Personal Filter Warning';
+
+  @override
+  String containsFilteredItem(Object filterName) {
+    return 'Contains \"$filterName\".';
+  }
+
+  @override
+  String get tabBarcode => 'Barcode';
+
+  @override
+  String get tabAiAnalysis => 'AI Analysis';
+
+  @override
+  String get aiAnalysisHint => 'Frame the food in the viewfinder';
+
+  @override
+  String get aiAnalyzing => 'AI is analyzing...';
+
+  @override
+  String get aiAnalysisResult => 'AI Analysis Result';
+
+  @override
+  String get aiEstimatedPortion => 'Estimated portion';
+
+  @override
+  String get aiConfidence => 'Confidence';
+
+  @override
+  String get aiSaveToHistory => 'Save to History';
+
+  @override
+  String get aiRetake => 'Retake Photo';
+
+  @override
+  String get aiSaved => 'AI analysis result saved';
+
+  @override
+  String get aiFailed => 'AI analysis failed. Please try again.';
+
+  @override
+  String get aiLowConfidence => 'Low confidence — results are estimates';
+
+  @override
+  String get aiEstimate => 'AI Estimate';
+
+  @override
+  String get carbohydrates => 'Carbohydrates';
 }

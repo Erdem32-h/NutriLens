@@ -43,13 +43,37 @@ class HpScoreCalculator {
     return 'E${match.group(1)!}';
   }
 
-  /// Full HP Score — all data available (API sources)
+  /// Extract E-codes from free-text ingredients.
+  /// Finds patterns like: E471, E 150d, E-330, (E211), e621
+  static List<String> extractECodesFromText(String? ingredientsText) {
+    if (ingredientsText == null || ingredientsText.isEmpty) return [];
+
+    final matches = RegExp(
+      r'\bE[\s\-]?(\d{3,4}[a-z]?)\b',
+      caseSensitive: false,
+    ).allMatches(ingredientsText);
+
+    final codes = <String>{};
+    for (final m in matches) {
+      final digits = m.group(1);
+      if (digits != null) {
+        codes.add('E$digits');
+      }
+    }
+    return codes.toList();
+  }
+
+  /// Full HP Score — all data available (API sources or user entry)
   Future<HpScoreResult> calculateFull({
     required List<String> additivesTags,
     required NutrimentsEntity nutriments,
     int? novaGroup,
+    String? ingredientsText,
   }) async {
-    final chemicalLoad = await _calculateChemicalLoad(additivesTags);
+    // Merge explicit additive tags with E-codes found in text
+    final allAdditives = _mergeAdditives(additivesTags, ingredientsText);
+
+    final chemicalLoad = await _calculateChemicalLoad(allAdditives);
     final riskFactor = _calculateRiskFactor(nutriments);
     final nutriFactor = _calculateNutriFactor(nutriments, novaGroup);
 
@@ -59,13 +83,23 @@ class HpScoreCalculator {
             (nutriFactor * ScoreConstants.nutriWeight))
         .clamp(0.0, 100.0);
 
+    // ── Critical ingredient blacklist ──
+    // If ANY of these are found → instant worst score (10.0 → gauge 5)
+    final String t = ingredientsText != null ? ScoreConstants.normalizeTurkish(ingredientsText) : '';
+
+    final bool hasCriticalIngredients =
+        ScoreConstants.criticalPatterns.any((pattern) => t.contains(pattern));
+
+    final double finalHpScore = hasCriticalIngredients ? 10.0 : hpScore;
+    final int finalGaugeLevel = hasCriticalIngredients ? 5 : ScoreConstants.hpToGauge(finalHpScore);
+
     return HpScoreResult(
-      hpScore: hpScore,
+      hpScore: finalHpScore,
       chemicalLoad: chemicalLoad,
       riskFactor: riskFactor,
       nutriFactor: nutriFactor,
       isPartial: false,
-      gaugeLevel: ScoreConstants.hpToGauge(hpScore),
+      gaugeLevel: finalGaugeLevel,
     );
   }
 
@@ -89,6 +123,24 @@ class HpScoreCalculator {
     );
   }
 
+  /// Merge explicit additive tags with E-codes extracted from text.
+  List<String> _mergeAdditives(
+    List<String> additivesTags,
+    String? ingredientsText,
+  ) {
+    final codes = <String>{};
+
+    for (final tag in additivesTags) {
+      codes.add(normalizeECode(tag));
+    }
+
+    for (final code in extractECodesFromText(ingredientsText)) {
+      codes.add(code);
+    }
+
+    return codes.toList();
+  }
+
   Future<double> _calculateChemicalLoad(List<String> additivesTags) async {
     if (additivesTags.isEmpty) return 0.0;
 
@@ -97,7 +149,7 @@ class HpScoreCalculator {
     for (final tag in additivesTags) {
       final eCode = normalizeECode(tag);
       final riskLevel = await _getAdditiveRiskLevel(eCode);
-      totalPenalty += ScoreConstants.additivePenalties[riskLevel] ?? 12.0;
+      totalPenalty += ScoreConstants.additivePenalties[riskLevel] ?? 10.0;
     }
 
     // Normalize to 0-100 scale, cap at 100
@@ -134,7 +186,8 @@ class HpScoreCalculator {
         min((n.fiber ?? 0) / ScoreConstants.fiberExcellent, 1.0) * 100;
     final proteinScore =
         min((n.proteins ?? 0) / ScoreConstants.proteinExcellent, 1.0) * 100;
-    final naturalness = ScoreConstants.novaNaturalness[novaGroup] ?? 0.0;
+    final naturalness = ScoreConstants.novaNaturalness[novaGroup] ??
+        ScoreConstants.novaUnknownNaturalness;
 
     return (fiberScore * ScoreConstants.fiberWeight) +
         (proteinScore * ScoreConstants.proteinWeight) +

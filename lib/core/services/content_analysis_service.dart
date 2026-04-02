@@ -1,26 +1,64 @@
 import 'package:flutter/material.dart';
 
 import '../../features/product/domain/entities/product_entity.dart';
+import '../constants/health_filter_options.dart';
 
 enum WarningLevel { risky, caution, safe, natural }
 
 class ContentWarning {
   final String messageKey;
+  final String? placeholderKey;
   final IconData icon;
   final WarningLevel level;
 
   const ContentWarning({
     required this.messageKey,
+    this.placeholderKey,
     required this.icon,
     required this.level,
   });
 }
 
 abstract final class ContentAnalysisService {
-  static List<ContentWarning> analyzeIngredients(ProductEntity product) {
+  static List<ContentWarning> analyzeIngredients({
+    required ProductEntity product,
+    List<String> activeAllergens = const [],
+    List<String> activeDiets = const [],
+    List<String> activeOils = const [],
+    List<String> activeChemicals = const [],
+  }) {
     final warnings = <ContentWarning>[];
     final nutriments = product.nutriments;
     final ingredients = product.ingredientsText?.toLowerCase() ?? '';
+
+    // Check personal health filters first (they are more critical to the user)
+    _checkPersonalFilters(
+      ingredients: ingredients,
+      activeIds: activeAllergens,
+      options: HealthFilterOptions.allergens,
+      warnings: warnings,
+    );
+
+    _checkPersonalFilters(
+      ingredients: ingredients,
+      activeIds: activeDiets,
+      options: HealthFilterOptions.diets,
+      warnings: warnings,
+    );
+
+    _checkPersonalFilters(
+      ingredients: ingredients,
+      activeIds: activeOils,
+      options: HealthFilterOptions.oils,
+      warnings: warnings,
+    );
+
+    _checkPersonalFilters(
+      ingredients: ingredients,
+      activeIds: activeChemicals,
+      options: HealthFilterOptions.chemicals,
+      warnings: warnings,
+    );
 
     // NOVA Group 4 = ultra-processed
     if (product.novaGroup == 4) {
@@ -97,6 +135,30 @@ abstract final class ContentAnalysisService {
     }
 
     return warnings;
+  }
+
+  static void _checkPersonalFilters({
+    required String ingredients,
+    required List<String> activeIds,
+    required List<FilterOption> options,
+    required List<ContentWarning> warnings,
+  }) {
+    if (activeIds.isEmpty || ingredients.isEmpty) return;
+
+    for (final id in activeIds) {
+      final option = options.where((o) => o.id == id).firstOrNull;
+      if (option != null) {
+        final allTriggers = [...option.triggersTr, ...option.triggersEn];
+        if (_containsAny(ingredients, allTriggers)) {
+          warnings.add(ContentWarning(
+            messageKey: 'containsFilteredItem',
+            placeholderKey: option.nameKey,
+            icon: Icons.health_and_safety_rounded,
+            level: WarningLevel.risky, // Highly critical for personal filters
+          ));
+        }
+      }
+    }
   }
 
   static bool _containsAny(String text, List<String> keywords) {

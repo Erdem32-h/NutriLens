@@ -6,6 +6,7 @@ import '../../../../core/services/content_analysis_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/product_entity.dart';
 import '../providers/product_provider.dart';
+import '../../../profile/presentation/providers/health_filters_provider.dart';
 
 class ContentAnalysisSection extends ConsumerWidget {
   final ProductEntity product;
@@ -16,7 +17,14 @@ class ContentAnalysisSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final l10n = context.l10n;
-    final warnings = ContentAnalysisService.analyzeIngredients(product);
+    final filters = ref.watch(healthFiltersProvider);
+    final warnings = ContentAnalysisService.analyzeIngredients(
+      product: product,
+      activeAllergens: filters.allergens,
+      activeDiets: filters.diets,
+      activeOils: filters.oils,
+      activeChemicals: filters.chemicals,
+    );
     final additivesAsync = ref.watch(
       additivesByCodesProvider(product.additivesTags),
     );
@@ -54,7 +62,7 @@ class ContentAnalysisSection extends ConsumerWidget {
                 ),
               ),
             ),
-            error: (_, __) => _EmptyAdditives(),
+            error: (_, _) => _EmptyAdditives(),
             data: (additiveMap) {
               if (additiveMap.isEmpty) return _EmptyAdditives();
 
@@ -115,7 +123,7 @@ class _WarningCard extends StatelessWidget {
       WarningLevel.natural => (colors.primary, l10n.naturalLabel),
     };
 
-    final message = _resolveMessage(l10n, warning.messageKey);
+    final message = _resolveMessage(l10n, warning);
 
     return Container(
       decoration: BoxDecoration(
@@ -167,8 +175,32 @@ class _WarningCard extends StatelessWidget {
     );
   }
 
-  String _resolveMessage(dynamic l10n, String key) {
-    return switch (key) {
+  String _resolveMessage(dynamic l10n, ContentWarning warning) {
+    if (warning.messageKey == 'containsFilteredItem' && warning.placeholderKey != null) {
+      final filterName = switch (warning.placeholderKey) {
+        'filterGluten' => l10n.filterGluten,
+        'filterLactose' => l10n.filterLactose,
+        'filterPeanut' => l10n.filterPeanut,
+        'filterSoy' => l10n.filterSoy,
+        'filterEgg' => l10n.filterEgg,
+        'filterFish' => l10n.filterFish,
+        'filterVegan' => l10n.filterVegan,
+        'filterVegetarian' => l10n.filterVegetarian,
+        'filterHalal' => l10n.filterHalal,
+        'filterPalmOil' => l10n.filterPalmOil,
+        'filterTransFat' => l10n.filterTransFat,
+        'filterCanola' => l10n.filterCanola,
+        'filterMsg' => l10n.filterMsg,
+        'filterAspartame' => l10n.filterAspartame,
+        'filterHfcs' => l10n.filterHfcs,
+        'filterNitrite' => l10n.filterNitrite,
+        'filterColorant' => l10n.filterColorant,
+        _ => warning.placeholderKey!,
+      };
+      return l10n.containsFilteredItem(filterName);
+    }
+
+    return switch (warning.messageKey) {
       'ultraProcessed' => l10n.ultraProcessed,
       'highSugar' => l10n.highSugar,
       'moderateSugar' => l10n.moderateSugar,
@@ -177,7 +209,7 @@ class _WarningCard extends StatelessWidget {
       'mayContainTransFat' => l10n.mayContainTransFat,
       'containsFlavoring' => l10n.containsFlavoring,
       'highSalt' => l10n.highSalt,
-      _ => key,
+      _ => warning.messageKey,
     };
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,6 +18,7 @@ import '../../features/product/presentation/screens/edit_product_screen.dart';
 import '../../features/product/presentation/screens/ingredients_camera_screen.dart';
 import '../../features/product/presentation/screens/ingredients_verification_screen.dart';
 import '../../features/product/presentation/screens/manual_ingredients_screen.dart';
+import '../../features/scanner/presentation/screens/food_result_screen.dart';
 import '../../features/profile/presentation/screens/allergen_selection_screen.dart';
 import '../../features/profile/presentation/screens/diet_filter_screen.dart';
 import '../../features/profile/presentation/screens/oil_filter_screen.dart';
@@ -30,7 +32,17 @@ GoRouter createRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/scanner',
+    debugLogDiagnostics: kDebugMode,
+    onException: (context, state, router) {
+      debugPrint('[GoRouter] No route for: ${state.uri}');
+      router.go('/scanner');
+    },
     redirect: (context, state) {
+      final path = state.uri.path;
+
+      // Root path has no route — send to scanner
+      if (path == '/' || path.isEmpty) return '/scanner';
+
       // Supabase başlatılmamışsa login'e yönlendir
       if (!SupabaseConfig.isInitialized) {
         final isAuthRoute = state.matchedLocation == '/login' ||
@@ -179,6 +191,15 @@ GoRouter createRouter() {
             barcode: barcode,
             productInfo: extra,
           );
+        },
+      ),
+      GoRoute(
+        path: '/food-result',
+        name: RouteNames.foodResult,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final imageBytes = state.extra as Uint8List;
+          return FoodResultScreen(imageBytes: imageBytes);
         },
       ),
     ],

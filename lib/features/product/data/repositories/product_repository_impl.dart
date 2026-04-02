@@ -83,7 +83,12 @@ final class ProductRepositoryImpl implements ProductRepository {
         const Duration(seconds: 16),
       );
       if (result.isFound) {
-        await _localDataSource.cacheProduct(result.product!);
+        // Cache write is fire-and-forget — never block product display
+        try {
+          await _localDataSource.cacheProduct(result.product!);
+        } on CacheException catch (_) {
+          // SQLite unavailable — proceed without caching
+        }
         return Right(result.product!);
       }
       // Not found in any source — return stale cache
@@ -106,7 +111,12 @@ final class ProductRepositoryImpl implements ProductRepository {
         const Duration(seconds: 16),
       );
       if (result.isFound) {
-        await _localDataSource.cacheProduct(result.product!);
+        // Cache write is fire-and-forget — never block product display
+        try {
+          await _localDataSource.cacheProduct(result.product!);
+        } on CacheException catch (_) {
+          // SQLite unavailable — proceed without caching
+        }
         return Right(result.product!);
       }
       return const Left(NotFoundFailure());

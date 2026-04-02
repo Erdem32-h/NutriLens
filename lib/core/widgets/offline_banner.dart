@@ -14,7 +14,7 @@ class OfflineBanner extends ConsumerWidget {
 
     return connectivityAsync.when(
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
       data: (isOnline) {
         if (isOnline) return const SizedBox.shrink();
 

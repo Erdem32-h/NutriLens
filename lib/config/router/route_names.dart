@@ -25,6 +25,9 @@ abstract final class RouteNames {
   static const String oilFilter = 'oilFilter';
   static const String chemicalFilter = 'chemicalFilter';
 
+  // AI
+  static const String foodResult = 'foodResult';
+
   // Favorites sub-screens
   static const String blacklist = 'blacklist';
 }
