@@ -33,6 +33,9 @@ desktop.ini
 .env.*
 !.env.example
 
+# Claude Code
+.claude/worktrees/
+
 # Misc
 *.log
 coverage/

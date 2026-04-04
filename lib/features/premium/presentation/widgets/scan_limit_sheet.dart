@@ -35,7 +35,7 @@ class ScanLimitSheet extends ConsumerWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: colors.textSecondary.withOpacity(0.3),
+              color: colors.textSecondary.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),

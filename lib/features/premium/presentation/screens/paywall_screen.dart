@@ -112,91 +112,97 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   const SizedBox(height: 32),
 
                   // Package cards
-                  ..._packages.asMap().entries.map((entry) {
-                    final i = entry.key;
-                    final pkg = entry.value;
-                    final isSelected = i == _selectedIndex;
-                    final isAnnual = pkg.packageType == PackageType.annual;
+                  RadioGroup<int>(
+                    groupValue: _selectedIndex,
+                    onChanged: (v) => setState(() => _selectedIndex = v!),
+                    child: Column(
+                      children: _packages.asMap().entries.map((entry) {
+                        final i = entry.key;
+                        final pkg = entry.value;
+                        final isSelected = i == _selectedIndex;
+                        final isAnnual = pkg.packageType == PackageType.annual;
 
-                    return GestureDetector(
-                      onTap: () => setState(() => _selectedIndex = i),
-                      child: Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: isSelected
-                                ? colors.primary
-                                : colors.textSecondary.withOpacity(0.2),
-                            width: isSelected ? 2 : 1,
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          children: [
-                            Radio<int>(
-                              value: i,
-                              groupValue: _selectedIndex,
-                              onChanged: (v) =>
-                                  setState(() => _selectedIndex = v!),
+                        return GestureDetector(
+                          onTap: () => setState(() => _selectedIndex = i),
+                          child: Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: isSelected
+                                    ? colors.primary
+                                    : colors.textSecondary
+                                        .withValues(alpha: 0.2),
+                                width: isSelected ? 2 : 1,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
+                            child: Row(
+                              children: [
+                                Radio<int>(value: i),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        isAnnual ? 'Yıllık' : 'Aylık',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
-                                      if (isAnnual) ...[
-                                        const SizedBox(width: 8),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: colors.success
-                                                .withOpacity(0.15),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: Text(
-                                            '%40 tasarruf',
+                                      Row(
+                                        children: [
+                                          Text(
+                                            isAnnual ? 'Yıllık' : 'Aylık',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .labelSmall
+                                                .titleMedium
                                                 ?.copyWith(
-                                                  color: colors.success,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                           ),
-                                        ),
-                                      ],
+                                          if (isAnnual) ...[
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 2,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: colors.success
+                                                    .withValues(alpha: 0.15),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Text(
+                                                '%40 tasarruf',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelSmall
+                                                    ?.copyWith(
+                                                      color: colors.success,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        pkg.storeProduct.priceString,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
                                     ],
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    pkg.storeProduct.priceString,
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
                   const SizedBox(height: 24),
 
                   // Purchase button

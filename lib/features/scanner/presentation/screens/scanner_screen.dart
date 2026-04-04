@@ -95,6 +95,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       }
     }
 
+    if (!mounted) return;
+
     HapticFeedback.mediumImpact();
 
     debugPrint('[Scanner] navigating to /product/$value');
