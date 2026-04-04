@@ -19,6 +19,7 @@ import '../../features/product/presentation/screens/ingredients_camera_screen.da
 import '../../features/product/presentation/screens/ingredients_verification_screen.dart';
 import '../../features/product/presentation/screens/manual_ingredients_screen.dart';
 import '../../features/scanner/presentation/screens/food_result_screen.dart';
+import '../../features/premium/presentation/screens/paywall_screen.dart';
 import '../../features/profile/presentation/screens/allergen_selection_screen.dart';
 import '../../features/profile/presentation/screens/diet_filter_screen.dart';
 import '../../features/profile/presentation/screens/oil_filter_screen.dart';
@@ -201,6 +202,12 @@ GoRouter createRouter() {
           final imageBytes = state.extra as Uint8List;
           return FoodResultScreen(imageBytes: imageBytes);
         },
+      ),
+      GoRoute(
+        path: '/paywall',
+        name: RouteNames.paywall,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PaywallScreen(),
       ),
     ],
   );

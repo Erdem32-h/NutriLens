@@ -30,4 +30,7 @@ abstract final class RouteNames {
 
   // Favorites sub-screens
   static const String blacklist = 'blacklist';
+
+  // Premium
+  static const String paywall = 'paywall';
 }
