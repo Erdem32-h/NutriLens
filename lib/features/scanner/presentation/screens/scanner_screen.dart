@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../widgets/scanner_overlay.dart';
+import '../../../premium/presentation/widgets/scan_limit_sheet.dart';
 
-class ScannerScreen extends StatefulWidget {
+class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});
 
   @override
-  State<ScannerScreen> createState() => _ScannerScreenState();
+  ConsumerState<ScannerScreen> createState() => _ScannerScreenState();
 }
 
-class _ScannerScreenState extends State<ScannerScreen> {
+class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   final MobileScannerController _controller = MobileScannerController(
     detectionSpeed: DetectionSpeed.normal,
     facing: CameraFacing.back,
@@ -77,6 +80,21 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
     _isNavigating = true;
 
+    // Check scan limit
+    final scanLimitService = ref.read(scanLimitServiceProvider);
+    final scanResult = await scanLimitService.checkAndIncrement();
+    if (!scanResult.allowed) {
+      if (mounted) {
+        final granted = await ScanLimitSheet.show(context);
+        if (!granted) {
+          setState(() => _isNavigating = false);
+          return;
+        }
+      } else {
+        return;
+      }
+    }
+
     HapticFeedback.mediumImpact();
 
     debugPrint('[Scanner] navigating to /product/$value');
@@ -105,6 +123,20 @@ class _ScannerScreenState extends State<ScannerScreen> {
       if (xFile == null || !mounted) return;
 
       final Uint8List imageBytes = await xFile.readAsBytes();
+
+      if (!mounted) return;
+
+      // Check scan limit
+      final scanLimitService = ref.read(scanLimitServiceProvider);
+      final scanResult = await scanLimitService.checkAndIncrement();
+      if (!scanResult.allowed) {
+        if (mounted) {
+          final granted = await ScanLimitSheet.show(context);
+          if (!granted) return;
+        } else {
+          return;
+        }
+      }
 
       if (!mounted) return;
       await context.push('/food-result', extra: imageBytes);
