@@ -100,7 +100,7 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
   Future<bool> purchase(Package package) async {
     try {
       final result = await Purchases.purchase(
-        PurchaseParams(presentedOfferingContext: package.presentedOfferingContext),
+        PurchaseParams.package(package),
       );
       return result.customerInfo.entitlements
           .all[_entitlementId]?.isActive ?? false;
