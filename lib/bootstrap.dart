@@ -4,6 +4,8 @@ import 'package:logger/logger.dart';
 
 import 'config/drift/app_database.dart';
 import 'config/supabase/supabase_config.dart';
+import 'core/services/ad_service.dart';
+import 'core/services/subscription_service.dart';
 
 final logger = Logger(
   printer: PrettyPrinter(
@@ -42,4 +44,19 @@ Future<void> bootstrap() async {
   } catch (e) {
     logger.e('Failed to initialize Supabase: $e');
   }
+
+  // Initialize RevenueCat
+  final subscriptionService = RevenueCatSubscriptionService();
+  await subscriptionService.initialize();
+
+  // Link auth to RevenueCat
+  final currentUser = SupabaseConfig.isInitialized
+      ? SupabaseConfig.client.auth.currentUser
+      : null;
+  if (currentUser != null) {
+    await subscriptionService.logIn(currentUser.id);
+  }
+
+  // Initialize AdMob
+  await AdService.initialize();
 }
