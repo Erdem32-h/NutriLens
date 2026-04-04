@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../config/router/route_names.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -166,6 +167,32 @@ class ProfileScreen extends ConsumerWidget {
             title: l10n.chemicalFilters,
             value: l10n.chemicalOptions,
             onTap: () => context.goNamed(RouteNames.chemicalFilter),
+          ),
+
+          const SizedBox(height: 28),
+
+          // Subscription section
+          const _SectionLabel('Abonelik'),
+          const SizedBox(height: 10),
+
+          Consumer(
+            builder: (context, ref, _) {
+              final isPremium = ref.watch(isPremiumProvider);
+              if (isPremium) {
+                return _SettingsTile(
+                  icon: Icons.star,
+                  title: 'Premium Aktif',
+                  value: 'Aktif',
+                  onTap: () {},
+                );
+              }
+              return _SettingsTile(
+                icon: Icons.star_outline,
+                title: "Premium'a Geç",
+                value: 'Sınırsız tarama, reklamsız',
+                onTap: () => context.push('/paywall'),
+              );
+            },
           ),
 
           const SizedBox(height: 24),
