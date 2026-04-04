@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/providers/monetization_provider.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/entities/user_entity.dart';
@@ -41,6 +42,10 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
       (failure) => AsyncError(failure.message, StackTrace.current),
       (user) => AsyncData(user),
     );
+    if (state.value != null) {
+      final subscriptionService = ref.read(subscriptionServiceProvider);
+      await subscriptionService.logIn(state.value!.id);
+    }
   }
 
   Future<void> signUpWithEmail({
@@ -67,6 +72,10 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
       (failure) => AsyncError(failure.message, StackTrace.current),
       (user) => AsyncData(user),
     );
+    if (state.value != null) {
+      final subscriptionService = ref.read(subscriptionServiceProvider);
+      await subscriptionService.logIn(state.value!.id);
+    }
   }
 
   Future<void> signInWithApple() async {
@@ -76,9 +85,15 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
       (failure) => AsyncError(failure.message, StackTrace.current),
       (user) => AsyncData(user),
     );
+    if (state.value != null) {
+      final subscriptionService = ref.read(subscriptionServiceProvider);
+      await subscriptionService.logIn(state.value!.id);
+    }
   }
 
   Future<void> signOut() async {
+    final subscriptionService = ref.read(subscriptionServiceProvider);
+    await subscriptionService.logOut();
     await ref.read(authRepositoryProvider).signOut();
     state = const AsyncData(null);
   }
