@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/extensions/l10n_extension.dart';
+import '../../core/providers/monetization_provider.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/ad_banner_widget.dart';
 
-class AppShellScreen extends StatelessWidget {
+class AppShellScreen extends ConsumerStatefulWidget {
   final Widget child;
 
   const AppShellScreen({super.key, required this.child});
+
+  @override
+  ConsumerState<AppShellScreen> createState() => _AppShellScreenState();
+}
+
+class _AppShellScreenState extends ConsumerState<AppShellScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Pre-load rewarded ad for scan limit flow
+    final adService = ref.read(adServiceProvider);
+    adService.loadRewardedAd();
+  }
 
   int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
@@ -26,7 +42,12 @@ class AppShellScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      body: child,
+      body: Column(
+        children: [
+          Expanded(child: widget.child),
+          const AdBannerWidget(),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: context.colors.surface,
