@@ -22,8 +22,8 @@ class _AdBannerWidgetState extends ConsumerState<AdBannerWidget> {
     if (_bannerAd == null) _loadAd();
   }
 
-  void _loadAd() {
-    final adSize = AdSize.getAnchoredAdaptiveBannerAdSize(
+  Future<void> _loadAd() async {
+    final adSize = await AdSize.getAnchoredAdaptiveBannerAdSize(
       Orientation.portrait,
       MediaQuery.of(context).size.width.truncate(),
     );

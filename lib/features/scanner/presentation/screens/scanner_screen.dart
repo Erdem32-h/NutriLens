@@ -40,7 +40,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     super.dispose();
   }
 
-  void _onDetect(BarcodeCapture capture) {
+  Future<void> _onDetect(BarcodeCapture capture) async {
     if (_isNavigating || _scanMode != 0) return;
 
     final barcodes = capture.barcodes;

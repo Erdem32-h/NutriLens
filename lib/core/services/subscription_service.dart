@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -97,7 +99,9 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
   @override
   Future<bool> purchase(Package package) async {
     try {
-      final result = await Purchases.purchasePackage(package);
+      final result = await Purchases.purchase(
+        PurchaseParams(presentedOfferingContext: package.presentedOfferingContext),
+      );
       return result.customerInfo.entitlements
           .all[_entitlementId]?.isActive ?? false;
     } on PurchasesErrorCode catch (e) {
@@ -123,7 +127,11 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
 
   @override
   Stream<SubscriptionStatus> get statusStream {
-    return Purchases.customerInfoStream.map(_mapCustomerInfo);
+    final controller = StreamController<SubscriptionStatus>.broadcast();
+    Purchases.addCustomerInfoUpdateListener((info) {
+      controller.add(_mapCustomerInfo(info));
+    });
+    return controller.stream;
   }
 
   SubscriptionStatus _mapCustomerInfo(CustomerInfo info) {
