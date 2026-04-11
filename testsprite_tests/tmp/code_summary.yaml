@@ -1,0 +1,19 @@
+version: "2"
+type: backend
+tech_stack:
+  - language: Dart
+  - framework: Flutter
+  - database: Supabase
+features:
+  - name: Scan Limit Service
+    description: Manages user scan limits and history.
+    files:
+      - lib/core/services/scan_limit_service.dart
+    endpoints:
+      - method: GET
+        path: /api/scan_limit
+        description: List scan limit records
+        auth_required: false
+        response_schema:
+          "200": Object
+known_limitations: []

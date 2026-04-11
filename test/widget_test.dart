@@ -6,14 +6,14 @@ void main() {
   group('ScoreConstants', () {
     test('hpToGauge returns correct gauge for each threshold', () {
       expect(ScoreConstants.hpToGauge(100), 1);
-      expect(ScoreConstants.hpToGauge(80), 1);
-      expect(ScoreConstants.hpToGauge(79), 2);
-      expect(ScoreConstants.hpToGauge(60), 2);
-      expect(ScoreConstants.hpToGauge(59), 3);
-      expect(ScoreConstants.hpToGauge(40), 3);
-      expect(ScoreConstants.hpToGauge(39), 4);
-      expect(ScoreConstants.hpToGauge(20), 4);
-      expect(ScoreConstants.hpToGauge(19), 5);
+      expect(ScoreConstants.hpToGauge(75), 1);
+      expect(ScoreConstants.hpToGauge(74), 2);
+      expect(ScoreConstants.hpToGauge(55), 2);
+      expect(ScoreConstants.hpToGauge(54), 3);
+      expect(ScoreConstants.hpToGauge(35), 3);
+      expect(ScoreConstants.hpToGauge(34), 4);
+      expect(ScoreConstants.hpToGauge(18), 4);
+      expect(ScoreConstants.hpToGauge(17), 5);
       expect(ScoreConstants.hpToGauge(0), 5);
     });
   });

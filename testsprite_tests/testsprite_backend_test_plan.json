@@ -1,0 +1,7 @@
+[
+  {
+    "id": "TC001",
+    "title": "get_api_scan_limit_returns_scan_limit_records",
+    "description": "Test GET /api/scan_limit endpoint to verify it returns a 200 status with a list of scan limit records accessible without authentication, ensuring correct data structure and content for admin or diagnostics use."
+  }
+]

@@ -37,6 +37,8 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
   static const _apiKeyIos = String.fromEnvironment('RC_API_KEY_IOS');
   static const _entitlementId = 'premium';
 
+  StreamController<SubscriptionStatus>? _statusController;
+
   @override
   Future<void> initialize() async {
     final apiKey = defaultTargetPlatform == TargetPlatform.android
@@ -127,11 +129,18 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
 
   @override
   Stream<SubscriptionStatus> get statusStream {
-    final controller = StreamController<SubscriptionStatus>.broadcast();
-    Purchases.addCustomerInfoUpdateListener((info) {
-      controller.add(_mapCustomerInfo(info));
-    });
-    return controller.stream;
+    if (_statusController == null) {
+      _statusController = StreamController<SubscriptionStatus>.broadcast(
+        onCancel: () {
+          _statusController?.close();
+          _statusController = null;
+        },
+      );
+      Purchases.addCustomerInfoUpdateListener((info) {
+        _statusController?.add(_mapCustomerInfo(info));
+      });
+    }
+    return _statusController!.stream;
   }
 
   SubscriptionStatus _mapCustomerInfo(CustomerInfo info) {

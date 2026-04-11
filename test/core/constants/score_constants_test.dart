@@ -78,45 +78,46 @@ void main() {
     });
 
     group('hpToGauge', () {
-      test('returns 1 for HP >= 80', () {
+      // Thresholds: gauge1=75, gauge2=55, gauge3=35, gauge4=18
+      test('returns 1 for HP >= 75', () {
         expect(ScoreConstants.hpToGauge(100), 1);
-        expect(ScoreConstants.hpToGauge(80), 1);
+        expect(ScoreConstants.hpToGauge(75), 1);
         expect(ScoreConstants.hpToGauge(95.5), 1);
       });
 
-      test('returns 2 for 60 <= HP < 80', () {
-        expect(ScoreConstants.hpToGauge(79.9), 2);
-        expect(ScoreConstants.hpToGauge(79), 2);
-        expect(ScoreConstants.hpToGauge(60), 2);
-        expect(ScoreConstants.hpToGauge(70.0), 2);
+      test('returns 2 for 55 <= HP < 75', () {
+        expect(ScoreConstants.hpToGauge(74.9), 2);
+        expect(ScoreConstants.hpToGauge(74), 2);
+        expect(ScoreConstants.hpToGauge(55), 2);
+        expect(ScoreConstants.hpToGauge(65.0), 2);
       });
 
-      test('returns 3 for 40 <= HP < 60', () {
-        expect(ScoreConstants.hpToGauge(59.9), 3);
-        expect(ScoreConstants.hpToGauge(59), 3);
-        expect(ScoreConstants.hpToGauge(40), 3);
-        expect(ScoreConstants.hpToGauge(50.0), 3);
+      test('returns 3 for 35 <= HP < 55', () {
+        expect(ScoreConstants.hpToGauge(54.9), 3);
+        expect(ScoreConstants.hpToGauge(54), 3);
+        expect(ScoreConstants.hpToGauge(35), 3);
+        expect(ScoreConstants.hpToGauge(45.0), 3);
       });
 
-      test('returns 4 for 20 <= HP < 40', () {
-        expect(ScoreConstants.hpToGauge(39.9), 4);
-        expect(ScoreConstants.hpToGauge(39), 4);
-        expect(ScoreConstants.hpToGauge(20), 4);
-        expect(ScoreConstants.hpToGauge(30.0), 4);
+      test('returns 4 for 18 <= HP < 35', () {
+        expect(ScoreConstants.hpToGauge(34.9), 4);
+        expect(ScoreConstants.hpToGauge(34), 4);
+        expect(ScoreConstants.hpToGauge(18), 4);
+        expect(ScoreConstants.hpToGauge(25.0), 4);
       });
 
-      test('returns 5 for HP < 20', () {
-        expect(ScoreConstants.hpToGauge(19.9), 5);
-        expect(ScoreConstants.hpToGauge(19), 5);
+      test('returns 5 for HP < 18', () {
+        expect(ScoreConstants.hpToGauge(17.9), 5);
+        expect(ScoreConstants.hpToGauge(17), 5);
         expect(ScoreConstants.hpToGauge(0), 5);
         expect(ScoreConstants.hpToGauge(10.0), 5);
       });
 
       test('handles exact boundary values', () {
-        expect(ScoreConstants.hpToGauge(80.0), 1);
-        expect(ScoreConstants.hpToGauge(60.0), 2);
-        expect(ScoreConstants.hpToGauge(40.0), 3);
-        expect(ScoreConstants.hpToGauge(20.0), 4);
+        expect(ScoreConstants.hpToGauge(75.0), 1);
+        expect(ScoreConstants.hpToGauge(55.0), 2);
+        expect(ScoreConstants.hpToGauge(35.0), 3);
+        expect(ScoreConstants.hpToGauge(18.0), 4);
       });
 
       test('handles negative values', () {

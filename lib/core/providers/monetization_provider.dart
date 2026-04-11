@@ -31,6 +31,7 @@ final scanLimitServiceProvider = Provider<ScanLimitService>((ref) {
 
 final adServiceProvider = Provider<AdService>((ref) {
   final service = AdService();
+  service.loadRewardedAd();
   ref.onDispose(() => service.dispose());
   return service;
 });

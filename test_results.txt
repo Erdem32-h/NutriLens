@@ -1,0 +1,245 @@
+00:00 +0: loading C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart
+00:00 +0: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants static weights HP formula weights sum to 1.0
+00:00 +1: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants static weights risk factor sub-weights sum to 1.0
+00:00 +2: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants static weights nutri factor sub-weights sum to 1.0
+00:00 +3: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants additivePenalties has entries for risk levels 1 through 5
+00:00 +4: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants additivePenalties penalties increase with risk level
+00:00 +5: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants additivePenalties safe (level 1) has zero penalty
+00:00 +6: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants novaNaturalness has entries for NOVA groups 1 through 4
+00:00 +7: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants novaNaturalness NOVA 1 has highest naturalness (100)
+00:00 +8: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants novaNaturalness NOVA 4 has lowest naturalness (0)
+00:00 +9: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants novaNaturalness naturalness decreases with NOVA group
+00:00 +10: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants hpToGauge returns 1 for HP >= 75
+00:00 +11: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants hpToGauge returns 2 for 55 <= HP < 75
+00:00 +12: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants hpToGauge returns 3 for 35 <= HP < 55
+00:00 +13: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants hpToGauge returns 4 for 18 <= HP < 35
+00:00 +14: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants hpToGauge returns 5 for HP < 18
+00:00 +15: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants hpToGauge handles exact boundary values
+00:00 +16: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants hpToGauge handles negative values
+00:00 +17: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants hpToGauge handles values above 100
+00:00 +18: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants reference values sugar max ref is positive
+00:00 +19: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants reference values salt max ref is positive
+00:00 +20: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants reference values saturated fat max ref is positive
+00:00 +21: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants reference values fiber excellent is positive
+00:00 +22: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants reference values protein excellent is positive
+00:00 +23: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/constants/score_constants_test.dart: ScoreConstants gauge thresholds thresholds are in descending order
+00:00 +24: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: ServerException stores message and statusCode
+00:00 +25: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: ServerException statusCode defaults to null
+00:00 +26: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: ServerException toString includes message and statusCode
+00:00 +27: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: ServerException toString with null statusCode
+00:00 +28: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: CacheException stores message
+00:00 +29: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: CacheException toString includes message
+00:00 +30: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: NetworkException has default message
+00:00 +31: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: NetworkException accepts custom message
+00:00 +32: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: NetworkException toString includes message
+00:00 +33: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: NotFoundException has default message
+00:00 +34: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: NotFoundException accepts custom message
+00:00 +35: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: NotFoundException toString includes message
+00:00 +36: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: RateLimitException has default message
+00:00 +37: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: RateLimitException accepts custom message
+00:00 +38: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: RateLimitException toString includes message
+00:00 +39: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/exceptions_test.dart: All exceptions implement Exception every custom exception is an Exception
+00:00 +40: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: ServerFailure stores message and statusCode
+00:00 +41: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: ServerFailure statusCode defaults to null
+00:00 +42: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: ServerFailure two instances with same props are equal
+00:00 +43: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: ServerFailure two instances with different props are not equal
+00:00 +44: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: ServerFailure props include message and statusCode
+00:00 +45: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: CacheFailure stores message
+00:00 +46: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: CacheFailure equality works
+00:00 +47: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: NetworkFailure has default message
+00:00 +48: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: NetworkFailure accepts custom message
+00:00 +49: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: ValidationFailure stores message
+00:00 +50: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: NotFoundFailure has default message
+00:00 +51: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: NotFoundFailure accepts custom message
+00:00 +52: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: RateLimitFailure has default message
+00:00 +53: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: RateLimitFailure accepts custom message
+00:00 +54: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: AuthFailure stores message
+00:00 +55: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: Failure sealed class hierarchy all subclasses are Failure instances
+00:00 +56: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/error/failures_test.dart: Failure sealed class hierarchy different types with same message are not equal
+00:00 +57: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients returns empty list for product with no issues
+00:00 +58: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects NOVA 4 ultra-processed
+00:00 +59: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients does not flag NOVA 1, 2, 3 as ultra-processed
+00:00 +60: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects high sugar (> 22.5g)
+00:00 +61: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects moderate sugar (> 5g but <= 22.5g)
+00:00 +62: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients does not flag low sugar (<= 5g)
+00:00 +63: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects high saturated fat (> 5g)
+00:00 +64: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients does not flag low saturated fat (<= 5g)
+00:00 +65: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects high salt (> 1.5g)
+00:00 +66: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients does not flag low salt (<= 1.5g)
+00:00 +67: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects palm oil in ingredients
+00:00 +68: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects palmiye yağı (Turkish palm oil)
+00:00 +69: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects trans fat in ingredients
+00:00 +70: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects flavorings in ingredients
+00:00 +71: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients detects aroma verici (Turkish flavoring)
+00:00 +72: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients handles null ingredientsText gracefully
+00:00 +73: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients handles null nutriment values gracefully
+00:00 +74: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients case-insensitive ingredient matching
+00:00 +75: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients multiple warnings stack correctly
+00:00 +76: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients all warnings have valid icons
+00:00 +77: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients sugar boundary: exactly 22.5g is caution not risky
+00:00 +78: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients sugar boundary: exactly 5.0g is not flagged
+00:00 +79: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients saturated fat boundary: exactly 5.0g is not flagged
+00:00 +80: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentAnalysisService.analyzeIngredients salt boundary: exactly 1.5g is not flagged
+00:00 +81: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: WarningLevel enum has all expected values
+00:00 +82: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/content_analysis_service_test.dart: ContentWarning stores all fields
+00:00 +83: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: ScanCheckResult fromJson parses allowed free scan
+00:00 +84: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: ScanCheckResult fromJson parses denied scan
+00:00 +85: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: ScanCheckResult fromJson parses premium scan (unlimited)
+00:00 +86: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: ScanCheckResult fromJson uses defaults for missing fields
+00:00 +87: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: ScanCheckResult unlimited sentinel is always allowed and premium
+00:00 +88: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: BonusScanResult fromJson parses granted bonus
+00:00 +89: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: BonusScanResult fromJson parses max_bonus_reached denial
+00:00 +90: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: BonusScanResult fromJson uses defaults for missing fields
+00:00 +91: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: ScanLimitService checkAndIncrement returns denied immediately when user is not authenticated
+00:00 +92: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: ScanLimitService checkAndIncrement returns unlimited fallback when RPC throws
+[ScanLimit] RPC error: Exception: network error
+00:00 +93: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: ScanLimitService grantBonusScan returns not_authenticated when user is not logged in
+00:00 +94: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/scan_limit_service_test.dart: ScanLimitService grantBonusScan returns network_error when RPC throws
+[ScanLimit] Bonus RPC error: Exception: network error
+00:00 +95: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/subscription_service_test.dart: SubscriptionStatus free constant is free tier
+00:00 +96: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/subscription_service_test.dart: SubscriptionStatus free constant isPremium returns false
+00:00 +97: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/subscription_service_test.dart: SubscriptionStatus free constant has no expiry or management URL
+00:00 +98: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/subscription_service_test.dart: SubscriptionStatus premium status isPremium returns true
+00:00 +99: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/subscription_service_test.dart: SubscriptionStatus premium status stores expiry and management URL
+00:00 +100: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/subscription_service_test.dart: SubscriptionStatus premium status can be created without optional fields
+00:00 +101: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/subscription_service_test.dart: SubscriptionStatus SubscriptionTier free and premium are distinct values
+00:00 +102: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/core/services/subscription_service_test.dart: SubscriptionStatus SubscriptionTier enum has exactly two values
+00:00 +103: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signInWithEmail returns UserEntity on success
+00:00 +104: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signInWithEmail returns AuthFailure on AuthException
+00:00 +105: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signInWithEmail returns ServerFailure on unexpected exception
+00:00 +106: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signUpWithEmail returns UserEntity on success
+00:00 +107: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signUpWithEmail returns AuthFailure on AuthException
+00:00 +108: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signInWithGoogle returns UserEntity on success
+00:00 +109: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signInWithGoogle returns AuthFailure on AuthException
+00:00 +110: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signInWithApple returns UserEntity on success
+00:00 +111: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signInWithApple returns AuthFailure on AuthException
+00:00 +112: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signOut returns Right(null) on success
+00:00 +113: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signOut returns AuthFailure on AuthException
+00:00 +114: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: signOut returns ServerFailure on unexpected exception
+00:00 +115: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: authStateChanges delegates to data source
+00:00 +116: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: authStateChanges emits null when no user
+00:00 +117: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: currentUser returns user from data source
+00:00 +118: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/data/repositories/auth_repository_impl_test.dart: currentUser returns null when no user
+00:01 +119: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity stores all fields
+00:01 +120: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity displayName and avatarUrl default to null
+00:01 +121: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity equality based on all props
+00:01 +122: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity inequality when any prop differs
+00:01 +123: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity props contains all fields
+00:01 +124: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity.copyWith returns new instance with updated id
+00:01 +125: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity.copyWith returns new instance with updated email
+00:01 +126: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity.copyWith returns new instance with updated displayName
+00:01 +127: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity.copyWith returns new instance with updated avatarUrl
+00:01 +128: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/auth/domain/entities/user_entity_test.dart: UserEntity.copyWith preserves all fields when no arguments given
+00:01 +129: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/paywall_screen_test.dart: PaywallScreen shows loading indicator while fetching offerings
+00:01 +130: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +131: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +132: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +133: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +134: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +135: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +136: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +137: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +138: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +139: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +140: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +141: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +142: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +143: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +144: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +145: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +146: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +147: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +148: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +149: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +150: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +151: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +152: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +153: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +154: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +155: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +156: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +157: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +158: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +159: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +160: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +161: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders title and subtitle
+00:01 +162: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/paywall_screen_test.dart: PaywallScreen renders package cards for each offering
+00:01 +163: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet renders Premium'a Geç button
+00:01 +164: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/paywall_screen_test.dart: PaywallScreen shows success snackbar and pops on successful purchase
+00:01 +165: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/paywall_screen_test.dart: PaywallScreen shows success snackbar and pops on successful purchase
+00:01 +166: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet does NOT show rewarded ad button when ad is not ready
+00:01 +167: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/paywall_screen_test.dart: PaywallScreen does not pop on failed purchase
+00:01 +168: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet shows rewarded ad button when ad is ready
+00:01 +169: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/paywall_screen_test.dart: PaywallScreen restore shows success snackbar when subscription found
+00:01 +170: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet Kapat button dismisses the sheet
+00:01 +171: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/paywall_screen_test.dart: PaywallScreen restore shows failure snackbar when no subscription found
+00:02 +172: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet Premium'a Geç button navigates to paywall
+00:02 +173: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/premium/presentation/scan_limit_sheet_test.dart: ScanLimitSheet rewarded ad button dismisses sheet when ad watched and bonus granted
+00:02 +174: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: (setUpAll)
+00:02 +174: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when fresh cache exists returns cached product without remote call
+00:02 +175: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when stale cache exists fetches from resolver when online
+00:02 +176: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when stale cache exists returns stale cache when offline
+00:02 +177: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when stale cache exists returns stale cache when resolver finds nothing
+00:02 +178: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when stale cache exists returns stale cache on resolver exception
+00:02 +179: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when no cache exists resolves from sources and caches when online
+00:02 +180: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when no cache exists returns NetworkFailure when offline
+00:02 +181: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when no cache exists returns NotFoundFailure when resolver finds nothing
+00:02 +182: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when no cache exists returns ServerFailure on unexpected exception
+00:02 +183: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getProduct when cache read throws CacheException falls through to resolver
+00:02 +184: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: cacheProduct returns Right(null) on success
+00:02 +185: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: cacheProduct returns CacheFailure on CacheException
+00:02 +186: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getCachedProduct returns product when found in cache
+00:02 +187: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getCachedProduct returns NotFoundFailure when not in cache
+00:02 +188: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: getCachedProduct returns CacheFailure on CacheException
+00:02 +189: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/data/repositories/product_repository_impl_test.dart: (tearDownAll)
+00:02 +189: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity stores all fields
+00:02 +190: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity all fields default to null
+00:02 +191: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity empty static const is all nulls
+00:02 +192: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity equality based on all props
+00:02 +193: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity inequality when any prop differs
+00:02 +194: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity props contains all fields in order
+00:02 +195: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity.copyWith returns new instance with updated energyKcal
+00:02 +196: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity.copyWith returns new instance with updated fat
+00:02 +197: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity.copyWith returns new instance with updated saturatedFat
+00:02 +198: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity.copyWith returns new instance with updated sugars
+00:02 +199: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity.copyWith returns new instance with updated salt
+00:02 +200: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity.copyWith returns new instance with updated fiber
+00:02 +201: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity.copyWith returns new instance with updated proteins
+00:02 +202: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/nutriments_entity_test.dart: NutrimentsEntity.copyWith preserves all fields when no arguments given
+00:02 +203: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity stores all fields
+00:02 +204: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity optional fields default correctly
+00:02 +205: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity equality based on all props
+00:02 +206: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity inequality when barcode differs
+00:02 +207: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity.copyWith updates barcode
+00:02 +208: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity.copyWith updates productName
+00:02 +209: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity.copyWith updates hpScore
+00:02 +210: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity.copyWith updates allergensTags
+00:02 +211: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity.copyWith updates nutriments
+00:02 +212: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/entities/product_entity_test.dart: ProductEntity.copyWith preserves all fields when no arguments given
+00:02 +213: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/usecases/get_product_usecase_test.dart: GetProductUseCase returns ValidationFailure when barcode is empty
+00:02 +214: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/usecases/get_product_usecase_test.dart: GetProductUseCase delegates to repository when barcode is valid
+00:02 +215: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/usecases/get_product_usecase_test.dart: GetProductUseCase returns failure from repository on error
+00:02 +216: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/usecases/get_product_usecase_test.dart: GetProductUseCase returns NetworkFailure from repository
+00:02 +217: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/domain/usecases/get_product_usecase_test.dart: GetProductUseCase returns ServerFailure from repository
+00:02 +218: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid._riskLevel returns 1 (low) for < 15%
+00:02 +219: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid._riskLevel returns 2 (moderate) for 15% to < 30%
+00:02 +220: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid._riskLevel returns 3 (high) for 30% to < 50%
+00:02 +221: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid._riskLevel returns 4 (critical) for 50% to < 75%
+00:02 +222: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid._riskLevel returns 5 (very high) for >= 75%
+00:02 +223: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid daily value calculations fat percentage calculation
+00:02 +224: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid daily value calculations sugar percentage calculation
+00:02 +225: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid daily value calculations saturated fat percentage calculation
+00:02 +226: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid daily value calculations salt percentage calculation
+00:02 +227: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid daily value calculations calorie percentage calculation
+00:02 +228: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid daily value calculations percentage is clamped to 0 minimum
+00:02 +229: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/features/product/presentation/widgets/bento_nutrition_grid_test.dart: BentoNutritionGrid daily value calculations percentage is clamped to 999 maximum
+00:02 +230: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/widget_test.dart: ScoreConstants hpToGauge returns correct gauge for each threshold
+00:02 +230 -1: C:/Users/m_fat/OneDrive/Desktop/Github/NutriLens/test/widget_test.dart: ScoreConstants hpToGauge returns correct gauge for each threshold [E]
+  Expected: <2>
+    Actual: <1>
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\widget_test.dart 10:7                          main.<fn>.<fn>
+  
+00:02 +230 -1: Some tests failed.
