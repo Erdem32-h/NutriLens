@@ -1,5 +1,6 @@
 import 'package:logger/logger.dart';
 
+import '../../../../core/error/exceptions.dart';
 import '../../domain/entities/product_entity.dart';
 import 'product_remote_datasource.dart';
 import 'product_source.dart';
@@ -24,6 +25,9 @@ final class OpenFoodFactsSource implements ProductSource {
   Future<ProductEntity?> resolve(String barcode) async {
     try {
       return await _remoteDataSource.getProduct(barcode);
+    } on RateLimitException {
+      // Propagate rate-limit so the resolver/repository can surface it
+      rethrow;
     } catch (e) {
       _logger.w('OpenFoodFactsSource error for $barcode: $e');
       return null;

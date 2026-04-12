@@ -7,6 +7,7 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/product_repository.dart';
+import '../datasources/community_product_source.dart';
 import '../datasources/product_local_datasource.dart';
 import '../datasources/product_source.dart';
 
@@ -14,14 +15,17 @@ final class ProductRepositoryImpl implements ProductRepository {
   final ProductResolver _resolver;
   final ProductLocalDataSource _localDataSource;
   final NetworkInfo _networkInfo;
+  final CommunityProductSource _communitySource;
 
   const ProductRepositoryImpl({
     required ProductResolver resolver,
     required ProductLocalDataSource localDataSource,
     required NetworkInfo networkInfo,
+    required CommunityProductSource communitySource,
   })  : _resolver = resolver,
         _localDataSource = localDataSource,
-        _networkInfo = networkInfo;
+        _networkInfo = networkInfo,
+        _communitySource = communitySource;
 
   @override
   Future<Either<Failure, ProductEntity>> getProduct(String barcode) async {
@@ -66,6 +70,31 @@ final class ProductRepositoryImpl implements ProductRepository {
       return Right(cached);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> submitCommunityProduct({
+    required ProductEntity product,
+    required String userId,
+    String? ingredientsPhotoUrl,
+    String source = 'ocr',
+  }) async {
+    try {
+      await _communitySource.addProduct(
+        product: product,
+        ingredientsPhotoUrl: ingredientsPhotoUrl,
+        userId: userId,
+        source: source,
+      );
+      try {
+        await _localDataSource.cacheProduct(product);
+      } on CacheException catch (_) {
+        // Cache failure should not block successful submission
+      }
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure('Failed to submit product: $e'));
     }
   }
 
@@ -120,6 +149,8 @@ final class ProductRepositoryImpl implements ProductRepository {
         return Right(result.product!);
       }
       return const Left(NotFoundFailure());
+    } on RateLimitException {
+      return const Left(RateLimitFailure());
     } on TimeoutException {
       return const Left(ServerFailure('Product fetch timed out'));
     } catch (e) {

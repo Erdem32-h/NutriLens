@@ -199,7 +199,14 @@ GoRouter createRouter() {
         name: RouteNames.foodResult,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final imageBytes = state.extra as Uint8List;
+          final imageBytes = state.extra;
+          if (imageBytes is! Uint8List) {
+            // Fallback: redirect to scanner if extra is missing or wrong type
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.goNamed(RouteNames.scanner);
+            });
+            return const SizedBox.shrink();
+          }
           return FoodResultScreen(imageBytes: imageBytes);
         },
       ),

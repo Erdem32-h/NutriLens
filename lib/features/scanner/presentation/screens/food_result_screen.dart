@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -472,19 +473,36 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     );
   }
 
-  /// Simple HP score estimation from nutriments (without additive data).
+  /// Estimates HP score from nutriments alone (no additive data available).
+  /// Uses the same [ScoreConstants] as [HpScoreCalculator] for consistency.
   double _estimateHpScore(NutrimentsEntity n) {
-    // Simplified risk-based estimate
-    final sugarRisk = ((n.sugars ?? 0) / 22.5).clamp(0.0, 1.0) * 100;
-    final saltRisk = ((n.salt ?? 0) / 6.0).clamp(0.0, 1.0) * 100;
-    final satFatRisk = ((n.saturatedFat ?? 0) / 20.0).clamp(0.0, 1.0) * 100;
-    final riskFactor = (sugarRisk * 0.45 + saltRisk * 0.25 + satFatRisk * 0.30);
+    final sugarRisk =
+        ((n.sugars ?? 0) / ScoreConstants.sugarMaxRef).clamp(0.0, 1.0) * 100;
+    final saltRisk =
+        ((n.salt ?? 0) / ScoreConstants.saltMaxRef).clamp(0.0, 1.0) * 100;
+    final satFatRisk =
+        ((n.saturatedFat ?? 0) / ScoreConstants.saturatedFatMaxRef)
+            .clamp(0.0, 1.0) *
+        100;
+    final riskFactor = sugarRisk * ScoreConstants.sugarWeight +
+        saltRisk * ScoreConstants.saltWeight +
+        satFatRisk * ScoreConstants.saturatedFatWeight;
 
-    final fiberBonus = ((n.fiber ?? 0) / 5.0).clamp(0.0, 1.0) * 100;
-    final proteinBonus = ((n.proteins ?? 0) / 25.0).clamp(0.0, 1.0) * 100;
-    final nutriFactor = (fiberBonus * 0.5 + proteinBonus * 0.5);
+    final fiberBonus =
+        ((n.fiber ?? 0) / ScoreConstants.fiberExcellent).clamp(0.0, 1.0) * 100;
+    final proteinBonus =
+        ((n.proteins ?? 0) / ScoreConstants.proteinExcellent).clamp(0.0, 1.0) *
+        100;
+    // No NOVA data from AI recognition — use unknown naturalness default
+    final naturalnessBonus = ScoreConstants.novaUnknownNaturalness;
+    final nutriFactor = fiberBonus * ScoreConstants.fiberWeight +
+        proteinBonus * ScoreConstants.proteinWeight +
+        naturalnessBonus * ScoreConstants.naturalnessWeight;
 
-    return (100 - riskFactor * 0.4 + nutriFactor * 0.15).clamp(0.0, 100.0);
+    return (100 -
+            riskFactor * ScoreConstants.riskWeight +
+            nutriFactor * ScoreConstants.nutriWeight)
+        .clamp(0.0, 100.0);
   }
 }
 

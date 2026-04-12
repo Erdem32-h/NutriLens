@@ -1,41 +1,23 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/error/failures.dart';
-import '../../data/datasources/community_product_source.dart';
-import '../../data/datasources/product_local_datasource.dart';
 import '../entities/product_entity.dart';
+import '../repositories/product_repository.dart';
 
 class SubmitCommunityProductUseCase {
-  final CommunityProductSource _communitySource;
-  final ProductLocalDataSource _localDataSource;
+  final ProductRepository _repository;
 
-  const SubmitCommunityProductUseCase({
-    required CommunityProductSource communitySource,
-    required ProductLocalDataSource localDataSource,
-  })  : _communitySource = communitySource,
-        _localDataSource = localDataSource;
+  const SubmitCommunityProductUseCase(this._repository);
 
   Future<Either<Failure, void>> call({
     required ProductEntity product,
     required String userId,
     String? ingredientsPhotoUrl,
     String source = 'ocr',
-  }) async {
-    try {
-      // Save to Supabase community DB
-      await _communitySource.addProduct(
+  }) => _repository.submitCommunityProduct(
         product: product,
-        ingredientsPhotoUrl: ingredientsPhotoUrl,
         userId: userId,
+        ingredientsPhotoUrl: ingredientsPhotoUrl,
         source: source,
       );
-
-      // Cache locally in Drift
-      await _localDataSource.cacheProduct(product);
-
-      return const Right(null);
-    } catch (e) {
-      return Left(ServerFailure('Failed to submit product: $e'));
-    }
-  }
 }

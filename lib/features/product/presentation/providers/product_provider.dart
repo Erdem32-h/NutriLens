@@ -1,11 +1,10 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../config/drift/app_database.dart';
-import '../../../../core/network/network_info.dart';
+import '../../../../core/network/connectivity_provider.dart';
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/services/hp_score_calculator.dart';
 import '../../data/datasources/barcode_lookup_source.dart';
@@ -28,8 +27,19 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
   throw UnimplementedError('AppDatabase must be overridden');
 });
 
-final networkInfoProvider = Provider<NetworkInfo>((ref) {
-  return NetworkInfoImpl(Connectivity());
+// Supabase client provider — overridden in main.dart
+final supabaseClientProvider = Provider<SupabaseClient>((ref) {
+  throw UnimplementedError('SupabaseClient must be overridden');
+});
+
+// Shared Dio instance with base configuration
+final dioProvider = Provider<Dio>((ref) {
+  return Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
 });
 
 // --- Data Sources ---
@@ -46,7 +56,7 @@ final productLocalDataSourceProvider = Provider<ProductLocalDataSource>((ref) {
 });
 
 final communityProductSourceProvider = Provider<CommunityProductSource>((ref) {
-  final client = Supabase.instance.client;
+  final client = ref.watch(supabaseClientProvider);
   return CommunityProductSource(client);
 });
 
@@ -56,7 +66,7 @@ final offProductSourceProvider = Provider<OpenFoodFactsSource>((ref) {
 });
 
 final barcodeLookupSourceProvider = Provider<BarcodeLookupSource>((ref) {
-  return BarcodeLookupSource(Dio());
+  return BarcodeLookupSource(ref.watch(dioProvider));
 });
 
 // --- Resolver ---
@@ -75,7 +85,8 @@ final productRepositoryProvider = Provider<ProductRepository>((ref) {
   return ProductRepositoryImpl(
     resolver: ref.watch(productResolverProvider),
     localDataSource: ref.watch(productLocalDataSourceProvider),
-    networkInfo: ref.watch(networkInfoProvider),
+    networkInfo: ref.watch(connectivityProvider),
+    communitySource: ref.watch(communityProductSourceProvider),
   );
 });
 
@@ -95,7 +106,7 @@ final hpScoreCalculatorProvider = Provider<HpScoreCalculator>((ref) {
 // --- AI Service ---
 
 final geminiAiServiceProvider = Provider<GeminiAiService>((ref) {
-  return GeminiAiService(Supabase.instance.client);
+  return GeminiAiService(ref.watch(supabaseClientProvider));
 });
 
 // --- UI Providers ---
@@ -132,10 +143,7 @@ final productByBarcodeProvider = FutureProvider.family<ProductEntity?, String>((
 
 final submitCommunityProductUseCaseProvider =
     Provider<SubmitCommunityProductUseCase>((ref) {
-      return SubmitCommunityProductUseCase(
-        communitySource: ref.watch(communityProductSourceProvider),
-        localDataSource: ref.watch(productLocalDataSourceProvider),
-      );
+      return SubmitCommunityProductUseCase(ref.watch(productRepositoryProvider));
     });
 
 // --- Additives ---

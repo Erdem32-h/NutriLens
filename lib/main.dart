@@ -5,6 +5,8 @@ import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'bootstrap.dart';
 import 'config/router/app_router.dart';
 import 'core/providers/locale_provider.dart';
@@ -21,6 +23,7 @@ void main() async {
     ProviderScope(
       overrides: [
         appDatabaseProvider.overrideWithValue(database),
+        supabaseClientProvider.overrideWithValue(Supabase.instance.client),
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ],
       child: const NutriLensApp(),

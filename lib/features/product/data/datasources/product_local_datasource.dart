@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 
 import '../../../../config/drift/app_database.dart';
@@ -96,9 +98,5 @@ final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
     }
   }
 
-  String _listToJsonString(List<String> list) {
-    return list.isEmpty
-        ? '[]'
-        : '[${list.map((e) => '"$e"').join(',')}]';
-  }
+  String _listToJsonString(List<String> list) => jsonEncode(list);
 }
