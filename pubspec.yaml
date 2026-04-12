@@ -1,7 +1,7 @@
 name: nutrilens
 description: "KlikTag-inspired food barcode scanner with health scoring, additive analysis, and personalized dietary filtering."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.9.2

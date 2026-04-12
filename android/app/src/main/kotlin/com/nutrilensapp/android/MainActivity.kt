@@ -1,4 +1,4 @@
-package com.nutrilens.nutrilens
+package com.nutrilensapp.android
 
 import io.flutter.embedding.android.FlutterActivity
 
