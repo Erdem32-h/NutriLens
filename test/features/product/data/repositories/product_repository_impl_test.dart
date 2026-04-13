@@ -5,6 +5,7 @@ import 'package:nutrilens/core/error/exceptions.dart';
 import 'package:nutrilens/core/error/failures.dart';
 import 'package:nutrilens/core/network/network_info.dart';
 import 'package:nutrilens/features/product/data/datasources/product_local_datasource.dart';
+import 'package:nutrilens/features/product/data/datasources/community_product_source.dart';
 import 'package:nutrilens/features/product/data/datasources/product_source.dart';
 import 'package:nutrilens/features/product/data/repositories/product_repository_impl.dart';
 import 'package:nutrilens/features/product/domain/entities/product_entity.dart';
@@ -16,6 +17,9 @@ class MockProductLocalDataSource extends Mock
 
 class MockNetworkInfo extends Mock implements NetworkInfo {}
 
+class MockCommunityProductSource extends Mock
+    implements CommunityProductSource {}
+
 class FakeProductEntity extends Fake implements ProductEntity {}
 
 void main() {
@@ -23,6 +27,7 @@ void main() {
   late MockProductResolver mockResolver;
   late MockProductLocalDataSource mockLocal;
   late MockNetworkInfo mockNetwork;
+  late MockCommunityProductSource mockCommunity;
 
   setUpAll(() {
     registerFallbackValue(FakeProductEntity());
@@ -32,10 +37,12 @@ void main() {
     mockResolver = MockProductResolver();
     mockLocal = MockProductLocalDataSource();
     mockNetwork = MockNetworkInfo();
+    mockCommunity = MockCommunityProductSource();
     repository = ProductRepositoryImpl(
       resolver: mockResolver,
       localDataSource: mockLocal,
       networkInfo: mockNetwork,
+      communitySource: mockCommunity,
     );
   });
 

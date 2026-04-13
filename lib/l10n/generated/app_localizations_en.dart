@@ -726,4 +726,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get carbohydrates => 'Carbohydrates';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get turkishCodex => 'Turkish Codex';
+
+  @override
+  String get riskLevel => 'Risk Level';
+
+  @override
+  String get dietarySuitability => 'Dietary Suitability';
+
+  @override
+  String get vegan => 'Vegan';
+
+  @override
+  String get vegetarian => 'Vegetarian';
+
+  @override
+  String get halal => 'Halal';
+
+  @override
+  String get bannedAdditive =>
+      'This additive is banned by EFSA or the Turkish Food Codex.';
 }

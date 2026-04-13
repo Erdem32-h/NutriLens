@@ -231,5 +231,14 @@
   "aiFailed": "AI analysis failed. Please try again.",
   "aiLowConfidence": "Low confidence — results are estimates",
   "aiEstimate": "AI Estimate",
-  "carbohydrates": "Carbohydrates"
+  "carbohydrates": "Carbohydrates",
+  "description": "Description",
+  "category": "Category",
+  "turkishCodex": "Turkish Codex",
+  "riskLevel": "Risk Level",
+  "dietarySuitability": "Dietary Suitability",
+  "vegan": "Vegan",
+  "vegetarian": "Vegetarian",
+  "halal": "Halal",
+  "bannedAdditive": "This additive is banned by EFSA or the Turkish Food Codex."
 }

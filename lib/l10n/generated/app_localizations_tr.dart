@@ -727,4 +727,32 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get carbohydrates => 'Karbonhidrat';
+
+  @override
+  String get description => 'Açıklama';
+
+  @override
+  String get category => 'Kategori';
+
+  @override
+  String get turkishCodex => 'Türk Kodeksi';
+
+  @override
+  String get riskLevel => 'Risk Seviyesi';
+
+  @override
+  String get dietarySuitability => 'Diyet Uygunluğu';
+
+  @override
+  String get vegan => 'Vegan';
+
+  @override
+  String get vegetarian => 'Vejetaryen';
+
+  @override
+  String get halal => 'Helal';
+
+  @override
+  String get bannedAdditive =>
+      'Bu katkı maddesi EFSA veya Türk Gıda Kodeksi tarafından yasaklanmıştır.';
 }

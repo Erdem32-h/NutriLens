@@ -24,6 +24,7 @@ import '../../features/profile/presentation/screens/allergen_selection_screen.da
 import '../../features/profile/presentation/screens/diet_filter_screen.dart';
 import '../../features/profile/presentation/screens/oil_filter_screen.dart';
 import '../../features/profile/presentation/screens/chemical_filter_screen.dart';
+import '../../features/product/presentation/screens/additive_detail_screen.dart';
 import 'route_names.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -156,6 +157,15 @@ GoRouter createRouter() {
         builder: (context, state) {
           final barcode = state.pathParameters['barcode']!;
           return ProductNotFoundScreen(barcode: barcode);
+        },
+      ),
+      GoRoute(
+        path: '/additive/:eCode',
+        name: RouteNames.additiveDetail,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final eCode = state.pathParameters['eCode']!;
+          return AdditiveDetailScreen(eCode: eCode);
         },
       ),
       GoRoute(

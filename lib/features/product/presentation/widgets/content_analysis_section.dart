@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/content_analysis_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../config/router/route_names.dart';
 import '../../domain/entities/product_entity.dart';
 import '../providers/product_provider.dart';
 import '../../../profile/presentation/providers/health_filters_provider.dart';
@@ -233,8 +235,14 @@ class _AdditiveCard extends StatelessWidget {
 
     // Clean e-code display
     final displayCode = eCode.startsWith('en:') ? eCode.substring(3) : eCode;
+    final navigateCode = displayCode.toUpperCase();
 
-    return Container(
+    return GestureDetector(
+      onTap: () => context.pushNamed(
+        RouteNames.additiveDetail,
+        pathParameters: {'eCode': navigateCode},
+      ),
+      child: Container(
       decoration: BoxDecoration(
         color: colors.surfaceCard,
         borderRadius: BorderRadius.circular(20),
@@ -273,6 +281,8 @@ class _AdditiveCard extends StatelessWidget {
                       ),
                     ),
                     _Badge(text: badgeText, color: badgeColor),
+                    const SizedBox(width: 4),
+                    Icon(Icons.chevron_right, size: 16, color: colors.textMuted),
                   ],
                 ),
               ),
@@ -280,6 +290,7 @@ class _AdditiveCard extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

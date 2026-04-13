@@ -1489,6 +1489,60 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Karbonhidrat'**
   String get carbohydrates;
+
+  /// No description provided for @description.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açıklama'**
+  String get description;
+
+  /// No description provided for @category.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kategori'**
+  String get category;
+
+  /// No description provided for @turkishCodex.
+  ///
+  /// In tr, this message translates to:
+  /// **'Türk Kodeksi'**
+  String get turkishCodex;
+
+  /// No description provided for @riskLevel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Risk Seviyesi'**
+  String get riskLevel;
+
+  /// No description provided for @dietarySuitability.
+  ///
+  /// In tr, this message translates to:
+  /// **'Diyet Uygunluğu'**
+  String get dietarySuitability;
+
+  /// No description provided for @vegan.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vegan'**
+  String get vegan;
+
+  /// No description provided for @vegetarian.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vejetaryen'**
+  String get vegetarian;
+
+  /// No description provided for @halal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Helal'**
+  String get halal;
+
+  /// No description provided for @bannedAdditive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu katkı maddesi EFSA veya Türk Gıda Kodeksi tarafından yasaklanmıştır.'**
+  String get bannedAdditive;
 }
 
 class _AppLocalizationsDelegate

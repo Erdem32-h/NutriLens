@@ -231,5 +231,14 @@
   "aiFailed": "AI analiz başarısız oldu. Tekrar deneyin.",
   "aiLowConfidence": "Düşük güven — sonuçlar tahminidir",
   "aiEstimate": "AI Tahmin",
-  "carbohydrates": "Karbonhidrat"
+  "carbohydrates": "Karbonhidrat",
+  "description": "Açıklama",
+  "category": "Kategori",
+  "turkishCodex": "Türk Kodeksi",
+  "riskLevel": "Risk Seviyesi",
+  "dietarySuitability": "Diyet Uygunluğu",
+  "vegan": "Vegan",
+  "vegetarian": "Vejetaryen",
+  "halal": "Helal",
+  "bannedAdditive": "Bu katkı maddesi EFSA veya Türk Gıda Kodeksi tarafından yasaklanmıştır."
 }

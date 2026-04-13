@@ -5,7 +5,7 @@ import '../../domain/entities/product_entity.dart';
 import '../models/product_dto.dart';
 import 'product_source.dart';
 
-final class CommunityProductSource implements ProductSource {
+class CommunityProductSource implements ProductSource {
   final SupabaseClient _client;
   final _logger = Logger();
 

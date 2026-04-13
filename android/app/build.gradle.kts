@@ -13,6 +13,12 @@ if (keyPropertiesFile.exists()) {
     keyProperties.load(keyPropertiesFile.inputStream())
 }
 
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+
 android {
     namespace = "com.nutrilensapp.android"
     compileSdk = flutter.compileSdkVersion
@@ -33,10 +39,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders["ADMOB_APP_ID"] = if (project.hasProperty("ADMOB_APP_ID"))
-            project.property("ADMOB_APP_ID") as String
-        else
-            "ca-app-pub-3940256099942544~3347511713"  // test ID
+        manifestPlaceholders["ADMOB_APP_ID"] = localProperties.getProperty("ADMOB_APP_ID")
+            ?: if (project.hasProperty("ADMOB_APP_ID")) project.property("ADMOB_APP_ID") as String
+            else "ca-app-pub-3940256099942544~3347511713"  // Google test ID
     }
 
     signingConfigs {
