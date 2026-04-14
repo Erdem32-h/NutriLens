@@ -13,6 +13,14 @@ abstract interface class ProductLocalDataSource {
   Future<ProductEntity?> getProduct(String barcode);
   Future<void> cacheProduct(ProductEntity product);
   Future<bool> isStale(String barcode);
+
+  /// Returns up to [limit] cached products with a better HP score than
+  /// [currentHpScore], excluding [barcode], ordered by score descending.
+  Future<List<ProductEntity>> getAlternatives({
+    required String barcode,
+    required double currentHpScore,
+    int limit = 5,
+  });
 }
 
 final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
@@ -95,6 +103,50 @@ final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
       return age > AppConstants.cacheTtl;
     } catch (_) {
       return true;
+    }
+  }
+
+  @override
+  Future<List<ProductEntity>> getAlternatives({
+    required String barcode,
+    required double currentHpScore,
+    int limit = 5,
+  }) async {
+    try {
+      final query = _db.select(_db.foodProducts)
+        ..where(
+          (t) =>
+              t.barcode.equals(barcode).not() &
+              t.hpScore.isBiggerThanValue(currentHpScore),
+        )
+        ..orderBy([(t) => OrderingTerm.desc(t.hpScore)])
+        ..limit(limit);
+
+      final rows = await query.get();
+      return rows
+          .map(
+            (row) => ProductDto.fromDriftRow(
+              barcode: row.barcode,
+              productName: row.productName,
+              brands: row.brands,
+              imageUrl: row.imageUrl,
+              ingredientsText: row.ingredientsText,
+              allergensTags: row.allergensTags,
+              additivesTags: row.additivesTags,
+              novaGroup: row.novaGroup,
+              nutriscoreGrade: row.nutriscoreGrade,
+              nutriments: row.nutriments,
+              categoriesTags: row.categoriesTags,
+              countriesTags: row.countriesTags,
+              hpScore: row.hpScore,
+              hpChemicalLoad: row.hpChemicalLoad,
+              hpRiskFactor: row.hpRiskFactor,
+              hpNutriFactor: row.hpNutriFactor,
+            ),
+          )
+          .toList();
+    } catch (e) {
+      return [];
     }
   }
 

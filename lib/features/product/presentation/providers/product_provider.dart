@@ -146,6 +146,19 @@ final submitCommunityProductUseCaseProvider =
       return SubmitCommunityProductUseCase(ref.watch(productRepositoryProvider));
     });
 
+// --- Alternatives ---
+
+/// Returns up to 5 locally cached products with a better HP score than
+/// the product identified by [barcode]. The record is a (barcode, hpScore) pair.
+final alternativesProvider = FutureProvider.family<List<ProductEntity>,
+    ({String barcode, double hpScore})>((ref, args) async {
+  final local = ref.watch(productLocalDataSourceProvider);
+  return local.getAlternatives(
+    barcode: args.barcode,
+    currentHpScore: args.hpScore,
+  );
+});
+
 // --- Additives ---
 
 final additivesByCodesProvider =

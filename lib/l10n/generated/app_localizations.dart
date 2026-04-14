@@ -284,6 +284,30 @@ abstract class AppLocalizations {
   /// **'Kara Listeye Ekle'**
   String get addToBlacklist;
 
+  /// No description provided for @removeFromBlacklist.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kara Listeden Çıkar'**
+  String get removeFromBlacklist;
+
+  /// No description provided for @blacklist.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kara Liste'**
+  String get blacklist;
+
+  /// No description provided for @noBlacklist.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kara listede ürün yok'**
+  String get noBlacklist;
+
+  /// No description provided for @blacklistedWarning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ürünü daha önce engellediniz'**
+  String get blacklistedWarning;
+
   /// No description provided for @scanHistory.
   ///
   /// In tr, this message translates to:

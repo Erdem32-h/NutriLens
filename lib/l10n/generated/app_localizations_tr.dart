@@ -102,6 +102,18 @@ class AppLocalizationsTr extends AppLocalizations {
   String get addToBlacklist => 'Kara Listeye Ekle';
 
   @override
+  String get removeFromBlacklist => 'Kara Listeden Çıkar';
+
+  @override
+  String get blacklist => 'Kara Liste';
+
+  @override
+  String get noBlacklist => 'Kara listede ürün yok';
+
+  @override
+  String get blacklistedWarning => 'Bu ürünü daha önce engellediniz';
+
+  @override
   String get scanHistory => 'Tarama Geçmişi';
 
   @override

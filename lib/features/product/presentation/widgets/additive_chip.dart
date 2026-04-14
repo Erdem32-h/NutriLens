@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../config/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class AdditiveChip extends StatelessWidget {
@@ -18,7 +20,12 @@ class AdditiveChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = context.colors.riskColor(riskLevel);
 
-    return Container(
+    return GestureDetector(
+      onTap: () => context.pushNamed(
+        RouteNames.additiveDetail,
+        pathParameters: {'eCode': eCode},
+      ),
+      child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
@@ -69,6 +76,7 @@ class AdditiveChip extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

@@ -68,43 +68,6 @@ class AlternativePlaceholder extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16),
-
-          // Coming soon placeholder
-          Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: colors.surfaceCard,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.swap_horiz_rounded,
-                  size: 48,
-                  color: colors.textMuted,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.alternatives,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.alternativesComingSoon,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colors.textMuted,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

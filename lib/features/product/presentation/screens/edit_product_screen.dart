@@ -363,43 +363,49 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           const SizedBox(height: 32),
 
           // Save button
-          GestureDetector(
-            onTap: _saving ? null : _save,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                gradient: _saving ? null : context.colors.primaryGradient,
-                color: _saving ? context.colors.surfaceCard2 : null,
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: _saving ? null : context.colors.primaryGradient,
+              color: _saving ? context.colors.surfaceCard2 : null,
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _saving ? null : _save,
                 borderRadius: BorderRadius.circular(50),
-              ),
-              child: _saving
-                  ? Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: context.colors.primary,
-                        ),
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.check_rounded,
-                            color: Colors.black, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          l10n.saveAndView,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: _saving
+                      ? Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: context.colors.primary,
+                            ),
                           ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.check_rounded,
+                                color: Colors.black, size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              l10n.saveAndView,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 40),

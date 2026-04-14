@@ -9,6 +9,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../history/presentation/providers/history_provider.dart';
 import '../../../profile/presentation/providers/health_filters_provider.dart';
 import '../../domain/entities/product_entity.dart';
+import '../../../../core/constants/score_constants.dart';
 import '../providers/product_provider.dart';
 import '../widgets/alternative_placeholder.dart';
 import '../widgets/bento_nutrition_grid.dart';
@@ -45,13 +46,80 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final productAsync = ref.watch(productByBarcodeProvider(widget.barcode));
+    final isFavoriteAsync = ref.watch(isFavoriteProvider(widget.barcode));
+    final isBlacklistedAsync = ref.watch(isBlacklistedProvider(widget.barcode));
     final l10n = context.l10n;
+
+    final productLoaded =
+        productAsync.hasValue && productAsync.value != null;
 
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(
         title: Text(l10n.productDetail),
         backgroundColor: Colors.transparent,
+        actions: productLoaded
+            ? [
+                // Favorite toggle
+                isFavoriteAsync.when(
+                  loading: () => const SizedBox(
+                    width: 48,
+                    child: Center(
+                        child: SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2))),
+                  ),
+                  error: (e, s) => const SizedBox.shrink(),
+                  data: (isFav) => IconButton(
+                    tooltip: isFav ? l10n.removeFromFavorites : l10n.addToFavorites,
+                    icon: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      color: isFav ? Colors.redAccent : null,
+                    ),
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      if (isFav) {
+                        await removeFavoriteByBarcode(ref,
+                            barcode: widget.barcode);
+                        if (mounted) {
+                          messenger.showSnackBar(SnackBar(
+                              content: Text(l10n.removedFromFavorites)));
+                        }
+                      } else {
+                        await addToFavorites(ref, barcode: widget.barcode);
+                        if (mounted) {
+                          messenger.showSnackBar(
+                              SnackBar(content: Text(l10n.addedToFavorites)));
+                        }
+                      }
+                    },
+                  ),
+                ),
+                // Blacklist toggle
+                isBlacklistedAsync.when(
+                  loading: () => const SizedBox.shrink(),
+                  error: (e, s) => const SizedBox.shrink(),
+                  data: (isBlocked) => IconButton(
+                    tooltip: isBlocked
+                        ? l10n.removeFromBlacklist
+                        : l10n.addToBlacklist,
+                    icon: Icon(
+                      isBlocked ? Icons.block : Icons.block_outlined,
+                      color: isBlocked ? Colors.orange : null,
+                    ),
+                    onPressed: () async {
+                      if (isBlocked) {
+                        await removeBlacklistByBarcode(ref,
+                            barcode: widget.barcode);
+                      } else {
+                        await addToBlacklist(ref, barcode: widget.barcode);
+                      }
+                    },
+                  ),
+                ),
+              ]
+            : null,
       ),
       body: productAsync.when(
         loading: () {
@@ -116,6 +184,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               context.push('/product/${widget.barcode}/edit');
             },
           ),
+          _buildBlacklistedBanner(),
           _buildFilterWarningBanner(product),
           PillTabBar(
             selectedIndex: _selectedTab,
@@ -124,10 +193,51 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           const SizedBox(height: 16),
           if (_selectedTab == 0) ..._buildHealthTab(product),
           if (_selectedTab == 1) ..._buildNutritionTab(product),
-          if (_selectedTab == 2) ..._buildAlternativeTab(),
+          if (_selectedTab == 2) ..._buildAlternativeTab(product),
           const SizedBox(height: 32),
         ],
       ),
+    );
+  }
+
+  /// Shows a banner when this product is in the user's blacklist.
+  Widget _buildBlacklistedBanner() {
+    final isBlacklistedAsync = ref.watch(isBlacklistedProvider(widget.barcode));
+
+    return isBlacklistedAsync.maybeWhen(
+      data: (isBlocked) {
+        if (!isBlocked) return const SizedBox.shrink();
+        final l10n = context.l10n;
+        final colors = context.colors;
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.orange.withValues(alpha: 0.4)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.block, color: Colors.orange, size: 22),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.blacklistedWarning,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
     );
   }
 
@@ -292,9 +402,55 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     ];
   }
 
-  List<Widget> _buildAlternativeTab() {
+  List<Widget> _buildAlternativeTab(ProductEntity product) {
+    final hpScore = product.calculatedHpScore ?? 0.0;
+    final altAsync = ref.watch(
+      alternativesProvider((barcode: product.barcode, hpScore: hpScore)),
+    );
+
     return [
+      // "Did you know?" tip card — always visible
       const AlternativePlaceholder(),
+      // Actual alternatives from local cache
+      altAsync.when(
+        loading: () => const Padding(
+          padding: EdgeInsets.all(24),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+        error: (e, s) => const SizedBox.shrink(),
+        data: (alts) {
+          if (alts.isEmpty) return const SizedBox.shrink();
+
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                Text(
+                  context.l10n.alternatives,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 160,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(right: 24),
+                    itemCount: alts.length,
+                    separatorBuilder: (context, i) => const SizedBox(width: 12),
+                    itemBuilder: (_, i) => _AlternativeCard(product: alts[i]),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     ];
   }
 
@@ -348,5 +504,90 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       ),
     );
   }
+}
 
+/// Small card showing an alternative product in the horizontal list.
+class _AlternativeCard extends StatelessWidget {
+  final ProductEntity product;
+
+  const _AlternativeCard({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final gauge = ScoreConstants.hpToGauge(product.calculatedHpScore);
+    final gaugeColor = colors.gaugeColor(gauge);
+
+    return GestureDetector(
+      onTap: () => context.push('/product/${product.barcode}'),
+      child: Container(
+        width: 130,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colors.surfaceCard,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: product.imageUrl != null
+                  ? Image.network(
+                      product.imageUrl!,
+                      height: 72,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (ctx, e, s) => _placeholder(colors),
+                    )
+                  : _placeholder(colors),
+            ),
+            const SizedBox(height: 8),
+            // HP gauge badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: gaugeColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                '$gauge',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: gaugeColor,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Product name
+            Text(
+              product.productName ?? product.barcode,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: colors.textPrimary,
+                height: 1.3,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _placeholder(AppColorsExtension colors) {
+    return Container(
+      height: 72,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: colors.surfaceCard2,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(Icons.image_outlined, size: 28, color: colors.textMuted),
+    );
+  }
 }

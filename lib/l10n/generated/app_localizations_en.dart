@@ -102,6 +102,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addToBlacklist => 'Add to Blacklist';
 
   @override
+  String get removeFromBlacklist => 'Remove from Blacklist';
+
+  @override
+  String get blacklist => 'Blacklist';
+
+  @override
+  String get noBlacklist => 'No blocked products';
+
+  @override
+  String get blacklistedWarning => 'You previously blocked this product';
+
+  @override
   String get scanHistory => 'Scan History';
 
   @override
