@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../extensions/l10n_extension.dart';
 import '../theme/app_colors.dart';
 
 /// Animated semicircular HP gauge widget.
@@ -69,13 +70,16 @@ class _HealthGaugeState extends State<HealthGauge>
   Color _gaugeColor(BuildContext context) =>
       context.colors.gaugeColor(widget.gaugeLevel.clamp(1, 5));
 
-  String _levelLabel() => switch (widget.gaugeLevel) {
-        1 => 'Mükemmel',
-        2 => 'İyi',
-        3 => 'Orta',
-        4 => 'Zayıf',
-        _ => 'Kötü',
-      };
+  String _levelLabel(BuildContext context) {
+    final l10n = context.l10n;
+    return switch (widget.gaugeLevel) {
+      1 => l10n.gaugeExcellent,
+      2 => l10n.gaugeGood,
+      3 => l10n.gaugeModerate,
+      4 => l10n.gaugeWeak,
+      _ => l10n.gaugeBad,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +117,7 @@ class _HealthGaugeState extends State<HealthGauge>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    _levelLabel(),
+                    _levelLabel(context),
                     style: TextStyle(
                       fontSize: widget.size * 0.09,
                       fontWeight: FontWeight.w600,
@@ -121,7 +125,7 @@ class _HealthGaugeState extends State<HealthGauge>
                     ),
                   ),
                   Text(
-                    'HP Puanı',
+                    context.l10n.hpScoreLabel,
                     style: TextStyle(
                       fontSize: widget.size * 0.075,
                       color: colors.textMuted,

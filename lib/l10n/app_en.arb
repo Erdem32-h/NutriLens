@@ -248,5 +248,12 @@
   "counterfeitWarningTitle": "WARNING: On Counterfeit/Adulterated List!",
   "counterfeitViewSource": "View Ministry of Agriculture source",
   "counterfeitSyncing": "Updating counterfeit product list...",
-  "noCounterfeitFound": "Not found on counterfeit product list"
+  "noCounterfeitFound": "Not found on counterfeit product list",
+  "gaugeExcellent": "Excellent",
+  "gaugeGood": "Good",
+  "gaugeModerate": "Moderate",
+  "gaugeWeak": "Poor",
+  "gaugeBad": "Bad",
+  "hpScoreLabel": "HP Score",
+  "allergenWarningTitle": "WARNING: Contains Allergen"
 }

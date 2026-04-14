@@ -1591,6 +1591,48 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Taklit ürün listesinde bulunamadı'**
   String get noCounterfeitFound;
+
+  /// No description provided for @gaugeExcellent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mükemmel'**
+  String get gaugeExcellent;
+
+  /// No description provided for @gaugeGood.
+  ///
+  /// In tr, this message translates to:
+  /// **'İyi'**
+  String get gaugeGood;
+
+  /// No description provided for @gaugeModerate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orta'**
+  String get gaugeModerate;
+
+  /// No description provided for @gaugeWeak.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zayıf'**
+  String get gaugeWeak;
+
+  /// No description provided for @gaugeBad.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kötü'**
+  String get gaugeBad;
+
+  /// No description provided for @hpScoreLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'HP Puanı'**
+  String get hpScoreLabel;
+
+  /// No description provided for @allergenWarningTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'UYARI: Alerjen İçeriyor'**
+  String get allergenWarningTitle;
 }
 
 class _AppLocalizationsDelegate

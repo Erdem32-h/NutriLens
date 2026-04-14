@@ -248,5 +248,12 @@
   "counterfeitWarningTitle": "UYARI: Taklit/Tağşiş Listesinde!",
   "counterfeitViewSource": "Tarım Bakanlığı kaynağını görüntüle",
   "counterfeitSyncing": "Taklit ürün listesi güncelleniyor...",
-  "noCounterfeitFound": "Taklit ürün listesinde bulunamadı"
+  "noCounterfeitFound": "Taklit ürün listesinde bulunamadı",
+  "gaugeExcellent": "Mükemmel",
+  "gaugeGood": "İyi",
+  "gaugeModerate": "Orta",
+  "gaugeWeak": "Zayıf",
+  "gaugeBad": "Kötü",
+  "hpScoreLabel": "HP Puanı",
+  "allergenWarningTitle": "UYARI: Alerjen İçeriyor"
 }

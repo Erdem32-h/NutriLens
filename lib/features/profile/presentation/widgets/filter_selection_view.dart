@@ -21,12 +21,6 @@ class FilterSelectionView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    // Helper to get localized string from arbitrary keys isn't directly available from l10n
-    // So we use a map approach or reflection, but simpler is returning the localized string matched by nameKey.
-    // However, l10n doesn't have a [] operator.
-    // Fortunately, we can map the keys manually or just match them in a helper method.
-    
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(

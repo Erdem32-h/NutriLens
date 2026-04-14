@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../additive/domain/entities/allergen_entity.dart';
 
@@ -81,7 +82,7 @@ class AllergenWarningBanner extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'UYARI: Alerjen İçeriyor',
+                    context.l10n.allergenWarningTitle,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,

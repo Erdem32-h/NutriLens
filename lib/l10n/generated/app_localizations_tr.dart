@@ -779,4 +779,25 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noCounterfeitFound => 'Taklit ürün listesinde bulunamadı';
+
+  @override
+  String get gaugeExcellent => 'Mükemmel';
+
+  @override
+  String get gaugeGood => 'İyi';
+
+  @override
+  String get gaugeModerate => 'Orta';
+
+  @override
+  String get gaugeWeak => 'Zayıf';
+
+  @override
+  String get gaugeBad => 'Kötü';
+
+  @override
+  String get hpScoreLabel => 'HP Puanı';
+
+  @override
+  String get allergenWarningTitle => 'UYARI: Alerjen İçeriyor';
 }

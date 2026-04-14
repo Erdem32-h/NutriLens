@@ -779,4 +779,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCounterfeitFound => 'Not found on counterfeit product list';
+
+  @override
+  String get gaugeExcellent => 'Excellent';
+
+  @override
+  String get gaugeGood => 'Good';
+
+  @override
+  String get gaugeModerate => 'Moderate';
+
+  @override
+  String get gaugeWeak => 'Poor';
+
+  @override
+  String get gaugeBad => 'Bad';
+
+  @override
+  String get hpScoreLabel => 'HP Score';
+
+  @override
+  String get allergenWarningTitle => 'WARNING: Contains Allergen';
 }
