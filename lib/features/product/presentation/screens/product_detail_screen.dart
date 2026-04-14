@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/content_analysis_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../counterfeit/presentation/widgets/counterfeit_warning_banner.dart';
 import '../../../history/presentation/providers/history_provider.dart';
 import '../../../profile/presentation/providers/health_filters_provider.dart';
 import '../../domain/entities/product_entity.dart';
@@ -183,6 +184,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             onEditPressed: () {
               context.push('/product/${widget.barcode}/edit');
             },
+          ),
+          // Tarım Bakanlığı counterfeit warning (highest priority)
+          CounterfeitWarningBanner(
+            barcode: widget.barcode,
+            brand: product.brands,
           ),
           _buildBlacklistedBanner(),
           _buildFilterWarningBanner(product),

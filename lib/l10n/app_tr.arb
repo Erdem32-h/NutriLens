@@ -244,5 +244,9 @@
   "vegan": "Vegan",
   "vegetarian": "Vejetaryen",
   "halal": "Helal",
-  "bannedAdditive": "Bu katkı maddesi EFSA veya Türk Gıda Kodeksi tarafından yasaklanmıştır."
+  "bannedAdditive": "Bu katkı maddesi EFSA veya Türk Gıda Kodeksi tarafından yasaklanmıştır.",
+  "counterfeitWarningTitle": "UYARI: Taklit/Tağşiş Listesinde!",
+  "counterfeitViewSource": "Tarım Bakanlığı kaynağını görüntüle",
+  "counterfeitSyncing": "Taklit ürün listesi güncelleniyor...",
+  "noCounterfeitFound": "Taklit ürün listesinde bulunamadı"
 }

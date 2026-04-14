@@ -244,5 +244,9 @@
   "vegan": "Vegan",
   "vegetarian": "Vegetarian",
   "halal": "Halal",
-  "bannedAdditive": "This additive is banned by EFSA or the Turkish Food Codex."
+  "bannedAdditive": "This additive is banned by EFSA or the Turkish Food Codex.",
+  "counterfeitWarningTitle": "WARNING: On Counterfeit/Adulterated List!",
+  "counterfeitViewSource": "View Ministry of Agriculture source",
+  "counterfeitSyncing": "Updating counterfeit product list...",
+  "noCounterfeitFound": "Not found on counterfeit product list"
 }

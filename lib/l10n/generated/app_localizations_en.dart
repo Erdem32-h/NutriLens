@@ -766,4 +766,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get bannedAdditive =>
       'This additive is banned by EFSA or the Turkish Food Codex.';
+
+  @override
+  String get counterfeitWarningTitle =>
+      'WARNING: On Counterfeit/Adulterated List!';
+
+  @override
+  String get counterfeitViewSource => 'View Ministry of Agriculture source';
+
+  @override
+  String get counterfeitSyncing => 'Updating counterfeit product list...';
+
+  @override
+  String get noCounterfeitFound => 'Not found on counterfeit product list';
 }

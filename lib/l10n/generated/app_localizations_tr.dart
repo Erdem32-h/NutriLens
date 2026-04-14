@@ -767,4 +767,16 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get bannedAdditive =>
       'Bu katkı maddesi EFSA veya Türk Gıda Kodeksi tarafından yasaklanmıştır.';
+
+  @override
+  String get counterfeitWarningTitle => 'UYARI: Taklit/Tağşiş Listesinde!';
+
+  @override
+  String get counterfeitViewSource => 'Tarım Bakanlığı kaynağını görüntüle';
+
+  @override
+  String get counterfeitSyncing => 'Taklit ürün listesi güncelleniyor...';
+
+  @override
+  String get noCounterfeitFound => 'Taklit ürün listesinde bulunamadı';
 }

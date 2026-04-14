@@ -1567,6 +1567,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bu katkı maddesi EFSA veya Türk Gıda Kodeksi tarafından yasaklanmıştır.'**
   String get bannedAdditive;
+
+  /// No description provided for @counterfeitWarningTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'UYARI: Taklit/Tağşiş Listesinde!'**
+  String get counterfeitWarningTitle;
+
+  /// No description provided for @counterfeitViewSource.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tarım Bakanlığı kaynağını görüntüle'**
+  String get counterfeitViewSource;
+
+  /// No description provided for @counterfeitSyncing.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taklit ürün listesi güncelleniyor...'**
+  String get counterfeitSyncing;
+
+  /// No description provided for @noCounterfeitFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taklit ürün listesinde bulunamadı'**
+  String get noCounterfeitFound;
 }
 
 class _AppLocalizationsDelegate
