@@ -68,6 +68,8 @@ class NutritionOcrResult {
   final double? energyKcal;
   final double? fat;
   final double? saturatedFat;
+  final double? transFat;
+  final double? carbohydrates;
   final double? sugars;
   final double? salt;
   final double? fiber;
@@ -77,6 +79,8 @@ class NutritionOcrResult {
     this.energyKcal,
     this.fat,
     this.saturatedFat,
+    this.transFat,
+    this.carbohydrates,
     this.sugars,
     this.salt,
     this.fiber,
@@ -88,6 +92,8 @@ class NutritionOcrResult {
       energyKcal: (json['energy_kcal'] as num?)?.toDouble(),
       fat: (json['fat'] as num?)?.toDouble(),
       saturatedFat: (json['saturated_fat'] as num?)?.toDouble(),
+      transFat: (json['trans_fat'] as num?)?.toDouble(),
+      carbohydrates: (json['carbohydrates'] as num?)?.toDouble(),
       sugars: (json['sugars'] as num?)?.toDouble(),
       salt: (json['salt'] as num?)?.toDouble(),
       fiber: (json['fiber'] as num?)?.toDouble(),

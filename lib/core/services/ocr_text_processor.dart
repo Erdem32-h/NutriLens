@@ -76,9 +76,37 @@ class OcrTextProcessor {
   }
 
   /// Process for nutrition table specifically.
-  /// Returns the full cleaned text for nutrition parsing.
+  /// Preserves newlines so each row stays on its own line for line-by-line
+  /// parsing (critical for correct kJ/kcal extraction).
   OcrProcessedResult processNutrition(RecognizedText recognizedText) {
-    return process(recognizedText);
+    final allBlocks = recognizedText.blocks;
+    if (allBlocks.isEmpty) {
+      return const OcrProcessedResult(text: '', language: 'unknown');
+    }
+
+    // Sort blocks top-to-bottom
+    final sorted = List<TextBlock>.from(allBlocks)
+      ..sort((a, b) {
+        final dy = a.boundingBox.top - b.boundingBox.top;
+        if (dy.abs() > 20) return dy.toInt();
+        return (a.boundingBox.left - b.boundingBox.left).toInt();
+      });
+
+    // Join blocks with newlines — each block = one table row region
+    final rawText = sorted.map((b) => b.text).join('\n');
+    final lang = _detectLanguageHeuristic(rawText);
+
+    // Apply minimal cleaning that does NOT collapse newlines
+    var cleaned = rawText;
+    cleaned = cleaned.replaceAll('Içindekiler', 'İçindekiler');
+    cleaned = cleaned.replaceAllMapped(
+      RegExp(r'(\d+),(\d{1,2})\s*(g|mg|kcal|kj|ml)', caseSensitive: false),
+      (m) => '${m.group(1)}.${m.group(2)} ${m.group(3)}',
+    );
+    cleaned = cleaned.replaceAll(RegExp(r'\s{2,}'), ' ');
+    cleaned = cleaned.trim();
+
+    return OcrProcessedResult(text: cleaned, language: lang);
   }
 
   // ── Language Detection ─────────────────────────────────────────────

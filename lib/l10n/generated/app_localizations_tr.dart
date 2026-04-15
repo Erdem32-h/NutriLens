@@ -393,6 +393,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get saturatedFatLabel => 'DOYMUŞ YAĞ';
 
   @override
+  String get transFatLabel => 'TRANS YAĞ';
+
+  @override
   String get saltLabel => 'TUZ';
 
   @override

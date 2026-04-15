@@ -71,15 +71,28 @@ Sadece düzeltilmiş içindekiler listesini döndür, başka açıklama yazma.`,
               {
                 text: `Sen bir gıda etiketi uzmanısın. Aşağıdaki metin bir besin değerleri tablosunun OCR çıktısıdır.
 
-Görevlerin:
-1. OCR hatalarını düzelt
-2. Birimleri gram'a çevir (mg→g: /1000)
-3. Değerleri 100g başına normalize et
+ÖNEMLİ FORMAT KURALLARI:
+- Türk etiketlerinde enerji genellikle "2289 kJ / 549 kcal" şeklinde çift değer gösterir. Sadece kcal değerini (eğik çizgiden sonraki değer) al.
+- Birimleri gram'a çevir: mg → g (/1000)
+- Tüm değerler 100g başına olmalı
+- Değer yoksa null yaz, sıfır yazma
 
-OCR metni: ${payload.text}
+Örnekler:
+  "Enerji 2289kJ/549kcal" → energy_kcal: 549
+  "Yağ 34g" → fat: 34
+  "Doymuş Yağ 18g" → saturated_fat: 18
+  "Trans Yağ 0g" → trans_fat: 0
+  "Karbonhidrat 50g" → carbohydrates: 50
+  "Şekerler 40g" → sugars: 40
+  "Lif 4.0g" → fiber: 4.0
+  "Protein 9.0g" → protein: 9.0
+  "Tuz 0.60g" → salt: 0.60
+
+OCR metni:
+${payload.text}
 
 Sadece şu JSON formatında döndür, başka bir şey yazma:
-{"energy_kcal":0,"fat":0,"saturated_fat":0,"sugars":0,"salt":0,"fiber":0,"protein":0}`,
+{"energy_kcal":null,"fat":null,"saturated_fat":null,"trans_fat":null,"carbohydrates":null,"sugars":null,"salt":null,"fiber":null,"protein":null}`,
               },
             ],
           },

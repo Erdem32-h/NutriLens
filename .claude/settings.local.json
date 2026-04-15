@@ -9,7 +9,25 @@
       "Bash(xargs grep:*)",
       "Bash(grep -rn \"InputImage\\\\|processImage\\\\|close\\(\\)\" /c/Users/m_fat/OneDrive/Desktop/Github/NutriLens/lib --include=*.dart)",
       "Bash(flutter build:*)",
-      "Bash(flutter test:*)"
+      "Bash(flutter test:*)",
+      "Bash(ls lib/features/additive/)",
+      "Bash(ls lib/features/product/domain/usecases/)",
+      "Bash(ls supabase/functions/)",
+      "Bash(ls assets/)",
+      "Bash(ls lib/features/additive/domain/)",
+      "Bash(ls supabase/seed/)",
+      "Bash(ls assets/additives/)",
+      "Bash(ls lib/core/widgets/)",
+      "Bash(find lib/features/additive/ -type f)",
+      "Bash(find lib/features/product/presentation/widgets/ -type f)",
+      "Bash(find lib/features/additive/ -type d)",
+      "Bash(ls supabase/functions/calculate-hp-score/)",
+      "Bash(cat lib/config/drift/tables/additives_table.dart)",
+      "Bash(cat lib/config/drift/tables/allergens_table.dart)",
+      "Bash(ls lib/features/additive/domain/ lib/features/additive/data/ lib/features/additive/presentation/)",
+      "Bash(ls lib/features/profile/domain/)",
+      "Bash(ls lib/features/profile/data/)",
+      "Bash(dart analyze:*)"
     ]
   }
 }

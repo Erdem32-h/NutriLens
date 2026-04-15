@@ -395,6 +395,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saturatedFatLabel => 'SATURATED FAT';
 
   @override
+  String get transFatLabel => 'TRANS FAT';
+
+  @override
   String get saltLabel => 'SALT';
 
   @override

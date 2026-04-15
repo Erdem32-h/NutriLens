@@ -854,6 +854,12 @@ abstract class AppLocalizations {
   /// **'DOYMUŞ YAĞ'**
   String get saturatedFatLabel;
 
+  /// No description provided for @transFatLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'TRANS YAĞ'**
+  String get transFatLabel;
+
   /// No description provided for @saltLabel.
   ///
   /// In tr, this message translates to:

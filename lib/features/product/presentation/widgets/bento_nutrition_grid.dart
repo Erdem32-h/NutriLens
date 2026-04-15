@@ -17,6 +17,7 @@ class BentoNutritionGrid extends StatelessWidget {
   static const _dailySatFat = 20.0;
   static const _dailySalt = 6.0;
   static const _dailyCalories = 2000.0;
+  static const _dailyCarbs = 260.0;
 
   static int _riskLevel(double percent) {
     if (percent < 15) return 1;
@@ -118,6 +119,24 @@ class BentoNutritionGrid extends StatelessWidget {
               ),
             ],
           ),
+
+          if (nutriments.carbohydrates != null) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _MacroCard(
+                    label: l10n.carbohydrateLabel,
+                    value: nutriments.carbohydrates,
+                    dailyRef: _dailyCarbs,
+                    unit: 'g',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(child: SizedBox()),
+              ],
+            ),
+          ],
         ],
       ),
     );

@@ -21,6 +21,10 @@ class EditorialNutrientTable extends StatelessWidget {
         _NutrientRow(l10n.fatLabel, '${nutriments.fat!.toStringAsFixed(1)} g'),
       if (nutriments.saturatedFat != null)
         _NutrientRow(l10n.saturatedFatLabel, '${nutriments.saturatedFat!.toStringAsFixed(1)} g'),
+      if (nutriments.transFat != null)
+        _NutrientRow(l10n.transFatLabel, '${nutriments.transFat!.toStringAsFixed(1)} g'),
+      if (nutriments.carbohydrates != null)
+        _NutrientRow(l10n.carbohydrateLabel, '${nutriments.carbohydrates!.toStringAsFixed(1)} g'),
       if (nutriments.sugars != null)
         _NutrientRow(l10n.sugarLabel, '${nutriments.sugars!.toStringAsFixed(1)} g'),
       if (nutriments.salt != null)

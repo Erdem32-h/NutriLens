@@ -34,6 +34,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
   late TextEditingController _energyController;
   late TextEditingController _fatController;
   late TextEditingController _saturatedFatController;
+  late TextEditingController _transFatController;
+  late TextEditingController _carbsController;
   late TextEditingController _sugarsController;
   late TextEditingController _saltController;
   late TextEditingController _fiberController;
@@ -54,6 +56,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     _energyController = TextEditingController();
     _fatController = TextEditingController();
     _saturatedFatController = TextEditingController();
+    _transFatController = TextEditingController();
+    _carbsController = TextEditingController();
     _sugarsController = TextEditingController();
     _saltController = TextEditingController();
     _fiberController = TextEditingController();
@@ -68,6 +72,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     _energyController.dispose();
     _fatController.dispose();
     _saturatedFatController.dispose();
+    _transFatController.dispose();
+    _carbsController.dispose();
     _sugarsController.dispose();
     _saltController.dispose();
     _fiberController.dispose();
@@ -85,6 +91,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     _fatController.text = product.nutriments.fat?.toString() ?? '';
     _saturatedFatController.text =
         product.nutriments.saturatedFat?.toString() ?? '';
+    _transFatController.text = product.nutriments.transFat?.toString() ?? '';
+    _carbsController.text = product.nutriments.carbohydrates?.toString() ?? '';
     _sugarsController.text = product.nutriments.sugars?.toString() ?? '';
     _saltController.text = product.nutriments.salt?.toString() ?? '';
     _fiberController.text = product.nutriments.fiber?.toString() ?? '';
@@ -320,6 +328,26 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildNumberField(
+                  controller: _transFatController,
+                  label: l10n.transFatLabel,
+                  suffix: 'g',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildNumberField(
+                  controller: _carbsController,
+                  label: l10n.carbohydrateLabel,
+                  suffix: 'g',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildNumberField(
                   controller: _sugarsController,
                   label: l10n.sugarLabel,
                   suffix: 'g',
@@ -534,33 +562,38 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
               await aiService.improveNutritionOcr(mlKitResult.text);
 
           if (aiResult != null) {
-            // AI returned structured data — fill fields directly
+            // AI returned structured data — always overwrite with OCR result
             setState(() {
-              if (aiResult.energyKcal != null &&
-                  _energyController.text.isEmpty) {
+              if (aiResult.energyKcal != null) {
                 _energyController.text =
                     aiResult.energyKcal!.toStringAsFixed(1);
               }
-              if (aiResult.fat != null && _fatController.text.isEmpty) {
+              if (aiResult.fat != null) {
                 _fatController.text = aiResult.fat!.toStringAsFixed(1);
               }
-              if (aiResult.saturatedFat != null &&
-                  _saturatedFatController.text.isEmpty) {
+              if (aiResult.saturatedFat != null) {
                 _saturatedFatController.text =
                     aiResult.saturatedFat!.toStringAsFixed(1);
               }
-              if (aiResult.sugars != null && _sugarsController.text.isEmpty) {
+              if (aiResult.transFat != null) {
+                _transFatController.text =
+                    aiResult.transFat!.toStringAsFixed(1);
+              }
+              if (aiResult.carbohydrates != null) {
+                _carbsController.text =
+                    aiResult.carbohydrates!.toStringAsFixed(1);
+              }
+              if (aiResult.sugars != null) {
                 _sugarsController.text = aiResult.sugars!.toStringAsFixed(1);
               }
-              if (aiResult.salt != null && _saltController.text.isEmpty) {
+              if (aiResult.salt != null) {
                 _saltController.text = aiResult.salt!.toStringAsFixed(3);
               }
-              if (aiResult.fiber != null && _fiberController.text.isEmpty) {
+              if (aiResult.fiber != null) {
                 _fiberController.text = aiResult.fiber!.toStringAsFixed(1);
               }
-              if (aiResult.protein != null && _proteinController.text.isEmpty) {
-                _proteinController.text =
-                    aiResult.protein!.toStringAsFixed(1);
+              if (aiResult.protein != null) {
+                _proteinController.text = aiResult.protein!.toStringAsFixed(1);
               }
             });
           } else {
@@ -579,156 +612,150 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
   }
 
   /// Parse OCR text to extract nutrition values and fill the fields.
-  /// Handles both Turkish and English nutrition labels.
-  /// Detects units (mg, mcg/µg) and converts to grams automatically.
+  ///
+  /// Uses line-by-line matching to avoid cross-row contamination.
+  /// Handles Turkish kJ/kcal dual-value format: "Enerji 2289kJ/549kcal"
+  /// where kcal is the second value after the slash.
   void _parseNutritionFromOcr(String text) {
-    final lower = text.toLowerCase();
+    // Split on newlines OR paragraph breaks preserved by processNutrition
+    final lines = text.split(RegExp(r'\n+'));
 
-    // Helper: find a numeric value near a keyword.
-    // Detects unit (g, mg, mcg, µg, kcal, kj) and converts to grams.
-    // Returns the value in grams (or kcal for energy).
-    String? findValue(List<String> keywords, {bool isEnergy = false}) {
-      for (final keyword in keywords) {
-        // Find all occurrences of the keyword
-        int startIdx = 0;
-        while (true) {
-          final idx = lower.indexOf(keyword, startIdx);
-          if (idx == -1) break;
-          startIdx = idx + 1;
+    // Per-line extractor: returns the first number matching a unit on that line.
+    // For energy lines with "kJ/kcal" pattern, extracts the kcal value.
+    double? extractFromLine(String line, {bool isEnergy = false}) {
+      final lower = line.toLowerCase();
 
-          // Look for numbers after the keyword within ~60 chars
-          final searchEnd =
-              (idx + keyword.length + 60).clamp(0, lower.length);
-          final after = lower.substring(idx + keyword.length, searchEnd);
+      if (isEnergy) {
+        // Turkish format: "2289 kJ / 549 kcal" or "2289kJ/549kcal"
+        final dualMatch = RegExp(
+          r'(\d+[.,]?\d*)\s*kj[/ ]+(\d+[.,]?\d*)\s*kcal',
+          caseSensitive: false,
+        ).firstMatch(lower);
+        if (dualMatch != null) {
+          final kcalRaw = dualMatch.group(2)!.replaceAll(',', '.');
+          return double.tryParse(kcalRaw);
+        }
+        // Single kcal value on line
+        final kcalMatch = RegExp(
+          r'(\d+[.,]?\d*)\s*kcal',
+          caseSensitive: false,
+        ).firstMatch(lower);
+        if (kcalMatch != null) {
+          final raw = kcalMatch.group(1)!.replaceAll(',', '.');
+          final v = double.tryParse(raw);
+          if (v != null && v < 5000) return v;
+        }
+        return null;
+      }
 
-          // Match number + optional unit: "1500 mg", "3,5 g", "0.03g"
-          final match = RegExp(
-            r'(\d+[.,]?\d*)\s*(mg|mcg|µg|μg|g|kcal|kj)?',
-          ).firstMatch(after);
-          if (match != null) {
-            final raw = match.group(1);
-            final unit = match.group(2)?.toLowerCase();
-            if (raw != null) {
-              final normalized = raw.replaceAll(',', '.');
-              var value = double.tryParse(normalized);
-              if (value == null || value >= 10000) continue;
+      // Regular nutrient: grab first "number unit" pair on the line
+      final match = RegExp(
+        r'(\d+[.,]?\d*)\s*(mg|mcg|µg|μg|g)\b',
+        caseSensitive: false,
+      ).firstMatch(line);
+      if (match == null) return null;
 
-              // Convert units to grams (skip conversion for energy)
-              if (!isEnergy && unit != null) {
-                switch (unit) {
-                  case 'mg':
-                    value = value / 1000.0;
-                  case 'mcg' || 'µg' || 'μg':
-                    value = value / 1000000.0;
-                  case 'g':
-                    break; // already grams
-                  default:
-                    break;
-                }
-              }
+      final raw = match.group(1)!.replaceAll(',', '.');
+      var value = double.tryParse(raw);
+      if (value == null) return null;
 
-              // For energy with kJ unit, convert to kcal (1 kcal ≈ 4.184 kJ)
-              if (isEnergy && unit == 'kj') {
-                value = value / 4.184;
-              }
+      final unit = match.group(2)!.toLowerCase();
+      if (unit == 'mg') value = value / 1000.0;
+      if (unit == 'mcg' || unit == 'µg' || unit == 'μg') {
+        value = value / 1000000.0;
+      }
 
-              // Return with appropriate precision
-              if (value >= 1) {
-                return value.toStringAsFixed(1);
-              } else {
-                return value.toStringAsFixed(3);
-              }
-            }
-          }
+      return value < 500 ? value : null; // sanity cap
+    }
+
+    // For each nutrient, find the line whose lowercase content matches
+    // one of the given keywords, then extract from that line only.
+    double? findInLines(
+      List<String> keywords, {
+      bool isEnergy = false,
+    }) {
+      for (final line in lines) {
+        final lower = line.toLowerCase();
+        if (keywords.any((kw) => lower.contains(kw))) {
+          final v = extractFromLine(line, isEnergy: isEnergy);
+          if (v != null) return v;
         }
       }
       return null;
     }
 
+    String fmt(double v) => v >= 1 ? v.toStringAsFixed(1) : v.toStringAsFixed(3);
+
     setState(() {
-      // Energy (kcal) — Turkish labels often show kJ first, then kcal
-      final energy = findValue([
-        'kcal',
-        'kalori',
-        'enerji',
-        'energy',
-        'calories',
-      ], isEnergy: true);
-      if (energy != null && _energyController.text.isEmpty) {
-        _energyController.text = energy;
-      }
+      // Energy
+      final energy = findInLines(
+        ['enerji', 'energy', 'kalori', 'calories', 'kcal', 'kj'],
+        isEnergy: true,
+      );
+      if (energy != null) _energyController.text = energy.toStringAsFixed(1);
 
-      // Total fat
-      final fat = findValue([
-        'toplam yağ',
-        'total fat',
-        'yağ',
-        'fat',
-      ]);
-      if (fat != null && _fatController.text.isEmpty) {
-        _fatController.text = fat;
-      }
+      // Total fat — check BEFORE "doymuş" (saturated) to grab correct row
+      final fat = findInLines(['toplam yağ', 'total fat', 'yağ ', 'fat ']);
+      if (fat != null) _fatController.text = fmt(fat);
 
-      // Saturated fat — search BEFORE total fat to avoid matching "fat" alone
-      final saturated = findValue([
+      // Saturated fat
+      final saturated = findInLines([
         'doymuş yağ',
         'doymuş',
-        'of which saturates',
         'saturated fat',
-        'saturated',
+        'saturates',
       ]);
-      if (saturated != null && _saturatedFatController.text.isEmpty) {
-        _saturatedFatController.text = saturated;
-      }
+      if (saturated != null) _saturatedFatController.text = fmt(saturated);
+
+      // Trans fat
+      final transFat = findInLines(['trans yağ', 'trans fat', 'trans-fat']);
+      if (transFat != null) _transFatController.text = fmt(transFat);
+
+      // Carbohydrates
+      final carbs = findInLines([
+        'karbonhidrat',
+        'carbohydrate',
+        'glucides',
+        'hidrat',
+      ]);
+      if (carbs != null) _carbsController.text = fmt(carbs);
 
       // Sugars
-      final sugars = findValue([
+      final sugars = findInLines([
         'şekerler',
         'şeker',
         'of which sugars',
         'sugars',
         'sugar',
       ]);
-      if (sugars != null && _sugarsController.text.isEmpty) {
-        _sugarsController.text = sugars;
-      }
+      if (sugars != null) _sugarsController.text = fmt(sugars);
 
-      // Salt / Sodium — convert sodium to salt if needed (salt = sodium * 2.5)
-      // findValue already converts mg→g, so sodium value is in grams here
-      final salt = findValue(['tuz', 'salt']);
-      if (salt != null && _saltController.text.isEmpty) {
-        _saltController.text = salt;
-      } else if (_saltController.text.isEmpty) {
-        final sodium = findValue(['sodyum', 'sodium']);
+      // Salt
+      final salt = findInLines(['tuz', 'salt']);
+      if (salt != null) {
+        _saltController.text = fmt(salt);
+      } else {
+        // Fallback: sodium → salt conversion
+        final sodium = findInLines(['sodyum', 'sodium']);
         if (sodium != null) {
-          final sodiumVal = double.tryParse(sodium);
-          if (sodiumVal != null) {
-            // sodium is already in grams (mg→g converted by findValue)
-            final saltVal = sodiumVal * 2.5;
-            _saltController.text = saltVal >= 1
-                ? saltVal.toStringAsFixed(1)
-                : saltVal.toStringAsFixed(3);
-          }
+          final saltVal = sodium * 2.5;
+          _saltController.text = fmt(saltVal);
         }
       }
 
       // Fiber
-      final fiber = findValue([
+      final fiber = findInLines([
         'lif',
         'dietary fiber',
         'dietary fibre',
         'fiber',
         'fibre',
       ]);
-      if (fiber != null && _fiberController.text.isEmpty) {
-        _fiberController.text = fiber;
-      }
+      if (fiber != null) _fiberController.text = fmt(fiber);
 
       // Protein
-      final protein = findValue(['protein', 'protei̇n']);
-      if (protein != null && _proteinController.text.isEmpty) {
-        _proteinController.text = protein;
-      }
+      final protein = findInLines(['protein', 'protei̇n']);
+      if (protein != null) _proteinController.text = fmt(protein);
     });
   }
 
@@ -1107,6 +1134,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         energyKcal: _parseDouble(_energyController.text),
         fat: _parseDouble(_fatController.text),
         saturatedFat: _parseDouble(_saturatedFatController.text),
+        transFat: _parseDouble(_transFatController.text),
+        carbohydrates: _parseDouble(_carbsController.text),
         sugars: _parseDouble(_sugarsController.text),
         salt: _parseDouble(_saltController.text),
         fiber: _parseDouble(_fiberController.text),

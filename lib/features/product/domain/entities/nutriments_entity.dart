@@ -4,6 +4,8 @@ class NutrimentsEntity extends Equatable {
   final double? energyKcal;
   final double? fat;
   final double? saturatedFat;
+  final double? transFat;
+  final double? carbohydrates;
   final double? sugars;
   final double? salt;
   final double? fiber;
@@ -13,6 +15,8 @@ class NutrimentsEntity extends Equatable {
     this.energyKcal,
     this.fat,
     this.saturatedFat,
+    this.transFat,
+    this.carbohydrates,
     this.sugars,
     this.salt,
     this.fiber,
@@ -25,6 +29,8 @@ class NutrimentsEntity extends Equatable {
     double? energyKcal,
     double? fat,
     double? saturatedFat,
+    double? transFat,
+    double? carbohydrates,
     double? sugars,
     double? salt,
     double? fiber,
@@ -34,6 +40,8 @@ class NutrimentsEntity extends Equatable {
       energyKcal: energyKcal ?? this.energyKcal,
       fat: fat ?? this.fat,
       saturatedFat: saturatedFat ?? this.saturatedFat,
+      transFat: transFat ?? this.transFat,
+      carbohydrates: carbohydrates ?? this.carbohydrates,
       sugars: sugars ?? this.sugars,
       salt: salt ?? this.salt,
       fiber: fiber ?? this.fiber,
@@ -46,6 +54,8 @@ class NutrimentsEntity extends Equatable {
         energyKcal,
         fat,
         saturatedFat,
+        transFat,
+        carbohydrates,
         sugars,
         salt,
         fiber,

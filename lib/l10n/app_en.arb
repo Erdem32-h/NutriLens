@@ -126,6 +126,7 @@
   "fatLabel": "FAT",
   "sugarLabel": "SUGAR",
   "saturatedFatLabel": "SATURATED FAT",
+  "transFatLabel": "TRANS FAT",
   "saltLabel": "SALT",
   "lowLevel": "LOW",
   "moderateLevel": "MODERATE",
