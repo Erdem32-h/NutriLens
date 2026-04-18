@@ -7,6 +7,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/social_login_buttons.dart';
+import '../../../../core/providers/monetization_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -58,6 +59,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authStateProvider, (previous, next) {
+      if (next.hasValue && next.value != null) {
+        ref.read(subscriptionServiceProvider).logIn(next.value!.id);
+        if (mounted) context.go('/scanner');
+      }
+    });
+
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
     final l10n = context.l10n;
@@ -98,7 +106,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                     // Back button
                     IconButton(
-                      onPressed: () => context.goNamed(RouteNames.login),
+                      onPressed: () => context.go('/login'),
                       icon: Icon(
                         Icons.arrow_back_ios_new_rounded,
                         color: context.colors.textPrimary,
@@ -301,7 +309,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () => context.goNamed(RouteNames.login),
+                          onPressed: () => context.go('/login'),
                           child: Text(
                             'Giriş yap',
                             style: TextStyle(

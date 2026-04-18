@@ -122,6 +122,34 @@ class GeminiAiService {
     }
   }
 
+  /// Sentinel Gemini returns when no Turkish ingredients list is visible
+  /// in the image. Kept in sync with the prompt in the edge function.
+  static const _ingredientsNotFoundSentinel = 'İÇİNDEKİLER_BULUNAMADI';
+
+  /// Extract the ingredients list directly from a product photo using
+  /// Gemini vision. Much more robust than ML Kit for curved/glossy/rotated
+  /// packaging where plain OCR fails.
+  ///
+  /// Returns the verbatim Turkish ingredients text on success.
+  /// Returns `null` when Gemini couldn't find an ingredients list or the
+  /// call failed — caller should present a retake/manual-entry dialog.
+  Future<String?> extractIngredientsFromImage(Uint8List imageBytes) async {
+    try {
+      final base64Image = base64Encode(imageBytes);
+      final response = await _invoke(
+        'ocr_ingredients_image',
+        {'image_base64': base64Image},
+      );
+      final result = (response['result'] as String?)?.trim();
+      if (result == null || result.isEmpty) return null;
+      if (result.contains(_ingredientsNotFoundSentinel)) return null;
+      return result;
+    } catch (e) {
+      debugPrint('[GeminiAI] extractIngredientsFromImage error: $e');
+      return null;
+    }
+  }
+
   /// Improve OCR-extracted nutrition table using Gemini AI.
   /// Returns structured nutrition data, or null on failure.
   Future<NutritionOcrResult?> improveNutritionOcr(String rawText) async {

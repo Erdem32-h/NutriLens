@@ -21,6 +21,7 @@ final logger = Logger(
 );
 
 late final AppDatabase database;
+late final SubscriptionService subscriptionService;
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,8 +52,9 @@ Future<void> bootstrap() async {
     logger.e('Failed to initialize Supabase: $e');
   }
 
-  // Initialize RevenueCat
-  final subscriptionService = RevenueCatSubscriptionService();
+  // Initialize RevenueCat — store in the global so main.dart can pass it
+  // to Riverpod via provider override (same pattern as AppDatabase).
+  subscriptionService = RevenueCatSubscriptionService();
   await subscriptionService.initialize();
 
   // Link auth to RevenueCat

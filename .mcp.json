@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "flutter-skill": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "cd /d C:\\Users\\m_fat\\AppData\\Roaming\\npm\\node_modules\\flutter-skill\\dart && dart run bin/server.dart server"
+      ]
+    }
+  }
+}

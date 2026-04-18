@@ -40,13 +40,13 @@ final class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> signInWithGoogle() async {
-    return _handleAuth(() => _remoteDataSource.signInWithGoogle());
+  Future<Either<Failure, void>> signInWithGoogle() async {
+    return _handleAuthVoid(() => _remoteDataSource.signInWithGoogle());
   }
 
   @override
-  Future<Either<Failure, UserEntity>> signInWithApple() async {
-    return _handleAuth(() => _remoteDataSource.signInWithApple());
+  Future<Either<Failure, void>> signInWithApple() async {
+    return _handleAuthVoid(() => _remoteDataSource.signInWithApple());
   }
 
   @override
@@ -75,6 +75,19 @@ final class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = await action();
       return Right(user);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  Future<Either<Failure, void>> _handleAuthVoid(
+    Future<void> Function() action,
+  ) async {
+    try {
+      await action();
+      return const Right(null);
     } on AuthException catch (e) {
       return Left(AuthFailure(e.message));
     } catch (e) {

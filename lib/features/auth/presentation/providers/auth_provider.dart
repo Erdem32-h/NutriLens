@@ -66,29 +66,23 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
   }
 
   Future<void> signInWithGoogle() async {
-    state = const AsyncLoading();
     final result = await ref.read(authRepositoryProvider).signInWithGoogle();
-    state = result.fold(
-      (failure) => AsyncError(failure.message, StackTrace.current),
-      (user) => AsyncData(user),
+    result.fold(
+      (failure) => state = AsyncError(failure.message, StackTrace.current),
+      (_) {
+         // UI will listen to authStateProvider for successful login
+      },
     );
-    if (state.value != null) {
-      final subscriptionService = ref.read(subscriptionServiceProvider);
-      await subscriptionService.logIn(state.value!.id);
-    }
   }
 
   Future<void> signInWithApple() async {
-    state = const AsyncLoading();
     final result = await ref.read(authRepositoryProvider).signInWithApple();
-    state = result.fold(
-      (failure) => AsyncError(failure.message, StackTrace.current),
-      (user) => AsyncData(user),
+    result.fold(
+      (failure) => state = AsyncError(failure.message, StackTrace.current),
+      (_) {
+         // UI will listen to authStateProvider for successful login
+      },
     );
-    if (state.value != null) {
-      final subscriptionService = ref.read(subscriptionServiceProvider);
-      await subscriptionService.logIn(state.value!.id);
-    }
   }
 
   Future<void> signOut() async {

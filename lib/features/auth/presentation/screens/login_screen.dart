@@ -7,6 +7,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/social_login_buttons.dart';
+import '../../../../core/providers/monetization_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -48,6 +49,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authStateProvider, (previous, next) {
+      if (next.hasValue && next.value != null) {
+        ref.read(subscriptionServiceProvider).logIn(next.value!.id);
+        if (mounted) context.go('/scanner');
+      }
+    });
+
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
     final l10n = context.l10n;
@@ -268,7 +276,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () => context.goNamed(RouteNames.register),
+                          onPressed: () => context.go('/register'),
                           child: Text(
                             'Kayıt ol',
                             style: TextStyle(

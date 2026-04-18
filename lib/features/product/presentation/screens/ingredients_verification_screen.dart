@@ -33,6 +33,8 @@ class _IngredientsVerificationScreenState
   late List<String> _detectedAdditives;
   late List<String> _unmatchedAdditives;
   double? _confidence;
+  String? _rawOcrText;
+  bool _showRawOcr = false;
   HpScoreResult? _scoreResult;
   bool _isSaving = false;
 
@@ -43,6 +45,7 @@ class _IngredientsVerificationScreenState
     _ingredientsController = TextEditingController(
       text: extra['cleanedText'] as String? ?? '',
     );
+    _rawOcrText = extra['rawText'] as String?;
     _productNameController = TextEditingController(
       text: extra['productName'] as String? ?? '',
     );
@@ -215,6 +218,57 @@ class _IngredientsVerificationScreenState
                 color: context.colors.textPrimary,
               ),
             ),
+            if (_rawOcrText != null && _rawOcrText!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () => setState(() => _showRawOcr = !_showRawOcr),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _showRawOcr
+                          ? Icons.keyboard_arrow_down_rounded
+                          : Icons.keyboard_arrow_right_rounded,
+                      size: 18,
+                      color: context.colors.textMuted,
+                    ),
+                    Text(
+                      _showRawOcr
+                          ? 'Ham OCR metnini gizle'
+                          : 'Ham OCR metnini göster',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.colors.textMuted,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (_showRawOcr) ...[
+                const SizedBox(height: 6),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: context.colors.surfaceCard,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: context.colors.border.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  child: SelectableText(
+                    _rawOcrText!,
+                    style: TextStyle(
+                      fontSize: 11,
+                      height: 1.4,
+                      color: context.colors.textMuted,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ),
+              ],
+            ],
             const SizedBox(height: 16),
 
             // Detected additives

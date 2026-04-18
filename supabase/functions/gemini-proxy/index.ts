@@ -2,8 +2,23 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-const GEMINI_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
+const GEMINI_API_BASE =
+  "https://generativelanguage.googleapis.com/v1beta/models";
+
+// Pick the model per action. OCR of small/curved/glossy text on food
+// packaging is accuracy-critical — use Pro. Other actions use Flash for
+// speed/cost. Preview snapshots (e.g. 2.5-flash-preview-05-20) underperform
+// on vision tasks vs the current stable GA releases.
+function modelFor(action: string): string {
+  switch (action) {
+    case "ocr_ingredients_image":
+      return "gemini-2.5-pro";
+    case "food_recognition":
+      return "gemini-2.5-flash";
+    default:
+      return "gemini-2.5-flash";
+  }
+}
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -14,7 +29,11 @@ const RATE_LIMIT = 30; // requests per hour per user
 const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 
 interface RequestBody {
-  action: "ocr_ingredients" | "ocr_nutrition" | "food_recognition";
+  action:
+    | "ocr_ingredients"
+    | "ocr_ingredients_image"
+    | "ocr_nutrition"
+    | "food_recognition";
   payload: {
     text?: string;
     image_base64?: string;
@@ -46,21 +65,62 @@ function buildPrompt(action: string, payload: RequestBody["payload"]): object {
           {
             parts: [
               {
-                text: `Sen bir gıda etiketi uzmanısın. Aşağıdaki metin bir gıda ürününün içindekiler listesinin OCR çıktısıdır. OCR hataları içerebilir.
+                text: `Sen bir gıda etiketi uzmanısın. Aşağıdaki metin bir gıda ürününün içindekiler listesinin OCR çıktısıdır.
 
-Görevlerin:
-1. OCR hatalarını düzelt (karakter karışıklıkları, eksik harfler)
-2. Türkçe içerik varsa Türkçeyi tercih et
-3. İngilizce ise Türkçeye çevir
-4. Temiz, virgülle ayrılmış içindekiler listesi döndür
+ÖNEMLİ KURALLAR:
+1. Türkçe karakterleri MUTLAKA doğru yaz: ş, ğ, ı, İ, ü, ö, ç. OCR bu karakterleri genellikle ASCII'ye dönüştürür (örn. "seker"→"şeker", "yag"→"yağ", "sut"→"süt", "cikolata"→"çikolata", "findik"→"fındık"). Tüm bu hataları düzelt.
+2. SADECE içindekiler listesini döndür. Şunları kesinlikle EKLEME:
+   - Saklama koşulları ("Buzdolabında sakla", "18-22°C'de muhafaza ediniz" vb.)
+   - Son tüketim / üretim tarihi / TETT / Parti No
+   - Üretici firma adı ve adresi
+   - Türk standart numaraları (TS xxxx)
+   - Web sitesi adresleri
+   - "Dikkat!", "Uyarı:" blokları
+3. İçindekiler listesi genellikle "içerebilir" veya "içerir" kelimesiyle biter — buradan sonrasını alma.
+4. Temiz, virgülle ayrılmış tek satır liste döndür.
+5. SADECE Türkçe içindekileri al. Çok dilli etiketlerde (örn. TR + Azerice, TR + İngilizce) diğer dillerdeki içindekiler listelerini ALMA. Azerice işaretleri: "Tarkibi:", "İstehsalçı", "saxlanma", "AZ" ülke kodu. Bunları ve sonrasını dahil etme.
+6. Eğer metin Türkçe ise Türkçe yaz, başka bir dilde ise Türkçeye çevir.
 
-OCR metni: ${payload.text}
+OCR metni:
+${payload.text}
 
-Sadece düzeltilmiş içindekiler listesini döndür, başka açıklama yazma.`,
+Sadece düzeltilmiş Türkçe içindekiler listesini döndür, başka hiçbir şey yazma.`,
               },
             ],
           },
         ],
+      };
+
+    case "ocr_ingredients_image":
+      return {
+        contents: [
+          {
+            parts: [
+              {
+                text: `Bu bir gıda paketinin fotoğrafı. Pakette yazan Türkçe içindekiler listesini olduğu gibi, harfi harfine oku ve metin olarak döndür.
+
+- Sadece "İçindekiler:" kısmını döndür. Besin değerleri tablosu, üretici adresi, son tüketim tarihi, saklama koşulları gibi diğer bilgileri ekleme.
+- Çok dilli etikette sadece TÜRKÇE olanı al. Azerice kısmı (Tərkibi, ə harfi, İstehsalçı) ekleme.
+- Türkçe karakterleri doğru kullan: ş, ğ, ı, İ, ü, ö, ç.
+- Parantezleri ve yüzdeleri koru. "Eser miktarda ... içerebilir" uyarısını da ekle.
+- Fotoğraf dönük veya eğriyse metni zihninde düzelterek oku.
+- Sadece içindekiler metnini döndür, yorum ekleme.
+- Eğer fotoğrafta Türkçe içindekiler listesi yoksa veya okunamıyorsa tek kelime döndür: İÇİNDEKİLER_BULUNAMADI`,
+              },
+              {
+                inline_data: {
+                  mime_type: "image/jpeg",
+                  data: payload.image_base64,
+                },
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0,
+          topP: 0.95,
+          maxOutputTokens: 2048,
+        },
       };
 
     case "ocr_nutrition":
@@ -206,9 +266,11 @@ serve(async (req: Request) => {
 
     // Build and send Gemini request
     const geminiBody = buildPrompt(action, payload);
+    const model = modelFor(action);
+    const geminiUrl = `${GEMINI_API_BASE}/${model}:generateContent`;
 
     const geminiResponse = await fetch(
-      `${GEMINI_URL}?key=${GEMINI_API_KEY}`,
+      `${geminiUrl}?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

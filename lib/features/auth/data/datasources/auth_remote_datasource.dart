@@ -14,9 +14,9 @@ abstract interface class AuthRemoteDataSource {
     String? displayName,
   });
 
-  Future<UserEntity> signInWithGoogle();
+  Future<void> signInWithGoogle();
 
-  Future<UserEntity> signInWithApple();
+  Future<void> signInWithApple();
 
   Future<void> signOut();
 
@@ -57,30 +57,19 @@ final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserEntity> signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: 'com.nutrilens.nutrilens://callback',
     );
-    // OAuth redirects; auth state change will provide user
-    final user = _client.auth.currentUser;
-    if (user == null) {
-      throw Exception('Google sign-in failed');
-    }
-    return _mapUser(user);
   }
 
   @override
-  Future<UserEntity> signInWithApple() async {
+  Future<void> signInWithApple() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.apple,
       redirectTo: 'com.nutrilens.nutrilens://callback',
     );
-    final user = _client.auth.currentUser;
-    if (user == null) {
-      throw Exception('Apple sign-in failed');
-    }
-    return _mapUser(user);
   }
 
   @override

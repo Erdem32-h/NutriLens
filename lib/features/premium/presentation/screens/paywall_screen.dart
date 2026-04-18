@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../../../core/providers/monetization_provider.dart';
+import '../../../../core/services/subscription_service.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class PaywallScreen extends ConsumerStatefulWidget {
@@ -16,6 +18,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   List<Package> _packages = [];
   bool _loading = true;
   bool _purchasing = false;
+  String? _loadError;
   int _selectedIndex = 0;
 
   @override
@@ -25,12 +28,19 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   }
 
   Future<void> _loadOfferings() async {
+    setState(() {
+      _loading = true;
+      _loadError = null;
+    });
     final service = ref.read(subscriptionServiceProvider);
     final packages = await service.getOfferings();
     if (mounted) {
       setState(() {
         _packages = packages;
         _loading = false;
+        if (packages.isEmpty) {
+          _loadError = 'Abonelik paketleri yüklenemedi.\nİnternet bağlantınızı kontrol edin.';
+        }
         // Default to annual if available
         final annualIdx = packages.indexWhere(
           (p) => p.packageType == PackageType.annual,
@@ -41,21 +51,75 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   }
 
   Future<void> _purchase() async {
-    if (_packages.isEmpty || _purchasing) return;
+    if (_packages.isEmpty) {
+      // Retry loading if packages didn't load
+      await _loadOfferings();
+      return;
+    }
+    if (_purchasing) return;
     setState(() => _purchasing = true);
 
-    final service = ref.read(subscriptionServiceProvider);
-    final success = await service.purchase(_packages[_selectedIndex]);
+    try {
+      final service = ref.read(subscriptionServiceProvider);
+      final result = await service.purchase(_packages[_selectedIndex]);
 
-    if (mounted) {
+      if (!mounted) return;
       setState(() => _purchasing = false);
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Premium aktif! 🎉')),
-        );
-        Navigator.of(context).pop();
+
+      switch (result) {
+        case SubscriptionPurchaseResult.success:
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Premium aktif! 🎉')),
+          );
+          Navigator.of(context).pop();
+        case SubscriptionPurchaseResult.cancelled:
+          // User cancelled — stay silent, they know what they did.
+          break;
+        case SubscriptionPurchaseResult.failed:
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Satın alma tamamlanamadı. Lütfen tekrar deneyin.'),
+              backgroundColor: Colors.red,
+            ),
+          );
       }
+    } on PlatformException catch (e) {
+      if (!mounted) return;
+      setState(() => _purchasing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_friendlyError(e)),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _purchasing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
+  }
+
+  /// Maps RevenueCat/Play Billing errors to user-friendly Turkish messages.
+  String _friendlyError(PlatformException e) {
+    final code = PurchasesErrorHelper.getErrorCode(e);
+    return switch (code) {
+      PurchasesErrorCode.networkError =>
+        'İnternet bağlantınızı kontrol edin.',
+      PurchasesErrorCode.paymentPendingError =>
+        'Ödeme onay bekliyor. Birkaç dakika içinde aktifleşecek.',
+      PurchasesErrorCode.productNotAvailableForPurchaseError =>
+        'Bu ürün şu anda satın alınamıyor.',
+      PurchasesErrorCode.productAlreadyPurchasedError =>
+        'Bu abonelik zaten aktif. "Geri Yükle" seçeneğini deneyin.',
+      PurchasesErrorCode.storeProblemError =>
+        'Play Store geçici bir sorun yaşıyor. Lütfen tekrar deneyin.',
+      _ => 'Satın alma tamamlanamadı. Lütfen tekrar deneyin.',
+    };
   }
 
   Future<void> _restore() async {
@@ -89,7 +153,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          : _loadError != null && _packages.isEmpty
+              ? _buildErrorState(colors)
+              : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
@@ -238,6 +304,38 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildErrorState(AppColorsExtension colors) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.cloud_off_rounded, size: 64, color: colors.textMuted),
+            const SizedBox(height: 16),
+            Text(
+              _loadError ?? 'Paketler yüklenemedi.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.textSecondary, fontSize: 15),
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: _loading ? null : _loadOfferings,
+              icon: _loading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh_rounded),
+              label: const Text('Tekrar Dene'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

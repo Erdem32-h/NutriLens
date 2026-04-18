@@ -39,6 +39,9 @@ class ProfileScreen extends ConsumerWidget {
             tooltip: l10n.signOut,
             onPressed: () async {
               await ref.read(authNotifierProvider.notifier).signOut();
+              if (context.mounted) {
+                context.go('/login');
+              }
             },
           ),
         ],

@@ -136,7 +136,7 @@ void main() {
       when(() => mockService.getOfferings())
           .thenAnswer((_) async => [mockPackage]);
       when(() => mockService.purchase(mockPackage))
-          .thenAnswer((_) async => true);
+          .thenAnswer((_) async => SubscriptionPurchaseResult.success);
 
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
@@ -161,7 +161,7 @@ void main() {
       when(() => mockService.getOfferings())
           .thenAnswer((_) async => [mockPackage]);
       when(() => mockService.purchase(mockPackage))
-          .thenAnswer((_) async => false);
+          .thenAnswer((_) async => SubscriptionPurchaseResult.failed);
 
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();

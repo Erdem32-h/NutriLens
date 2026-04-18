@@ -1,9 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 enum SubscriptionTier { free, premium }
+
+enum SubscriptionPurchaseResult {
+  /// Satın alma başarılı, entitlement aktif.
+  success,
+
+  /// Kullanıcı Play Billing ekranından iptal etti — hata gösterme.
+  cancelled,
+
+  /// Satın alma tamamlandı ama entitlement aktif görünmüyor (nadir).
+  failed,
+}
 
 class SubscriptionStatus {
   final SubscriptionTier tier;
@@ -27,28 +40,33 @@ abstract interface class SubscriptionService {
   Future<void> logOut();
   Future<SubscriptionStatus> getStatus();
   Future<List<Package>> getOfferings();
-  Future<bool> purchase(Package package);
+  Future<SubscriptionPurchaseResult> purchase(Package package);
   Future<bool> restorePurchases();
   Stream<SubscriptionStatus> get statusStream;
 }
 
 final class RevenueCatSubscriptionService implements SubscriptionService {
-  static const _apiKeyAndroid = String.fromEnvironment('RC_API_KEY_ANDROID');
-  static const _apiKeyIos = String.fromEnvironment('RC_API_KEY_IOS');
-  static const _entitlementId = 'premium';
+  // Must match the entitlement identifier in the RevenueCat dashboard:
+  // NutriLens project → Product catalog → Entitlements.
+  static const _entitlementId = 'NutriLens Pro';
 
   StreamController<SubscriptionStatus>? _statusController;
 
   @override
   Future<void> initialize() async {
+    final apiKeyAndroid = dotenv.env['RC_API_KEY_ANDROID'] ?? '';
+    final apiKeyIos = dotenv.env['RC_API_KEY_IOS'] ?? '';
+
     final apiKey = defaultTargetPlatform == TargetPlatform.android
-        ? _apiKeyAndroid
-        : _apiKeyIos;
+        ? apiKeyAndroid
+        : apiKeyIos;
 
     if (apiKey.isEmpty) {
       debugPrint('[RevenueCat] No API key — running in mock mode');
       return;
     }
+
+    await Purchases.setLogLevel(LogLevel.debug);
 
     final configuration = PurchasesConfiguration(apiKey);
     await Purchases.configure(configuration);
@@ -99,20 +117,26 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
   }
 
   @override
-  Future<bool> purchase(Package package) async {
+  Future<SubscriptionPurchaseResult> purchase(Package package) async {
     try {
       final result = await Purchases.purchase(
         PurchaseParams.package(package),
       );
-      return result.customerInfo.entitlements
+      final isActive = result.customerInfo.entitlements
           .all[_entitlementId]?.isActive ?? false;
-    } on PurchasesErrorCode catch (e) {
-      if (e == PurchasesErrorCode.purchaseCancelledError) return false;
-      debugPrint('[RevenueCat] Purchase error: $e');
-      return false;
+      return isActive ? SubscriptionPurchaseResult.success : SubscriptionPurchaseResult.failed;
+    } on PlatformException catch (e) {
+      // purchases_flutter throws PlatformException — map to PurchasesErrorCode
+      final errorCode = PurchasesErrorHelper.getErrorCode(e);
+      if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
+        // User tapped back / cancelled the Play Billing sheet — not an error.
+        return SubscriptionPurchaseResult.cancelled;
+      }
+      debugPrint('[RevenueCat] Purchase error: $errorCode — ${e.message}');
+      rethrow; // Let the caller (PaywallScreen) show the error to the user
     } catch (e) {
-      debugPrint('[RevenueCat] Purchase error: $e');
-      return false;
+      debugPrint('[RevenueCat] Purchase unexpected error: $e');
+      rethrow;
     }
   }
 

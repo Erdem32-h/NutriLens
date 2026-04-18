@@ -1,12 +1,13 @@
 name: nutrilens
 description: "KlikTag-inspired food barcode scanner with health scoring, additive analysis, and personalized dietary filtering."
 publish_to: 'none'
-version: 1.0.0+3
+version: 1.0.0+5
 
 environment:
   sdk: ^3.9.2
 
 dependencies:
+  flutter_skill: ^0.9.36
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -58,6 +59,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   google_mlkit_text_recognition: ^0.15.1
   image_picker: ^1.2.1
+  image: ^4.3.0
   uuid: ^4.5.3
 
   # Monetization

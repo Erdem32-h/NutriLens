@@ -4,17 +4,23 @@ import 'package:go_router/go_router.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_skill/flutter_skill.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'bootstrap.dart';
 import 'config/router/app_router.dart';
 import 'core/providers/locale_provider.dart';
+import 'core/providers/monetization_provider.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/product/presentation/providers/product_provider.dart';
 
 void main() async {
+  // Sadece debug modda aktif olması güvenli bir yaklaşımdır
+  if (kDebugMode) FlutterSkillBinding.ensureInitialized();
+
   await bootstrap();
 
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -25,6 +31,7 @@ void main() async {
         appDatabaseProvider.overrideWithValue(database),
         supabaseClientProvider.overrideWithValue(Supabase.instance.client),
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        subscriptionServiceProvider.overrideWithValue(subscriptionService),
       ],
       child: const NutriLensApp(),
     ),

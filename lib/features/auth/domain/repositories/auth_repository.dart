@@ -15,9 +15,9 @@ abstract interface class AuthRepository {
     String? displayName,
   });
 
-  Future<Either<Failure, UserEntity>> signInWithGoogle();
+  Future<Either<Failure, void>> signInWithGoogle();
 
-  Future<Either<Failure, UserEntity>> signInWithApple();
+  Future<Either<Failure, void>> signInWithApple();
 
   Future<Either<Failure, void>> signOut();
 

@@ -13,6 +13,8 @@ import '../../../history/presentation/providers/history_provider.dart';
 import '../../../product/domain/entities/nutriments_entity.dart';
 import '../../../product/domain/entities/product_entity.dart';
 import '../../../product/presentation/providers/product_provider.dart';
+import '../../../product/presentation/widgets/bento_nutrition_grid.dart';
+import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
 import '../../../product/presentation/widgets/health_score_bar.dart';
 
 class FoodResultScreen extends ConsumerStatefulWidget {
@@ -315,8 +317,17 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
 
           const SizedBox(height: 16),
 
-          // Macro grid
-          _buildMacroGrid(result, l10n, colors),
+          // Macro grid — matches Nutrition tab format
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                BentoNutritionGrid(nutriments: nutriments),
+                const SizedBox(height: 16),
+                EditorialNutrientTable(nutriments: nutriments),
+              ],
+            ),
+          ),
 
           // Description
           if (result.description.isNotEmpty) ...[
@@ -403,76 +414,6 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     );
   }
 
-  Widget _buildMacroGrid(
-      FoodRecognitionResult result, dynamic l10n, AppColorsExtension colors) {
-    final items = [
-      _MacroItem(
-          result.energyKcal.toStringAsFixed(0), 'kcal', colors.error),
-      _MacroItem(
-          '${result.protein.toStringAsFixed(1)}g', l10n.proteinLabel, colors.info),
-      _MacroItem(
-          '${result.fat.toStringAsFixed(1)}g', l10n.fatLabel, colors.warning),
-      _MacroItem('${result.sugars.toStringAsFixed(1)}g', l10n.sugarLabel,
-          colors.error),
-      _MacroItem(
-          '${result.fiber.toStringAsFixed(1)}g', l10n.fiberLabel, colors.success),
-      _MacroItem(
-          '${result.salt.toStringAsFixed(2)}g', l10n.saltLabel, colors.textMuted),
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colors.surfaceCard,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          children: [
-            Row(
-              children: items
-                  .sublist(0, 3)
-                  .map((item) => Expanded(child: _buildMacroCell(item, colors)))
-                  .toList(),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: items
-                  .sublist(3, 6)
-                  .map((item) => Expanded(child: _buildMacroCell(item, colors)))
-                  .toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMacroCell(_MacroItem item, AppColorsExtension colors) {
-    return Column(
-      children: [
-        Text(
-          item.value,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: item.color,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          item.label,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: colors.textMuted,
-          ),
-        ),
-      ],
-    );
-  }
-
   /// Estimates HP score from nutriments alone (no additive data available).
   /// Uses the same [ScoreConstants] as [HpScoreCalculator] for consistency.
   double _estimateHpScore(NutrimentsEntity n) {
@@ -506,10 +447,3 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   }
 }
 
-class _MacroItem {
-  final String value;
-  final String label;
-  final Color color;
-
-  const _MacroItem(this.value, this.label, this.color);
-}

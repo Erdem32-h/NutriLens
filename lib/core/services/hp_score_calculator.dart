@@ -71,7 +71,7 @@ class HpScoreCalculator {
     String? ingredientsText,
   }) async {
     // Merge explicit additive tags with E-codes found in text
-    final allAdditives = _mergeAdditives(additivesTags, ingredientsText);
+    final allAdditives = await _mergeAdditives(additivesTags, ingredientsText);
 
     final chemicalLoad = await _calculateChemicalLoad(allAdditives);
     final riskFactor = _calculateRiskFactor(nutriments);
@@ -123,22 +123,78 @@ class HpScoreCalculator {
     );
   }
 
-  /// Merge explicit additive tags with E-codes extracted from text.
-  List<String> _mergeAdditives(
+  /// Merge additive sources into one deduplicated list of normalised E-codes:
+  ///   1. Explicit additive tags from the OFF API (e.g. "en:e322")
+  ///   2. E-codes written inline in ingredients text (e.g. "(E476)")
+  ///   3. Name-based DB lookup — matches Turkish/English additive names found
+  ///      in the ingredients text so that products that write "Poligliserol
+  ///      Polirisinoleat" instead of "E476" are still detected.
+  Future<List<String>> _mergeAdditives(
     List<String> additivesTags,
     String? ingredientsText,
-  ) {
+  ) async {
     final codes = <String>{};
 
+    // ── 1. API tags ──────────────────────────────────────────────────
     for (final tag in additivesTags) {
       codes.add(normalizeECode(tag));
     }
 
+    // ── 2. Inline E-codes in text ────────────────────────────────────
     for (final code in extractECodesFromText(ingredientsText)) {
       codes.add(code);
     }
 
+    // ── 3. Name-based lookup ─────────────────────────────────────────
+    if (ingredientsText != null && ingredientsText.isNotEmpty) {
+      final byName = await _extractAdditivesByName(ingredientsText);
+      codes.addAll(byName);
+    }
+
     return codes.toList();
+  }
+
+  /// Look up additives in the local DB whose Turkish or English name appears
+  /// in [ingredientsText].  Uses normalised (ASCII) comparison so that OCR
+  /// errors and missing Turkish diacritics don't prevent matching.
+  Future<List<String>> _extractAdditivesByName(String ingredientsText) async {
+    try {
+      final allRows = await _db.select(_db.additives).get();
+      if (allRows.isEmpty) return [];
+
+      final normText = ScoreConstants.normalizeTurkish(ingredientsText);
+      final found = <String>{};
+
+      for (final row in allRows) {
+        // Build candidate names: try Turkish first, then English
+        final candidates = <String>[];
+        if (row.nameTr != null && row.nameTr!.isNotEmpty) {
+          candidates.add(row.nameTr!);
+        }
+        candidates.add(row.nameEn);
+
+        for (final rawName in candidates) {
+          // Strip parenthetical suffixes: "Poligliserol Polirisinoleat (PGPR)"
+          // → "Poligliserol Polirisinoleat"
+          final clean = rawName
+              .replaceAll(RegExp(r'\s*\([^)]*\)'), '')
+              .trim();
+
+          // Ignore very short names to avoid false positives
+          if (clean.length < 6) continue;
+
+          final normName = ScoreConstants.normalizeTurkish(clean);
+          if (normText.contains(normName)) {
+            found.add(row.eNumber);
+            break; // Found via this additive, no need to check English name
+          }
+        }
+      }
+
+      return found.toList();
+    } catch (_) {
+      return [];
+    }
   }
 
   Future<double> _calculateChemicalLoad(List<String> additivesTags) async {
