@@ -11,8 +11,9 @@ class NutrimentTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rows = _buildRows(context);
+    final hasAnyValue = rows.any((r) => r.value != null);
 
-    if (rows.isEmpty) {
+    if (!hasAnyValue) {
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         padding: const EdgeInsets.all(16),
@@ -112,7 +113,9 @@ class NutrimentTable extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${item.value.toStringAsFixed(1)} ${item.unit}',
+                    item.value == null
+                        ? '?'
+                        : '${_formatValue(item.value!, item.unit)} ${item.unit}',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -130,67 +133,77 @@ class NutrimentTable extends StatelessWidget {
   }
 
   List<_NutrimentRow> _buildRows(BuildContext context) {
-    final items = <_NutrimentRow>[];
-
-    if (nutriments.energyKcal != null) {
-      items.add(_NutrimentRow('Enerji', nutriments.energyKcal!, 'kcal', null));
-    }
-    if (nutriments.fat != null) {
-      items.add(_NutrimentRow('Yağ', nutriments.fat!, 'g', _fatLevel(context)));
-    }
-    if (nutriments.saturatedFat != null) {
-      items.add(_NutrimentRow(
-          'Doymuş Yağ', nutriments.saturatedFat!, 'g', _satFatLevel(context)));
-    }
-    if (nutriments.sugars != null) {
-      items.add(_NutrimentRow('Şeker', nutriments.sugars!, 'g', _sugarLevel(context)));
-    }
-    if (nutriments.salt != null) {
-      items.add(_NutrimentRow('Tuz', nutriments.salt!, 'g', _saltLevel(context)));
-    }
-    if (nutriments.fiber != null) {
-      items.add(_NutrimentRow('Lif', nutriments.fiber!, 'g', null));
-    }
-    if (nutriments.proteins != null) {
-      items.add(_NutrimentRow('Protein', nutriments.proteins!, 'g', null));
-    }
-
-    return items;
+    return [
+      _NutrimentRow('Enerji', nutriments.energyKcal, 'kcal', null),
+      _NutrimentRow('Yağ', nutriments.fat, 'g', _fatLevel(context)),
+      _NutrimentRow('Doymuş Yağ', nutriments.saturatedFat, 'g', _satFatLevel(context)),
+      _NutrimentRow('Trans Yağ', nutriments.transFat, 'g', _transFatLevel(context)),
+      _NutrimentRow('Karbonhidrat', nutriments.carbohydrates, 'g', null),
+      _NutrimentRow('Şeker', nutriments.sugars, 'g', _sugarLevel(context)),
+      _NutrimentRow('Lif', nutriments.fiber, 'g', null),
+      _NutrimentRow('Protein', nutriments.proteins, 'g', null),
+      _NutrimentRow('Tuz', nutriments.salt, 'g', _saltLevel(context)),
+    ];
   }
 
   // WHO thresholds per 100g for color coding
   Color? _fatLevel(BuildContext context) {
-    final v = nutriments.fat ?? 0;
+    final v = nutriments.fat;
+    if (v == null) return null;
     if (v <= 3) return context.colors.riskSafe;
     if (v <= 17.5) return context.colors.riskModerate;
     return context.colors.riskDangerous;
   }
 
   Color? _satFatLevel(BuildContext context) {
-    final v = nutriments.saturatedFat ?? 0;
+    final v = nutriments.saturatedFat;
+    if (v == null) return null;
     if (v <= 1.5) return context.colors.riskSafe;
     if (v <= 5) return context.colors.riskModerate;
     return context.colors.riskDangerous;
   }
 
   Color? _sugarLevel(BuildContext context) {
-    final v = nutriments.sugars ?? 0;
+    final v = nutriments.sugars;
+    if (v == null) return null;
     if (v <= 5) return context.colors.riskSafe;
     if (v <= 22.5) return context.colors.riskModerate;
     return context.colors.riskDangerous;
   }
 
   Color? _saltLevel(BuildContext context) {
-    final v = nutriments.salt ?? 0;
+    final v = nutriments.salt;
+    if (v == null) return null;
     if (v <= 0.3) return context.colors.riskSafe;
     if (v <= 1.5) return context.colors.riskModerate;
     return context.colors.riskDangerous;
+  }
+
+  // Trans fat is a strict "lower is better" signal — WHO recommends < 1 % of
+  // total energy, which for a 100 g serving means anything above ~1 g is
+  // already a meaningful hit. Keep the safe band tight.
+  Color? _transFatLevel(BuildContext context) {
+    final v = nutriments.transFat;
+    if (v == null) return null;
+    if (v <= 0.1) return context.colors.riskSafe;
+    if (v <= 1) return context.colors.riskModerate;
+    return context.colors.riskDangerous;
+  }
+
+  // Salt is commonly labelled to 2–3 decimals ("Tuz: 0,60 g"). Rounding to
+  // 1 decimal erases meaningful information for low-sodium products.
+  // For all other nutrients 1 decimal matches how labels are printed.
+  String _formatValue(double v, String unit) {
+    if (v == 0) return '0';
+    if (unit == 'kcal') return v.toStringAsFixed(0);
+    if (unit == 'g' && v < 1) return v.toStringAsFixed(2);
+    return v.toStringAsFixed(1);
   }
 }
 
 class _NutrimentRow {
   final String label;
-  final double value;
+  final double? value;
   final String unit;
   final Color? levelColor;
 

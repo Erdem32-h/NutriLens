@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:logger/logger.dart';
 
 import '../../config/drift/app_database.dart';
@@ -26,19 +25,18 @@ class IngredientsParseResult {
   });
 }
 
+/// Additive detector for ingredient text.
+///
+/// **Note**: ML Kit text extraction was removed when the ingredients OCR
+/// pipeline switched to Gemini vision (`GeminiAiService.extractIngredients
+/// FromImage`). This service now exists solely to scan already-extracted
+/// text (whether from Gemini or pasted/typed by the user) for E-codes and
+/// known additive names, matching them against the local Additives table.
 class IngredientsOcrService {
   final AppDatabase _db;
   final _logger = Logger();
-  final _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
 
   IngredientsOcrService(this._db);
-
-  /// Extract raw text from image using ML Kit
-  Future<String> extractText(String imagePath) async {
-    final inputImage = InputImage.fromFilePath(imagePath);
-    final recognizedText = await _textRecognizer.processImage(inputImage);
-    return recognizedText.text;
-  }
 
   /// Parse ingredients text, extract E-codes, match against Additives DB.
   ///
@@ -91,10 +89,6 @@ class IngredientsOcrService {
       confidence: confidence,
       headerFound: headerFound,
     );
-  }
-
-  void dispose() {
-    _textRecognizer.close();
   }
 
   // --- Private helpers ---

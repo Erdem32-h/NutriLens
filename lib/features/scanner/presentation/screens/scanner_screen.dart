@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,11 +21,40 @@ class ScannerScreen extends ConsumerStatefulWidget {
   ConsumerState<ScannerScreen> createState() => _ScannerScreenState();
 }
 
-class _ScannerScreenState extends ConsumerState<ScannerScreen> {
+class _ScannerScreenState extends ConsumerState<ScannerScreen>
+    with WidgetsBindingObserver {
+  // Manual lifecycle: we start/stop the camera in response to app state,
+  // tab-mode changes, and navigation. `autoStart: false` + stream
+  // subscription is the canonical v7 pattern (see mobile_scanner README
+  // "Advanced > Lifecycle changes").
+  //
+  // `DetectionSpeed.noDuplicates` dramatically cuts wasted callbacks vs
+  // `.normal`: the camera feed still runs at native frame rate but the
+  // decoder only fires when the barcode value changes. Combined with the
+  // format allow-list below this reduces CPU/heat noticeably — the
+  // earlier `.normal` setting processed every frame even when the user
+  // was just pointing at the package.
+  //
+  // `formats` restriction: product barcodes on food packaging are almost
+  // exclusively EAN/UPC, plus QR for the occasional smart-label. Not
+  // accepting PDF417/Aztec/Data Matrix/etc. saves the decoder a bunch of
+  // per-frame work.
   final MobileScannerController _controller = MobileScannerController(
-    detectionSpeed: DetectionSpeed.normal,
+    autoStart: false,
+    detectionSpeed: DetectionSpeed.noDuplicates,
     facing: CameraFacing.back,
+    formats: const [
+      BarcodeFormat.ean13,
+      BarcodeFormat.ean8,
+      BarcodeFormat.upcA,
+      BarcodeFormat.upcE,
+      BarcodeFormat.code128,
+      BarcodeFormat.code39,
+      BarcodeFormat.qrCode,
+    ],
   );
+
+  StreamSubscription<BarcodeCapture>? _subscription;
 
   DateTime? _lastScanTime;
   String? _lastBarcode;
@@ -35,12 +66,70 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   final ImagePicker _picker = ImagePicker();
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _startScanning();
   }
 
-  Future<void> _onDetect(BarcodeCapture capture) async {
+  @override
+  Future<void> dispose() async {
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_subscription?.cancel());
+    _subscription = null;
+    super.dispose();
+    await _controller.dispose();
+  }
+
+  /// Subscribe to the barcode stream and start the camera.
+  ///
+  /// Safe to call multiple times: `_subscription` is guarded, and
+  /// `controller.start()` is a no-op when already running.
+  void _startScanning() {
+    _subscription ??= _controller.barcodes.listen(_handleBarcode);
+    unawaited(_controller.start());
+  }
+
+  /// Tear down the barcode subscription and stop the camera.
+  ///
+  /// This is the hot path for battery savings: when the app is backgrounded
+  /// or the user switches to AI mode / navigates to a product detail, we
+  /// release the camera so it isn't streaming frames into a decoder whose
+  /// output we're discarding anyway.
+  void _stopScanning() {
+    unawaited(_subscription?.cancel());
+    _subscription = null;
+    unawaited(_controller.stop());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Permission dialogs trigger lifecycle changes before the controller
+    // has a real camera handle — guard against that per mobile_scanner
+    // docs.
+    if (!_controller.value.hasCameraPermission) return;
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        // Only resume scanning if we're on the barcode tab and not
+        // waiting on a pushed navigation. `inactive` fires any time a
+        // system dialog/sheet appears, so a benign interruption (e.g.
+        // permission prompt finishing) shouldn't wake scanning when the
+        // user has already switched to AI mode.
+        if (_scanMode == 0 && !_isNavigating) {
+          _startScanning();
+        }
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        _stopScanning();
+        break;
+    }
+  }
+
+  Future<void> _handleBarcode(BarcodeCapture capture) async {
     if (_isNavigating || _scanMode != 0) return;
 
     final barcodes = capture.barcodes;
@@ -100,10 +189,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     HapticFeedback.mediumImpact();
 
     debugPrint('[Scanner] navigating to /product/$value');
+    // Release the camera while the product detail is on top — the scanner
+    // route is still mounted underneath but the preview + decoder would
+    // otherwise keep streaming frames we can never see.
+    _stopScanning();
     context.push('/product/$value').then((_) {
-      if (mounted) {
-        setState(() => _isNavigating = false);
-      }
+      if (!mounted) return;
+      setState(() => _isNavigating = false);
+      if (_scanMode == 0) _startScanning();
     });
   }
 
@@ -147,6 +240,21 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     }
   }
 
+  /// Toggle scanning mode. In AI mode we stop the camera because the
+  /// capture button launches `image_picker` (which uses the system
+  /// camera). Leaving `MobileScanner` streaming frames while the user
+  /// hasn't tapped capture is pure wasted CPU — the decoder was already
+  /// discarding results for us via the `_scanMode != 0` guard.
+  void _setScanMode(int mode) {
+    if (_scanMode == mode) return;
+    setState(() => _scanMode = mode);
+    if (mode == 0) {
+      _startScanning();
+    } else {
+      _stopScanning();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -156,10 +264,12 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Camera preview
+          // Camera preview. We read barcodes via `controller.barcodes`
+          // (see `_startScanning`) so `onDetect` is intentionally omitted
+          // — that's the canonical v7 pattern for manual lifecycle
+          // management.
           MobileScanner(
             controller: _controller,
-            onDetect: _onDetect,
             errorBuilder: (context, error) {
               return _buildCameraError(context, error);
             },
@@ -381,14 +491,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
             icon: Icons.qr_code_scanner_rounded,
             isSelected: _scanMode == 0,
             colors: colors,
-            onTap: () => setState(() => _scanMode = 0),
+            onTap: () => _setScanMode(0),
           ),
           _buildModeTab(
             label: l10n.tabAiAnalysis,
             icon: Icons.auto_awesome_rounded,
             isSelected: _scanMode == 1,
             colors: colors,
-            onTap: () => setState(() => _scanMode = 1),
+            onTap: () => _setScanMode(1),
           ),
         ],
       ),

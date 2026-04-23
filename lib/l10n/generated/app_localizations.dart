@@ -839,31 +839,31 @@ abstract class AppLocalizations {
   /// No description provided for @fatLabel.
   ///
   /// In tr, this message translates to:
-  /// **'YAĞ'**
+  /// **'Yağ'**
   String get fatLabel;
 
   /// No description provided for @sugarLabel.
   ///
   /// In tr, this message translates to:
-  /// **'ŞEKER'**
+  /// **'Şeker'**
   String get sugarLabel;
 
   /// No description provided for @saturatedFatLabel.
   ///
   /// In tr, this message translates to:
-  /// **'DOYMUŞ YAĞ'**
+  /// **'Doymuş yağ'**
   String get saturatedFatLabel;
 
   /// No description provided for @transFatLabel.
   ///
   /// In tr, this message translates to:
-  /// **'TRANS YAĞ'**
+  /// **'Trans yağ'**
   String get transFatLabel;
 
   /// No description provided for @saltLabel.
   ///
   /// In tr, this message translates to:
-  /// **'TUZ'**
+  /// **'Tuz'**
   String get saltLabel;
 
   /// No description provided for @lowLevel.
@@ -1501,6 +1501,42 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'AI analiz başarısız oldu. Tekrar deneyin.'**
   String get aiFailed;
+
+  /// No description provided for @aiServiceUnavailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI servisi şu an çalışmıyor — yedek tarama kullanılıyor, sonuçlar daha az hassas olabilir.'**
+  String get aiServiceUnavailable;
+
+  /// No description provided for @aiServiceUnavailableNoFallback.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI servisi şu an çalışmıyor. Lütfen birkaç dakika sonra tekrar deneyin.'**
+  String get aiServiceUnavailableNoFallback;
+
+  /// No description provided for @aiServiceDownTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI Servisi Çalışmıyor'**
+  String get aiServiceDownTitle;
+
+  /// No description provided for @aiServiceDownBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler okuma servisi şu an yanıt vermiyor. Birkaç dakika sonra tekrar deneyin ya da içindekileri elle girin.'**
+  String get aiServiceDownBody;
+
+  /// No description provided for @manualEntry.
+  ///
+  /// In tr, this message translates to:
+  /// **'Elle Gir'**
+  String get manualEntry;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar Dene'**
+  String get tryAgain;
 
   /// No description provided for @aiLowConfidence.
   ///

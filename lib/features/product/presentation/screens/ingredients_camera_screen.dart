@@ -1,16 +1,23 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/ocr_image_prep.dart';
 import '../providers/ocr_provider.dart';
 import '../providers/product_provider.dart';
 
+/// First-save ingredients capture flow.
+///
+/// **Gemini-only**: ML Kit fallback was removed deliberately. When Gemini's
+/// vision OCR can't read the ingredients (or the service is down), we surface
+/// a clear "retry / enter manually" dialog instead of silently substituting
+/// a less-accurate ML Kit result that often picks up the producer address.
 class IngredientsCameraScreen extends ConsumerStatefulWidget {
   final String barcode;
   final Map<String, dynamic>? productInfo;
@@ -53,63 +60,57 @@ class _IngredientsCameraScreenState
     setState(() => _isProcessing = true);
 
     try {
-      final ocrService = ref.read(ocrServiceProvider);
       final geminiService = ref.read(geminiAiServiceProvider);
 
-      // 1) Try Gemini vision first — it handles curved, rotated, glossy,
-      //    multi-language labels far better than ML Kit's plain OCR.
-      //    Normalize EXIF orientation: some Android cameras save bytes
-      //    unrotated with only an orientation flag, which Gemini sometimes
-      //    ignores — resulting in 90°-rotated input.
+      // Gemini vision is the only OCR path. It handles curved, rotated,
+      // glossy, multi-language labels far better than ML Kit's plain OCR
+      // and avoids the failure mode where ML Kit substitutes the producer
+      // address when the ingredients section is missed.
+      //
+      // EXIF orientation baking + downscale + base64 encode all happen on a
+      // worker isolate via [prepareOcrImage]. Doing this synchronously on
+      // the main isolate blocks the UI long enough on a 12 MP capture to
+      // trigger Android's "App not responding" dialog.
       final rawBytes = await File(image.path).readAsBytes();
-      final imageBytes = await _normalizeOrientation(rawBytes);
-      String? ingredientsText =
-          await geminiService.extractIngredientsFromImage(imageBytes);
+      final prepared = await prepareOcrImage(rawBytes);
 
-      // 2) Fall back to ML Kit only if Gemini failed (network error,
-      //    rate limit, or couldn't see a Turkish ingredients list).
-      String rawText;
-      if (ingredientsText != null) {
-        rawText = ingredientsText;
-      } else {
-        debugPrint(
-          '[OCR] Gemini returned no ingredients — falling back to ML Kit',
-        );
-        rawText = await ocrService.extractText(image.path);
+      final String? ingredientsText;
+      try {
+        ingredientsText =
+            await geminiService.extractIngredientsFromBase64(prepared.base64);
+      } on GeminiServiceException catch (e) {
+        // Service-level failure (auth, network, rate limit). No fallback —
+        // ask the user to retry or enter manually.
+        debugPrint('[OCR] Gemini service failure: $e');
+        if (mounted) _showAiServiceDownDialog();
+        return;
       }
-
-      final result = await ocrService.parseIngredients(rawText);
 
       if (!mounted) return;
 
-      // If both Gemini AND ML Kit failed to find an ingredients header and no
-      // additives were matched, the photo almost certainly missed the list.
-      if (ingredientsText == null &&
-          !result.headerFound &&
-          result.detectedAdditives.isEmpty) {
+      // Gemini ran but couldn't read an ingredients list (sentinel returned).
+      // Almost always means the photo missed the section, was too far away,
+      // or showed only the address/nutrition side of the package.
+      if (ingredientsText == null) {
         _showHeaderMissingDialog();
         return;
       }
 
-      if (result.confidence < 0.1 && ingredientsText == null) {
-        _showOcrFailedDialog();
-        return;
-      }
+      // Parse for additive detection (E-codes + Turkish name matching).
+      // The Gemini text is already clean; parseIngredients runs E-code and
+      // additive-name regex over it for the verify screen.
+      final ocrService = ref.read(ocrServiceProvider);
+      final result = await ocrService.parseIngredients(ingredientsText);
 
-      // When Gemini supplied the text, prefer it as the cleaned/raw text.
-      // It's already a clean list, not a raw OCR dump.
-      final cleanedText =
-          ingredientsText ?? result.cleanedText;
+      if (!mounted) return;
 
-      // Merge product info from not-found screen with OCR result
       final extra = <String, dynamic>{
-        'cleanedText': cleanedText,
-        'rawText': rawText,
+        'cleanedText': ingredientsText,
+        'rawText': ingredientsText,
         'detectedAdditives': result.detectedAdditives,
         'unmatchedAdditives': result.unmatchedAdditives,
         'confidence': result.confidence,
         'imagePath': image.path,
-        'usedGemini': ingredientsText != null,
         // Carry forward product info from not-found screen
         if (widget.productInfo != null) ...widget.productInfo!,
       };
@@ -123,38 +124,54 @@ class _IngredientsCameraScreenState
     }
   }
 
-  /// Bake EXIF orientation into the pixels and re-encode as JPEG.
-  ///
-  /// Android's image_picker often returns a JPEG whose pixel data is stored
-  /// landscape regardless of how the phone was held, with only the EXIF
-  /// Orientation tag indicating the intended rotation. Some downstream
-  /// consumers — including Gemini — honour this flag inconsistently, which
-  /// means a portrait photo may reach the model sideways and become
-  /// unreadable. `bakeOrientation` applies the rotation to the actual
-  /// pixels and strips the EXIF tag, giving us a predictable upright image.
-  Future<Uint8List> _normalizeOrientation(Uint8List bytes) async {
-    try {
-      final decoded = img.decodeImage(bytes);
-      if (decoded == null) return bytes;
-      final upright = img.bakeOrientation(decoded);
-      // Downscale very large images — Gemini does not need more than ~1600px
-      // on the long edge for legible package text, and smaller payloads
-      // round-trip faster.
-      final longestSide =
-          upright.width > upright.height ? upright.width : upright.height;
-      final resized = longestSide > 1600
-          ? img.copyResize(
-              upright,
-              width: upright.width >= upright.height ? 1600 : null,
-              height: upright.height > upright.width ? 1600 : null,
-              interpolation: img.Interpolation.cubic,
-            )
-          : upright;
-      return Uint8List.fromList(img.encodeJpg(resized, quality: 92));
-    } catch (e) {
-      debugPrint('[OCR] orientation normalize failed: $e');
-      return bytes;
-    }
+  /// Shown when the Gemini service itself failed (network/auth/rate limit).
+  /// Without an ML Kit fallback there's nothing we can do automatically, so
+  /// give the user a clear retry/manual choice.
+  void _showAiServiceDownDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: context.colors.surfaceCard,
+        icon: Icon(
+          Icons.cloud_off_rounded,
+          color: const Color(0xFFFF9800),
+          size: 36,
+        ),
+        title: Text(
+          context.l10n.aiServiceDownTitle,
+          style: TextStyle(color: context.colors.textPrimary),
+        ),
+        content: Text(
+          context.l10n.aiServiceDownBody,
+          style: TextStyle(color: context.colors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              context.go(
+                '/product/${widget.barcode}/manual',
+                extra: widget.productInfo,
+              );
+            },
+            child: Text(
+              context.l10n.manualEntry,
+              style: TextStyle(color: context.colors.textMuted),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _takePicture();
+            },
+            child: Text(
+              context.l10n.tryAgain,
+              style: TextStyle(color: context.colors.primary),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showHeaderMissingDialog() {

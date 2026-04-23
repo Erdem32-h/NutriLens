@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
-import '../../../../core/services/ocr_text_processor.dart';
+import '../../../../core/services/gemini_ai_service.dart';
+import '../../../../core/services/nutrition_mlkit_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/ocr_image_prep.dart';
 import '../../domain/entities/nutriments_entity.dart';
 import '../../domain/entities/product_entity.dart';
 import '../providers/product_provider.dart';
@@ -43,7 +44,11 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
   File? _selectedImage;
   bool _saving = false;
-  bool _ocrProcessing = false;
+  // Track WHICH OCR target is currently scanning so only that button shows
+  // its spinner. Using a single bool flagged BOTH buttons as busy and made
+  // the user think the nutrition scan had auto-fired off the ingredients
+  // photo.
+  _OcrTarget? _ocrProcessingTarget;
   ProductEntity? _existingProduct;
   bool _isNewProduct = false;
 
@@ -189,8 +194,11 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             ),
             child: Row(
               children: [
-                Icon(Icons.qr_code_rounded,
-                    size: 20, color: context.colors.textMuted),
+                Icon(
+                  Icons.qr_code_rounded,
+                  size: 20,
+                  color: context.colors.textMuted,
+                ),
                 const SizedBox(width: 10),
                 Text(
                   '${l10n.barcode}: ${widget.barcode}',
@@ -255,6 +263,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           // OCR Scan Ingredients button
           _buildOcrButton(
             context,
+            target: _OcrTarget.ingredients,
             label: l10n.scanIngredients,
             icon: Icons.document_scanner_rounded,
             onTap: () => _scanWithOcr(_OcrTarget.ingredients),
@@ -273,16 +282,14 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           const SizedBox(height: 4),
           Text(
             '(${l10n.portion100g})',
-            style: TextStyle(
-              fontSize: 12,
-              color: context.colors.textMuted,
-            ),
+            style: TextStyle(fontSize: 12, color: context.colors.textMuted),
           ),
           const SizedBox(height: 12),
 
           // OCR Scan Nutrition button
           _buildOcrButton(
             context,
+            target: _OcrTarget.nutrition,
             label: l10n.scanNutrition,
             icon: Icons.document_scanner_rounded,
             onTap: () => _scanWithOcr(_OcrTarget.nutrition),
@@ -419,8 +426,11 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.check_rounded,
-                                color: Colors.black, size: 20),
+                            const Icon(
+                              Icons.check_rounded,
+                              color: Colors.black,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               l10n.saveAndView,
@@ -446,12 +456,18 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
   Widget _buildOcrButton(
     BuildContext context, {
+    required _OcrTarget target,
     required String label,
     required IconData icon,
     required VoidCallback onTap,
   }) {
+    final isThisOneScanning = _ocrProcessingTarget == target;
+    final isAnyScanning = _ocrProcessingTarget != null;
     return GestureDetector(
-      onTap: _ocrProcessing ? null : onTap,
+      // Block both buttons while EITHER is scanning (only one Gemini request
+      // at a time, single rate-limit slot), but only show the spinner on the
+      // button that was actually tapped.
+      onTap: isAnyScanning ? null : onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
@@ -464,7 +480,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_ocrProcessing)
+            if (isThisOneScanning)
               SizedBox(
                 width: 18,
                 height: 18,
@@ -477,7 +493,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
               Icon(icon, size: 20, color: context.colors.primary),
             const SizedBox(width: 10),
             Text(
-              _ocrProcessing ? context.l10n.ocrProcessing : label,
+              isThisOneScanning ? context.l10n.ocrProcessing : label,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -493,270 +509,121 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
   Future<void> _scanWithOcr(_OcrTarget target) async {
     final l10n = context.l10n;
 
-    // Pick image from camera or gallery
+    // Pick image from camera or gallery.
+    //
+    // Don't clamp size here — `prepareOcrImage` (worker isolate) downscales
+    // to 3200px on the long edge AFTER baking EXIF rotation. Picker's max*
+    // clamp happens before orientation is resolved on some Android OEMs,
+    // which can produce misshapen/rotated bytes that Gemini reads sideways.
     final source = await _showOcrSourcePicker();
     if (source == null) return;
 
     XFile? xFile;
     try {
-      xFile = await _picker.pickImage(
-        source: source,
-        maxWidth: 2048,
-        maxHeight: 2048,
-        imageQuality: 95,
-      );
+      xFile = await _picker.pickImage(source: source, imageQuality: 95);
     } catch (_) {
       return;
     }
     if (xFile == null) return;
 
-    setState(() => _ocrProcessing = true);
+    setState(() => _ocrProcessingTarget = target);
 
     try {
-      final inputImage = InputImage.fromFilePath(xFile.path);
-      final textRecognizer =
-          TextRecognizer(script: TextRecognitionScript.latin);
-      final recognizedText = await textRecognizer.processImage(inputImage);
-      await textRecognizer.close();
-
-      if (!mounted) return;
-
-      if (recognizedText.text.trim().isEmpty) {
-        _showMessage(l10n.ocrNoText);
-        return;
-      }
-
-      // Process with multi-language support and artifact cleanup
-      const processor = OcrTextProcessor();
+      final aiService = ref.read(geminiAiServiceProvider);
+      final rawBytes = await File(xFile.path).readAsBytes();
+      // Normalize orientation + downscale + base64 on a worker isolate so
+      // the UI thread stays responsive (a 12 MP frame would otherwise
+      // block ~2 s of CPU here and risk an Android ANR dialog).
+      final prepared = await prepareOcrImage(rawBytes);
 
       switch (target) {
         case _OcrTarget.ingredients:
-          final mlKitResult = processor.processIngredients(recognizedText);
-          if (mlKitResult.text.isEmpty) {
+          // Gemini vision is the only OCR path for ingredients — same
+          // rationale as `IngredientsCameraScreen`: ML Kit's plain OCR
+          // tends to substitute the producer address when the ingredients
+          // section is missed, and Gemini handles curved/multi-section
+          // labels far better.
+          String? aiText;
+          try {
+            aiText = await aiService.extractIngredientsFromBase64(
+              prepared.base64,
+            );
+          } on GeminiServiceException catch (e) {
+            debugPrint('[OCR] Gemini ingredients service failure: $e');
+            if (!mounted) return;
+            _showAiUnavailableWarning();
+            return;
+          }
+
+          if (!mounted) return;
+
+          if (aiText == null || aiText.trim().isEmpty) {
+            // Sentinel returned: photo missed the ingredients section.
             _showMessage(l10n.ocrNoText);
             return;
           }
 
-          // Try AI improvement (silent — fallback to ML Kit result on failure)
-          final aiService = ref.read(geminiAiServiceProvider);
-          final aiImproved =
-              await aiService.improveIngredientsOcr(mlKitResult.text);
-
           setState(() {
-            _ingredientsController.text = aiImproved ?? mlKitResult.text;
+            _ingredientsController.text = aiText!;
           });
-          debugPrint('[OCR] ingredients ai=${aiImproved != null}, '
-              'lang=${mlKitResult.language}');
+          debugPrint(
+            '[OCR] ingredients via Gemini vision, '
+            'len=${aiText.length}',
+          );
           _showMessage(l10n.ocrSuccess);
 
         case _OcrTarget.nutrition:
-          final mlKitResult = processor.processNutrition(recognizedText);
-          if (mlKitResult.text.isEmpty) {
+          // Use ML Kit only for nutrition tables - native OCR without cloud.
+          NutritionOcrResult? aiResult;
+
+          try {
+            final mlkitService = NutritionMlkitService();
+            aiResult = await mlkitService.extractFromImage(xFile.path);
+            mlkitService.dispose();
+          } catch (e) {
+            debugPrint('[OCR] ML Kit nutrition failed: $e');
+          }
+
+          if (!mounted) return;
+
+          if (aiResult == null) {
             _showMessage(l10n.ocrNoText);
             return;
           }
 
-          // Try AI improvement for structured data
-          final aiService = ref.read(geminiAiServiceProvider);
-          final aiResult =
-              await aiService.improveNutritionOcr(mlKitResult.text);
+          _showMessage('Besin değerleri tarandı');
 
-          if (aiResult != null) {
-            // AI returned structured data — always overwrite with OCR result
-            setState(() {
-              if (aiResult.energyKcal != null) {
-                _energyController.text =
-                    aiResult.energyKcal!.toStringAsFixed(1);
-              }
-              if (aiResult.fat != null) {
-                _fatController.text = aiResult.fat!.toStringAsFixed(1);
-              }
-              if (aiResult.saturatedFat != null) {
-                _saturatedFatController.text =
-                    aiResult.saturatedFat!.toStringAsFixed(1);
-              }
-              if (aiResult.transFat != null) {
-                _transFatController.text =
-                    aiResult.transFat!.toStringAsFixed(1);
-              }
-              if (aiResult.carbohydrates != null) {
-                _carbsController.text =
-                    aiResult.carbohydrates!.toStringAsFixed(1);
-              }
-              if (aiResult.sugars != null) {
-                _sugarsController.text = aiResult.sugars!.toStringAsFixed(1);
-              }
-              if (aiResult.salt != null) {
-                _saltController.text = aiResult.salt!.toStringAsFixed(3);
-              }
-              if (aiResult.fiber != null) {
-                _fiberController.text = aiResult.fiber!.toStringAsFixed(1);
-              }
-              if (aiResult.protein != null) {
-                _proteinController.text = aiResult.protein!.toStringAsFixed(1);
-              }
-            });
-          } else {
-            // AI failed — fallback to regex-based parsing
-            _parseNutritionFromOcr(mlKitResult.text);
-          }
-          debugPrint('[OCR] nutrition ai=${aiResult != null}');
+          setState(() {
+            // Write all values, using 0.0 as default if AI didn't find any value
+            _energyController.text =
+                aiResult!.energyKcal?.toStringAsFixed(1) ?? '0.0';
+            _fatController.text = aiResult.fat?.toStringAsFixed(1) ?? '0.0';
+            _saturatedFatController.text =
+                aiResult.saturatedFat?.toStringAsFixed(1) ?? '0.0';
+            _transFatController.text =
+                aiResult.transFat?.toStringAsFixed(1) ?? '0.0';
+            _carbsController.text =
+                aiResult.carbohydrates?.toStringAsFixed(1) ?? '0.0';
+            _sugarsController.text =
+                aiResult.sugars?.toStringAsFixed(1) ?? '0.0';
+            _saltController.text = aiResult.salt?.toStringAsFixed(3) ?? '0.000';
+            _fiberController.text = aiResult.fiber?.toStringAsFixed(1) ?? '0.0';
+            _proteinController.text =
+                aiResult.protein?.toStringAsFixed(1) ?? '0.0';
+          });
+          debugPrint(
+            '[OCR] nutrition via Gemini vision: '
+            'kcal=${aiResult.energyKcal}, fat=${aiResult.fat}, '
+            'carbs=${aiResult.carbohydrates}, protein=${aiResult.protein}',
+          );
           _showMessage(l10n.ocrSuccess);
       }
     } catch (e) {
       debugPrint('[OCR] error: $e');
       if (mounted) _showMessage(l10n.ocrFailed);
     } finally {
-      if (mounted) setState(() => _ocrProcessing = false);
+      if (mounted) setState(() => _ocrProcessingTarget = null);
     }
-  }
-
-  /// Parse OCR text to extract nutrition values and fill the fields.
-  ///
-  /// Uses line-by-line matching to avoid cross-row contamination.
-  /// Handles Turkish kJ/kcal dual-value format: "Enerji 2289kJ/549kcal"
-  /// where kcal is the second value after the slash.
-  void _parseNutritionFromOcr(String text) {
-    // Split on newlines OR paragraph breaks preserved by processNutrition
-    final lines = text.split(RegExp(r'\n+'));
-
-    // Per-line extractor: returns the first number matching a unit on that line.
-    // For energy lines with "kJ/kcal" pattern, extracts the kcal value.
-    double? extractFromLine(String line, {bool isEnergy = false}) {
-      final lower = line.toLowerCase();
-
-      if (isEnergy) {
-        // Turkish format: "2289 kJ / 549 kcal" or "2289kJ/549kcal"
-        final dualMatch = RegExp(
-          r'(\d+[.,]?\d*)\s*kj[/ ]+(\d+[.,]?\d*)\s*kcal',
-          caseSensitive: false,
-        ).firstMatch(lower);
-        if (dualMatch != null) {
-          final kcalRaw = dualMatch.group(2)!.replaceAll(',', '.');
-          return double.tryParse(kcalRaw);
-        }
-        // Single kcal value on line
-        final kcalMatch = RegExp(
-          r'(\d+[.,]?\d*)\s*kcal',
-          caseSensitive: false,
-        ).firstMatch(lower);
-        if (kcalMatch != null) {
-          final raw = kcalMatch.group(1)!.replaceAll(',', '.');
-          final v = double.tryParse(raw);
-          if (v != null && v < 5000) return v;
-        }
-        return null;
-      }
-
-      // Regular nutrient: grab first "number unit" pair on the line
-      final match = RegExp(
-        r'(\d+[.,]?\d*)\s*(mg|mcg|µg|μg|g)\b',
-        caseSensitive: false,
-      ).firstMatch(line);
-      if (match == null) return null;
-
-      final raw = match.group(1)!.replaceAll(',', '.');
-      var value = double.tryParse(raw);
-      if (value == null) return null;
-
-      final unit = match.group(2)!.toLowerCase();
-      if (unit == 'mg') value = value / 1000.0;
-      if (unit == 'mcg' || unit == 'µg' || unit == 'μg') {
-        value = value / 1000000.0;
-      }
-
-      return value < 500 ? value : null; // sanity cap
-    }
-
-    // For each nutrient, find the line whose lowercase content matches
-    // one of the given keywords, then extract from that line only.
-    double? findInLines(
-      List<String> keywords, {
-      bool isEnergy = false,
-    }) {
-      for (final line in lines) {
-        final lower = line.toLowerCase();
-        if (keywords.any((kw) => lower.contains(kw))) {
-          final v = extractFromLine(line, isEnergy: isEnergy);
-          if (v != null) return v;
-        }
-      }
-      return null;
-    }
-
-    String fmt(double v) => v >= 1 ? v.toStringAsFixed(1) : v.toStringAsFixed(3);
-
-    setState(() {
-      // Energy
-      final energy = findInLines(
-        ['enerji', 'energy', 'kalori', 'calories', 'kcal', 'kj'],
-        isEnergy: true,
-      );
-      if (energy != null) _energyController.text = energy.toStringAsFixed(1);
-
-      // Total fat — check BEFORE "doymuş" (saturated) to grab correct row
-      final fat = findInLines(['toplam yağ', 'total fat', 'yağ ', 'fat ']);
-      if (fat != null) _fatController.text = fmt(fat);
-
-      // Saturated fat
-      final saturated = findInLines([
-        'doymuş yağ',
-        'doymuş',
-        'saturated fat',
-        'saturates',
-      ]);
-      if (saturated != null) _saturatedFatController.text = fmt(saturated);
-
-      // Trans fat
-      final transFat = findInLines(['trans yağ', 'trans fat', 'trans-fat']);
-      if (transFat != null) _transFatController.text = fmt(transFat);
-
-      // Carbohydrates
-      final carbs = findInLines([
-        'karbonhidrat',
-        'carbohydrate',
-        'glucides',
-        'hidrat',
-      ]);
-      if (carbs != null) _carbsController.text = fmt(carbs);
-
-      // Sugars
-      final sugars = findInLines([
-        'şekerler',
-        'şeker',
-        'of which sugars',
-        'sugars',
-        'sugar',
-      ]);
-      if (sugars != null) _sugarsController.text = fmt(sugars);
-
-      // Salt
-      final salt = findInLines(['tuz', 'salt']);
-      if (salt != null) {
-        _saltController.text = fmt(salt);
-      } else {
-        // Fallback: sodium → salt conversion
-        final sodium = findInLines(['sodyum', 'sodium']);
-        if (sodium != null) {
-          final saltVal = sodium * 2.5;
-          _saltController.text = fmt(saltVal);
-        }
-      }
-
-      // Fiber
-      final fiber = findInLines([
-        'lif',
-        'dietary fiber',
-        'dietary fibre',
-        'fiber',
-        'fibre',
-      ]);
-      if (fiber != null) _fiberController.text = fmt(fiber);
-
-      // Protein
-      final protein = findInLines(['protein', 'protei̇n']);
-      if (protein != null) _proteinController.text = fmt(protein);
-    });
   }
 
   Future<ImageSource?> _showOcrSourcePicker() async {
@@ -784,14 +651,18 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.camera_alt_rounded,
-                    color: context.colors.primary),
+                leading: Icon(
+                  Icons.camera_alt_rounded,
+                  color: context.colors.primary,
+                ),
                 title: Text(l10n.takePhoto),
                 onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
               ),
               ListTile(
-                leading: Icon(Icons.photo_library_rounded,
-                    color: context.colors.primary),
+                leading: Icon(
+                  Icons.photo_library_rounded,
+                  color: context.colors.primary,
+                ),
                 title: Text(l10n.chooseFromGallery),
                 onTap: () => Navigator.pop(sheetContext, ImageSource.gallery),
               ),
@@ -869,22 +740,19 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             child: _selectedImage != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(19),
-                    child: Image.file(
-                      _selectedImage!,
-                      fit: BoxFit.cover,
-                    ),
+                    child: Image.file(_selectedImage!, fit: BoxFit.cover),
                   )
                 : existingImageUrl != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(19),
-                        child: Image.network(
-                          existingImageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) =>
-                              _buildPhotoPlaceholder(context),
-                        ),
-                      )
-                    : _buildPhotoPlaceholder(context),
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(19),
+                    child: Image.network(
+                      existingImageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) =>
+                          _buildPhotoPlaceholder(context),
+                    ),
+                  )
+                : _buildPhotoPlaceholder(context),
           ),
         ),
       ],
@@ -904,10 +772,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         const SizedBox(height: 8),
         Text(
           l10n.takePhoto,
-          style: TextStyle(
-            fontSize: 13,
-            color: context.colors.textMuted,
-          ),
+          style: TextStyle(fontSize: 13, color: context.colors.textMuted),
         ),
       ],
     );
@@ -933,12 +798,14 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-              color: context.colors.border.withValues(alpha: 0.3)),
+            color: context.colors.border.withValues(alpha: 0.3),
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-              color: context.colors.border.withValues(alpha: 0.3)),
+            color: context.colors.border.withValues(alpha: 0.3),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -952,8 +819,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: context.colors.error, width: 1.5),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
     );
   }
@@ -968,13 +837,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       validator: validator,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[\d.,]')),
-      ],
-      style: TextStyle(
-        color: context.colors.textPrimary,
-        fontSize: 14,
-      ),
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.,]'))],
+      style: TextStyle(color: context.colors.textPrimary, fontSize: 14),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(fontSize: 12, color: context.colors.textMuted),
@@ -989,12 +853,14 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-              color: context.colors.border.withValues(alpha: 0.3)),
+            color: context.colors.border.withValues(alpha: 0.3),
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-              color: context.colors.border.withValues(alpha: 0.3)),
+            color: context.colors.border.withValues(alpha: 0.3),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -1008,8 +874,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: context.colors.error, width: 1.5),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
         isDense: true,
       ),
     );
@@ -1042,8 +910,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.camera_alt_rounded,
-                    color: context.colors.primary),
+                leading: Icon(
+                  Icons.camera_alt_rounded,
+                  color: context.colors.primary,
+                ),
                 title: Text(l10n.takePhoto),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -1051,8 +921,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.photo_library_rounded,
-                    color: context.colors.primary),
+                leading: Icon(
+                  Icons.photo_library_rounded,
+                  color: context.colors.primary,
+                ),
                 title: Text(l10n.chooseFromGallery),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -1091,10 +963,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     return !product.hasEssentialData;
   }
 
-  double? _parseDouble(String text) {
-    if (text.trim().isEmpty) return null;
+  double _parseDouble(String text) {
+    if (text.trim().isEmpty) return 0.0;
     final normalized = text.replaceAll(',', '.');
-    return double.tryParse(normalized);
+    return double.tryParse(normalized) ?? 0.0;
   }
 
   Future<void> _save() async {
@@ -1122,7 +994,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         if (uploadedPath != null) {
           imageUrl = uploadedPath;
         }
-        // If uploadedPath is null, it failed. 
+        // If uploadedPath is null, it failed.
         // We log error but proceed with previous image or gracefully handle it.
       }
 
@@ -1153,10 +1025,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
       final updatedProduct = ProductEntity(
         barcode: widget.barcode,
-        productName:
-            _nameController.text.isNotEmpty ? _nameController.text : null,
-        brands:
-            _brandController.text.isNotEmpty ? _brandController.text : null,
+        productName: _nameController.text.isNotEmpty
+            ? _nameController.text
+            : null,
+        brands: _brandController.text.isNotEmpty ? _brandController.text : null,
         imageUrl: imageUrl,
         ingredientsText: ingredientsText,
         allergensTags: _existingProduct?.allergensTags ?? const [],
@@ -1213,8 +1085,9 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         SnackBar(
           content: Text(l10n.savedSuccessfully),
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -1240,7 +1113,9 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     try {
       final fileSize = await _selectedImage!.length();
       debugPrint('[Upload] file: ${_selectedImage!.path}');
-      debugPrint('[Upload] size: $fileSize bytes (${(fileSize / 1024).toStringAsFixed(1)} KB)');
+      debugPrint(
+        '[Upload] size: $fileSize bytes (${(fileSize / 1024).toStringAsFixed(1)} KB)',
+      );
 
       final ext = _selectedImage!.path.split('.').last;
       final safeExt = (ext.length > 5 || ext.contains(RegExp(r'[^a-zA-Z0-9]')))
@@ -1248,11 +1123,15 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           : ext;
       debugPrint('[Upload] extension: "$ext" → "$safeExt"');
 
-      final sanitizedBarcode =
-          widget.barcode.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      final sanitizedBarcode = widget.barcode.replaceAll(
+        RegExp(r'[^a-zA-Z0-9]'),
+        '',
+      );
       final path = 'products/${sanitizedBarcode}_$userId.$safeExt';
       debugPrint('[Upload] storage path: "$path"');
-      debugPrint('[Upload] barcode: "${widget.barcode}" → sanitized: "$sanitizedBarcode"');
+      debugPrint(
+        '[Upload] barcode: "${widget.barcode}" → sanitized: "$sanitizedBarcode"',
+      );
 
       // Check file exists and is readable
       if (!await _selectedImage!.exists()) {
@@ -1262,8 +1141,11 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
       await Supabase.instance.client.storage
           .from('product-images')
-          .upload(path, _selectedImage!,
-              fileOptions: const FileOptions(upsert: true));
+          .upload(
+            path,
+            _selectedImage!,
+            fileOptions: const FileOptions(upsert: true),
+          );
 
       final publicUrl = Supabase.instance.client.storage
           .from('product-images')
@@ -1286,6 +1168,30 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  /// Shown when the Gemini service call failed. Since the refactor removed
+  /// the ML Kit fallback, the no-fallback copy ("try again in a minute") is
+  /// the honest message — "yedek tarama kullanılıyor" would be a lie now.
+  /// Warning colour + longer display so the user notices that nothing was
+  /// written to the form and they need to retry.
+  void _showAiUnavailableWarning() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.cloud_off_rounded, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(child: Text(context.l10n.aiServiceUnavailableNoFallback)),
+          ],
+        ),
+        backgroundColor: const Color(0xFFFF9800),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 5),
       ),
     );
   }

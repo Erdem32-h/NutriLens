@@ -386,19 +386,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get energyValue => 'Energy Value';
 
   @override
-  String get fatLabel => 'FAT';
+  String get fatLabel => 'Fat';
 
   @override
-  String get sugarLabel => 'SUGAR';
+  String get sugarLabel => 'Sugar';
 
   @override
-  String get saturatedFatLabel => 'SATURATED FAT';
+  String get saturatedFatLabel => 'Saturated fat';
 
   @override
-  String get transFatLabel => 'TRANS FAT';
+  String get transFatLabel => 'Trans fat';
 
   @override
-  String get saltLabel => 'SALT';
+  String get saltLabel => 'Salt';
 
   @override
   String get lowLevel => 'LOW';
@@ -732,6 +732,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiFailed => 'AI analysis failed. Please try again.';
+
+  @override
+  String get aiServiceUnavailable =>
+      'AI service unavailable — using fallback scan, results may be less accurate.';
+
+  @override
+  String get aiServiceUnavailableNoFallback =>
+      'AI service is currently unavailable. Please try again in a few minutes.';
+
+  @override
+  String get aiServiceDownTitle => 'AI Service Unavailable';
+
+  @override
+  String get aiServiceDownBody =>
+      'The ingredient reading service isn\'t responding right now. Please try again in a few minutes or enter the ingredients manually.';
+
+  @override
+  String get manualEntry => 'Enter Manually';
+
+  @override
+  String get tryAgain => 'Try Again';
 
   @override
   String get aiLowConfidence => 'Low confidence — results are estimates';

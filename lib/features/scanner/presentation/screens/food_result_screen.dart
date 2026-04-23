@@ -30,6 +30,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   FoodRecognitionResult? _result;
   bool _loading = true;
   String? _error;
+  bool _serviceUnavailable = false;
   bool _saving = false;
 
   @override
@@ -42,6 +43,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      _serviceUnavailable = false;
     });
 
     try {
@@ -50,6 +52,14 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       if (!mounted) return;
       setState(() {
         _result = result;
+        _loading = false;
+      });
+    } on GeminiServiceException catch (e) {
+      debugPrint('[FoodResult] AI service unavailable: $e');
+      if (!mounted) return;
+      setState(() {
+        _serviceUnavailable = true;
+        _error = e.toString();
         _loading = false;
       });
     } catch (e) {
@@ -178,16 +188,28 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   }
 
   Widget _buildError(dynamic l10n, AppColorsExtension colors) {
+    // Service-unavailable gets the warning palette + a softer message; this
+    // distinguishes "AI is down right now" from "AI couldn't recognize the
+    // food", which need different user actions (wait vs. retake the photo).
+    final isServiceDown = _serviceUnavailable;
+    final iconColor = isServiceDown ? colors.warning : colors.error;
+    final icon = isServiceDown
+        ? Icons.cloud_off_rounded
+        : Icons.error_outline_rounded;
+    final message = isServiceDown
+        ? l10n.aiServiceUnavailableNoFallback
+        : l10n.aiFailed;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline_rounded, size: 64, color: colors.error),
+            Icon(icon, size: 64, color: iconColor),
             const SizedBox(height: 16),
             Text(
-              l10n.aiFailed,
+              message,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

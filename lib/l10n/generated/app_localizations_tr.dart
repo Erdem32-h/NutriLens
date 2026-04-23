@@ -384,19 +384,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get energyValue => 'Enerji Değeri';
 
   @override
-  String get fatLabel => 'YAĞ';
+  String get fatLabel => 'Yağ';
 
   @override
-  String get sugarLabel => 'ŞEKER';
+  String get sugarLabel => 'Şeker';
 
   @override
-  String get saturatedFatLabel => 'DOYMUŞ YAĞ';
+  String get saturatedFatLabel => 'Doymuş yağ';
 
   @override
-  String get transFatLabel => 'TRANS YAĞ';
+  String get transFatLabel => 'Trans yağ';
 
   @override
-  String get saltLabel => 'TUZ';
+  String get saltLabel => 'Tuz';
 
   @override
   String get lowLevel => 'DÜŞÜK';
@@ -733,6 +733,27 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get aiFailed => 'AI analiz başarısız oldu. Tekrar deneyin.';
+
+  @override
+  String get aiServiceUnavailable =>
+      'AI servisi şu an çalışmıyor — yedek tarama kullanılıyor, sonuçlar daha az hassas olabilir.';
+
+  @override
+  String get aiServiceUnavailableNoFallback =>
+      'AI servisi şu an çalışmıyor. Lütfen birkaç dakika sonra tekrar deneyin.';
+
+  @override
+  String get aiServiceDownTitle => 'AI Servisi Çalışmıyor';
+
+  @override
+  String get aiServiceDownBody =>
+      'İçindekiler okuma servisi şu an yanıt vermiyor. Birkaç dakika sonra tekrar deneyin ya da içindekileri elle girin.';
+
+  @override
+  String get manualEntry => 'Elle Gir';
+
+  @override
+  String get tryAgain => 'Tekrar Dene';
 
   @override
   String get aiLowConfidence => 'Düşük güven — sonuçlar tahminidir';
