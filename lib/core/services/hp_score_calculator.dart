@@ -76,22 +76,32 @@ class HpScoreCalculator {
     final chemicalLoad = await _calculateChemicalLoad(allAdditives);
     final riskFactor = _calculateRiskFactor(nutriments);
     final nutriFactor = _calculateNutriFactor(nutriments, novaGroup);
+    final ingredientQualityPenalty = _calculateIngredientQualityPenalty(
+      ingredientsText,
+    );
 
-    final hpScore = (100 -
-            (chemicalLoad * ScoreConstants.chemicalWeight) -
-            (riskFactor * ScoreConstants.riskWeight) +
-            (nutriFactor * ScoreConstants.nutriWeight))
-        .clamp(0.0, 100.0);
+    final hpScore =
+        (100 -
+                (chemicalLoad * ScoreConstants.chemicalWeight) -
+                (riskFactor * ScoreConstants.riskWeight) +
+                (nutriFactor * ScoreConstants.nutriWeight) -
+                ingredientQualityPenalty)
+            .clamp(0.0, 100.0);
 
     // ── Critical ingredient blacklist ──
     // If ANY of these are found → instant worst score (10.0 → gauge 5)
-    final String t = ingredientsText != null ? ScoreConstants.normalizeTurkish(ingredientsText) : '';
+    final String t = ingredientsText != null
+        ? ScoreConstants.normalizeTurkish(ingredientsText)
+        : '';
 
-    final bool hasCriticalIngredients =
-        ScoreConstants.criticalPatterns.any((pattern) => t.contains(pattern));
+    final bool hasCriticalIngredients = ScoreConstants.criticalPatterns.any(
+      (pattern) => t.contains(pattern),
+    );
 
     final double finalHpScore = hasCriticalIngredients ? 10.0 : hpScore;
-    final int finalGaugeLevel = hasCriticalIngredients ? 5 : ScoreConstants.hpToGauge(finalHpScore);
+    final int finalGaugeLevel = hasCriticalIngredients
+        ? 5
+        : ScoreConstants.hpToGauge(finalHpScore);
 
     return HpScoreResult(
       hpScore: finalHpScore,
@@ -176,9 +186,7 @@ class HpScoreCalculator {
         for (final rawName in candidates) {
           // Strip parenthetical suffixes: "Poligliserol Polirisinoleat (PGPR)"
           // → "Poligliserol Polirisinoleat"
-          final clean = rawName
-              .replaceAll(RegExp(r'\s*\([^)]*\)'), '')
-              .trim();
+          final clean = rawName.replaceAll(RegExp(r'\s*\([^)]*\)'), '').trim();
 
           // Ignore very short names to avoid false positives
           if (clean.length < 6) continue;
@@ -226,11 +234,10 @@ class HpScoreCalculator {
   double _calculateRiskFactor(NutrimentsEntity n) {
     final sugarRatio =
         min((n.sugars ?? 0) / ScoreConstants.sugarMaxRef, 1.0) * 100;
-    final saltRatio =
-        min((n.salt ?? 0) / ScoreConstants.saltMaxRef, 1.0) * 100;
+    final saltRatio = min((n.salt ?? 0) / ScoreConstants.saltMaxRef, 1.0) * 100;
     final satFatRatio =
         min((n.saturatedFat ?? 0) / ScoreConstants.saturatedFatMaxRef, 1.0) *
-            100;
+        100;
 
     return (sugarRatio * ScoreConstants.sugarWeight) +
         (saltRatio * ScoreConstants.saltWeight) +
@@ -242,11 +249,31 @@ class HpScoreCalculator {
         min((n.fiber ?? 0) / ScoreConstants.fiberExcellent, 1.0) * 100;
     final proteinScore =
         min((n.proteins ?? 0) / ScoreConstants.proteinExcellent, 1.0) * 100;
-    final naturalness = ScoreConstants.novaNaturalness[novaGroup] ??
+    final naturalness =
+        ScoreConstants.novaNaturalness[novaGroup] ??
         ScoreConstants.novaUnknownNaturalness;
 
     return (fiberScore * ScoreConstants.fiberWeight) +
         (proteinScore * ScoreConstants.proteinWeight) +
         (naturalness * ScoreConstants.naturalnessWeight);
+  }
+
+  double _calculateIngredientQualityPenalty(String? ingredientsText) {
+    if (ingredientsText == null || ingredientsText.trim().isEmpty) return 0.0;
+
+    final text = ScoreConstants.normalizeTurkish(ingredientsText);
+    final hasAddedSugar = ScoreConstants.addedSugarPatterns.any(text.contains);
+    final hasRefinedFlour =
+        ScoreConstants.refinedFlourPatterns.any(text.contains) ||
+        RegExp(r'(^|[^a-z])un([^a-z]|$)').hasMatch(text);
+
+    var penalty = 0.0;
+    if (hasAddedSugar) penalty += ScoreConstants.addedSugarPenalty;
+    if (hasRefinedFlour) penalty += ScoreConstants.refinedFlourPenalty;
+    if (hasAddedSugar && hasRefinedFlour) {
+      penalty += ScoreConstants.refinedCarbComboPenalty;
+    }
+
+    return min(penalty, ScoreConstants.ingredientQualityPenaltyCap);
   }
 }

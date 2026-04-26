@@ -6,6 +6,8 @@ void main() {
     energyKcal: 250.0,
     fat: 10.5,
     saturatedFat: 3.2,
+    transFat: 0.1,
+    carbohydrates: 34.0,
     sugars: 12.0,
     salt: 1.5,
     fiber: 4.0,
@@ -17,6 +19,8 @@ void main() {
       expect(nutriments.energyKcal, 250.0);
       expect(nutriments.fat, 10.5);
       expect(nutriments.saturatedFat, 3.2);
+      expect(nutriments.transFat, 0.1);
+      expect(nutriments.carbohydrates, 34.0);
       expect(nutriments.sugars, 12.0);
       expect(nutriments.salt, 1.5);
       expect(nutriments.fiber, 4.0);
@@ -44,6 +48,8 @@ void main() {
         energyKcal: 250.0,
         fat: 10.5,
         saturatedFat: 3.2,
+        transFat: 0.1,
+        carbohydrates: 34.0,
         sugars: 12.0,
         salt: 1.5,
         fiber: 4.0,
@@ -58,6 +64,8 @@ void main() {
         energyKcal: 999.0,
         fat: 10.5,
         saturatedFat: 3.2,
+        transFat: 0.1,
+        carbohydrates: 34.0,
         sugars: 12.0,
         salt: 1.5,
         fiber: 4.0,
@@ -68,7 +76,10 @@ void main() {
     });
 
     test('props contains all fields in order', () {
-      expect(nutriments.props, [250.0, 10.5, 3.2, 12.0, 1.5, 4.0, 8.0]);
+      expect(
+        nutriments.props,
+        [250.0, 10.5, 3.2, 0.1, 34.0, 12.0, 1.5, 4.0, 8.0],
+      );
     });
   });
 
@@ -90,6 +101,18 @@ void main() {
       final updated = nutriments.copyWith(saturatedFat: 5.0);
 
       expect(updated.saturatedFat, 5.0);
+    });
+
+    test('returns new instance with updated transFat', () {
+      final updated = nutriments.copyWith(transFat: 0.0);
+
+      expect(updated.transFat, 0.0);
+    });
+
+    test('returns new instance with updated carbohydrates', () {
+      final updated = nutriments.copyWith(carbohydrates: 42.0);
+
+      expect(updated.carbohydrates, 42.0);
     });
 
     test('returns new instance with updated sugars', () {

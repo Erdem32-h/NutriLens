@@ -53,10 +53,16 @@ class ScanLimitService {
 
   const ScanLimitService(this._client);
 
-  Future<ScanCheckResult> checkAndIncrement() async {
+  Future<ScanCheckResult> checkAndIncrement({bool localPremium = false}) async {
+    if (localPremium) return ScanCheckResult.unlimited;
+
     final userId = _client.auth.currentUser?.id;
     if (userId == null) {
-      return const ScanCheckResult(allowed: false, remaining: 0, isPremium: false);
+      return const ScanCheckResult(
+        allowed: false,
+        remaining: 0,
+        isPremium: false,
+      );
     }
 
     try {

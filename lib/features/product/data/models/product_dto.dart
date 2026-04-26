@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:openfoodfacts/openfoodfacts.dart';
 
+import '../../../../core/constants/score_constants.dart';
 import '../../domain/entities/nutriments_entity.dart';
 import '../../domain/entities/product_entity.dart';
 import 'nutriments_dto.dart';
@@ -43,6 +44,8 @@ abstract final class ProductDto {
         energyKcal: _safeDouble(nutrimentsMap['energy_kcal']),
         fat: _safeDouble(nutrimentsMap['fat']),
         saturatedFat: _safeDouble(nutrimentsMap['saturated_fat']),
+        transFat: _safeDouble(nutrimentsMap['trans_fat']),
+        carbohydrates: _safeDouble(nutrimentsMap['carbohydrates']),
         sugars: _safeDouble(nutrimentsMap['sugars']),
         salt: _safeDouble(nutrimentsMap['salt']),
         fiber: _safeDouble(nutrimentsMap['fiber']),
@@ -52,10 +55,13 @@ abstract final class ProductDto {
       hpChemicalLoad: _safeDouble(row['hp_chemical_load']),
       hpRiskFactor: _safeDouble(row['hp_risk_factor']),
       hpNutriFactor: _safeDouble(row['hp_nutri_factor']),
+      hpScoreVersion:
+          _safeInt(row['hp_score_version']) ??
+          ScoreConstants.hpScoreAlgorithmVersion,
     );
   }
 
-  /// Safely extracts a List<String> from a dynamic Supabase value.
+  /// Safely extracts a `List<String>` from a dynamic Supabase value.
   /// Handles: List, JSON string, null.
   static List<String> _safeListFromRow(dynamic value) {
     if (value == null) return const [];
@@ -71,7 +77,7 @@ abstract final class ProductDto {
     return const [];
   }
 
-  /// Safely extracts a Map<String, dynamic> from a dynamic Supabase value.
+  /// Safely extracts a `Map<String, dynamic>` from a dynamic Supabase value.
   /// Handles: Map, JSON string, null.
   static Map<String, dynamic> _safeMapFromRow(dynamic value) {
     if (value == null) return const {};
@@ -133,6 +139,7 @@ abstract final class ProductDto {
     double? hpChemicalLoad,
     double? hpRiskFactor,
     double? hpNutriFactor,
+    int hpScoreVersion = ScoreConstants.hpScoreAlgorithmVersion,
   }) {
     return ProductEntity(
       barcode: barcode,
@@ -151,6 +158,7 @@ abstract final class ProductDto {
       hpChemicalLoad: hpChemicalLoad,
       hpRiskFactor: hpRiskFactor,
       hpNutriFactor: hpNutriFactor,
+      hpScoreVersion: hpScoreVersion,
     );
   }
 }

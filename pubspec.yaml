@@ -34,7 +34,10 @@ dependencies:
   # Barcode Scanning
   mobile_scanner: ^7.0.1
 
-  # ML Kit OCR (fallback for Gemini)
+  # On-device OCR (used for nutrition-table scanning — numbers are the
+  # payload, and ML Kit's local text recognizer is both faster and more
+  # tolerant of perspective/lighting than the Gemini vision path we use
+  # for ingredients).
   google_mlkit_text_recognition: ^0.14.0
 
   # Food Data

@@ -8,18 +8,22 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
-import '../../../../core/services/gemini_ai_service.dart';
-import '../../../../core/services/nutrition_mlkit_service.dart';
+import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/services/anthropic_ai_service.dart';
+import '../../../../core/services/gemini_ai_service.dart'
+    show NutritionOcrResult;
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
 import '../../domain/entities/nutriments_entity.dart';
 import '../../domain/entities/product_entity.dart';
+import '../providers/ocr_provider.dart';
 import '../providers/product_provider.dart';
 
 class EditProductScreen extends ConsumerStatefulWidget {
   final String barcode;
+  final Map<String, dynamic>? productInfo;
 
-  const EditProductScreen({super.key, required this.barcode});
+  const EditProductScreen({super.key, required this.barcode, this.productInfo});
 
   @override
   ConsumerState<EditProductScreen> createState() => _EditProductScreenState();
@@ -49,8 +53,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
   // the user think the nutrition scan had auto-fired off the ingredients
   // photo.
   _OcrTarget? _ocrProcessingTarget;
+  _OcrStage? _ocrStage;
   ProductEntity? _existingProduct;
   bool _isNewProduct = false;
+  bool _initialProductInfoApplied = false;
 
   @override
   void initState() {
@@ -104,6 +110,30 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     _proteinController.text = product.nutriments.proteins?.toString() ?? '';
   }
 
+  void _applyInitialProductInfo() {
+    if (_initialProductInfoApplied) return;
+    _initialProductInfoApplied = true;
+
+    final info = widget.productInfo;
+    if (info == null) return;
+
+    final productName = info['productName'] as String?;
+    final brand = info['brand'] as String?;
+    final frontPhotoPath = info['frontPhotoPath'] as String?;
+
+    if (_nameController.text.isEmpty && productName != null) {
+      _nameController.text = productName;
+    }
+    if (_brandController.text.isEmpty && brand != null) {
+      _brandController.text = brand;
+    }
+    if (_selectedImage == null &&
+        frontPhotoPath != null &&
+        frontPhotoPath.isNotEmpty) {
+      _selectedImage = File(frontPhotoPath);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -143,6 +173,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         error: (_, _) {
           // Error loading = treat as new product
           _isNewProduct = true;
+          _applyInitialProductInfo();
           return _buildForm(context, null);
         },
         data: (product) {
@@ -150,6 +181,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             _populateFromProduct(product);
           } else {
             _isNewProduct = true;
+            _applyInitialProductInfo();
           }
           return _buildForm(context, product);
         },
@@ -464,7 +496,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     final isThisOneScanning = _ocrProcessingTarget == target;
     final isAnyScanning = _ocrProcessingTarget != null;
     return GestureDetector(
-      // Block both buttons while EITHER is scanning (only one Gemini request
+      // Block both buttons while EITHER is scanning (only one AI request
       // at a time, single rate-limit slot), but only show the spinner on the
       // button that was actually tapped.
       onTap: isAnyScanning ? null : onTap,
@@ -492,12 +524,16 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             else
               Icon(icon, size: 20, color: context.colors.primary),
             const SizedBox(width: 10),
-            Text(
-              isThisOneScanning ? context.l10n.ocrProcessing : label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: context.colors.primary,
+            Flexible(
+              child: Text(
+                isThisOneScanning ? _ocrStageText(context, _ocrStage) : label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: context.colors.primary,
+                ),
               ),
             ),
           ],
@@ -514,7 +550,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     // Don't clamp size here — `prepareOcrImage` (worker isolate) downscales
     // to 3200px on the long edge AFTER baking EXIF rotation. Picker's max*
     // clamp happens before orientation is resolved on some Android OEMs,
-    // which can produce misshapen/rotated bytes that Gemini reads sideways.
+    // which can produce misshapen/rotated bytes that vision models read sideways.
     final source = await _showOcrSourcePicker();
     if (source == null) return;
 
@@ -526,30 +562,33 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     }
     if (xFile == null) return;
 
-    setState(() => _ocrProcessingTarget = target);
+    setState(() {
+      _ocrProcessingTarget = target;
+      _ocrStage = _OcrStage.preparingImage;
+    });
 
     try {
-      final aiService = ref.read(geminiAiServiceProvider);
-      final rawBytes = await File(xFile.path).readAsBytes();
-      // Normalize orientation + downscale + base64 on a worker isolate so
-      // the UI thread stays responsive (a 12 MP frame would otherwise
-      // block ~2 s of CPU here and risk an Android ANR dialog).
-      final prepared = await prepareOcrImage(rawBytes);
-
       switch (target) {
         case _OcrTarget.ingredients:
-          // Gemini vision is the only OCR path for ingredients — same
-          // rationale as `IngredientsCameraScreen`: ML Kit's plain OCR
-          // tends to substitute the producer address when the ingredients
-          // section is missed, and Gemini handles curved/multi-section
-          // labels far better.
-          String? aiText;
+          // Claude vision is the OCR path for ingredients.
+          // Send the label photo directly to Claude vision using the app's
+          // selected language, including allergen warnings in the returned text.
+          final rawBytes = await File(xFile.path).readAsBytes();
+          _setOcrStage(_OcrStage.preparingImage);
+          final prepared = await prepareOcrImage(rawBytes);
+          final languageCode = ref.read(localeProvider).languageCode;
+
+          String? ingredientsText;
           try {
-            aiText = await aiService.extractIngredientsFromBase64(
-              prepared.base64,
-            );
-          } on GeminiServiceException catch (e) {
-            debugPrint('[OCR] Gemini ingredients service failure: $e');
+            _setOcrStage(_OcrStage.sendingToClaude);
+            ingredientsText = await ref
+                .read(anthropicAiServiceProvider)
+                .extractIngredientsFromBase64(
+                  prepared.base64,
+                  languageCode: languageCode,
+                );
+          } on AnthropicServiceException catch (e) {
+            debugPrint('[OCR] Claude ingredients service failure: $e');
             if (!mounted) return;
             _showAiUnavailableWarning();
             return;
@@ -557,64 +596,82 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
           if (!mounted) return;
 
-          if (aiText == null || aiText.trim().isEmpty) {
+          if (ingredientsText == null || ingredientsText.trim().isEmpty) {
             // Sentinel returned: photo missed the ingredients section.
             _showMessage(l10n.ocrNoText);
             return;
           }
 
+          _setOcrStage(_OcrStage.fillingForm);
           setState(() {
-            _ingredientsController.text = aiText!;
+            _ingredientsController.text = ingredientsText!;
           });
           debugPrint(
-            '[OCR] ingredients via Gemini vision, '
-            'len=${aiText.length}',
+            '[OCR] ingredients via Claude Opus 4.7, '
+            'language=$languageCode, len=${ingredientsText.length}',
           );
           _showMessage(l10n.ocrSuccess);
 
         case _OcrTarget.nutrition:
-          // Use ML Kit only for nutrition tables - native OCR without cloud.
-          NutritionOcrResult? aiResult;
+          final rawBytes = await File(xFile.path).readAsBytes();
 
+          // Nutrition tables often have both "100 g" and "portion" columns,
+          // so send the photo directly to Claude vision and let the prompt
+          // select the 100 g / 100 ml values. No Supabase proxy and no ML Kit
+          // fallback here: if Anthropic is not configured/reachable, show a
+          // service warning instead of the misleading "no text found" copy.
+          late final NutritionOcrResult nutritionResult;
           try {
-            final mlkitService = NutritionMlkitService();
-            aiResult = await mlkitService.extractFromImage(xFile.path);
-            mlkitService.dispose();
-          } catch (e) {
-            debugPrint('[OCR] ML Kit nutrition failed: $e');
+            _setOcrStage(_OcrStage.preparingImage);
+            final prepared = await prepareOcrImage(rawBytes);
+            _setOcrStage(_OcrStage.sendingToClaude);
+            final result = await ref
+                .read(anthropicAiServiceProvider)
+                .extractNutritionFromBase64(prepared.base64);
+            nutritionResult =
+                result ??
+                const NutritionOcrResult(
+                  energyKcal: 0,
+                  fat: 0,
+                  saturatedFat: 0,
+                  transFat: 0,
+                  carbohydrates: 0,
+                  sugars: 0,
+                  salt: 0,
+                  fiber: 0,
+                  protein: 0,
+                );
+          } on AnthropicServiceException catch (e) {
+            debugPrint('[OCR] Claude nutrition service failure: $e');
+            if (!mounted) return;
+            _showAiUnavailableWarning();
+            return;
           }
 
           if (!mounted) return;
 
-          if (aiResult == null) {
-            _showMessage(l10n.ocrNoText);
-            return;
-          }
-
-          _showMessage('Besin değerleri tarandı');
-
+          _setOcrStage(_OcrStage.fillingForm);
           setState(() {
-            // Write all values, using 0.0 as default if AI didn't find any value
-            _energyController.text =
-                aiResult!.energyKcal?.toStringAsFixed(1) ?? '0.0';
-            _fatController.text = aiResult.fat?.toStringAsFixed(1) ?? '0.0';
-            _saturatedFatController.text =
-                aiResult.saturatedFat?.toStringAsFixed(1) ?? '0.0';
-            _transFatController.text =
-                aiResult.transFat?.toStringAsFixed(1) ?? '0.0';
-            _carbsController.text =
-                aiResult.carbohydrates?.toStringAsFixed(1) ?? '0.0';
-            _sugarsController.text =
-                aiResult.sugars?.toStringAsFixed(1) ?? '0.0';
-            _saltController.text = aiResult.salt?.toStringAsFixed(3) ?? '0.000';
-            _fiberController.text = aiResult.fiber?.toStringAsFixed(1) ?? '0.0';
-            _proteinController.text =
-                aiResult.protein?.toStringAsFixed(1) ?? '0.0';
+            final assignments = <(TextEditingController, double?, int)>[
+              (_energyController, nutritionResult.energyKcal, 1),
+              (_fatController, nutritionResult.fat, 1),
+              (_saturatedFatController, nutritionResult.saturatedFat, 1),
+              (_transFatController, nutritionResult.transFat, 1),
+              (_carbsController, nutritionResult.carbohydrates, 1),
+              (_sugarsController, nutritionResult.sugars, 1),
+              (_saltController, nutritionResult.salt, 3),
+              (_fiberController, nutritionResult.fiber, 1),
+              (_proteinController, nutritionResult.protein, 1),
+            ];
+            for (final (controller, value, decimals) in assignments) {
+              controller.text = (value ?? 0).toStringAsFixed(decimals);
+            }
           });
           debugPrint(
-            '[OCR] nutrition via Gemini vision: '
-            'kcal=${aiResult.energyKcal}, fat=${aiResult.fat}, '
-            'carbs=${aiResult.carbohydrates}, protein=${aiResult.protein}',
+            '[OCR] nutrition via Claude Opus 4.7: '
+            'kcal=${nutritionResult.energyKcal}, fat=${nutritionResult.fat}, '
+            'carbs=${nutritionResult.carbohydrates}, '
+            'protein=${nutritionResult.protein}',
           );
           _showMessage(l10n.ocrSuccess);
       }
@@ -622,8 +679,31 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
       debugPrint('[OCR] error: $e');
       if (mounted) _showMessage(l10n.ocrFailed);
     } finally {
-      if (mounted) setState(() => _ocrProcessingTarget = null);
+      if (mounted) {
+        setState(() {
+          _ocrProcessingTarget = null;
+          _ocrStage = null;
+        });
+      }
     }
+  }
+
+  void _setOcrStage(_OcrStage stage) {
+    if (!mounted) return;
+    setState(() => _ocrStage = stage);
+  }
+
+  String _ocrStageText(BuildContext context, _OcrStage? stage) {
+    final isTr = Localizations.localeOf(context).languageCode == 'tr';
+    return switch (stage) {
+      _OcrStage.preparingImage =>
+        isTr ? 'Fotoğraf hazırlanıyor...' : 'Preparing photo...',
+      _OcrStage.sendingToClaude =>
+        isTr ? 'Claude ile analiz ediliyor...' : 'Analyzing with Claude...',
+      _OcrStage.fillingForm =>
+        isTr ? 'Sonuçlar forma yazılıyor...' : 'Filling the form...',
+      null => context.l10n.ocrProcessing,
+    };
   }
 
   Future<ImageSource?> _showOcrSourcePicker() async {
@@ -1002,6 +1082,20 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
       final ingredientsText = _ingredientsController.text.isNotEmpty
           ? _ingredientsController.text
           : null;
+      var additiveTags = _existingProduct?.additivesTags ?? const <String>[];
+      if (ingredientsText != null) {
+        final ocrService = ref.read(ocrServiceProvider);
+        final parsedIngredients = await ocrService.parseIngredients(
+          ingredientsText,
+        );
+        final parsedTags = {
+          ...parsedIngredients.detectedAdditives,
+          ...parsedIngredients.unmatchedAdditives,
+        }.toList();
+        if (parsedTags.isNotEmpty || _isNewProduct) {
+          additiveTags = parsedTags;
+        }
+      }
       final nutriments = NutrimentsEntity(
         energyKcal: _parseDouble(_energyController.text),
         fat: _parseDouble(_fatController.text),
@@ -1017,7 +1111,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
       // Calculate HP Score with full data
       final calculator = ref.read(hpScoreCalculatorProvider);
       final hpResult = await calculator.calculateFull(
-        additivesTags: _existingProduct?.additivesTags ?? const [],
+        additivesTags: additiveTags,
         nutriments: nutriments,
         novaGroup: _existingProduct?.novaGroup,
         ingredientsText: ingredientsText,
@@ -1032,7 +1126,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         imageUrl: imageUrl,
         ingredientsText: ingredientsText,
         allergensTags: _existingProduct?.allergensTags ?? const [],
-        additivesTags: _existingProduct?.additivesTags ?? const [],
+        additivesTags: additiveTags,
         novaGroup: _existingProduct?.novaGroup,
         nutriscoreGrade: _existingProduct?.nutriscoreGrade,
         nutriments: nutriments,
@@ -1172,7 +1266,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     );
   }
 
-  /// Shown when the Gemini service call failed. Since the refactor removed
+  /// Shown when the AI service call failed. Since the refactor removed
   /// the ML Kit fallback, the no-fallback copy ("try again in a minute") is
   /// the honest message — "yedek tarama kullanılıyor" would be a lie now.
   /// Warning colour + longer display so the user notices that nothing was
@@ -1198,3 +1292,5 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 }
 
 enum _OcrTarget { ingredients, nutrition }
+
+enum _OcrStage { preparingImage, sendingToClaude, fillingForm }

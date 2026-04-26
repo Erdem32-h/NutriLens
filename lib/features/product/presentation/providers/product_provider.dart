@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../config/drift/app_database.dart';
 import '../../../../core/network/connectivity_provider.dart';
+import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/services/hp_score_calculator.dart';
 import '../../data/datasources/barcode_lookup_source.dart';
@@ -109,6 +111,13 @@ final geminiAiServiceProvider = Provider<GeminiAiService>((ref) {
   return GeminiAiService(ref.watch(supabaseClientProvider));
 });
 
+final anthropicAiServiceProvider = Provider<AnthropicAiService>((ref) {
+  return AnthropicAiService(
+    dio: ref.watch(dioProvider),
+    apiKey: dotenv.env['ANTHROPIC_API_KEY'] ?? '',
+  );
+});
+
 // --- UI Providers ---
 
 /// Fetches product by barcode. Use `ref.watch(productByBarcodeProvider(barcode))`.
@@ -126,38 +135,50 @@ final productByBarcodeProvider = FutureProvider.family<ProductEntity?, String>((
       return const Left(ServerFailure('Request timed out'));
     },
   );
-  return result.fold((failure) {
-    debugPrint('[Provider] productByBarcode($barcode) → failure: '
-        '${failure.runtimeType} - ${failure.message}');
-    // NotFoundFailure → return null so UI redirects to edit screen
-    if (failure is NotFoundFailure) return null;
-    throw Exception(failure.message);
-  }, (product) {
-    debugPrint('[Provider] productByBarcode($barcode) → found: '
-        'name=${product.productName}, hasEssential=${product.hasEssentialData}');
-    return product;
-  });
+  return result.fold(
+    (failure) {
+      debugPrint(
+        '[Provider] productByBarcode($barcode) → failure: '
+        '${failure.runtimeType} - ${failure.message}',
+      );
+      // NotFoundFailure → return null so UI redirects to edit screen
+      if (failure is NotFoundFailure) return null;
+      throw Exception(failure.message);
+    },
+    (product) {
+      debugPrint(
+        '[Provider] productByBarcode($barcode) → found: '
+        'name=${product.productName}, hasEssential=${product.hasEssentialData}',
+      );
+      return product;
+    },
+  );
 });
 
 // --- Submit Community Product ---
 
 final submitCommunityProductUseCaseProvider =
     Provider<SubmitCommunityProductUseCase>((ref) {
-      return SubmitCommunityProductUseCase(ref.watch(productRepositoryProvider));
+      return SubmitCommunityProductUseCase(
+        ref.watch(productRepositoryProvider),
+      );
     });
 
 // --- Alternatives ---
 
 /// Returns up to 5 locally cached products with a better HP score than
 /// the product identified by [barcode]. The record is a (barcode, hpScore) pair.
-final alternativesProvider = FutureProvider.family<List<ProductEntity>,
-    ({String barcode, double hpScore})>((ref, args) async {
-  final local = ref.watch(productLocalDataSourceProvider);
-  return local.getAlternatives(
-    barcode: args.barcode,
-    currentHpScore: args.hpScore,
-  );
-});
+final alternativesProvider =
+    FutureProvider.family<
+      List<ProductEntity>,
+      ({String barcode, double hpScore})
+    >((ref, args) async {
+      final local = ref.watch(productLocalDataSourceProvider);
+      return local.getAlternatives(
+        barcode: args.barcode,
+        currentHpScore: args.hpScore,
+      );
+    });
 
 // --- Additives ---
 

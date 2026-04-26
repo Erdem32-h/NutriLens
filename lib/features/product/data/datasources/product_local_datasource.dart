@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 
 import '../../../../config/drift/app_database.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/constants/score_constants.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../domain/entities/product_entity.dart';
 import '../models/nutriments_dto.dart';
@@ -54,6 +55,7 @@ final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
         hpChemicalLoad: row.hpChemicalLoad,
         hpRiskFactor: row.hpRiskFactor,
         hpNutriFactor: row.hpNutriFactor,
+        hpScoreVersion: row.hpScoreVersion,
       );
     } catch (e) {
       throw CacheException('Failed to read cached product: $e');
@@ -83,6 +85,7 @@ final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
               hpChemicalLoad: Value(product.hpChemicalLoad),
               hpRiskFactor: Value(product.hpRiskFactor),
               hpNutriFactor: Value(product.hpNutriFactor),
+              hpScoreVersion: Value(product.hpScoreVersion),
             ),
           );
     } catch (e) {
@@ -98,6 +101,10 @@ final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
 
       final row = await query.getSingleOrNull();
       if (row == null) return true;
+
+      if (row.hpScoreVersion < ScoreConstants.hpScoreAlgorithmVersion) {
+        return true;
+      }
 
       final age = DateTime.now().difference(row.cachedAt);
       return age > AppConstants.cacheTtl;
@@ -142,6 +149,7 @@ final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
               hpChemicalLoad: row.hpChemicalLoad,
               hpRiskFactor: row.hpRiskFactor,
               hpNutriFactor: row.hpNutriFactor,
+              hpScoreVersion: row.hpScoreVersion,
             ),
           )
           .toList();

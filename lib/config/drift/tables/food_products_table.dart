@@ -17,6 +17,7 @@ class FoodProducts extends Table {
   RealColumn get hpChemicalLoad => real().nullable()();
   RealColumn get hpRiskFactor => real().nullable()();
   RealColumn get hpNutriFactor => real().nullable()();
+  IntColumn get hpScoreVersion => integer().withDefault(const Constant(0))();
   DateTimeColumn get cachedAt =>
       dateTime().withDefault(currentDateAndTime)();
 

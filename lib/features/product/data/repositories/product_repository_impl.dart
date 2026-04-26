@@ -35,6 +35,8 @@ final class ProductRepositoryImpl implements ProductRepository {
       if (cached != null) {
         final stale = await _localDataSource.isStale(barcode);
         if (!stale) {
+          final communityProduct = await _tryRefreshFromCommunity(barcode);
+          if (communityProduct != null) return Right(communityProduct);
           return Right(cached);
         }
         // Stale cache — try resolver, fall back to stale
@@ -124,6 +126,27 @@ final class ProductRepositoryImpl implements ProductRepository {
       return Right(staleCached);
     } catch (_) {
       return Right(staleCached);
+    }
+  }
+
+  Future<ProductEntity?> _tryRefreshFromCommunity(String barcode) async {
+    final isOnline = await _networkInfo.isConnected;
+    if (!isOnline) return null;
+
+    try {
+      final product = await _communitySource.resolve(barcode).timeout(
+        _communitySource.timeout,
+      );
+      if (product == null) return null;
+
+      try {
+        await _localDataSource.cacheProduct(product);
+      } on CacheException catch (_) {
+        // SQLite unavailable — proceed with fresh remote product.
+      }
+      return product;
+    } catch (_) {
+      return null;
     }
   }
 

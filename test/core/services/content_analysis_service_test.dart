@@ -35,23 +35,31 @@ void main() {
         ingredientsText: 'water, wheat flour',
       );
 
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
       expect(result, isEmpty);
     });
 
     test('detects NOVA 4 ultra-processed', () {
       final product = makeProduct(novaGroup: 4);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'ultraProcessed'), isTrue);
-      final warning = result.firstWhere((w) => w.messageKey == 'ultraProcessed');
+      final warning = result.firstWhere(
+        (w) => w.messageKey == 'ultraProcessed',
+      );
       expect(warning.level, WarningLevel.risky);
     });
 
     test('does not flag NOVA 1, 2, 3 as ultra-processed', () {
       for (final nova in [1, 2, 3]) {
         final product = makeProduct(novaGroup: nova);
-        final result = ContentAnalysisService.analyzeIngredients(product: product);
+        final result = ContentAnalysisService.analyzeIngredients(
+          product: product,
+        );
         expect(
           result.any((w) => w.messageKey == 'ultraProcessed'),
           isFalse,
@@ -62,7 +70,9 @@ void main() {
 
     test('detects high sugar (> 22.5g)', () {
       final product = makeProduct(sugars: 30.0);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'highSugar'), isTrue);
       final warning = result.firstWhere((w) => w.messageKey == 'highSugar');
@@ -71,7 +81,9 @@ void main() {
 
     test('detects moderate sugar (> 5g but <= 22.5g)', () {
       final product = makeProduct(sugars: 15.0);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'moderateSugar'), isTrue);
       final warning = result.firstWhere((w) => w.messageKey == 'moderateSugar');
@@ -80,7 +92,9 @@ void main() {
 
     test('does not flag low sugar (<= 5g)', () {
       final product = makeProduct(sugars: 3.0);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'highSugar'), isFalse);
       expect(result.any((w) => w.messageKey == 'moderateSugar'), isFalse);
@@ -88,22 +102,30 @@ void main() {
 
     test('detects high saturated fat (> 5g)', () {
       final product = makeProduct(saturatedFat: 8.0);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'highSaturatedFat'), isTrue);
-      final warning = result.firstWhere((w) => w.messageKey == 'highSaturatedFat');
+      final warning = result.firstWhere(
+        (w) => w.messageKey == 'highSaturatedFat',
+      );
       expect(warning.level, WarningLevel.risky);
     });
 
     test('does not flag low saturated fat (<= 5g)', () {
       final product = makeProduct(saturatedFat: 3.0);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
       expect(result.any((w) => w.messageKey == 'highSaturatedFat'), isFalse);
     });
 
     test('detects high salt (> 1.5g)', () {
       final product = makeProduct(salt: 2.5);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'highSalt'), isTrue);
       final warning = result.firstWhere((w) => w.messageKey == 'highSalt');
@@ -112,26 +134,30 @@ void main() {
 
     test('does not flag low salt (<= 1.5g)', () {
       final product = makeProduct(salt: 0.5);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
       expect(result.any((w) => w.messageKey == 'highSalt'), isFalse);
     });
 
     test('detects palm oil in ingredients', () {
-      final product = makeProduct(
-        ingredientsText: 'sugar, palm oil, flour',
+      final product = makeProduct(ingredientsText: 'sugar, palm oil, flour');
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
       );
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
 
       expect(result.any((w) => w.messageKey == 'containsPalmOil'), isTrue);
-      final warning = result.firstWhere((w) => w.messageKey == 'containsPalmOil');
+      final warning = result.firstWhere(
+        (w) => w.messageKey == 'containsPalmOil',
+      );
       expect(warning.level, WarningLevel.risky);
     });
 
     test('detects palmiye yağı (Turkish palm oil)', () {
-      final product = makeProduct(
-        ingredientsText: 'şeker, palmiye yağı, un',
+      final product = makeProduct(ingredientsText: 'şeker, palmiye yağı, un');
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
       );
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
       expect(result.any((w) => w.messageKey == 'containsPalmOil'), isTrue);
     });
 
@@ -139,10 +165,14 @@ void main() {
       final product = makeProduct(
         ingredientsText: 'partially hydrogenated soybean oil',
       );
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'mayContainTransFat'), isTrue);
-      final warning = result.firstWhere((w) => w.messageKey == 'mayContainTransFat');
+      final warning = result.firstWhere(
+        (w) => w.messageKey == 'mayContainTransFat',
+      );
       expect(warning.level, WarningLevel.caution);
     });
 
@@ -150,24 +180,42 @@ void main() {
       final product = makeProduct(
         ingredientsText: 'sugar, natural flavor, salt',
       );
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'containsFlavoring'), isTrue);
-      final warning = result.firstWhere((w) => w.messageKey == 'containsFlavoring');
+      final warning = result.firstWhere(
+        (w) => w.messageKey == 'containsFlavoring',
+      );
       expect(warning.level, WarningLevel.caution);
     });
 
-    test('detects aroma verici (Turkish flavoring)', () {
+    test('detects gluten when selected as a diet filter', () {
       final product = makeProduct(
-        ingredientsText: 'şeker, aroma verici, tuz',
+        ingredientsText: 'İçindekiler: buğday unu, şeker, tuz',
       );
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+        activeDiets: const ['gluten'],
+      );
+
+      expect(result.any((w) => w.placeholderKey == 'filterGluten'), isTrue);
+    });
+
+    test('detects aroma verici (Turkish flavoring)', () {
+      final product = makeProduct(ingredientsText: 'şeker, aroma verici, tuz');
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
       expect(result.any((w) => w.messageKey == 'containsFlavoring'), isTrue);
     });
 
     test('handles null ingredientsText gracefully', () {
       final product = makeProduct(ingredientsText: null);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
       // Should not throw, and should not contain ingredient-text-based warnings
       expect(result.any((w) => w.messageKey == 'containsPalmOil'), isFalse);
       expect(result.any((w) => w.messageKey == 'mayContainTransFat'), isFalse);
@@ -176,7 +224,9 @@ void main() {
 
     test('handles null nutriment values gracefully', () {
       final product = makeProduct();
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
       // Should not throw, and should not contain nutriment-based warnings
       expect(result.any((w) => w.messageKey == 'highSugar'), isFalse);
       expect(result.any((w) => w.messageKey == 'moderateSugar'), isFalse);
@@ -185,10 +235,10 @@ void main() {
     });
 
     test('case-insensitive ingredient matching', () {
-      final product = makeProduct(
-        ingredientsText: 'PALM OIL, FLAVOR',
+      final product = makeProduct(ingredientsText: 'PALM OIL, FLAVOR');
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
       );
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
       expect(result.any((w) => w.messageKey == 'containsPalmOil'), isTrue);
       expect(result.any((w) => w.messageKey == 'containsFlavoring'), isTrue);
     });
@@ -201,7 +251,9 @@ void main() {
         salt: 2.0,
         ingredientsText: 'palm oil, aroma, partially hydrogenated oil',
       );
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       // Should have: ultraProcessed, highSugar, highSaturatedFat, highSalt,
       //              containsPalmOil, containsFlavoring, mayContainTransFat
@@ -216,7 +268,9 @@ void main() {
         salt: 2.0,
         ingredientsText: 'palm oil, aroma, partially hydrogenated oil',
       );
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       for (final warning in result) {
         expect(warning.icon, isA<IconData>());
@@ -225,7 +279,9 @@ void main() {
 
     test('sugar boundary: exactly 22.5g is caution not risky', () {
       final product = makeProduct(sugars: 22.5);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'highSugar'), isFalse);
       expect(result.any((w) => w.messageKey == 'moderateSugar'), isTrue);
@@ -233,7 +289,9 @@ void main() {
 
     test('sugar boundary: exactly 5.0g is not flagged', () {
       final product = makeProduct(sugars: 5.0);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
 
       expect(result.any((w) => w.messageKey == 'highSugar'), isFalse);
       expect(result.any((w) => w.messageKey == 'moderateSugar'), isFalse);
@@ -241,13 +299,17 @@ void main() {
 
     test('saturated fat boundary: exactly 5.0g is not flagged', () {
       final product = makeProduct(saturatedFat: 5.0);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
       expect(result.any((w) => w.messageKey == 'highSaturatedFat'), isFalse);
     });
 
     test('salt boundary: exactly 1.5g is not flagged', () {
       final product = makeProduct(salt: 1.5);
-      final result = ContentAnalysisService.analyzeIngredients(product: product);
+      final result = ContentAnalysisService.analyzeIngredients(
+        product: product,
+      );
       expect(result.any((w) => w.messageKey == 'highSalt'), isFalse);
     });
   });

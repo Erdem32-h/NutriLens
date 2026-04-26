@@ -1,6 +1,7 @@
 import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/constants/score_constants.dart';
 import '../../domain/entities/product_entity.dart';
 import '../models/product_dto.dart';
 import 'product_source.dart';
@@ -57,6 +58,8 @@ class CommunityProductSource implements ProductSource {
           'energy_kcal': product.nutriments.energyKcal,
           'fat': product.nutriments.fat,
           'saturated_fat': product.nutriments.saturatedFat,
+          'trans_fat': product.nutriments.transFat,
+          'carbohydrates': product.nutriments.carbohydrates,
           'sugars': product.nutriments.sugars,
           'salt': product.nutriments.salt,
           'fiber': product.nutriments.fiber,
@@ -68,6 +71,8 @@ class CommunityProductSource implements ProductSource {
         'hp_chemical_load': product.hpChemicalLoad,
         'hp_risk_factor': product.hpRiskFactor,
         'hp_nutri_factor': product.hpNutriFactor,
+        'hp_score_version': ScoreConstants.hpScoreAlgorithmVersion,
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
         'source': source,
         'ingredients_photo_url': ingredientsPhotoUrl,
         'added_by': userId,

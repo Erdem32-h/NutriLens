@@ -58,17 +58,59 @@ void main() {
 
   group('getProduct', () {
     group('when fresh cache exists', () {
-      test('returns cached product without remote call', () async {
+      test('returns cached product without resolver call when offline', () async {
         when(() => mockLocal.getProduct('8690000000001'))
             .thenAnswer((_) async => product);
         when(() => mockLocal.isStale('8690000000001'))
             .thenAnswer((_) async => false);
+        when(() => mockNetwork.isConnected).thenAnswer((_) async => false);
 
         final result = await repository.getProduct('8690000000001');
 
         expect(result, const Right(product));
         verifyNever(() => mockResolver.resolve(any()));
-        verifyNever(() => mockNetwork.isConnected);
+      });
+
+      test('refreshes from community before returning fresh cache when online',
+          () async {
+        const updatedProduct = ProductEntity(
+          barcode: '8690000000001',
+          productName: 'Updated Product',
+          hpScore: 62,
+        );
+
+        when(() => mockLocal.getProduct('8690000000001'))
+            .thenAnswer((_) async => product);
+        when(() => mockLocal.isStale('8690000000001'))
+            .thenAnswer((_) async => false);
+        when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
+        when(() => mockCommunity.resolve('8690000000001'))
+            .thenAnswer((_) async => updatedProduct);
+        when(() => mockCommunity.timeout).thenReturn(const Duration(seconds: 5));
+        when(() => mockLocal.cacheProduct(any())).thenAnswer((_) async {});
+
+        final result = await repository.getProduct('8690000000001');
+
+        expect(result, const Right(updatedProduct));
+        verify(() => mockLocal.cacheProduct(updatedProduct)).called(1);
+        verifyNever(() => mockResolver.resolve(any()));
+      });
+
+      test('falls back to fresh cache when online community has no row',
+          () async {
+        when(() => mockLocal.getProduct('8690000000001'))
+            .thenAnswer((_) async => product);
+        when(() => mockLocal.isStale('8690000000001'))
+            .thenAnswer((_) async => false);
+        when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
+        when(() => mockCommunity.resolve('8690000000001'))
+            .thenAnswer((_) async => null);
+        when(() => mockCommunity.timeout).thenReturn(const Duration(seconds: 5));
+
+        final result = await repository.getProduct('8690000000001');
+
+        expect(result, const Right(product));
+        verifyNever(() => mockResolver.resolve(any()));
       });
     });
 

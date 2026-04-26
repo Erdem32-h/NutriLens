@@ -147,7 +147,8 @@ GoRouter createRouter() {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final barcode = state.pathParameters['barcode']!;
-          return EditProductScreen(barcode: barcode);
+          final extra = state.extra as Map<String, dynamic>?;
+          return EditProductScreen(barcode: barcode, productInfo: extra);
         },
       ),
       GoRoute(

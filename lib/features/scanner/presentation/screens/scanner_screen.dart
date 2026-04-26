@@ -171,7 +171,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     // Check scan limit
     final scanLimitService = ref.read(scanLimitServiceProvider);
-    final scanResult = await scanLimitService.checkAndIncrement();
+    final scanResult = await scanLimitService.checkAndIncrement(
+      localPremium: ref.read(isPremiumProvider),
+    );
     if (!scanResult.allowed) {
       if (mounted) {
         final granted = await ScanLimitSheet.show(context);
@@ -223,7 +225,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
       // Check scan limit
       final scanLimitService = ref.read(scanLimitServiceProvider);
-      final scanResult = await scanLimitService.checkAndIncrement();
+      final scanResult = await scanLimitService.checkAndIncrement(
+        localPremium: ref.read(isPremiumProvider),
+      );
       if (!scanResult.allowed) {
         if (mounted) {
           final granted = await ScanLimitSheet.show(context);
@@ -285,8 +289,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               right: 0,
               child: Center(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.55),
                     borderRadius: BorderRadius.circular(50),
@@ -310,9 +316,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
           // AI mode: hint + capture button
           if (_scanMode == 1) ...[
             // Semi-transparent overlay
-            Container(
-              color: Colors.black.withValues(alpha: 0.3),
-            ),
+            Container(color: Colors.black.withValues(alpha: 0.3)),
             // Hint text
             Positioned(
               top: MediaQuery.of(context).size.height * 0.35,
@@ -320,8 +324,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               right: 0,
               child: Center(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.55),
                     borderRadius: BorderRadius.circular(50),
@@ -379,7 +385,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -480,9 +488,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(50),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.15),
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
       ),
       child: Row(
         children: [
@@ -551,8 +557,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     );
   }
 
-  Widget _buildCameraError(
-      BuildContext context, MobileScannerException error) {
+  Widget _buildCameraError(BuildContext context, MobileScannerException error) {
     final l10n = context.l10n;
 
     return Center(
@@ -587,10 +592,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
             const SizedBox(height: 8),
             Text(
               l10n.enableCameraPermission,
-              style: TextStyle(
-                fontSize: 14,
-                color: context.colors.textMuted,
-              ),
+              style: TextStyle(fontSize: 14, color: context.colors.textMuted),
               textAlign: TextAlign.center,
             ),
           ],

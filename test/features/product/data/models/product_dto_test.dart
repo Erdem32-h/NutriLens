@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutrilens/features/product/data/models/product_dto.dart';
 import 'package:nutrilens/features/product/domain/entities/nutriments_entity.dart';
-import 'package:nutrilens/features/product/domain/entities/product_entity.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 
 void main() {
@@ -76,25 +75,6 @@ void main() {
     salt: 1.0,
     fiber: 3.0,
     proteins: 7.0,
-  );
-
-  const product = ProductEntity(
-    barcode: '8690000000001',
-    productName: 'Test Product',
-    brands: 'Test Brand',
-    imageUrl: 'https://example.com/img.jpg',
-    ingredientsText: 'water, sugar',
-    allergensTags: ['en:milk', 'en:gluten'],
-    additivesTags: ['en:e300'],
-    novaGroup: 2,
-    nutriscoreGrade: 'a',
-    nutriments: nutriments,
-    categoriesTags: ['en:snacks'],
-    countriesTags: ['en:turkey'],
-    hpScore: 80.0,
-    hpChemicalLoad: 90.0,
-    hpRiskFactor: 70.0,
-    hpNutriFactor: 75.0,
   );
 
   group('ProductDto.fromDriftRow', () {
@@ -178,6 +158,37 @@ void main() {
       expect(entity.brands, isNull);
       expect(entity.novaGroup, isNull);
       expect(entity.hpScore, isNull);
+    });
+  });
+
+  group('ProductDto.fromCommunityRow', () {
+    test('preserves full nutrition table values from community products', () {
+      final entity = ProductDto.fromCommunityRow({
+        'barcode': '8690000000001',
+        'product_name': 'Community Product',
+        'brand': 'Community Brand',
+        'nutriments': {
+          'energy_kcal': 230.0,
+          'fat': 9.0,
+          'saturated_fat': 3.0,
+          'trans_fat': 0.2,
+          'carbohydrates': 33.0,
+          'sugars': 12.0,
+          'salt': 0.8,
+          'fiber': 2.0,
+          'proteins': 6.0,
+        },
+      });
+
+      expect(entity.nutriments.energyKcal, 230.0);
+      expect(entity.nutriments.fat, 9.0);
+      expect(entity.nutriments.saturatedFat, 3.0);
+      expect(entity.nutriments.transFat, 0.2);
+      expect(entity.nutriments.carbohydrates, 33.0);
+      expect(entity.nutriments.sugars, 12.0);
+      expect(entity.nutriments.salt, 0.8);
+      expect(entity.nutriments.fiber, 2.0);
+      expect(entity.nutriments.proteins, 6.0);
     });
   });
 

@@ -1,0 +1,9 @@
+ALTER TABLE IF EXISTS public.food_products
+  ADD COLUMN IF NOT EXISTS hp_score_version INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE IF EXISTS public.community_products
+  ADD COLUMN IF NOT EXISTS hp_score_version INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE IF EXISTS public.community_products
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+

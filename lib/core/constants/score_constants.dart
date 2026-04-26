@@ -1,4 +1,6 @@
 abstract final class ScoreConstants {
+  static const int hpScoreAlgorithmVersion = 2;
+
   // ── HP Formula Weights ──────────────────────────────────────────────
   // These weights define how much each component contributes to the
   // final 1-5 gauge score. They are applied as PENALTY multipliers,
@@ -18,6 +20,14 @@ abstract final class ScoreConstants {
   static const double riskWeight = 0.40;
   static const double nutriWeight = 0.15;
 
+  // ── Ingredient Quality Penalty ─────────────────────────────────────────
+  // Applied after the weighted formula so ingredient-list red flags still
+  // matter when nutrition values are missing or OCR returns zeros.
+  static const double ingredientQualityPenaltyCap = 35.0;
+  static const double addedSugarPenalty = 18.0;
+  static const double refinedFlourPenalty = 12.0;
+  static const double refinedCarbComboPenalty = 10.0;
+
   // ── Chemical Load ───────────────────────────────────────────────────
   // Penalties per additive risk level (summed, capped at 100)
   static const Map<int, double> additivePenalties = {
@@ -32,7 +42,8 @@ abstract final class ScoreConstants {
   // Reference values (per 100g) — when a nutrient hits this value,
   // its sub-score maxes out at 100.
   static const double sugarMaxRef = 22.5; // WHO: <25g free sugar/day
-  static const double saltMaxRef = 2.4; // WHO: <5g salt/day → ~2.4g/100g threshold
+  static const double saltMaxRef =
+      2.4; // WHO: <5g salt/day → ~2.4g/100g threshold
   static const double saturatedFatMaxRef = 10.0; // ~10g/100g is very high
 
   // Sub-weights inside risk factor (must sum to 1.0)
@@ -93,12 +104,45 @@ abstract final class ScoreConstants {
 
   /// Centralized critical ingredient patterns, pre-normalized.
   static const List<String> criticalPatterns = [
-    'palm yag', 'palm oil', 'palmiye yag',
-    'invert seker', 'invert sugar',
-    'glikoz surubu', 'glikoz surub', 'glucose syrup', 'glukoz surubu',
-    'fruktoz surubu', 'fruktoz surub', 'fructose syrup',
-    'misir surubu', 'misir surub', 'corn syrup',
-    'yuksek fruktozlu', 'high fructose corn syrup', 'hfcs',
-    'seker surubu', 'seker surub', 'sugar syrup',
+    'palm yag',
+    'palm oil',
+    'palmiye yag',
+    'invert seker',
+    'invert sugar',
+    'glikoz surubu',
+    'glikoz surub',
+    'glucose syrup',
+    'glukoz surubu',
+    'fruktoz surubu',
+    'fruktoz surub',
+    'fructose syrup',
+    'misir surubu',
+    'misir surub',
+    'corn syrup',
+    'yuksek fruktozlu',
+    'high fructose corn syrup',
+    'hfcs',
+    'seker surubu',
+    'seker surub',
+    'sugar syrup',
+  ];
+
+  static const List<String> addedSugarPatterns = [
+    'seker',
+    'sugar',
+    'sakkaroz',
+    'sucrose',
+    'dekstroz',
+    'dextrose',
+    'glikoz',
+    'glucose',
+  ];
+
+  static const List<String> refinedFlourPatterns = [
+    'bugday unu',
+    'beyaz un',
+    'wheat flour',
+    'white flour',
+    'flour',
   ];
 }

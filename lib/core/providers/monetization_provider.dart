@@ -13,7 +13,10 @@ final subscriptionServiceProvider = Provider<SubscriptionService>((ref) {
 
 final subscriptionStatusProvider = StreamProvider<SubscriptionStatus>((ref) {
   final service = ref.watch(subscriptionServiceProvider);
-  return service.statusStream;
+  return (() async* {
+    yield await service.getStatus();
+    yield* service.statusStream;
+  })();
 });
 
 final isPremiumProvider = Provider<bool>((ref) {

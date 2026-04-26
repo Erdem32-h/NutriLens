@@ -119,12 +119,13 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
   @override
   Future<SubscriptionPurchaseResult> purchase(Package package) async {
     try {
-      final result = await Purchases.purchase(
-        PurchaseParams.package(package),
-      );
-      final isActive = result.customerInfo.entitlements
-          .all[_entitlementId]?.isActive ?? false;
-      return isActive ? SubscriptionPurchaseResult.success : SubscriptionPurchaseResult.failed;
+      final result = await Purchases.purchase(PurchaseParams.package(package));
+      final status = _mapCustomerInfo(result.customerInfo);
+      _statusController?.add(status);
+      final isActive = status.isPremium;
+      return isActive
+          ? SubscriptionPurchaseResult.success
+          : SubscriptionPurchaseResult.failed;
     } on PlatformException catch (e) {
       // purchases_flutter throws PlatformException — map to PurchasesErrorCode
       final errorCode = PurchasesErrorHelper.getErrorCode(e);
@@ -144,7 +145,9 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
   Future<bool> restorePurchases() async {
     try {
       final info = await Purchases.restorePurchases();
-      return info.entitlements.all[_entitlementId]?.isActive ?? false;
+      final status = _mapCustomerInfo(info);
+      _statusController?.add(status);
+      return status.isPremium;
     } catch (e) {
       debugPrint('[RevenueCat] Restore error: $e');
       return false;

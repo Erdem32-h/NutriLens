@@ -64,6 +64,11 @@ class FoodRecognitionResult {
 }
 
 /// Result of AI-improved nutrition OCR.
+///
+/// Every field is nullable so the UI can tell "value not recognized" apart
+/// from "value is 0". That distinction matters on the edit screen — we
+/// must not clobber a user's hand-typed value with a scan that failed to
+/// read that particular row.
 class NutritionOcrResult {
   final double? energyKcal;
   final double? fat;
@@ -89,15 +94,15 @@ class NutritionOcrResult {
 
   factory NutritionOcrResult.fromJson(Map<String, dynamic> json) {
     return NutritionOcrResult(
-      energyKcal: (json['energy_kcal'] as num?)?.toDouble() ?? 0.0,
-      fat: (json['fat'] as num?)?.toDouble() ?? 0.0,
-      saturatedFat: (json['saturated_fat'] as num?)?.toDouble() ?? 0.0,
-      transFat: (json['trans_fat'] as num?)?.toDouble() ?? 0.0,
-      carbohydrates: (json['carbohydrates'] as num?)?.toDouble() ?? 0.0,
-      sugars: (json['sugars'] as num?)?.toDouble() ?? 0.0,
-      salt: (json['salt'] as num?)?.toDouble() ?? 0.0,
-      fiber: (json['fiber'] as num?)?.toDouble() ?? 0.0,
-      protein: (json['protein'] as num?)?.toDouble() ?? 0.0,
+      energyKcal: (json['energy_kcal'] as num?)?.toDouble(),
+      fat: (json['fat'] as num?)?.toDouble(),
+      saturatedFat: (json['saturated_fat'] as num?)?.toDouble(),
+      transFat: (json['trans_fat'] as num?)?.toDouble(),
+      carbohydrates: (json['carbohydrates'] as num?)?.toDouble(),
+      sugars: (json['sugars'] as num?)?.toDouble(),
+      salt: (json['salt'] as num?)?.toDouble(),
+      fiber: (json['fiber'] as num?)?.toDouble(),
+      protein: (json['protein'] as num?)?.toDouble(),
     );
   }
 }

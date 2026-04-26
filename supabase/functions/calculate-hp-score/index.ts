@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const CHEMICAL_WEIGHT = 0.45
 const RISK_WEIGHT = 0.40
 const NUTRI_WEIGHT = 0.15
+const HP_SCORE_ALGORITHM_VERSION = 2
 
 const ADDITIVE_PENALTIES: Record<number, number> = {
   1: 0.0,
@@ -32,6 +33,11 @@ const NOVA_UNKNOWN = 15.0
 
 const GAUGE_THRESHOLDS = [75, 55, 35, 18]
 
+const INGREDIENT_QUALITY_PENALTY_CAP = 35
+const ADDED_SUGAR_PENALTY = 18
+const REFINED_FLOUR_PENALTY = 12
+const REFINED_CARB_COMBO_PENALTY = 10
+
 const CRITICAL_PATTERNS = [
   'palm yag', 'palm oil', 'palmiye yag',
   'invert seker', 'invert sugar',
@@ -39,6 +45,15 @@ const CRITICAL_PATTERNS = [
   'fruktoz surubu', 'fructose syrup',
   'misir surubu', 'corn syrup',
   'yuksek fruktozlu', 'high fructose corn syrup', 'hfcs',
+]
+
+const ADDED_SUGAR_PATTERNS = [
+  'seker', 'sugar', 'sakkaroz', 'sucrose',
+  'dekstroz', 'dextrose', 'glikoz', 'glucose',
+]
+
+const REFINED_FLOUR_PATTERNS = [
+  'bugday unu', 'beyaz un', 'wheat flour', 'white flour', 'flour',
 ]
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -171,6 +186,23 @@ function calculateNutriFactor(n: Nutriments, novaGroup?: number): number {
   return fiber * FIBER_WEIGHT + protein * PROTEIN_WEIGHT + naturalness * NATURALNESS_WEIGHT
 }
 
+function calculateIngredientQualityPenalty(ingredientsText?: string): number {
+  if (!ingredientsText || ingredientsText.trim().length === 0) return 0
+
+  const text = normalizeTurkish(ingredientsText)
+  const hasAddedSugar = ADDED_SUGAR_PATTERNS.some((p) => text.includes(p))
+  const hasRefinedFlour =
+    REFINED_FLOUR_PATTERNS.some((p) => text.includes(p)) ||
+    /(^|[^a-z])un([^a-z]|$)/.test(text)
+
+  let penalty = 0
+  if (hasAddedSugar) penalty += ADDED_SUGAR_PENALTY
+  if (hasRefinedFlour) penalty += REFINED_FLOUR_PENALTY
+  if (hasAddedSugar && hasRefinedFlour) penalty += REFINED_CARB_COMBO_PENALTY
+
+  return Math.min(penalty, INGREDIENT_QUALITY_PENALTY_CAP)
+}
+
 // ── Handler ───────────────────────────────────────────────────────────────────
 
 serve(async (req) => {
@@ -198,9 +230,14 @@ serve(async (req) => {
     )
     const riskFactor = calculateRiskFactor(body.nutriments ?? {})
     const nutriFactor = calculateNutriFactor(body.nutriments ?? {}, body.nova_group)
+    const ingredientQualityPenalty = calculateIngredientQualityPenalty(body.ingredients_text)
 
     let hpScore = clamp(
-      100 - chemicalLoad * CHEMICAL_WEIGHT - riskFactor * RISK_WEIGHT + nutriFactor * NUTRI_WEIGHT,
+      100 -
+        chemicalLoad * CHEMICAL_WEIGHT -
+        riskFactor * RISK_WEIGHT +
+        nutriFactor * NUTRI_WEIGHT -
+        ingredientQualityPenalty,
       0,
       100
     )
@@ -225,7 +262,14 @@ serve(async (req) => {
     if (body.barcode) {
       await supabase
         .from('food_products')
-        .update({ hp_score: hpScore })
+        .update({
+          hp_score: hpScore,
+          hp_chemical_load: chemicalLoad,
+          hp_risk_factor: riskFactor,
+          hp_nutri_factor: nutriFactor,
+          hp_score_version: HP_SCORE_ALGORITHM_VERSION,
+          cached_at: new Date().toISOString(),
+        })
         .eq('barcode', body.barcode)
     }
 

@@ -50,7 +50,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
 
   void _goToOcr() {
     context.go(
-      '/product/${widget.barcode}/ocr',
+      '/product/${widget.barcode}/edit',
       extra: _buildProductInfo(),
     );
   }
@@ -249,7 +249,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
                         color: Colors.black, size: 20),
                     SizedBox(width: 8),
                     Text(
-                      'İçindekileri Fotoğrafla',
+                      'Bilgileri Fotoğrafla Tamamla',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

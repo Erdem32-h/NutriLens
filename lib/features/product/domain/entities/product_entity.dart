@@ -20,6 +20,7 @@ class ProductEntity extends Equatable {
   final double? hpChemicalLoad;
   final double? hpRiskFactor;
   final double? hpNutriFactor;
+  final int hpScoreVersion;
 
   const ProductEntity({
     required this.barcode,
@@ -38,6 +39,7 @@ class ProductEntity extends Equatable {
     this.hpChemicalLoad,
     this.hpRiskFactor,
     this.hpNutriFactor,
+    this.hpScoreVersion = ScoreConstants.hpScoreAlgorithmVersion,
   });
 
   ProductEntity copyWith({
@@ -57,6 +59,7 @@ class ProductEntity extends Equatable {
     double? hpChemicalLoad,
     double? hpRiskFactor,
     double? hpNutriFactor,
+    int? hpScoreVersion,
   }) {
     return ProductEntity(
       barcode: barcode ?? this.barcode,
@@ -75,6 +78,7 @@ class ProductEntity extends Equatable {
       hpChemicalLoad: hpChemicalLoad ?? this.hpChemicalLoad,
       hpRiskFactor: hpRiskFactor ?? this.hpRiskFactor,
       hpNutriFactor: hpNutriFactor ?? this.hpNutriFactor,
+      hpScoreVersion: hpScoreVersion ?? this.hpScoreVersion,
     );
   }
 
@@ -119,5 +123,6 @@ class ProductEntity extends Equatable {
         hpChemicalLoad,
         hpRiskFactor,
         hpNutriFactor,
+        hpScoreVersion,
       ];
 }
