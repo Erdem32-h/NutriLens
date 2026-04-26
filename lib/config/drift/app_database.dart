@@ -11,25 +11,29 @@ import 'tables/scan_history_table.dart';
 import 'tables/favorites_table.dart';
 import 'tables/blacklist_table.dart';
 import 'tables/counterfeit_products_table.dart';
+import 'tables/meal_entries_table.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [
-  FoodProducts,
-  Additives,
-  Allergens,
-  ScanHistory,
-  Favorites,
-  Blacklist,
-  CounterfeitProducts,
-])
+@DriftDatabase(
+  tables: [
+    FoodProducts,
+    Additives,
+    Allergens,
+    ScanHistory,
+    Favorites,
+    Blacklist,
+    CounterfeitProducts,
+    MealEntries,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -40,6 +44,9 @@ class AppDatabase extends _$AppDatabase {
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 2) {
           await m.addColumn(foodProducts, foodProducts.hpScoreVersion);
+        }
+        if (from < 3) {
+          await m.createTable(mealEntries);
         }
       },
     );

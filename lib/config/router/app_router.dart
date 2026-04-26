@@ -19,6 +19,7 @@ import '../../features/product/presentation/screens/ingredients_camera_screen.da
 import '../../features/product/presentation/screens/ingredients_verification_screen.dart';
 import '../../features/product/presentation/screens/manual_ingredients_screen.dart';
 import '../../features/scanner/presentation/screens/food_result_screen.dart';
+import '../../features/meals/presentation/screens/meals_screen.dart';
 import '../../features/premium/presentation/screens/paywall_screen.dart';
 import '../../features/profile/presentation/screens/allergen_selection_screen.dart';
 import '../../features/profile/presentation/screens/diet_filter_screen.dart';
@@ -47,7 +48,8 @@ GoRouter createRouter() {
 
       // Supabase başlatılmamışsa login'e yönlendir
       if (!SupabaseConfig.isInitialized) {
-        final isAuthRoute = state.matchedLocation == '/login' ||
+        final isAuthRoute =
+            state.matchedLocation == '/login' ||
             state.matchedLocation == '/register';
         if (!isAuthRoute) return '/login';
         return null;
@@ -55,7 +57,8 @@ GoRouter createRouter() {
 
       final session = Supabase.instance.client.auth.currentSession;
       final isLoggedIn = session != null;
-      final isAuthRoute = state.matchedLocation == '/login' ||
+      final isAuthRoute =
+          state.matchedLocation == '/login' ||
           state.matchedLocation == '/register';
 
       if (!isLoggedIn && !isAuthRoute) {
@@ -97,6 +100,11 @@ GoRouter createRouter() {
             builder: (context, state) => const HistoryScreen(),
           ),
           GoRoute(
+            path: '/meals',
+            name: RouteNames.meals,
+            builder: (context, state) => const MealsScreen(),
+          ),
+          GoRoute(
             path: '/favorites',
             name: RouteNames.favorites,
             builder: (context, state) => const FavoritesScreen(),
@@ -109,8 +117,7 @@ GoRouter createRouter() {
               GoRoute(
                 path: 'allergens',
                 name: RouteNames.allergenSelection,
-                builder: (context, state) =>
-                    const AllergenSelectionScreen(),
+                builder: (context, state) => const AllergenSelectionScreen(),
               ),
               GoRoute(
                 path: 'diets',
@@ -125,8 +132,7 @@ GoRouter createRouter() {
               GoRoute(
                 path: 'chemicals',
                 name: RouteNames.chemicalFilter,
-                builder: (context, state) =>
-                    const ChemicalFilterScreen(),
+                builder: (context, state) => const ChemicalFilterScreen(),
               ),
             ],
           ),
@@ -186,10 +192,7 @@ GoRouter createRouter() {
         builder: (context, state) {
           final barcode = state.pathParameters['barcode']!;
           final extra = state.extra as Map<String, dynamic>?;
-          return IngredientsVerificationScreen(
-            barcode: barcode,
-            extra: extra,
-          );
+          return IngredientsVerificationScreen(barcode: barcode, extra: extra);
         },
       ),
       GoRoute(
@@ -199,10 +202,7 @@ GoRouter createRouter() {
         builder: (context, state) {
           final barcode = state.pathParameters['barcode']!;
           final extra = state.extra as Map<String, dynamic>?;
-          return ManualIngredientsScreen(
-            barcode: barcode,
-            productInfo: extra,
-          );
+          return ManualIngredientsScreen(barcode: barcode, productInfo: extra);
         },
       ),
       GoRoute(

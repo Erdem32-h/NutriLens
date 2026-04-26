@@ -7,6 +7,7 @@ abstract final class RouteNames {
   // Main tabs
   static const String scanner = 'scanner';
   static const String history = 'history';
+  static const String meals = 'meals';
   static const String favorites = 'favorites';
   static const String profile = 'profile';
 

@@ -73,6 +73,51 @@ Alerjenler: Gluten, fındık, süt.
     });
   });
 
+  group('AnthropicAiService.parseMealAnalysisResponseText', () {
+    test('parses meal analysis JSON with ingredients and nutrition', () {
+      final result = AnthropicAiService.parseMealAnalysisResponseText('''
+```json
+{
+  "food_name": "Menemen ve ekmek",
+  "portion_grams": 420,
+  "ingredients_text": "Yumurta, domates, biber, zeytinyağı, ekmek",
+  "nutrition": {
+    "energy_kcal": 610,
+    "fat": 28,
+    "saturated_fat": 6,
+    "trans_fat": 0,
+    "carbohydrates": 55,
+    "sugars": 8,
+    "salt": 1.7,
+    "fiber": 6,
+    "protein": 28
+  },
+  "confidence": 0.72,
+  "description": "Ev tipi karışık öğün tahmini."
+}
+```
+''');
+
+      expect(result, isNotNull);
+      expect(result!.foodName, 'Menemen ve ekmek');
+      expect(result.portionGrams, 420);
+      expect(result.ingredientsText, contains('Yumurta'));
+      expect(result.nutriments.energyKcal, 610);
+      expect(result.nutriments.carbohydrates, 55);
+      expect(result.confidence, 0.72);
+    });
+
+    test('defaults missing meal nutrition values to zero', () {
+      final result = AnthropicAiService.parseMealAnalysisResponseText('{}');
+
+      expect(result, isNotNull);
+      expect(result!.foodName, 'Bilinmeyen Öğün');
+      expect(result.nutriments.energyKcal, 0);
+      expect(result.nutriments.proteins, 0);
+      expect(result.ingredientsText, isNull);
+    });
+  });
+
   group('AnthropicAiService vision requests', () {
     test('retries transient Anthropic failures once and returns text', () async {
       final adapter = _FakeAnthropicAdapter([

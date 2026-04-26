@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
-import '../../../../core/services/gemini_ai_service.dart';
+import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../history/presentation/providers/history_provider.dart';
+import '../../../../core/utils/ocr_image_prep.dart';
+import '../../../meals/data/services/meal_thumbnail_service.dart';
+import '../../../meals/domain/entities/meal_entry_entity.dart';
+import '../../../meals/domain/services/meal_defaults.dart';
+import '../../../meals/presentation/providers/meal_provider.dart';
 import '../../../product/domain/entities/nutriments_entity.dart';
-import '../../../product/domain/entities/product_entity.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../../product/presentation/widgets/bento_nutrition_grid.dart';
 import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
@@ -27,7 +31,11 @@ class FoodResultScreen extends ConsumerStatefulWidget {
 }
 
 class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
-  FoodRecognitionResult? _result;
+  late final DateTime _capturedAt;
+  late final TextEditingController _mealNameController;
+  late final TextEditingController _brandController;
+
+  MealAnalysisResult? _result;
   bool _loading = true;
   String? _error;
   bool _serviceUnavailable = false;
@@ -36,7 +44,18 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   @override
   void initState() {
     super.initState();
+    _capturedAt = DateTime.now();
+    final defaults = mealDefaultsFor(_capturedAt);
+    _mealNameController = TextEditingController(text: defaults.name);
+    _brandController = TextEditingController(text: defaults.brand);
     _analyzeFood();
+  }
+
+  @override
+  void dispose() {
+    _mealNameController.dispose();
+    _brandController.dispose();
+    super.dispose();
   }
 
   Future<void> _analyzeFood() async {
@@ -47,15 +66,17 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     });
 
     try {
-      final aiService = ref.read(geminiAiServiceProvider);
-      final result = await aiService.recognizeFood(widget.imageBytes);
+      final prepared = await prepareOcrImage(widget.imageBytes);
+      final aiService = ref.read(anthropicAiServiceProvider);
+      final result = await aiService.analyzeMealFromBase64(prepared.base64);
+      if (result == null) throw Exception('AI returned empty meal result');
       if (!mounted) return;
       setState(() {
         _result = result;
         _loading = false;
       });
-    } on GeminiServiceException catch (e) {
-      debugPrint('[FoodResult] AI service unavailable: $e');
+    } on AnthropicServiceException catch (e) {
+      debugPrint('[FoodResult] Claude service unavailable: $e');
       if (!mounted) return;
       setState(() {
         _serviceUnavailable = true;
@@ -72,7 +93,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     }
   }
 
-  Future<void> _saveToHistory() async {
+  Future<void> _saveMeal() async {
     if (_result == null || _saving) return;
 
     setState(() => _saving = true);
@@ -81,48 +102,51 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       final userId = Supabase.instance.client.auth.currentUser?.id;
       if (userId == null) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(context.l10n.saveFailedAuth)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.saveFailedAuth)));
         }
         return;
       }
 
-      // Generate virtual barcode
-      final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      final shortUuid = DateTime.now().microsecond.toRadixString(16);
-      final virtualBarcode = 'ai_${timestamp}_$shortUuid';
-
-      final product = ProductEntity(
-        barcode: virtualBarcode,
-        productName: _result!.foodName,
-        brands: context.l10n.aiEstimate,
-        nutriments: _result!.toNutriments(),
+      const uuid = Uuid();
+      final mealId = uuid.v4();
+      final defaults = mealDefaultsFor(_capturedAt);
+      final thumbnailPath = await const MealThumbnailService().saveThumbnail(
+        mealId: mealId,
+        imageBytes: widget.imageBytes,
       );
 
-      // Calculate HP score
       final calculator = ref.read(hpScoreCalculatorProvider);
       final hpResult = await calculator.calculateFull(
         additivesTags: const [],
-        nutriments: _result!.toNutriments(),
+        nutriments: _result!.nutriments,
+        ingredientsText: _result!.ingredientsText,
       );
 
-      // Save to community_products
-      final communitySource = ref.read(communityProductSourceProvider);
-      await communitySource.addProduct(
-        product: product.copyWith(hpScore: hpResult.hpScore),
+      final meal = MealEntryEntity(
+        id: mealId,
         userId: userId,
-        source: 'ai_recognition',
+        photoThumbnailPath: thumbnailPath,
+        mealName: _mealNameController.text.trim().isEmpty
+            ? defaults.name
+            : _mealNameController.text.trim(),
+        brand: _brandController.text.trim().isEmpty
+            ? defaults.brand
+            : _brandController.text.trim(),
+        mealType: defaults.type,
+        capturedAt: _capturedAt,
+        ingredientsText: _result!.ingredientsText,
+        nutriments: _result!.nutriments,
+        calories: _result!.nutriments.energyKcal ?? 0,
+        hpScore: hpResult.hpScore,
+        confidence: _result!.confidence,
+        aiRawJson: _result!.rawJson,
       );
 
-      // Add to scan history
-      if (mounted) {
-        await addScanToHistory(
-          ref,
-          barcode: virtualBarcode,
-          hpScore: hpResult.hpScore,
-        );
-      }
+      await ref.read(mealLocalDataSourceProvider).saveMeal(meal);
+      ref.invalidate(mealsProvider);
+      ref.invalidate(mealCalorieSummaryProvider);
 
       if (!mounted) return;
 
@@ -130,18 +154,19 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       context.pop();
       messenger.showSnackBar(
         SnackBar(
-          content: Text(context.l10n.aiSaved),
+          content: const Text('Öğün kaydedildi'),
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     } catch (e) {
       debugPrint('[FoodResult] save error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.saveFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.saveFailed)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -162,8 +187,8 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       body: _loading
           ? _buildLoading(l10n, colors)
           : _error != null
-              ? _buildError(l10n, colors)
-              : _buildResult(l10n, colors),
+          ? _buildError(l10n, colors)
+          : _buildResult(l10n, colors),
     );
   }
 
@@ -188,9 +213,6 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   }
 
   Widget _buildError(dynamic l10n, AppColorsExtension colors) {
-    // Service-unavailable gets the warning palette + a softer message; this
-    // distinguishes "AI is down right now" from "AI couldn't recognize the
-    // food", which need different user actions (wait vs. retake the photo).
     final isServiceDown = _serviceUnavailable;
     final iconColor = isServiceDown ? colors.warning : colors.error;
     final icon = isServiceDown
@@ -237,32 +259,23 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   Widget _buildResult(dynamic l10n, AppColorsExtension colors) {
     final result = _result!;
     final confidencePercent = (result.confidence * 100).toInt();
-
-    // Calculate HP score from AI nutrients
-    final nutriments = result.toNutriments();
+    final nutriments = result.nutriments;
     final hpScore = _estimateHpScore(nutriments);
 
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Photo
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
               child: AspectRatio(
                 aspectRatio: 16 / 9,
-                child: Image.memory(
-                  widget.imageBytes,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.memory(widget.imageBytes, fit: BoxFit.cover),
               ),
             ),
           ),
-
           const SizedBox(height: 16),
-
-          // Food name
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Align(
@@ -277,10 +290,34 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
               ),
             ),
           ),
-
-          const SizedBox(height: 8),
-
-          // Portion + Confidence badges
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _mealNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Öğün adı',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _brandController,
+                    decoration: const InputDecoration(
+                      labelText: 'Kaynak',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
@@ -298,23 +335,26 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
               ],
             ),
           ),
-
-          // Low confidence warning
           if (result.confidence < 0.6) ...[
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: colors.warning.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.warning_amber_rounded,
-                        size: 18, color: colors.warning),
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 18,
+                      color: colors.warning,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -331,15 +371,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
               ),
             ),
           ],
-
           const SizedBox(height: 16),
-
-          // Health score
           HealthScoreBar(hpScore: hpScore),
-
           const SizedBox(height: 16),
-
-          // Macro grid — matches Nutrition tab format
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
@@ -350,29 +384,51 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
               ],
             ),
           ),
-
-          // Description
-          if (result.description.isNotEmpty) ...[
+          if ((result.ingredientsText ?? result.description).isNotEmpty) ...[
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  result.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.5,
-                    color: colors.textSecondary,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (result.ingredientsText != null) ...[
+                      Text(
+                        'Tahmini içerik',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        result.ingredientsText!,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                    ],
+                    if (result.description.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        result.description,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
           ],
-
           const SizedBox(height: 24),
-
-          // Action buttons
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
@@ -381,7 +437,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                   width: double.infinity,
                   height: 52,
                   child: FilledButton.icon(
-                    onPressed: _saving ? null : _saveToHistory,
+                    onPressed: _saving ? null : _saveMeal,
                     icon: _saving
                         ? const SizedBox(
                             width: 18,
@@ -392,7 +448,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                             ),
                           )
                         : const Icon(Icons.save_rounded),
-                    label: Text(l10n.aiSaveToHistory),
+                    label: const Text('Öğünlere kaydet'),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -408,15 +464,17 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
               ],
             ),
           ),
-
           const SizedBox(height: 32),
         ],
       ),
     );
   }
 
-  Widget _buildBadge(String text, AppColorsExtension colors,
-      {bool isWarning = false}) {
+  Widget _buildBadge(
+    String text,
+    AppColorsExtension colors, {
+    bool isWarning = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -436,18 +494,19 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     );
   }
 
-  /// Estimates HP score from nutriments alone (no additive data available).
-  /// Uses the same [ScoreConstants] as [HpScoreCalculator] for consistency.
   double _estimateHpScore(NutrimentsEntity n) {
     final sugarRisk =
         ((n.sugars ?? 0) / ScoreConstants.sugarMaxRef).clamp(0.0, 1.0) * 100;
     final saltRisk =
         ((n.salt ?? 0) / ScoreConstants.saltMaxRef).clamp(0.0, 1.0) * 100;
     final satFatRisk =
-        ((n.saturatedFat ?? 0) / ScoreConstants.saturatedFatMaxRef)
-            .clamp(0.0, 1.0) *
+        ((n.saturatedFat ?? 0) / ScoreConstants.saturatedFatMaxRef).clamp(
+          0.0,
+          1.0,
+        ) *
         100;
-    final riskFactor = sugarRisk * ScoreConstants.sugarWeight +
+    final riskFactor =
+        sugarRisk * ScoreConstants.sugarWeight +
         saltRisk * ScoreConstants.saltWeight +
         satFatRisk * ScoreConstants.saturatedFatWeight;
 
@@ -456,9 +515,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     final proteinBonus =
         ((n.proteins ?? 0) / ScoreConstants.proteinExcellent).clamp(0.0, 1.0) *
         100;
-    // No NOVA data from AI recognition — use unknown naturalness default
-    final naturalnessBonus = ScoreConstants.novaUnknownNaturalness;
-    final nutriFactor = fiberBonus * ScoreConstants.fiberWeight +
+    const naturalnessBonus = ScoreConstants.novaUnknownNaturalness;
+    final nutriFactor =
+        fiberBonus * ScoreConstants.fiberWeight +
         proteinBonus * ScoreConstants.proteinWeight +
         naturalnessBonus * ScoreConstants.naturalnessWeight;
 
@@ -468,4 +527,3 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         .clamp(0.0, 100.0);
   }
 }
-

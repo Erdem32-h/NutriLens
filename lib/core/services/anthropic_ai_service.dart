@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../features/product/domain/entities/nutriments_entity.dart';
 import 'gemini_ai_service.dart' show NutritionOcrResult;
 
 class AnthropicServiceException implements Exception {
@@ -14,6 +15,26 @@ class AnthropicServiceException implements Exception {
   @override
   String toString() =>
       'AnthropicServiceException(status=$statusCode): $message';
+}
+
+class MealAnalysisResult {
+  final String foodName;
+  final int portionGrams;
+  final String? ingredientsText;
+  final NutrimentsEntity nutriments;
+  final double confidence;
+  final String description;
+  final String rawJson;
+
+  const MealAnalysisResult({
+    required this.foodName,
+    required this.portionGrams,
+    this.ingredientsText,
+    required this.nutriments,
+    required this.confidence,
+    required this.description,
+    required this.rawJson,
+  });
 }
 
 /// Direct Anthropic Messages API client for nutrition-table vision OCR.
@@ -62,6 +83,16 @@ class AnthropicAiService {
       logLabel: 'nutrition',
     );
     return parseNutritionResponseText(text);
+  }
+
+  Future<MealAnalysisResult?> analyzeMealFromBase64(String base64Image) async {
+    final text = await _sendVisionPrompt(
+      base64Image: base64Image,
+      prompt: _mealAnalysisPrompt,
+      maxTokens: 1000,
+      logLabel: 'meal',
+    );
+    return parseMealAnalysisResponseText(text);
   }
 
   Future<String> _sendVisionPrompt({
@@ -203,6 +234,38 @@ class AnthropicAiService {
     }
   }
 
+  @visibleForTesting
+  static MealAnalysisResult? parseMealAnalysisResponseText(String text) {
+    try {
+      final jsonStr = _extractJson(text);
+      final json = jsonDecode(jsonStr) as Map<String, dynamic>;
+      final nutrition = _safeMap(json['nutrition']);
+
+      return MealAnalysisResult(
+        foodName: _safeString(json['food_name'], 'Bilinmeyen Öğün'),
+        portionGrams: _safeInt(json['portion_grams']),
+        ingredientsText: _nullableTrimmed(json['ingredients_text']),
+        nutriments: NutrimentsEntity(
+          energyKcal: _number(nutrition['energy_kcal']),
+          fat: _number(nutrition['fat']),
+          saturatedFat: _number(nutrition['saturated_fat']),
+          transFat: _number(nutrition['trans_fat']),
+          carbohydrates: _number(nutrition['carbohydrates']),
+          sugars: _number(nutrition['sugars']),
+          salt: _number(nutrition['salt']),
+          fiber: _number(nutrition['fiber']),
+          proteins: _number(nutrition['protein']),
+        ),
+        confidence: _number(json['confidence']),
+        description: _safeString(json['description'], ''),
+        rawJson: jsonStr,
+      );
+    } catch (e) {
+      debugPrint('[AnthropicAI] meal JSON parse failed: $e');
+      return null;
+    }
+  }
+
   static String? _firstTextBlock(Map<String, dynamic>? response) {
     final content = response?['content'];
     if (content is! List) return null;
@@ -247,6 +310,37 @@ class AnthropicAiService {
       fiber: value('fiber'),
       protein: value('protein'),
     );
+  }
+
+  static Map<String, dynamic> _safeMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return const {};
+  }
+
+  static String _safeString(dynamic value, String fallback) {
+    final text = value?.toString().trim();
+    return text == null || text.isEmpty ? fallback : text;
+  }
+
+  static String? _nullableTrimmed(dynamic value) {
+    final text = value?.toString().trim();
+    return text == null || text.isEmpty ? null : text;
+  }
+
+  static int _safeInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
+  static double _number(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value.replaceAll(',', '.')) ?? 0;
+    }
+    return 0;
   }
 }
 
@@ -312,5 +406,38 @@ Kurallar:
   "salt": number,
   "fiber": number,
   "protein": number
+}
+''';
+
+const String _mealAnalysisPrompt = '''
+Bu görseldeki öğünü analiz et.
+
+Kurallar:
+- Görselde görünen yiyecek/içecekleri tahmin et.
+- Porsiyonu fotoğrafa göre gram olarak tahmin et.
+- Kalori ve besin değerleri tüm görünen porsiyon içindir; 100 g değerleri değildir.
+- İçindekiler/tahmini bileşenleri Türkçe düz metin olarak yaz.
+- Görsel belirsizse yine en iyi tahmini yap, confidence değerini düşük ver.
+- Bulamadığın besin değerlerini 0 döndür.
+- Sadece JSON döndür, açıklama veya markdown yazma.
+
+Şema:
+{
+  "food_name": string,
+  "portion_grams": number,
+  "ingredients_text": string,
+  "nutrition": {
+    "energy_kcal": number,
+    "fat": number,
+    "saturated_fat": number,
+    "trans_fat": number,
+    "carbohydrates": number,
+    "sugars": number,
+    "salt": number,
+    "fiber": number,
+    "protein": number
+  },
+  "confidence": number,
+  "description": string
 }
 ''';

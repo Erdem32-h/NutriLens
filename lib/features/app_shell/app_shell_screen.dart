@@ -27,7 +27,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
 
   int _currentIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
-    const paths = ['/scanner', '/history', '/favorites', '/profile'];
+    const paths = ['/scanner', '/history', '/meals', '/favorites', '/profile'];
     for (var i = 0; i < paths.length; i++) {
       if (location.startsWith(paths[i])) return i;
     }
@@ -38,7 +38,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
   Widget build(BuildContext context) {
     final currentIndex = _currentIndex(context);
     final l10n = context.l10n;
-    const paths = ['/scanner', '/history', '/favorites', '/profile'];
+    const paths = ['/scanner', '/history', '/meals', '/favorites', '/profile'];
 
     return Scaffold(
       backgroundColor: context.colors.background,
@@ -70,6 +70,11 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
               icon: const Icon(Icons.history_outlined),
               selectedIcon: const Icon(Icons.history),
               label: l10n.history,
+            ),
+            const NavigationDestination(
+              icon: Icon(Icons.restaurant_menu_outlined),
+              selectedIcon: Icon(Icons.restaurant_menu),
+              label: 'Öğünlerim',
             ),
             NavigationDestination(
               icon: const Icon(Icons.favorite_outline),
