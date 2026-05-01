@@ -95,6 +95,92 @@ class AnthropicAiService {
     return parseMealAnalysisResponseText(text);
   }
 
+  Future<NutrimentsEntity?> recalculateNutritionFromIngredients(
+    String ingredientsText,
+  ) async {
+    final text = await _sendTextPrompt(
+      prompt: _recalcNutritionPrompt(ingredientsText),
+      maxTokens: 600,
+      logLabel: 'recalc',
+    );
+    return parseRecalcResponseText(text);
+  }
+
+  Future<String> _sendTextPrompt({
+    required String prompt,
+    required int maxTokens,
+    required String logLabel,
+  }) async {
+    if (_apiKey.isEmpty) {
+      throw const AnthropicServiceException(
+        'ANTHROPIC_API_KEY is not set',
+        statusCode: 401,
+      );
+    }
+
+    for (var attempt = 1; attempt <= _maxAttempts; attempt++) {
+      try {
+        final response = await _dio
+            .post<Map<String, dynamic>>(
+              _messagesUrl,
+              options: Options(
+                sendTimeout: _timeout,
+                receiveTimeout: _timeout,
+                headers: {
+                  'content-type': 'application/json',
+                  'x-api-key': _apiKey,
+                  'anthropic-version': _apiVersion,
+                },
+              ),
+              data: {
+                'model': model,
+                'max_tokens': maxTokens,
+                'messages': [
+                  {
+                    'role': 'user',
+                    'content': [
+                      {'type': 'text', 'text': prompt},
+                    ],
+                  },
+                ],
+              },
+            )
+            .timeout(_timeout);
+
+        final text = _firstTextBlock(response.data);
+        if (text == null || text.trim().isEmpty) {
+          throw const AnthropicServiceException(
+            'Anthropic returned empty text',
+          );
+        }
+        return text;
+      } on AnthropicServiceException {
+        rethrow;
+      } on DioException catch (e) {
+        final status = e.response?.statusCode;
+        final message = _anthropicErrorMessage(e);
+        debugPrint(
+          '[AnthropicAI] $logLabel failed: attempt=$attempt '
+          'status=$status error=$message',
+        );
+        if (attempt < _maxAttempts && _shouldRetry(e)) {
+          await Future<void>.delayed(_retryDelay);
+          continue;
+        }
+        throw AnthropicServiceException(message, statusCode: status);
+      } catch (e) {
+        debugPrint('[AnthropicAI] $logLabel transport error: $e');
+        if (attempt < _maxAttempts) {
+          await Future<void>.delayed(_retryDelay);
+          continue;
+        }
+        throw AnthropicServiceException(e.toString());
+      }
+    }
+
+    throw const AnthropicServiceException('Anthropic request failed');
+  }
+
   Future<String> _sendVisionPrompt({
     required String base64Image,
     required String prompt,
@@ -177,6 +263,28 @@ class AnthropicAiService {
     }
 
     throw const AnthropicServiceException('Anthropic request failed');
+  }
+
+  @visibleForTesting
+  static NutrimentsEntity? parseRecalcResponseText(String text) {
+    try {
+      final jsonStr = _extractJson(text);
+      final json = jsonDecode(jsonStr) as Map<String, dynamic>;
+      return NutrimentsEntity(
+        energyKcal: _number(json['energy_kcal']),
+        fat: _number(json['fat']),
+        saturatedFat: _number(json['saturated_fat']),
+        transFat: _number(json['trans_fat']),
+        carbohydrates: _number(json['carbohydrates']),
+        sugars: _number(json['sugars']),
+        salt: _number(json['salt']),
+        fiber: _number(json['fiber']),
+        proteins: _number(json['protein']),
+      );
+    } catch (e) {
+      debugPrint('[AnthropicAI] recalc JSON parse failed: $e');
+      return null;
+    }
   }
 
   static bool _shouldRetry(DioException e) {
@@ -394,6 +502,31 @@ Kurallar:
 - Bulamadığın her alanı 0 dön.
 - Tablo yoksa tüm alanları 0 olan JSON dön.
 - Sadece JSON dön, açıklama yazma.
+
+Şema:
+{
+  "energy_kcal": number,
+  "fat": number,
+  "saturated_fat": number,
+  "trans_fat": number,
+  "carbohydrates": number,
+  "sugars": number,
+  "salt": number,
+  "fiber": number,
+  "protein": number
+}
+''';
+
+String _recalcNutritionPrompt(String ingredientsText) => '''
+Aşağıdaki içerik listesine göre 1 porsiyon için tahmini besin değerlerini hesapla.
+
+İçerik:
+$ingredientsText
+
+Kurallar:
+- Değerler toplam 1 porsiyon içindir
+- Bulamadığın değerleri 0 döndür
+- Sadece JSON döndür, açıklama yazma
 
 Şema:
 {

@@ -20,6 +20,8 @@ import '../../features/product/presentation/screens/ingredients_verification_scr
 import '../../features/product/presentation/screens/manual_ingredients_screen.dart';
 import '../../features/scanner/presentation/screens/food_result_screen.dart';
 import '../../features/meals/presentation/screens/meals_screen.dart';
+import '../../features/meals/presentation/screens/meal_detail_screen.dart';
+import '../../features/meals/domain/entities/meal_entry_entity.dart';
 import '../../features/premium/presentation/screens/paywall_screen.dart';
 import '../../features/profile/presentation/screens/allergen_selection_screen.dart';
 import '../../features/profile/presentation/screens/diet_filter_screen.dart';
@@ -219,6 +221,21 @@ GoRouter createRouter() {
             return const SizedBox.shrink();
           }
           return FoodResultScreen(imageBytes: imageBytes);
+        },
+      ),
+      GoRoute(
+        path: '/meal-detail',
+        name: RouteNames.mealDetail,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final meal = state.extra;
+          if (meal is! MealEntryEntity) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.goNamed(RouteNames.meals);
+            });
+            return const SizedBox.shrink();
+          }
+          return MealDetailScreen(meal: meal);
         },
       ),
       GoRoute(

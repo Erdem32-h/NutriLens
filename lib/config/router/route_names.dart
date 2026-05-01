@@ -29,6 +29,9 @@ abstract final class RouteNames {
   // AI
   static const String foodResult = 'foodResult';
 
+  // Meals
+  static const String mealDetail = 'mealDetail';
+
   // Favorites sub-screens
   static const String blacklist = 'blacklist';
 

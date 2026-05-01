@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../config/router/route_names.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/meal_entry_entity.dart';
@@ -140,13 +142,13 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-class _MealTile extends StatelessWidget {
+class _MealTile extends ConsumerWidget {
   final MealEntryEntity meal;
 
   const _MealTile({required this.meal});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final time = DateFormat('dd MMM HH:mm').format(meal.capturedAt);
     final gauge = meal.hpScore != null
@@ -155,67 +157,72 @@ class _MealTile extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: colors.surfaceCard,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: colors.border),
-        ),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                width: 72,
-                height: 72,
-                child: meal.photoThumbnailPath != null
-                    ? Image.file(
-                        File(meal.photoThumbnailPath!),
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            _thumbFallback(colors),
-                      )
-                    : _thumbFallback(colors),
+      child: GestureDetector(
+        onTap: () => context.pushNamed(RouteNames.mealDetail, extra: meal),
+        onLongPress: () => _confirmDelete(context, ref),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colors.surfaceCard,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: colors.border),
+          ),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  width: 72,
+                  height: 72,
+                  child: meal.photoThumbnailPath != null
+                      ? Image.file(
+                          File(meal.photoThumbnailPath!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              _thumbFallback(colors),
+                        )
+                      : _thumbFallback(colors),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    meal.mealName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      meal.mealName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    '${meal.brand} • $time',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: colors.textMuted, fontSize: 12),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    children: [
-                      _Pill(text: '${meal.calories.round()} kcal'),
-                      if (gauge != null) _Pill(text: 'Skor $gauge'),
-                      if (meal.confidence != null)
-                        _Pill(text: '%${(meal.confidence! * 100).round()}'),
-                    ],
-                  ),
-                ],
+                    const SizedBox(height: 3),
+                    Text(
+                      '${meal.brand} • $time',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: colors.textMuted, fontSize: 12),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      children: [
+                        _Pill(text: '${meal.calories.round()} kcal'),
+                        if (gauge != null) _Pill(text: 'Skor $gauge'),
+                        if (meal.confidence != null)
+                          _Pill(text: '%${(meal.confidence! * 100).round()}'),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              const Icon(Icons.chevron_right_rounded, size: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -226,6 +233,32 @@ class _MealTile extends StatelessWidget {
       color: colors.surface,
       child: Icon(Icons.restaurant_rounded, color: colors.textMuted),
     );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Öğünü sil'),
+        content: Text('"${meal.mealName}" silinsin mi?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('İptal'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Sil'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    await ref.read(mealLocalDataSourceProvider).deleteMeal(meal.id);
+    ref.invalidate(mealsProvider);
+    ref.invalidate(mealCalorieSummaryProvider);
   }
 }
 

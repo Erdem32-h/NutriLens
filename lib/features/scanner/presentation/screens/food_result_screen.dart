@@ -34,12 +34,14 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   late final DateTime _capturedAt;
   late final TextEditingController _mealNameController;
   late final TextEditingController _brandController;
+  late final TextEditingController _ingredientsController;
 
   MealAnalysisResult? _result;
   bool _loading = true;
   String? _error;
   bool _serviceUnavailable = false;
   bool _saving = false;
+  bool _recalcLoading = false;
 
   @override
   void initState() {
@@ -48,6 +50,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     final defaults = mealDefaultsFor(_capturedAt);
     _mealNameController = TextEditingController(text: defaults.name);
     _brandController = TextEditingController(text: defaults.brand);
+    _ingredientsController = TextEditingController();
     _analyzeFood();
   }
 
@@ -55,6 +58,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   void dispose() {
     _mealNameController.dispose();
     _brandController.dispose();
+    _ingredientsController.dispose();
     super.dispose();
   }
 
@@ -73,6 +77,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       if (!mounted) return;
       setState(() {
         _result = result;
+        _ingredientsController.text = result.ingredientsText ?? '';
         _loading = false;
       });
     } on AnthropicServiceException catch (e) {
@@ -90,6 +95,47 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         _error = e.toString();
         _loading = false;
       });
+    }
+  }
+
+  Future<void> _recalculateNutrition() async {
+    final text = _ingredientsController.text.trim();
+    if (text.isEmpty || _recalcLoading || _result == null) return;
+    setState(() => _recalcLoading = true);
+    try {
+      final aiService = ref.read(anthropicAiServiceProvider);
+      final newNutriments =
+          await aiService.recalculateNutritionFromIngredients(text);
+      if (!mounted) return;
+      if (newNutriments != null) {
+        setState(() {
+          _result = MealAnalysisResult(
+            foodName: _result!.foodName,
+            portionGrams: _result!.portionGrams,
+            ingredientsText: text,
+            nutriments: newNutriments,
+            confidence: _result!.confidence,
+            description: _result!.description,
+            rawJson: _result!.rawJson,
+          );
+        });
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Besin değerleri hesaplanamadı, tekrar dene.'),
+            ),
+          );
+        }
+      }
+    } on AnthropicServiceException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Yeniden hesaplama başarısız.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _recalcLoading = false);
     }
   }
 
@@ -136,7 +182,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             : _brandController.text.trim(),
         mealType: defaults.type,
         capturedAt: _capturedAt,
-        ingredientsText: _result!.ingredientsText,
+        ingredientsText: _ingredientsController.text.trim().isNotEmpty
+            ? _ingredientsController.text.trim()
+            : _result!.ingredientsText,
         nutriments: _result!.nutriments,
         calories: _result!.nutriments.energyKcal ?? 0,
         hpScore: hpResult.hpScore,
@@ -384,50 +432,69 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
               ],
             ),
           ),
-          if ((result.ingredientsText ?? result.description).isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (result.ingredientsText != null) ...[
-                      Text(
-                        'Tahmini içerik',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          color: colors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        result.ingredientsText!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.5,
-                          color: colors.textSecondary,
-                        ),
-                      ),
-                    ],
-                    if (result.description.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      Text(
-                        result.description,
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.5,
-                          color: colors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ],
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Tahmini içerik',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: colors.textPrimary,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: _ingredientsController,
+                  maxLines: null,
+                  minLines: 3,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: colors.textSecondary,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'İçerik ekle veya düzenle...',
+                    contentPadding: const EdgeInsets.all(12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _recalcLoading ? null : _recalculateNutrition,
+                    icon: _recalcLoading
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.refresh_rounded, size: 18),
+                    label: const Text('Yeniden Hesapla'),
+                  ),
+                ),
+                if (result.description.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    result.description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.5,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
           const SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
