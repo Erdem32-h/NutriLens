@@ -1,0 +1,103 @@
+workflows:
+
+  # ─────────────────────────────────────────────────────────────
+  # iOS → TestFlight
+  # ─────────────────────────────────────────────────────────────
+  ios-testflight:
+    name: iOS TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    environment:
+      ios_signing:
+        distribution_type: app_store          # App Store / TestFlight dağıtımı
+        bundle_identifier: app.nutrilens.ios
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      vars:
+        FLUTTER_BUILD_NUMBER: $BUILD_NUMBER   # Codemagic otomatik artırır
+
+    scripts:
+      - name: Oluştur .env
+        script: |
+          cat > .env << EOF
+          SUPABASE_URL=$SUPABASE_URL
+          SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+          ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
+          RC_API_KEY_IOS=$RC_API_KEY_IOS
+          RC_API_KEY_ANDROID=$RC_API_KEY_ANDROID
+          ADMOB_APP_ID=$ADMOB_APP_ID_IOS
+          EOF
+
+      - name: Flutter pub get
+        script: flutter pub get
+
+      - name: Kod üretimi (Drift / Riverpod)
+        script: dart run build_runner build --delete-conflicting-outputs
+
+      - name: iOS IPA build
+        script: |
+          flutter build ipa \
+            --release \
+            --build-number=$BUILD_NUMBER
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+
+    publishing:
+      app_store_connect:
+        auth: integration           # Codemagic Teams > Integrations > App Store Connect
+        submit_to_testflight: true
+        submit_to_app_store: false
+
+  # ─────────────────────────────────────────────────────────────
+  # Android → Play Console Internal Testing
+  # ─────────────────────────────────────────────────────────────
+  android-internal:
+    name: Android Internal Testing
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      android_signing:
+        - nutrilens_keystore             # Codemagic Code Signing'e eklenen keystore adı
+      flutter: stable
+      vars:
+        FLUTTER_BUILD_NUMBER: $BUILD_NUMBER
+
+    scripts:
+      - name: Oluştur .env
+        script: |
+          cat > .env << EOF
+          SUPABASE_URL=$SUPABASE_URL
+          SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+          ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
+          RC_API_KEY_ANDROID=$RC_API_KEY_ANDROID
+          RC_API_KEY_IOS=$RC_API_KEY_IOS
+          ADMOB_APP_ID=$ADMOB_APP_ID_ANDROID
+          EOF
+
+      - name: Flutter pub get
+        script: flutter pub get
+
+      - name: Kod üretimi (Drift / Riverpod)
+        script: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Android AAB build
+        script: |
+          flutter build appbundle \
+            --release \
+            --build-number=$BUILD_NUMBER
+
+    artifacts:
+      - build/app/outputs/bundle/release/app-release.aab
+      - build/app/outputs/mapping/release/mapping.txt
+
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: false
