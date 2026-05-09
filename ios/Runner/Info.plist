@@ -4,6 +4,14 @@
 <dict>
 	<key>GADApplicationIdentifier</key>
 	<string>$(ADMOB_APP_ID)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>NutriLens barkodları taramak ve ürün/öğün fotoğraflarını analiz etmek için kamerayı kullanır.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>NutriLens ürün veya öğün fotoğraflarını seçerek analiz edebilmeniz için fotoğraf arşivinize erişir.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>NutriLens analiz için kullandığınız görselleri gerektiğinde fotoğraf arşivinize kaydedebilmek için izin ister.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 	  <dict>

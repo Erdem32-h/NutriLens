@@ -41,6 +41,9 @@ desktop.ini
 *.log
 coverage/
 
+# Store upload assets generated locally
+store_assets/
+
 # NotebookLM
 notebooklm/
 NotebookLM/
