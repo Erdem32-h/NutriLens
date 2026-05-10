@@ -348,21 +348,30 @@ class AnthropicAiService {
       final jsonStr = _extractJson(text);
       final json = jsonDecode(jsonStr) as Map<String, dynamic>;
       final nutrition = _safeMap(json['nutrition']);
+      final portionGrams = _safeInt(json['portion_grams']);
+      final normalizedPortionGrams = _normalizeMealPortionGrams(portionGrams);
+      final nutritionScale = _mealNutritionScale(portionGrams);
 
       return MealAnalysisResult(
         foodName: _safeString(json['food_name'], 'Bilinmeyen Öğün'),
-        portionGrams: _safeInt(json['portion_grams']),
+        portionGrams: normalizedPortionGrams,
         ingredientsText: _nullableTrimmed(json['ingredients_text']),
         nutriments: NutrimentsEntity(
-          energyKcal: _number(nutrition['energy_kcal']),
-          fat: _number(nutrition['fat']),
-          saturatedFat: _number(nutrition['saturated_fat']),
-          transFat: _number(nutrition['trans_fat']),
-          carbohydrates: _number(nutrition['carbohydrates']),
-          sugars: _number(nutrition['sugars']),
-          salt: _number(nutrition['salt']),
-          fiber: _number(nutrition['fiber']),
-          proteins: _number(nutrition['protein']),
+          energyKcal: _scaledNumber(nutrition['energy_kcal'], nutritionScale),
+          fat: _scaledNumber(nutrition['fat'], nutritionScale),
+          saturatedFat: _scaledNumber(
+            nutrition['saturated_fat'],
+            nutritionScale,
+          ),
+          transFat: _scaledNumber(nutrition['trans_fat'], nutritionScale),
+          carbohydrates: _scaledNumber(
+            nutrition['carbohydrates'],
+            nutritionScale,
+          ),
+          sugars: _scaledNumber(nutrition['sugars'], nutritionScale),
+          salt: _scaledNumber(nutrition['salt'], nutritionScale),
+          fiber: _scaledNumber(nutrition['fiber'], nutritionScale),
+          proteins: _scaledNumber(nutrition['protein'], nutritionScale),
         ),
         confidence: _number(json['confidence']),
         description: _safeString(json['description'], ''),
@@ -450,6 +459,22 @@ class AnthropicAiService {
     }
     return 0;
   }
+
+  static int _normalizeMealPortionGrams(int portionGrams) {
+    if (portionGrams <= 0) return 100;
+    if (portionGrams > 100) return 100;
+    return portionGrams;
+  }
+
+  static double _mealNutritionScale(int portionGrams) {
+    if (portionGrams <= 100) return 1;
+    return 100 / portionGrams;
+  }
+
+  static double _scaledNumber(dynamic value, double scale) {
+    final scaled = _number(value) * scale;
+    return double.parse(scaled.toStringAsFixed(2));
+  }
 }
 
 String _ingredientsPrompt(String languageCode) {
@@ -518,13 +543,13 @@ Kurallar:
 ''';
 
 String _recalcNutritionPrompt(String ingredientsText) => '''
-Aşağıdaki içerik listesine göre 1 porsiyon için tahmini besin değerlerini hesapla.
+Aşağıdaki içerik listesine göre 100 g kişi porsiyonu için tahmini besin değerlerini hesapla.
 
 İçerik:
 $ingredientsText
 
 Kurallar:
-- Değerler toplam 1 porsiyon içindir
+- Değerler toplam 100 g kişi porsiyonu içindir
 - Bulamadığın değerleri 0 döndür
 - Sadece JSON döndür, açıklama yazma
 
@@ -547,8 +572,10 @@ Bu görseldeki öğünü analiz et.
 
 Kurallar:
 - Görselde görünen yiyecek/içecekleri tahmin et.
-- Porsiyonu fotoğrafa göre gram olarak tahmin et.
-- Kalori ve besin değerleri tüm görünen porsiyon içindir; 100 g değerleri değildir.
+- Fotoğrafta büyük tabak, tencere, tepsi veya paylaşımlı kap varsa tamamının yeneceğini varsayma.
+- Varsayılan kişi porsiyonu toplam 100 g kabul edilir.
+- "portion_grams" alanını varsayılan olarak 100 döndür.
+- Kalori ve besin değerleri bu 100 g kişi porsiyonu içindir; tüm görünen yemek için değildir.
 - İçindekiler/tahmini bileşenleri Türkçe düz metin olarak yaz.
 - Görsel belirsizse yine en iyi tahmini yap, confidence değerini düşük ver.
 - Bulamadığın besin değerlerini 0 döndür.

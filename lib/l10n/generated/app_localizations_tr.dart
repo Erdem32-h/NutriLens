@@ -510,6 +510,57 @@ class AppLocalizationsTr extends AppLocalizations {
   String get saveFailed => 'Kaydetme başarısız';
 
   @override
+  String get dataManagement => 'Veri Yönetimi';
+
+  @override
+  String get deleteAllData => 'Tüm verileri sil';
+
+  @override
+  String get userData => 'Kullanıcı verileri';
+
+  @override
+  String get deleteAllDataTitle => 'Tüm veriler silinsin mi?';
+
+  @override
+  String get deleteAllDataMessage =>
+      'Tarama geçmişi, favoriler, kara liste, öğünler ve profil filtrelerin silinir. Kullanıcı tarafından eklenen ürünler uygulama veritabanında kalır.';
+
+  @override
+  String get keepData => 'Vazgeç';
+
+  @override
+  String get userDataDeleted => 'Kullanıcı verilerin silindi.';
+
+  @override
+  String deleteDataFailed(Object error) {
+    return 'Veriler silinemedi: $error';
+  }
+
+  @override
+  String get deleteAccount => 'Hesabımı sil';
+
+  @override
+  String get permanent => 'Kalıcı';
+
+  @override
+  String get deleteAccountTitle => 'Hesap kalıcı silinsin mi?';
+
+  @override
+  String get deleteAccountMessage =>
+      'Önce kişisel verilerin temizlenir, ardından hesabın kalıcı olarak silinir. Kullanıcı tarafından eklenen ürünler uygulama veritabanında kalır.';
+
+  @override
+  String get deleteAccountButton => 'Hesabı sil';
+
+  @override
+  String get accountDeleted => 'Hesabın silindi.';
+
+  @override
+  String deleteAccountFailed(Object error) {
+    return 'Hesap silinemedi: $error';
+  }
+
+  @override
   String get missingInfo => 'Eksik bilgiler tamamlanabilir';
 
   @override

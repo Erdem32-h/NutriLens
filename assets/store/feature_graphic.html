@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>NutriLens — Play Feature Graphic</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
+                 "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .feature {
+    width: 1024px;
+    height: 500px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+    display: flex;
+    align-items: center;
+  }
+
+  /* Decorative blur orbs */
+  .feature::before {
+    content: '';
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(22,163,74,0.18), transparent 70%);
+    top: -120px;
+    right: -80px;
+  }
+  .feature::after {
+    content: '';
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(16,185,129,0.14), transparent 70%);
+    bottom: -100px;
+    left: 280px;
+  }
+
+  .left {
+    flex: 1;
+    padding: 50px 0 50px 60px;
+    z-index: 2;
+    max-width: 580px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .brand-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(22,163,74,0.25);
+  }
+
+  .brand-name {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #14532d;
+  }
+  .brand-name span { color: #16a34a; }
+
+  .headline {
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 1.05;
+    color: #0f172a;
+    letter-spacing: -1.5px;
+    margin-bottom: 22px;
+  }
+  .headline .accent { color: #16a34a; }
+
+  .bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+  .bullets li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #16a34a;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  /* Phone mockup on the right */
+  .right {
+    flex: 0 0 380px;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .phone {
+    width: 240px;
+    height: 480px;
+    background: #0f172a;
+    border-radius: 38px;
+    padding: 12px;
+    box-shadow: 0 30px 60px rgba(15,23,42,0.35),
+                0 12px 28px rgba(15,23,42,0.25);
+    transform: rotate(-6deg) translateX(20px);
+    position: relative;
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #fff 0%, #f0fdf4 100%);
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notch {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 22px;
+    background: #0f172a;
+    border-radius: 999px;
+    z-index: 10;
+  }
+
+  .app-bar {
+    padding: 38px 18px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .app-bar-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #14532d;
+  }
+
+  .score-card {
+    margin: 8px 16px 14px;
+    background: white;
+    border-radius: 18px;
+    padding: 18px 16px;
+    box-shadow: 0 4px 14px rgba(15,23,42,0.06);
+    text-align: center;
+  }
+
+  .score-circle {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    background: conic-gradient(#16a34a 0% 85%, #e5e7eb 85% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .score-circle::before {
+    content: '';
+    position: absolute;
+    inset: 9px;
+    background: white;
+    border-radius: 50%;
+  }
+  .score-value {
+    font-size: 30px;
+    font-weight: 900;
+    color: #16a34a;
+    z-index: 1;
+    line-height: 1;
+  }
+  .score-value small {
+    display: block;
+    font-size: 9px;
+    color: #64748b;
+    font-weight: 700;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+  .score-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 2px;
+  }
+  .score-sub {
+    font-size: 9px;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .macros {
+    margin: 0 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+  .macro {
+    background: white;
+    border-radius: 12px;
+    padding: 8px 4px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(15,23,42,0.04);
+  }
+  .macro-val {
+    font-size: 13px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+  }
+  .macro-lbl {
+    font-size: 8px;
+    color: #64748b;
+    font-weight: 700;
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="feature" id="feature">
+  <div class="left">
+    <div class="brand">
+      <img src="../icon/nutrilens_icon_192.png" class="brand-icon" alt="NutriLens">
+      <div class="brand-name">Nutri<span>Lens</span></div>
+    </div>
+
+    <h1 class="headline">
+      Sağlıklı seçimler<br>
+      <span class="accent">buradan başlar.</span>
+    </h1>
+
+    <ul class="bullets">
+      <li><span class="check">✓</span> Barkodu tara, sağlık skorunu gör</li>
+      <li><span class="check">✓</span> Katkı maddelerini ve E-kodları anla</li>
+      <li><span class="check">✓</span> AI ile öğününü analiz et</li>
+      <li><span class="check">✓</span> Diyetine göre kişisel uyarılar</li>
+    </ul>
+  </div>
+
+  <div class="right">
+    <div class="phone">
+      <div class="screen">
+        <div class="notch"></div>
+        <div class="app-bar">
+          <div class="app-bar-title">Tadım Granola</div>
+        </div>
+        <div class="score-card">
+          <div class="score-circle">
+            <div class="score-value">85<small>HP</small></div>
+          </div>
+          <div class="score-label">Sağlıklı seçim</div>
+          <div class="score-sub">Düşük şeker · yüksek lif</div>
+        </div>
+        <div class="macros">
+          <div class="macro"><div class="macro-val">324</div><div class="macro-lbl">KCAL</div></div>
+          <div class="macro"><div class="macro-val">12g</div><div class="macro-lbl">PROTEİN</div></div>
+          <div class="macro"><div class="macro-val">8g</div><div class="macro-lbl">LİF</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

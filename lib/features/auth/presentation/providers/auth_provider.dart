@@ -20,7 +20,11 @@ final authStateProvider = StreamProvider<UserEntity?>((ref) {
 });
 
 final currentUserProvider = Provider<UserEntity?>((ref) {
-  return ref.watch(authRepositoryProvider).currentUser;
+  final authState = ref.watch(authStateProvider);
+  return authState.maybeWhen(
+    data: (user) => user,
+    orElse: () => ref.watch(authRepositoryProvider).currentUser,
+  );
 });
 
 class AuthNotifier extends AsyncNotifier<UserEntity?> {

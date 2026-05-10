@@ -164,6 +164,31 @@
   "saving": "Saving...",
   "savedSuccessfully": "Saved successfully",
   "saveFailed": "Save failed",
+  "dataManagement": "Data Management",
+  "deleteAllData": "Delete all data",
+  "userData": "User data",
+  "deleteAllDataTitle": "Delete all data?",
+  "deleteAllDataMessage": "Your scan history, favorites, blacklist, meals, and profile filters will be deleted. Products added by users will remain in the app database.",
+  "keepData": "Cancel",
+  "userDataDeleted": "Your user data has been deleted.",
+  "deleteDataFailed": "Could not delete data: {error}",
+  "@deleteDataFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "deleteAccount": "Delete my account",
+  "permanent": "Permanent",
+  "deleteAccountTitle": "Delete account permanently?",
+  "deleteAccountMessage": "Your personal data will be cleared first, then your account will be permanently deleted. Products added by users will remain in the app database.",
+  "deleteAccountButton": "Delete account",
+  "accountDeleted": "Your account has been deleted.",
+  "deleteAccountFailed": "Could not delete account: {error}",
+  "@deleteAccountFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "missingInfo": "Missing info can be completed",
   "noProductName": "Unnamed Product",
   "fieldRequired": "This field is required",

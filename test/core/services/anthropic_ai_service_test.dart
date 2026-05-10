@@ -100,10 +100,10 @@ Alerjenler: Gluten, fındık, süt.
 
       expect(result, isNotNull);
       expect(result!.foodName, 'Menemen ve ekmek');
-      expect(result.portionGrams, 420);
+      expect(result.portionGrams, 100);
       expect(result.ingredientsText, contains('Yumurta'));
-      expect(result.nutriments.energyKcal, 610);
-      expect(result.nutriments.carbohydrates, 55);
+      expect(result.nutriments.energyKcal, 145.24);
+      expect(result.nutriments.carbohydrates, 13.1);
       expect(result.confidence, 0.72);
     });
 
@@ -115,6 +115,36 @@ Alerjenler: Gluten, fındık, süt.
       expect(result.nutriments.energyKcal, 0);
       expect(result.nutriments.proteins, 0);
       expect(result.ingredientsText, isNull);
+    });
+
+    test('normalizes oversized visible portions to a 100g personal serving', () {
+      final result = AnthropicAiService.parseMealAnalysisResponseText('''
+{
+  "food_name": "Tencere yemeği",
+  "portion_grams": 500,
+  "ingredients_text": "Et, sebze, yağ",
+  "nutrition": {
+    "energy_kcal": 750,
+    "fat": 35,
+    "saturated_fat": 10,
+    "trans_fat": 0,
+    "carbohydrates": 60,
+    "sugars": 15,
+    "salt": 4,
+    "fiber": 8,
+    "protein": 40
+  },
+  "confidence": 0.6,
+  "description": "Büyük kapta görünen toplam yemek."
+}
+''');
+
+      expect(result, isNotNull);
+      expect(result!.portionGrams, 100);
+      expect(result.nutriments.energyKcal, 150);
+      expect(result.nutriments.fat, 7);
+      expect(result.nutriments.salt, 0.8);
+      expect(result.nutriments.proteins, 8);
     });
   });
 

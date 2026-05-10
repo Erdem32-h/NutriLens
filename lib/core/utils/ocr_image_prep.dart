@@ -15,6 +15,16 @@ class PreparedOcrImage {
   const PreparedOcrImage({required this.bytes, required this.base64});
 }
 
+class ImagePrepOptions {
+  final int maxEdge;
+  final int jpegQuality;
+
+  const ImagePrepOptions({
+    required this.maxEdge,
+    required this.jpegQuality,
+  });
+}
+
 /// Decode → bake EXIF orientation → downscale → re-encode as JPEG → base64.
 ///
 /// This MUST run on a background isolate via [compute] — the synchronous
@@ -29,20 +39,43 @@ class PreparedOcrImage {
 /// manufacturer address instead of the ingredients list). Baking the
 /// orientation into the pixels eliminates that ambiguity.
 ///
-/// 3200 px on the long edge keeps small/curved package text legible without
-/// forcing the user to crop in close, and roughly halves the upload size
-/// vs the raw 12 MP capture.
+/// 1600 px on the long edge keeps package OCR payloads small enough for quick
+/// upload while preserving readable label text for the direct AI pass.
 Future<PreparedOcrImage> prepareOcrImage(Uint8List bytes) {
-  return compute(_prepareOcrImageSync, bytes);
+  return _prepareImage(bytes, const ImagePrepOptions(maxEdge: 1600, jpegQuality: 85));
 }
 
-PreparedOcrImage _prepareOcrImageSync(Uint8List bytes) {
-  Uint8List outputBytes = bytes;
+/// Meal analysis benefits from a clearer scene than label OCR: food boundaries,
+/// side dishes, and texture cues are visual rather than text-only. Keep the
+/// camera-capped 2048 px long edge instead of shrinking it again.
+Future<PreparedOcrImage> prepareMealAnalysisImage(Uint8List bytes) {
+  return _prepareImage(bytes, const ImagePrepOptions(maxEdge: 2048, jpegQuality: 90));
+}
+
+Future<PreparedOcrImage> _prepareImage(
+  Uint8List bytes,
+  ImagePrepOptions options,
+) {
+  return compute(
+    _prepareOcrImageSync,
+    _ImagePrepJob(bytes: bytes, options: options),
+  );
+}
+
+class _ImagePrepJob {
+  final Uint8List bytes;
+  final ImagePrepOptions options;
+
+  const _ImagePrepJob({required this.bytes, required this.options});
+}
+
+PreparedOcrImage _prepareOcrImageSync(_ImagePrepJob job) {
+  Uint8List outputBytes = job.bytes;
   try {
-    final decoded = img.decodeImage(bytes);
+    final decoded = img.decodeImage(job.bytes);
     if (decoded != null) {
       final upright = img.bakeOrientation(decoded);
-      const maxEdge = 1600;
+      final maxEdge = job.options.maxEdge;
       final longestSide =
           upright.width > upright.height ? upright.width : upright.height;
       final resized = longestSide > maxEdge
@@ -53,13 +86,15 @@ PreparedOcrImage _prepareOcrImageSync(Uint8List bytes) {
               interpolation: img.Interpolation.cubic,
             )
           : upright;
-      outputBytes = Uint8List.fromList(img.encodeJpg(resized, quality: 85));
+      outputBytes = Uint8List.fromList(
+        img.encodeJpg(resized, quality: job.options.jpegQuality),
+      );
     }
   } catch (_) {
     // Fall back to the raw bytes — the OCR may still succeed and we'd
     // rather try than abort. The caller logs nothing here because we're
     // on a worker isolate without access to the app's logger.
-    outputBytes = bytes;
+    outputBytes = job.bytes;
   }
 
   return PreparedOcrImage(

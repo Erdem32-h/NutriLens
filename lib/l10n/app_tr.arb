@@ -164,6 +164,31 @@
   "saving": "Kaydediliyor...",
   "savedSuccessfully": "Başarıyla kaydedildi",
   "saveFailed": "Kaydetme başarısız",
+  "dataManagement": "Veri Yönetimi",
+  "deleteAllData": "Tüm verileri sil",
+  "userData": "Kullanıcı verileri",
+  "deleteAllDataTitle": "Tüm veriler silinsin mi?",
+  "deleteAllDataMessage": "Tarama geçmişi, favoriler, kara liste, öğünler ve profil filtrelerin silinir. Kullanıcı tarafından eklenen ürünler uygulama veritabanında kalır.",
+  "keepData": "Vazgeç",
+  "userDataDeleted": "Kullanıcı verilerin silindi.",
+  "deleteDataFailed": "Veriler silinemedi: {error}",
+  "@deleteDataFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "deleteAccount": "Hesabımı sil",
+  "permanent": "Kalıcı",
+  "deleteAccountTitle": "Hesap kalıcı silinsin mi?",
+  "deleteAccountMessage": "Önce kişisel verilerin temizlenir, ardından hesabın kalıcı olarak silinir. Kullanıcı tarafından eklenen ürünler uygulama veritabanında kalır.",
+  "deleteAccountButton": "Hesabı sil",
+  "accountDeleted": "Hesabın silindi.",
+  "deleteAccountFailed": "Hesap silinemedi: {error}",
+  "@deleteAccountFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "missingInfo": "Eksik bilgiler tamamlanabilir",
   "noProductName": "İsimsiz Ürün",
   "fieldRequired": "Bu alan zorunludur",

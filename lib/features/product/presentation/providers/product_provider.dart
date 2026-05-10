@@ -9,6 +9,7 @@ import '../../../../core/network/connectivity_provider.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/services/hp_score_calculator.dart';
+import '../../../../core/services/product_score_enricher.dart';
 import '../../data/datasources/barcode_lookup_source.dart';
 import '../../data/datasources/community_product_source.dart';
 import '../../data/datasources/off_product_source.dart';
@@ -105,6 +106,10 @@ final hpScoreCalculatorProvider = Provider<HpScoreCalculator>((ref) {
   return HpScoreCalculator(db);
 });
 
+final productScoreEnricherProvider = Provider<ProductScoreEnricher>((ref) {
+  return ProductScoreEnricher(ref.watch(hpScoreCalculatorProvider));
+});
+
 // --- AI Service ---
 
 final geminiAiServiceProvider = Provider<GeminiAiService>((ref) {
@@ -128,6 +133,8 @@ final productByBarcodeProvider = FutureProvider.family<ProductEntity?, String>((
 ) async {
   debugPrint('[Provider] productByBarcode($barcode) → fetching...');
   final useCase = ref.watch(getProductUseCaseProvider);
+  final scoreEnricher = ref.watch(productScoreEnricherProvider);
+  final localDataSource = ref.watch(productLocalDataSourceProvider);
   final result = await useCase(barcode).timeout(
     const Duration(seconds: 20),
     onTimeout: () {
@@ -145,12 +152,21 @@ final productByBarcodeProvider = FutureProvider.family<ProductEntity?, String>((
       if (failure is NotFoundFailure) return null;
       throw Exception(failure.message);
     },
-    (product) {
+    (product) async {
+      final enriched = await scoreEnricher.ensureFreshScore(product);
+      if (enriched != product) {
+        try {
+          await localDataSource.cacheProduct(enriched);
+        } catch (_) {
+          // Score calculation should still be shown even if local cache fails.
+        }
+      }
       debugPrint(
         '[Provider] productByBarcode($barcode) → found: '
-        'name=${product.productName}, hasEssential=${product.hasEssentialData}',
+        'name=${enriched.productName}, hasEssential=${enriched.hasEssentialData}, '
+        'hpScore=${enriched.hpScore}',
       );
-      return product;
+      return enriched;
     },
   );
 });

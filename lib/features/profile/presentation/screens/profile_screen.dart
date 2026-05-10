@@ -9,6 +9,10 @@ import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../history/presentation/providers/history_provider.dart';
+import '../../../meals/presentation/providers/meal_provider.dart';
+import '../providers/health_filters_provider.dart';
+import '../providers/user_data_deletion_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -20,10 +24,11 @@ class ProfileScreen extends ConsumerWidget {
     final currentThemeMode = ref.watch(themeModeProvider);
     final currentLocale = ref.watch(localeProvider);
 
-    final initial = (user?.displayName?.isNotEmpty == true
-            ? user!.displayName![0]
-            : user?.email[0] ?? '?')
-        .toUpperCase();
+    final initial =
+        (user?.displayName?.isNotEmpty == true
+                ? user!.displayName![0]
+                : user?.email[0] ?? '?')
+            .toUpperCase();
 
     return Scaffold(
       backgroundColor: context.colors.background,
@@ -32,10 +37,7 @@ class ProfileScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.logout_rounded,
-              color: context.colors.textMuted,
-            ),
+            icon: Icon(Icons.logout_rounded, color: context.colors.textMuted),
             tooltip: l10n.signOut,
             onPressed: () async {
               await ref.read(authNotifierProvider.notifier).signOut();
@@ -60,7 +62,8 @@ class ProfileScreen extends ConsumerWidget {
             child: Row(
               children: [
                 Container(
-                  width: 64, height: 64,
+                  width: 64,
+                  height: 64,
                   decoration: BoxDecoration(
                     gradient: context.colors.primaryGradient,
                     shape: BoxShape.circle,
@@ -115,14 +118,14 @@ class ProfileScreen extends ConsumerWidget {
             icon: currentThemeMode == ThemeMode.dark
                 ? Icons.dark_mode_rounded
                 : currentThemeMode == ThemeMode.light
-                    ? Icons.light_mode_rounded
-                    : Icons.brightness_auto_rounded,
+                ? Icons.light_mode_rounded
+                : Icons.brightness_auto_rounded,
             title: l10n.theme,
             value: currentThemeMode == ThemeMode.dark
                 ? l10n.darkMode
                 : currentThemeMode == ThemeMode.light
-                    ? l10n.lightMode
-                    : l10n.systemMode,
+                ? l10n.lightMode
+                : l10n.systemMode,
             onTap: () => _showThemeDialog(context, ref, currentThemeMode),
           ),
 
@@ -198,22 +201,168 @@ class ProfileScreen extends ConsumerWidget {
             },
           ),
 
+          const SizedBox(height: 28),
+
+          _SectionLabel(l10n.dataManagement),
+          const SizedBox(height: 10),
+
+          _SettingsTile(
+            icon: Icons.delete_sweep_rounded,
+            title: l10n.deleteAllData,
+            value: l10n.userData,
+            accentColor: context.colors.error,
+            onTap: () => _confirmDeleteAllData(context, ref),
+          ),
+          const SizedBox(height: 8),
+          _SettingsTile(
+            icon: Icons.person_remove_rounded,
+            title: l10n.deleteAccount,
+            value: l10n.permanent,
+            accentColor: context.colors.error,
+            onTap: () => _confirmDeleteAccount(context, ref),
+          ),
+
           const SizedBox(height: 24),
         ],
       ),
     );
   }
 
+  Future<void> _confirmDeleteAllData(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final userId = ref.read(currentUserProvider)?.id;
+    if (userId == null) return;
+    final l10n = context.l10n;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: context.colors.surfaceCard2,
+        title: Text(
+          l10n.deleteAllDataTitle,
+          style: TextStyle(color: context.colors.textPrimary),
+        ),
+        content: Text(
+          l10n.deleteAllDataMessage,
+          style: TextStyle(color: context.colors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.keepData),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: context.colors.error,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(userDataDeletionServiceProvider).deleteAllUserData(userId);
+      ref.invalidate(scanHistoryProvider);
+      ref.invalidate(favoritesProvider);
+      ref.invalidate(blacklistProvider);
+      ref.invalidate(mealsProvider);
+      ref.invalidate(mealCalorieSummaryProvider);
+      ref.invalidate(healthFiltersProvider);
+
+      if (!context.mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(l10n.userDataDeleted)));
+    } catch (e) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.deleteDataFailed(e.toString()))),
+      );
+    }
+  }
+
+  Future<void> _confirmDeleteAccount(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final userId = ref.read(currentUserProvider)?.id;
+    if (userId == null) return;
+    final l10n = context.l10n;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: context.colors.surfaceCard2,
+        title: Text(
+          l10n.deleteAccountTitle,
+          style: TextStyle(color: context.colors.textPrimary),
+        ),
+        content: Text(
+          l10n.deleteAccountMessage,
+          style: TextStyle(color: context.colors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.keepData),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: context.colors.error,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.deleteAccountButton),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(accountDeletionServiceProvider).deleteAccount(userId);
+      ref.invalidate(scanHistoryProvider);
+      ref.invalidate(favoritesProvider);
+      ref.invalidate(blacklistProvider);
+      ref.invalidate(mealsProvider);
+      ref.invalidate(mealCalorieSummaryProvider);
+      ref.invalidate(healthFiltersProvider);
+      ref.invalidate(authStateProvider);
+
+      if (!context.mounted) return;
+      context.go('/login');
+      messenger.showSnackBar(SnackBar(content: Text(l10n.accountDeleted)));
+    } catch (e) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.deleteAccountFailed(e.toString()))),
+      );
+    }
+  }
+
   void _showThemeDialog(
-      BuildContext context, WidgetRef ref, ThemeMode currentMode) {
+    BuildContext context,
+    WidgetRef ref,
+    ThemeMode currentMode,
+  ) {
     final l10n = context.l10n;
 
     showDialog(
       context: context,
       builder: (context) => SimpleDialog(
         backgroundColor: context.colors.surfaceCard2,
-        title: Text(l10n.theme,
-            style: TextStyle(color: context.colors.textPrimary)),
+        title: Text(
+          l10n.theme,
+          style: TextStyle(color: context.colors.textPrimary),
+        ),
         children: [
           _buildDialogOption(
             context: context,
@@ -245,9 +394,7 @@ class ProfileScreen extends ConsumerWidget {
             icon: Icons.dark_mode_rounded,
             isSelected: currentMode == ThemeMode.dark,
             onTap: () {
-              ref
-                  .read(themeModeProvider.notifier)
-                  .setThemeMode(ThemeMode.dark);
+              ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
               Navigator.pop(context);
             },
           ),
@@ -257,15 +404,20 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   void _showLanguageDialog(
-      BuildContext context, WidgetRef ref, Locale currentLocale) {
+    BuildContext context,
+    WidgetRef ref,
+    Locale currentLocale,
+  ) {
     final l10n = context.l10n;
 
     showDialog(
       context: context,
       builder: (context) => SimpleDialog(
         backgroundColor: context.colors.surfaceCard2,
-        title: Text(l10n.language,
-            style: TextStyle(color: context.colors.textPrimary)),
+        title: Text(
+          l10n.language,
+          style: TextStyle(color: context.colors.textPrimary),
+        ),
         children: [
           _buildDialogOption(
             context: context,
@@ -273,9 +425,7 @@ class ProfileScreen extends ConsumerWidget {
             icon: Icons.flag_rounded,
             isSelected: currentLocale.languageCode == 'tr',
             onTap: () {
-              ref
-                  .read(localeProvider.notifier)
-                  .setLocale(const Locale('tr'));
+              ref.read(localeProvider.notifier).setLocale(const Locale('tr'));
               Navigator.pop(context);
             },
           ),
@@ -285,9 +435,7 @@ class ProfileScreen extends ConsumerWidget {
             icon: Icons.flag_outlined,
             isSelected: currentLocale.languageCode == 'en',
             onTap: () {
-              ref
-                  .read(localeProvider.notifier)
-                  .setLocale(const Locale('en'));
+              ref.read(localeProvider.notifier).setLocale(const Locale('en'));
               Navigator.pop(context);
             },
           ),
@@ -309,16 +457,19 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           Icon(
             icon,
-            color: isSelected ? context.colors.primary : context.colors.textMuted,
+            color: isSelected
+                ? context.colors.primary
+                : context.colors.textMuted,
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               title,
               style: TextStyle(
-                fontWeight:
-                    isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? context.colors.primary : context.colors.textPrimary,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected
+                    ? context.colors.primary
+                    : context.colors.textPrimary,
               ),
             ),
           ),
@@ -353,12 +504,14 @@ class _SettingsTile extends StatelessWidget {
   final String title;
   final String value;
   final VoidCallback onTap;
+  final Color? accentColor;
 
   const _SettingsTile({
     required this.icon,
     required this.title,
     required this.value,
     required this.onTap,
+    this.accentColor,
   });
 
   @override
@@ -375,12 +528,19 @@ class _SettingsTile extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 36, height: 36,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: context.colors.primary.withValues(alpha: 0.12),
+                color: (accentColor ?? context.colors.primary).withValues(
+                  alpha: 0.12,
+                ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 18, color: context.colors.primary),
+              child: Icon(
+                icon,
+                size: 18,
+                color: accentColor ?? context.colors.primary,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(

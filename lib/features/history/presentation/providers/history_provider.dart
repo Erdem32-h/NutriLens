@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../data/datasources/scan_history_local_datasource.dart';
 
@@ -18,7 +19,7 @@ final scanHistoryLocalDataSourceProvider =
 /// Enriches Supabase results with product info from local Drift cache.
 final scanHistoryProvider =
     FutureProvider<List<ScanHistoryWithProduct>>((ref) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.watch(currentUserProvider)?.id;
   if (userId == null) return [];
 
   // Try Supabase first for cross-device sync
@@ -71,7 +72,7 @@ Future<void> addScanToHistory(
   required String barcode,
   double? hpScore,
 }) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.read(currentUserProvider)?.id;
   if (userId == null) return;
 
   try {
@@ -125,7 +126,7 @@ Future<void> deleteScanFromHistory(WidgetRef ref, String id) async {
 /// Fetches favorites from Supabase, enriched with local product cache.
 final favoritesProvider =
     FutureProvider<List<ScanHistoryWithProduct>>((ref) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.watch(currentUserProvider)?.id;
   if (userId == null) return [];
 
   try {
@@ -162,7 +163,7 @@ final favoritesProvider =
 /// Check if a barcode is in favorites.
 final isFavoriteProvider =
     FutureProvider.family<bool, String>((ref, barcode) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.watch(currentUserProvider)?.id;
   if (userId == null) return false;
 
   try {
@@ -181,7 +182,7 @@ final isFavoriteProvider =
 /// Add a barcode to favorites.
 /// Mutual exclusion: automatically removes from blacklist if present.
 Future<bool> addToFavorites(WidgetRef ref, {required String barcode}) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.read(currentUserProvider)?.id;
   if (userId == null) return false;
 
   try {
@@ -226,7 +227,7 @@ Future<bool> removeFavoriteByBarcode(
   WidgetRef ref, {
   required String barcode,
 }) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.read(currentUserProvider)?.id;
   if (userId == null) return false;
 
   try {
@@ -248,7 +249,7 @@ Future<bool> removeFavoriteByBarcode(
 /// Fetches blacklisted products from Supabase, enriched with local product cache.
 final blacklistProvider =
     FutureProvider<List<ScanHistoryWithProduct>>((ref) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.watch(currentUserProvider)?.id;
   if (userId == null) return [];
 
   try {
@@ -285,7 +286,7 @@ final blacklistProvider =
 /// Check if a barcode is in the blacklist.
 final isBlacklistedProvider =
     FutureProvider.family<bool, String>((ref, barcode) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.watch(currentUserProvider)?.id;
   if (userId == null) return false;
 
   try {
@@ -308,7 +309,7 @@ Future<bool> addToBlacklist(
   required String barcode,
   String? reason,
 }) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.read(currentUserProvider)?.id;
   if (userId == null) return false;
 
   try {
@@ -355,7 +356,7 @@ Future<bool> removeBlacklistByBarcode(
   WidgetRef ref, {
   required String barcode,
 }) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
+  final userId = ref.read(currentUserProvider)?.id;
   if (userId == null) return false;
 
   try {

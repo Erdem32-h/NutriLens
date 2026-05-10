@@ -70,7 +70,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     });
 
     try {
-      final prepared = await prepareOcrImage(widget.imageBytes);
+      final prepared = await prepareMealAnalysisImage(widget.imageBytes);
       final aiService = ref.read(anthropicAiServiceProvider);
       final result = await aiService.analyzeMealFromBase64(prepared.base64);
       if (result == null) throw Exception('AI returned empty meal result');

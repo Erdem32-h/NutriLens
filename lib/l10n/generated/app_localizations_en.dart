@@ -511,6 +511,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveFailed => 'Save failed';
 
   @override
+  String get dataManagement => 'Data Management';
+
+  @override
+  String get deleteAllData => 'Delete all data';
+
+  @override
+  String get userData => 'User data';
+
+  @override
+  String get deleteAllDataTitle => 'Delete all data?';
+
+  @override
+  String get deleteAllDataMessage =>
+      'Your scan history, favorites, blacklist, meals, and profile filters will be deleted. Products added by users will remain in the app database.';
+
+  @override
+  String get keepData => 'Cancel';
+
+  @override
+  String get userDataDeleted => 'Your user data has been deleted.';
+
+  @override
+  String deleteDataFailed(Object error) {
+    return 'Could not delete data: $error';
+  }
+
+  @override
+  String get deleteAccount => 'Delete my account';
+
+  @override
+  String get permanent => 'Permanent';
+
+  @override
+  String get deleteAccountTitle => 'Delete account permanently?';
+
+  @override
+  String get deleteAccountMessage =>
+      'Your personal data will be cleared first, then your account will be permanently deleted. Products added by users will remain in the app database.';
+
+  @override
+  String get deleteAccountButton => 'Delete account';
+
+  @override
+  String get accountDeleted => 'Your account has been deleted.';
+
+  @override
+  String deleteAccountFailed(Object error) {
+    return 'Could not delete account: $error';
+  }
+
+  @override
   String get missingInfo => 'Missing info can be completed';
 
   @override

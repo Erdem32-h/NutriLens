@@ -1082,6 +1082,96 @@ abstract class AppLocalizations {
   /// **'Kaydetme başarısız'**
   String get saveFailed;
 
+  /// No description provided for @dataManagement.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veri Yönetimi'**
+  String get dataManagement;
+
+  /// No description provided for @deleteAllData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm verileri sil'**
+  String get deleteAllData;
+
+  /// No description provided for @userData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanıcı verileri'**
+  String get userData;
+
+  /// No description provided for @deleteAllDataTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm veriler silinsin mi?'**
+  String get deleteAllDataTitle;
+
+  /// No description provided for @deleteAllDataMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tarama geçmişi, favoriler, kara liste, öğünler ve profil filtrelerin silinir. Kullanıcı tarafından eklenen ürünler uygulama veritabanında kalır.'**
+  String get deleteAllDataMessage;
+
+  /// No description provided for @keepData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vazgeç'**
+  String get keepData;
+
+  /// No description provided for @userDataDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanıcı verilerin silindi.'**
+  String get userDataDeleted;
+
+  /// No description provided for @deleteDataFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veriler silinemedi: {error}'**
+  String deleteDataFailed(Object error);
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabımı sil'**
+  String get deleteAccount;
+
+  /// No description provided for @permanent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kalıcı'**
+  String get permanent;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap kalıcı silinsin mi?'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önce kişisel verilerin temizlenir, ardından hesabın kalıcı olarak silinir. Kullanıcı tarafından eklenen ürünler uygulama veritabanında kalır.'**
+  String get deleteAccountMessage;
+
+  /// No description provided for @deleteAccountButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabı sil'**
+  String get deleteAccountButton;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabın silindi.'**
+  String get accountDeleted;
+
+  /// No description provided for @deleteAccountFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap silinemedi: {error}'**
+  String deleteAccountFailed(Object error);
+
   /// No description provided for @missingInfo.
   ///
   /// In tr, this message translates to:

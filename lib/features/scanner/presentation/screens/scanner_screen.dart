@@ -215,7 +215,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
         source: ImageSource.camera,
         maxWidth: 2048,
         maxHeight: 2048,
-        imageQuality: 90,
+        imageQuality: 95,
       );
       if (xFile == null || !mounted) return;
 
