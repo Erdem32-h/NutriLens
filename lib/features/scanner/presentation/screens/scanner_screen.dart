@@ -195,18 +195,60 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     // route is still mounted underneath but the preview + decoder would
     // otherwise keep streaming frames we can never see.
     _stopScanning();
-    context.push('/product/$value').then((_) {
+    context.push('/product/$value').then((_) async {
+      if (!mounted) return;
+      // The native camera handle takes a beat to release after stop(); on
+      // some Android devices a back-to-back stop()→start() leaves the
+      // preview surface in a black state. A short delay lets the
+      // underlying CameraX session fully tear down before we re-open it,
+      // and a forced setState afterwards repaints the preview widget.
+      await Future<void>.delayed(const Duration(milliseconds: 250));
       if (!mounted) return;
       setState(() => _isNavigating = false);
-      if (_scanMode == 0) _startScanning();
+      if (_scanMode == 0) {
+        _startScanning();
+        // Second-pass repaint once start() has returned. Some devices
+        // need this on the next frame for the preview surface to attach.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() {});
+        });
+      }
     });
   }
 
-  /// Returns true if the value looks like a product barcode.
+  /// Returns true if the value looks like a product barcode AND, for EAN/UPC
+  /// lengths, the modulo-10 check digit matches. ~90% of random digit
+  /// scrambles fail this check — it doesn't catch every misread (two
+  /// digits can swap into another valid GTIN by chance) but it does
+  /// reject most pixel-level scanner errors before they hit the DB.
   bool _isValidBarcode(String value) {
     if (value.contains('://') || value.contains('/')) return false;
     if (value.startsWith('http') || value.startsWith('www.')) return false;
+    // Only run check-digit validation on the formats that define one.
+    // QR/code128/code39 carry arbitrary text — accept as-is.
+    final isNumericOnly = RegExp(r'^\d+$').hasMatch(value);
+    if (!isNumericOnly) return true;
+    final len = value.length;
+    if (len == 8 || len == 12 || len == 13 || len == 14) {
+      return _hasValidGtinCheckDigit(value);
+    }
     return true;
+  }
+
+  /// GS1 mod-10 check digit validation, valid for EAN-8, UPC-A (12),
+  /// EAN-13 and ITF-14 alike. Rightmost digit is the check; remaining
+  /// digits weighted 3,1,3,1,... from the right just before the check
+  /// digit. Sum mod 10, then (10 - r) mod 10 must equal the check.
+  static bool _hasValidGtinCheckDigit(String value) {
+    final digits = value.codeUnits;
+    final check = digits.last - 0x30;
+    var sum = 0;
+    for (var i = 0; i < digits.length - 1; i++) {
+      final d = digits[digits.length - 2 - i] - 0x30;
+      sum += d * (i.isEven ? 3 : 1);
+    }
+    final expected = (10 - (sum % 10)) % 10;
+    return expected == check;
   }
 
   Future<void> _captureForAi() async {

@@ -36,17 +36,21 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 GoRouter createRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/scanner',
+    // Land on Meals: scanner is heavy (camera init + permission), so a
+    // cold-launch on its tab can stutter on low-end Androids. Meals is a
+    // local Drift read — instant. The user reaches the scanner via the
+    // (still-centered, still-prominent) middle nav button when ready.
+    initialLocation: '/meals',
     debugLogDiagnostics: kDebugMode,
     onException: (context, state, router) {
       debugPrint('[GoRouter] No route for: ${state.uri}');
-      router.go('/scanner');
+      router.go('/meals');
     },
     redirect: (context, state) {
       final path = state.uri.path;
 
-      // Root path has no route — send to scanner
-      if (path == '/' || path.isEmpty) return '/scanner';
+      // Root path has no route — send to meals (initial landing).
+      if (path == '/' || path.isEmpty) return '/meals';
 
       // Supabase başlatılmamışsa login'e yönlendir
       if (!SupabaseConfig.isInitialized) {
@@ -67,7 +71,7 @@ GoRouter createRouter() {
         return '/login';
       }
       if (isLoggedIn && isAuthRoute) {
-        return '/scanner';
+        return '/meals';
       }
       return null;
     },

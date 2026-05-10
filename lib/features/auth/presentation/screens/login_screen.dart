@@ -42,7 +42,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           SnackBar(content: Text(authState.error.toString())),
         );
       } else {
-        context.goNamed(RouteNames.scanner);
+        context.goNamed(RouteNames.meals);
       }
     }
   }
@@ -52,7 +52,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.listen(authStateProvider, (previous, next) {
       if (next.hasValue && next.value != null) {
         ref.read(subscriptionServiceProvider).logIn(next.value!.id);
-        if (mounted) context.go('/scanner');
+        if (mounted) context.go('/meals');
       }
     });
 

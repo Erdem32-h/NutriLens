@@ -52,7 +52,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ),
         );
       } else {
-        context.goNamed(RouteNames.scanner);
+        context.goNamed(RouteNames.meals);
       }
     }
   }
@@ -62,7 +62,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ref.listen(authStateProvider, (previous, next) {
       if (next.hasValue && next.value != null) {
         ref.read(subscriptionServiceProvider).logIn(next.value!.id);
-        if (mounted) context.go('/scanner');
+        if (mounted) context.go('/meals');
       }
     });
 
