@@ -1,8 +1,8 @@
-{
+﻿{
   "@@locale": "tr",
   "appTitle": "NutriLens",
   "scanner": "Tarayıcı",
-  "history": "Geçmiş",
+  "history": "Ürün Geçmişi",
   "favorites": "Favoriler",
   "profile": "Profil",
   "login": "Giriş Yap",

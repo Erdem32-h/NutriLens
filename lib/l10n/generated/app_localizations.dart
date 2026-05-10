@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @history.
   ///
   /// In tr, this message translates to:
-  /// **'Geçmiş'**
+  /// **'Ürün Geçmişi'**
   String get history;
 
   /// No description provided for @favorites.

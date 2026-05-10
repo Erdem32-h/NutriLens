@@ -15,7 +15,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get scanner => 'Tarayıcı';
 
   @override
-  String get history => 'Geçmiş';
+  String get history => 'Ürün Geçmişi';
 
   @override
   String get favorites => 'Favoriler';

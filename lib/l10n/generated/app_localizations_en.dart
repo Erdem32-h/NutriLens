@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanner => 'Scanner';
 
   @override
-  String get history => 'History';
+  String get history => 'Product History';
 
   @override
   String get favorites => 'Favorites';

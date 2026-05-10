@@ -1,8 +1,8 @@
-{
+﻿{
   "@@locale": "en",
   "appTitle": "NutriLens",
   "scanner": "Scanner",
-  "history": "History",
+  "history": "Product History",
   "favorites": "Favorites",
   "profile": "Profile",
   "login": "Login",

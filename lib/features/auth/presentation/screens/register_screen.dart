@@ -145,7 +145,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: _nameController,
-                      style: TextStyle(color: context.colors.textPrimary),
+                      keyboardType: TextInputType.name,
+                      textCapitalization: TextCapitalization.words,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      style: TextStyle(
+                        color: context.colors.textPrimary,
+                        fontFamilyFallback: const ['Roboto', 'sans-serif'],
+                      ),
                       decoration: const InputDecoration(
                         hintText: 'Ad Soyad',
                         prefixIcon: Icon(Icons.person_outline_rounded),
