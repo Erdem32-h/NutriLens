@@ -1,1 +1,12 @@
 #include "Generated.xcconfig"
+
+// AdMob App ID. Info.plist references $(ADMOB_APP_ID); when the Google
+// Mobile Ads iOS SDK framework loads it raises an NSException if this
+// value is missing or doesn't match `ca-app-pub-*~*`, which crashes the
+// app before Flutter's main() runs (App Review caught this on iPad).
+//
+// Default = Google's official iOS test App ID. Safe for local builds and
+// keeps the SDK silent in CI builds where the real ID hasn't been wired
+// yet. Codemagic overwrites this line with the production ID via the
+// `Configure iOS build settings` script.
+ADMOB_APP_ID = ca-app-pub-3940256099942544~1458002511

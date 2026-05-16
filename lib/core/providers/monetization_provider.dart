@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../constants/ad_constants.dart';
 import '../services/ad_service.dart';
 import '../services/scan_limit_service.dart';
 import '../services/subscription_service.dart';
@@ -66,7 +67,9 @@ final scanLimitServiceProvider = Provider<ScanLimitService>((ref) {
 
 final adServiceProvider = Provider<AdService>((ref) {
   final service = AdService();
-  service.loadRewardedAd();
+  if (AdConstants.isAdMobEnabled) {
+    service.loadRewardedAd();
+  }
   ref.onDispose(() => service.dispose());
   return service;
 });

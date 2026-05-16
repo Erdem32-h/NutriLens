@@ -10,11 +10,16 @@ class AdService {
   bool get isRewardedAdReady => _isRewardedAdReady;
 
   static Future<void> initialize() async {
+    if (!AdConstants.isAdMobEnabled) {
+      debugPrint('[AdService] AdMob disabled for this build');
+      return;
+    }
     await MobileAds.instance.initialize();
     debugPrint('[AdService] MobileAds initialized');
   }
 
   void loadRewardedAd() {
+    if (!AdConstants.isAdMobEnabled) return;
     RewardedAd.load(
       adUnitId: AdConstants.rewardedAdUnitId,
       request: const AdRequest(),
@@ -53,7 +58,9 @@ class AdService {
     await _rewardedAd!.show(
       onUserEarnedReward: (ad, reward) {
         rewarded = true;
-        debugPrint('[AdService] User earned reward: ${reward.amount} ${reward.type}');
+        debugPrint(
+          '[AdService] User earned reward: ${reward.amount} ${reward.type}',
+        );
       },
     );
 

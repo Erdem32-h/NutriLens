@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/constants/legal_links.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/subscription_service.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -39,7 +41,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         _packages = packages;
         _loading = false;
         if (packages.isEmpty) {
-          _loadError = 'Abonelik paketleri yüklenemedi.\nİnternet bağlantınızı kontrol edin.';
+          _loadError =
+              'Abonelik paketleri yüklenemedi.\nİnternet bağlantınızı kontrol edin.';
         }
         // Default to annual if available
         final annualIdx = packages.indexWhere(
@@ -68,9 +71,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
       switch (result) {
         case SubscriptionPurchaseResult.success:
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Premium aktif! 🎉')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Premium aktif! 🎉')));
           Navigator.of(context).pop();
         case SubscriptionPurchaseResult.cancelled:
           // User cancelled — stay silent, they know what they did.
@@ -87,10 +90,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       if (!mounted) return;
       setState(() => _purchasing = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(_friendlyError(e)),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(_friendlyError(e)), backgroundColor: Colors.red),
       );
     } catch (e) {
       if (!mounted) return;
@@ -108,8 +108,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   String _friendlyError(PlatformException e) {
     final code = PurchasesErrorHelper.getErrorCode(e);
     return switch (code) {
-      PurchasesErrorCode.networkError =>
-        'İnternet bağlantınızı kontrol edin.',
+      PurchasesErrorCode.networkError => 'İnternet bağlantınızı kontrol edin.',
       PurchasesErrorCode.paymentPendingError =>
         'Ödeme onay bekliyor. Birkaç dakika içinde aktifleşecek.',
       PurchasesErrorCode.productNotAvailableForPurchaseError =>
@@ -128,9 +127,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(success
-              ? 'Abonelik geri yüklendi!'
-              : 'Aktif abonelik bulunamadı.'),
+          content: Text(
+            success ? 'Abonelik geri yüklendi!' : 'Aktif abonelik bulunamadı.',
+          ),
         ),
       );
       if (success) Navigator.of(context).pop();
@@ -145,17 +144,14 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       appBar: AppBar(
         title: const Text('Premium'),
         actions: [
-          TextButton(
-            onPressed: _restore,
-            child: const Text('Geri Yükle'),
-          ),
+          TextButton(onPressed: _restore, child: const Text('Geri Yükle')),
         ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _loadError != null && _packages.isEmpty
-              ? _buildErrorState(colors)
-              : SingleChildScrollView(
+          ? _buildErrorState(colors)
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
@@ -165,16 +161,28 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   Text(
                     'NutriLens Premium',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 24),
 
                   // Features
-                  const _FeatureTile(icon: Icons.all_inclusive, text: 'Sınırsız tarama'),
-                  const _FeatureTile(icon: Icons.block, text: 'Reklamsız deneyim'),
-                  const _FeatureTile(icon: Icons.smart_toy, text: 'Sınırsız AI tarama'),
-                  const _FeatureTile(icon: Icons.support_agent, text: 'Öncelikli destek'),
+                  const _FeatureTile(
+                    icon: Icons.all_inclusive,
+                    text: 'Sınırsız tarama',
+                  ),
+                  const _FeatureTile(
+                    icon: Icons.block,
+                    text: 'Reklamsız deneyim',
+                  ),
+                  const _FeatureTile(
+                    icon: Icons.smart_toy,
+                    text: 'Sınırsız AI tarama',
+                  ),
+                  const _FeatureTile(
+                    icon: Icons.support_agent,
+                    text: 'Öncelikli destek',
+                  ),
                   const SizedBox(height: 32),
 
                   // Package cards
@@ -198,8 +206,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                               border: Border.all(
                                 color: isSelected
                                     ? colors.primary
-                                    : colors.textSecondary
-                                        .withValues(alpha: 0.2),
+                                    : colors.textSecondary.withValues(
+                                        alpha: 0.2,
+                                      ),
                                 width: isSelected ? 2 : 1,
                               ),
                               borderRadius: BorderRadius.circular(16),
@@ -228,9 +237,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 2,
-                                              ),
+                                                    horizontal: 8,
+                                                    vertical: 2,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 color: colors.success
                                                     .withValues(alpha: 0.15),
@@ -255,9 +264,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                                       const SizedBox(height: 4),
                                       Text(
                                         pkg.storeProduct.priceString,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium,
                                       ),
                                     ],
                                   ),
@@ -297,10 +306,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   Text(
                     'Abonelik otomatik yenilenir. İstediğin zaman iptal edebilirsin.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
-                        ),
+                      color: colors.textSecondary,
+                    ),
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 8),
+                  _buildLegalLinks(),
                 ],
               ),
             ),
@@ -333,10 +344,37 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   : const Icon(Icons.refresh_rounded),
               label: const Text('Tekrar Dene'),
             ),
+            const SizedBox(height: 16),
+            _buildLegalLinks(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildLegalLinks() {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 12,
+      runSpacing: 4,
+      children: [
+        TextButton(
+          onPressed: () => _openLegalLink(LegalLinks.privacyPolicy),
+          child: const Text('Gizlilik Politikası'),
+        ),
+        TextButton(
+          onPressed: () => _openLegalLink(LegalLinks.termsOfUse),
+          child: const Text('Kullanım Koşulları'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _openLegalLink(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      await launchUrl(uri, mode: LaunchMode.platformDefault);
+    }
   }
 }
 

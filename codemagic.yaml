@@ -23,14 +23,38 @@ workflows:
           echo "RC_API_KEY_IOS=$RC_API_KEY_IOS" >> .env
           echo "RC_API_KEY_ANDROID=$RC_API_KEY_ANDROID" >> .env
           echo "ADMOB_APP_ID=$ADMOB_APP_ID_IOS" >> .env
+          echo "ADMOB_BANNER_IOS=$ADMOB_BANNER_IOS" >> .env
+          echo "ADMOB_REWARDED_IOS=$ADMOB_REWARDED_IOS" >> .env
+          echo "PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL" >> .env
+          echo "TERMS_OF_USE_URL=$TERMS_OF_USE_URL" >> .env
       - name: Flutter pub get
         script: flutter pub get
       - name: Code generation
         script: dart run build_runner build --delete-conflicting-outputs
       - name: Set up iOS code signing
         script: xcode-project use-profiles
+      - name: Configure iOS build settings
+        script: |
+          # IMPORTANT: do NOT append to Generated.xcconfig — `flutter build`
+          # regenerates that file at build start and our changes get wiped.
+          # Release.xcconfig is user-managed; overwrite it with a known-good
+          # template that includes ADMOB_APP_ID (real value when env var is
+          # set, Google test ID otherwise so the iOS SDK doesn't crash).
+          ADMOB_VALUE="${ADMOB_APP_ID_IOS:-ca-app-pub-3940256099942544~1458002511}"
+          cat > ios/Flutter/Release.xcconfig <<EOF
+          #include "Generated.xcconfig"
+          ADMOB_APP_ID = ${ADMOB_VALUE}
+          EOF
       - name: Build IPA
-        script: flutter build ipa --release --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist
+        script: |
+          flutter build ipa --release \
+            --build-number=$BUILD_NUMBER \
+            --dart-define=ADMOB_APP_ID_IOS=$ADMOB_APP_ID_IOS \
+            --dart-define=ADMOB_BANNER_IOS=$ADMOB_BANNER_IOS \
+            --dart-define=ADMOB_REWARDED_IOS=$ADMOB_REWARDED_IOS \
+            --dart-define=PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL \
+            --dart-define=TERMS_OF_USE_URL=$TERMS_OF_USE_URL \
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -59,12 +83,22 @@ workflows:
           echo "RC_API_KEY_ANDROID=$RC_API_KEY_ANDROID" >> .env
           echo "RC_API_KEY_IOS=$RC_API_KEY_IOS" >> .env
           echo "ADMOB_APP_ID=$ADMOB_APP_ID_ANDROID" >> .env
+          echo "ADMOB_BANNER_ANDROID=$ADMOB_BANNER_ANDROID" >> .env
+          echo "ADMOB_REWARDED_ANDROID=$ADMOB_REWARDED_ANDROID" >> .env
+          echo "PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL" >> .env
+          echo "TERMS_OF_USE_URL=$TERMS_OF_USE_URL" >> .env
       - name: Flutter pub get
         script: flutter pub get
       - name: Code generation
         script: dart run build_runner build --delete-conflicting-outputs
       - name: Build AAB
-        script: flutter build appbundle --release --build-number=$BUILD_NUMBER
+        script: |
+          flutter build appbundle --release \
+            --build-number=$BUILD_NUMBER \
+            --dart-define=ADMOB_BANNER_ANDROID=$ADMOB_BANNER_ANDROID \
+            --dart-define=ADMOB_REWARDED_ANDROID=$ADMOB_REWARDED_ANDROID \
+            --dart-define=PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL \
+            --dart-define=TERMS_OF_USE_URL=$TERMS_OF_USE_URL
     artifacts:
       - build/app/outputs/bundle/release/app-release.aab
       - build/app/outputs/mapping/release/mapping.txt

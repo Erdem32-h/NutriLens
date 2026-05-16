@@ -16,15 +16,23 @@ class MockPackage extends Mock implements Package {}
 
 class MockStoreProduct extends Mock implements StoreProduct {}
 
+MockPackage _mockPackage({
+  PackageType type = PackageType.monthly,
+  String price = '₺49,99/ay',
+}) {
+  final package = MockPackage();
+  final product = MockStoreProduct();
+  when(() => package.packageType).thenReturn(type);
+  when(() => package.storeProduct).thenReturn(product);
+  when(() => product.priceString).thenReturn(price);
+  return package;
+}
+
 Widget _buildSubject({required SubscriptionService service}) {
   return ProviderScope(
-    overrides: [
-      subscriptionServiceProvider.overrideWithValue(service),
-    ],
+    overrides: [subscriptionServiceProvider.overrideWithValue(service)],
     child: MaterialApp(
-      theme: ThemeData(
-        extensions: const [AppColorsExtension.light],
-      ),
+      theme: ThemeData(extensions: const [AppColorsExtension.light]),
       home: const PaywallScreen(),
     ),
   );
@@ -35,14 +43,20 @@ void main() {
 
   setUp(() {
     mockService = MockSubscriptionService();
-    when(() => mockService.statusStream).thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockService.statusStream,
+    ).thenAnswer((_) => const Stream.empty());
   });
 
   group('PaywallScreen', () {
-    testWidgets('shows loading indicator while fetching offerings', (tester) async {
+    testWidgets('shows loading indicator while fetching offerings', (
+      tester,
+    ) async {
       // Use Completer to avoid a pending timer that would fail the test
       final completer = Completer<List<Package>>();
-      when(() => mockService.getOfferings()).thenAnswer((_) => completer.future);
+      when(
+        () => mockService.getOfferings(),
+      ).thenAnswer((_) => completer.future);
 
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pump(); // Render the initial frame (loading = true)
@@ -54,22 +68,25 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('renders premium feature tiles after loading empty offerings',
-        (tester) async {
+    testWidgets('renders error state after loading empty offerings', (
+      tester,
+    ) async {
       when(() => mockService.getOfferings()).thenAnswer((_) async => []);
 
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
 
-      expect(find.text('NutriLens Premium'), findsOneWidget);
-      expect(find.text('Sınırsız tarama'), findsOneWidget);
-      expect(find.text('Reklamsız deneyim'), findsOneWidget);
-      expect(find.text('Sınırsız AI tarama'), findsOneWidget);
-      expect(find.text('Öncelikli destek'), findsOneWidget);
+      expect(
+        find.textContaining('Abonelik paketleri yüklenemedi'),
+        findsOneWidget,
+      );
+      expect(find.text('Tekrar Dene'), findsOneWidget);
     });
 
     testWidgets('shows Devam Et button after offerings load', (tester) async {
-      when(() => mockService.getOfferings()).thenAnswer((_) async => []);
+      when(
+        () => mockService.getOfferings(),
+      ).thenAnswer((_) async => [_mockPackage()]);
 
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
@@ -87,7 +104,9 @@ void main() {
     });
 
     testWidgets('shows legal disclaimer text', (tester) async {
-      when(() => mockService.getOfferings()).thenAnswer((_) async => []);
+      when(
+        () => mockService.getOfferings(),
+      ).thenAnswer((_) async => [_mockPackage()]);
 
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
@@ -96,24 +115,20 @@ void main() {
         find.textContaining('Abonelik otomatik yenilenir'),
         findsOneWidget,
       );
+      expect(find.text('Gizlilik Politikası'), findsOneWidget);
+      expect(find.text('Kullanım Koşulları'), findsOneWidget);
     });
 
     testWidgets('renders package cards for each offering', (tester) async {
-      final mockMonthly = MockPackage();
-      final mockAnnual = MockPackage();
-      final mockMonthlyProduct = MockStoreProduct();
-      final mockAnnualProduct = MockStoreProduct();
+      final mockMonthly = _mockPackage();
+      final mockAnnual = _mockPackage(
+        type: PackageType.annual,
+        price: '₺359,99/yıl',
+      );
 
-      when(() => mockMonthly.packageType).thenReturn(PackageType.monthly);
-      when(() => mockMonthly.storeProduct).thenReturn(mockMonthlyProduct);
-      when(() => mockMonthlyProduct.priceString).thenReturn('₺49,99/ay');
-
-      when(() => mockAnnual.packageType).thenReturn(PackageType.annual);
-      when(() => mockAnnual.storeProduct).thenReturn(mockAnnualProduct);
-      when(() => mockAnnualProduct.priceString).thenReturn('₺359,99/yıl');
-
-      when(() => mockService.getOfferings())
-          .thenAnswer((_) async => [mockMonthly, mockAnnual]);
+      when(
+        () => mockService.getOfferings(),
+      ).thenAnswer((_) async => [mockMonthly, mockAnnual]);
 
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
@@ -125,18 +140,16 @@ void main() {
       expect(find.text('%40 tasarruf'), findsOneWidget);
     });
 
-    testWidgets('shows success snackbar and pops on successful purchase',
-        (tester) async {
-      final mockPackage = MockPackage();
-      final mockProduct = MockStoreProduct();
-
-      when(() => mockPackage.packageType).thenReturn(PackageType.monthly);
-      when(() => mockPackage.storeProduct).thenReturn(mockProduct);
-      when(() => mockProduct.priceString).thenReturn('₺49,99/ay');
-      when(() => mockService.getOfferings())
-          .thenAnswer((_) async => [mockPackage]);
-      when(() => mockService.purchase(mockPackage))
-          .thenAnswer((_) async => SubscriptionPurchaseResult.success);
+    testWidgets('shows success snackbar and pops on successful purchase', (
+      tester,
+    ) async {
+      final mockPackage = _mockPackage();
+      when(
+        () => mockService.getOfferings(),
+      ).thenAnswer((_) async => [mockPackage]);
+      when(
+        () => mockService.purchase(mockPackage),
+      ).thenAnswer((_) async => SubscriptionPurchaseResult.success);
 
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
@@ -152,16 +165,13 @@ void main() {
     });
 
     testWidgets('does not pop on failed purchase', (tester) async {
-      final mockPackage = MockPackage();
-      final mockProduct = MockStoreProduct();
-
-      when(() => mockPackage.packageType).thenReturn(PackageType.monthly);
-      when(() => mockPackage.storeProduct).thenReturn(mockProduct);
-      when(() => mockProduct.priceString).thenReturn('₺49,99/ay');
-      when(() => mockService.getOfferings())
-          .thenAnswer((_) async => [mockPackage]);
-      when(() => mockService.purchase(mockPackage))
-          .thenAnswer((_) async => SubscriptionPurchaseResult.failed);
+      final mockPackage = _mockPackage();
+      when(
+        () => mockService.getOfferings(),
+      ).thenAnswer((_) async => [mockPackage]);
+      when(
+        () => mockService.purchase(mockPackage),
+      ).thenAnswer((_) async => SubscriptionPurchaseResult.failed);
 
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
@@ -173,8 +183,9 @@ void main() {
       expect(find.text('NutriLens Premium'), findsOneWidget);
     });
 
-    testWidgets('restore shows success snackbar when subscription found',
-        (tester) async {
+    testWidgets('restore shows success snackbar when subscription found', (
+      tester,
+    ) async {
       when(() => mockService.getOfferings()).thenAnswer((_) async => []);
       when(() => mockService.restorePurchases()).thenAnswer((_) async => true);
 
@@ -189,8 +200,9 @@ void main() {
       expect(find.text('Abonelik geri yüklendi!'), findsOneWidget);
     });
 
-    testWidgets('restore shows failure snackbar when no subscription found',
-        (tester) async {
+    testWidgets('restore shows failure snackbar when no subscription found', (
+      tester,
+    ) async {
       when(() => mockService.getOfferings()).thenAnswer((_) async => []);
       when(() => mockService.restorePurchases()).thenAnswer((_) async => false);
 

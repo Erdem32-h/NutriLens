@@ -1,1 +1,6 @@
 #include "Generated.xcconfig"
+
+// AdMob App ID — see Release.xcconfig for rationale. Debug builds always
+// use Google's iOS test App ID; there's no reason to ship a production
+// App ID into local debug binaries.
+ADMOB_APP_ID = ca-app-pub-3940256099942544~1458002511

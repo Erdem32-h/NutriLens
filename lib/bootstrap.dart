@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,10 +27,12 @@ late final SubscriptionService subscriptionService;
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  if (!Platform.isIOS) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
 
   // Initialize Drift database
   database = AppDatabase();
@@ -42,7 +45,9 @@ Future<void> bootstrap() async {
     await SupabaseConfig.initialize().timeout(
       const Duration(seconds: 10),
       onTimeout: () {
-        logger.w('Supabase initialization timed out after 10s — continuing offline');
+        logger.w(
+          'Supabase initialization timed out after 10s — continuing offline',
+        );
       },
     );
     if (SupabaseConfig.isInitialized) {
@@ -86,4 +91,3 @@ Future<void> _seedAdditivesIfRequired(AppDatabase db) async {
     logger.e('Failed to seed additive database: $e');
   }
 }
-

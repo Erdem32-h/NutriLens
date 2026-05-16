@@ -31,18 +31,19 @@ class FakeAdService extends Fake implements AdService {
 }
 
 class FakeScanLimitService extends Fake implements ScanLimitService {
-  BonusScanResult _bonusResult;
-  FakeScanLimitService({
-    BonusScanResult? bonusResult,
-  }) : _bonusResult = bonusResult ??
-            const BonusScanResult(granted: true, bonusRemaining: 1);
+  final BonusScanResult _bonusResult;
+  FakeScanLimitService({BonusScanResult? bonusResult})
+    : _bonusResult =
+          bonusResult ??
+          const BonusScanResult(granted: true, bonusRemaining: 1);
 
   @override
   Future<BonusScanResult> grantBonusScan() async => _bonusResult;
 
   @override
-  Future<ScanCheckResult> checkAndIncrement() async =>
-      ScanCheckResult.unlimited;
+  Future<ScanCheckResult> checkAndIncrement({
+    bool localPremium = false,
+  }) async => ScanCheckResult.unlimited;
 }
 
 class MockSubscriptionService extends Mock implements SubscriptionService {}
@@ -99,9 +100,7 @@ Widget _buildSubject({
     ],
     child: MaterialApp.router(
       routerConfig: router,
-      theme: ThemeData(
-        extensions: const [AppColorsExtension.light],
-      ),
+      theme: ThemeData(extensions: const [AppColorsExtension.light]),
     ),
   );
 }
@@ -116,10 +115,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Günlük Tarama Hakkın Doldu'), findsOneWidget);
-      expect(
-        find.textContaining('sınırsız tarama'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('sınırsız tarama'), findsOneWidget);
     });
 
     testWidgets("renders Premium'a Geç button", (tester) async {
@@ -138,8 +134,9 @@ void main() {
       expect(find.text('Kapat'), findsOneWidget);
     });
 
-    testWidgets('does NOT show rewarded ad button when ad is not ready',
-        (tester) async {
+    testWidgets('does NOT show rewarded ad button when ad is not ready', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _buildSubject(adService: FakeAdService(adReady: false)),
       );
@@ -180,28 +177,32 @@ void main() {
 
       // Sheet is dismissed and paywall is pushed
       expect(find.text('Günlük Tarama Hakkın Doldu'), findsNothing);
-      expect(find.text('NutriLens Premium'), findsOneWidget);
+      expect(find.text('Geri Yükle'), findsOneWidget);
     });
 
-    testWidgets('rewarded ad button dismisses sheet when ad watched and bonus granted',
-        (tester) async {
-      await tester.pumpWidget(
-        _buildSubject(
-          adService: FakeAdService(adReady: true),
-          scanLimitService: FakeScanLimitService(
-            bonusResult:
-                const BonusScanResult(granted: true, bonusRemaining: 1),
+    testWidgets(
+      'rewarded ad button dismisses sheet when ad watched and bonus granted',
+      (tester) async {
+        await tester.pumpWidget(
+          _buildSubject(
+            adService: FakeAdService(adReady: true),
+            scanLimitService: FakeScanLimitService(
+              bonusResult: const BonusScanResult(
+                granted: true,
+                bonusRemaining: 1,
+              ),
+            ),
           ),
-        ),
-      );
-      await tester.tap(find.text('open'));
-      await tester.pumpAndSettle();
+        );
+        await tester.tap(find.text('open'));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Reklam İzle → +1 Tarama'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Reklam İzle → +1 Tarama'));
+        await tester.pumpAndSettle();
 
-      // Sheet should be gone (bonus granted → scan allowed)
-      expect(find.text('Günlük Tarama Hakkın Doldu'), findsNothing);
-    });
+        // Sheet should be gone (bonus granted → scan allowed)
+        expect(find.text('Günlük Tarama Hakkın Doldu'), findsNothing);
+      },
+    );
   });
 }
