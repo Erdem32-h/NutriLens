@@ -15,11 +15,7 @@ void main() {
 
     await service.deleteAccount('user-1');
 
-    expect(events, [
-      'clean:user-1',
-      'delete-account:user-1',
-      'sign-out',
-    ]);
+    expect(events, ['clean:user-1', 'delete-account:user-1', 'sign-out']);
   });
 
   test('does not sign out when remote account deletion fails', () async {
@@ -35,10 +31,7 @@ void main() {
       throwsA(isA<AccountDeletionException>()),
     );
 
-    expect(events, [
-      'clean:user-1',
-      'delete-account:user-1',
-    ]);
+    expect(events, ['clean:user-1', 'delete-account:user-1']);
   });
 }
 

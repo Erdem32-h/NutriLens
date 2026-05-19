@@ -40,10 +40,12 @@ class ContentAnalysisSection extends ConsumerWidget {
           if (warnings.isNotEmpty) ...[
             _SectionTitle(title: l10n.contentAnalysis),
             const SizedBox(height: 8),
-            ...warnings.map((warning) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: _WarningCard(warning: warning),
-                )),
+            ...warnings.map(
+              (warning) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _WarningCard(warning: warning),
+              ),
+            ),
             const SizedBox(height: 16),
           ],
 
@@ -178,7 +180,8 @@ class _WarningCard extends StatelessWidget {
   }
 
   String _resolveMessage(dynamic l10n, ContentWarning warning) {
-    if (warning.messageKey == 'containsFilteredItem' && warning.placeholderKey != null) {
+    if (warning.messageKey == 'containsFilteredItem' &&
+        warning.placeholderKey != null) {
       final filterName = switch (warning.placeholderKey) {
         'filterGluten' => l10n.filterGluten,
         'filterLactose' => l10n.filterLactose,
@@ -243,54 +246,58 @@ class _AdditiveCard extends StatelessWidget {
         pathParameters: {'eCode': navigateCode},
       ),
       child: Container(
-      decoration: BoxDecoration(
-        color: colors.surfaceCard,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            Container(
-              width: 4,
-              decoration: BoxDecoration(
-                color: badgeColor,
-                borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(20),
+        decoration: BoxDecoration(
+          color: colors.surfaceCard,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              Container(
+                width: 4,
+                decoration: BoxDecoration(
+                  color: badgeColor,
+                  borderRadius: const BorderRadius.horizontal(
+                    left: Radius.circular(20),
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 14,
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.science_outlined, size: 18, color: badgeColor),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        displayCode.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: colors.textPrimary,
-                          letterSpacing: 0.5,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.science_outlined, size: 18, color: badgeColor),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          displayCode.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                            letterSpacing: 0.5,
+                          ),
                         ),
                       ),
-                    ),
-                    _Badge(text: badgeText, color: badgeColor),
-                    const SizedBox(width: 4),
-                    Icon(Icons.chevron_right, size: 16, color: colors.textMuted),
-                  ],
+                      _Badge(text: badgeText, color: badgeColor),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.chevron_right,
+                        size: 16,
+                        color: colors.textMuted,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }

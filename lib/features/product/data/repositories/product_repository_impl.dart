@@ -22,10 +22,10 @@ final class ProductRepositoryImpl implements ProductRepository {
     required ProductLocalDataSource localDataSource,
     required NetworkInfo networkInfo,
     required CommunityProductSource communitySource,
-  })  : _resolver = resolver,
-        _localDataSource = localDataSource,
-        _networkInfo = networkInfo,
-        _communitySource = communitySource;
+  }) : _resolver = resolver,
+       _localDataSource = localDataSource,
+       _networkInfo = networkInfo,
+       _communitySource = communitySource;
 
   @override
   Future<Either<Failure, ProductEntity>> getProduct(String barcode) async {
@@ -110,9 +110,9 @@ final class ProductRepositoryImpl implements ProductRepository {
     }
 
     try {
-      final result = await _resolver.resolve(barcode).timeout(
-        const Duration(seconds: 16),
-      );
+      final result = await _resolver
+          .resolve(barcode)
+          .timeout(const Duration(seconds: 16));
       if (result.isFound) {
         // Cache write is fire-and-forget — never block product display
         try {
@@ -134,9 +134,9 @@ final class ProductRepositoryImpl implements ProductRepository {
     if (!isOnline) return null;
 
     try {
-      final product = await _communitySource.resolve(barcode).timeout(
-        _communitySource.timeout,
-      );
+      final product = await _communitySource
+          .resolve(barcode)
+          .timeout(_communitySource.timeout);
       if (product == null) return null;
 
       try {
@@ -159,9 +159,9 @@ final class ProductRepositoryImpl implements ProductRepository {
     }
 
     try {
-      final result = await _resolver.resolve(barcode).timeout(
-        const Duration(seconds: 16),
-      );
+      final result = await _resolver
+          .resolve(barcode)
+          .timeout(const Duration(seconds: 16));
       if (result.isFound) {
         // Cache write is fire-and-forget — never block product display
         try {

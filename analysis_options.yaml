@@ -1,5 +1,17 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    # One-off migration scripts at repo root — they intentionally use
+    # `print()` for tooling output and should not gate CI on lint.
+    - fix_const.dart
+    - migrate_colors.dart
+    # Generated code never matches our style rules.
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.gr.dart"
+    - "lib/l10n/generated/**"
+
 linter:
   rules:
     use_super_parameters: false

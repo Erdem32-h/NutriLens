@@ -46,39 +46,98 @@ class CommunityProductSource implements ProductSource {
     required String userId,
     String source = 'community',
   }) async {
-    await _client.from('community_products').upsert(
-      {
-        'barcode': product.barcode,
-        'product_name': product.productName,
-        'brand': product.brands,
-        'image_url': product.imageUrl,
-        'ingredients_text': product.ingredientsText,
-        'additives_tags': product.additivesTags,
-        'nutriments': {
-          'energy_kcal': product.nutriments.energyKcal,
-          'fat': product.nutriments.fat,
-          'saturated_fat': product.nutriments.saturatedFat,
-          'trans_fat': product.nutriments.transFat,
-          'carbohydrates': product.nutriments.carbohydrates,
-          'sugars': product.nutriments.sugars,
-          'salt': product.nutriments.salt,
-          'fiber': product.nutriments.fiber,
-          'proteins': product.nutriments.proteins,
-        },
-        'nova_group': product.novaGroup,
-        'nutriscore_grade': product.nutriscoreGrade,
-        'hp_score': product.hpScore,
-        'hp_chemical_load': product.hpChemicalLoad,
-        'hp_risk_factor': product.hpRiskFactor,
-        'hp_nutri_factor': product.hpNutriFactor,
-        'hp_score_version': ScoreConstants.hpScoreAlgorithmVersion,
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
-        'source': source,
-        'ingredients_photo_url': ingredientsPhotoUrl,
-        'added_by': userId,
+    await _client.from('community_products').upsert({
+      'barcode': product.barcode,
+      'product_name': product.productName,
+      'brand': product.brands,
+      'image_url': product.imageUrl,
+      'ingredients_text': product.ingredientsText,
+      'additives_tags': product.additivesTags,
+      'nutriments': {
+        'energy_kcal': product.nutriments.energyKcal,
+        'fat': product.nutriments.fat,
+        'saturated_fat': product.nutriments.saturatedFat,
+        'trans_fat': product.nutriments.transFat,
+        'carbohydrates': product.nutriments.carbohydrates,
+        'sugars': product.nutriments.sugars,
+        'salt': product.nutriments.salt,
+        'fiber': product.nutriments.fiber,
+        'proteins': product.nutriments.proteins,
       },
-      onConflict: 'barcode',
-    );
+      'nova_group': product.novaGroup,
+      'nutriscore_grade': product.nutriscoreGrade,
+      'hp_score': product.hpScore,
+      'hp_chemical_load': product.hpChemicalLoad,
+      'hp_risk_factor': product.hpRiskFactor,
+      'hp_nutri_factor': product.hpNutriFactor,
+      'hp_score_version': ScoreConstants.hpScoreAlgorithmVersion,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+      'source': source,
+      'ingredients_photo_url': ingredientsPhotoUrl,
+      'added_by': userId,
+    }, onConflict: 'barcode');
+  }
+
+  /// Best-effort write of an API-resolved product into community_products
+  /// so the TR corpus grows passively and future scans (plus the upcoming
+  /// alternatives/comparison feature) don't depend on external APIs.
+  ///
+  /// `ignoreDuplicates: true` is the critical safeguard — if a barcode is
+  /// already in community_products (e.g. a user previously corrected the
+  /// product name / ingredients), this is a no-op. We never overwrite
+  /// curated entries with raw API data.
+  ///
+  /// Caller is expected to skip this when `product.hasEssentialData` is
+  /// false; missing-metadata barcodes should go through the user edit flow
+  /// instead so the community DB doesn't accumulate junk rows.
+  ///
+  /// Returns `true` only when a new row was actually inserted.
+  Future<bool> autoImportFromApi({
+    required ProductEntity product,
+    required String userId,
+    String source = 'api_import',
+  }) async {
+    try {
+      final inserted = await _client
+          .from('community_products')
+          .upsert(
+            {
+              'barcode': product.barcode,
+              'product_name': product.productName,
+              'brand': product.brands,
+              'image_url': product.imageUrl,
+              'ingredients_text': product.ingredientsText,
+              'additives_tags': product.additivesTags,
+              'nutriments': {
+                'energy_kcal': product.nutriments.energyKcal,
+                'fat': product.nutriments.fat,
+                'saturated_fat': product.nutriments.saturatedFat,
+                'trans_fat': product.nutriments.transFat,
+                'carbohydrates': product.nutriments.carbohydrates,
+                'sugars': product.nutriments.sugars,
+                'salt': product.nutriments.salt,
+                'fiber': product.nutriments.fiber,
+                'proteins': product.nutriments.proteins,
+              },
+              'nova_group': product.novaGroup,
+              'nutriscore_grade': product.nutriscoreGrade,
+              'hp_score': product.hpScore,
+              'hp_chemical_load': product.hpChemicalLoad,
+              'hp_risk_factor': product.hpRiskFactor,
+              'hp_nutri_factor': product.hpNutriFactor,
+              'hp_score_version': ScoreConstants.hpScoreAlgorithmVersion,
+              'source': source,
+              'added_by': userId,
+            },
+            onConflict: 'barcode',
+            ignoreDuplicates: true,
+          )
+          .select();
+      return inserted.isNotEmpty;
+    } catch (e) {
+      _logger.w('autoImportFromApi failed for ${product.barcode}: $e');
+      return false;
+    }
   }
 
   /// Report or verify a community product.
@@ -97,13 +156,15 @@ class CommunityProductSource implements ProductSource {
 
     // Increment verify/report count
     if (action == 'verify') {
-      await _client.rpc('increment_verified_count', params: {
-        'product_id_param': productId,
-      });
+      await _client.rpc(
+        'increment_verified_count',
+        params: {'product_id_param': productId},
+      );
     } else if (action == 'report_wrong') {
-      await _client.rpc('increment_reported_count', params: {
-        'product_id_param': productId,
-      });
+      await _client.rpc(
+        'increment_reported_count',
+        params: {'product_id_param': productId},
+      );
     }
   }
 }

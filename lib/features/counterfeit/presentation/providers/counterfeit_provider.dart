@@ -15,16 +15,18 @@ final counterfeitLocalDsProvider = Provider<CounterfeitLocalDataSource>((ref) {
   return CounterfeitLocalDataSourceImpl(db);
 });
 
-final counterfeitRepositoryProvider =
-    Provider<CounterfeitRepositoryImpl>((ref) {
+final counterfeitRepositoryProvider = Provider<CounterfeitRepositoryImpl>((
+  ref,
+) {
   return CounterfeitRepositoryImpl(
     local: ref.watch(counterfeitLocalDsProvider),
     supabase: Supabase.instance.client,
   );
 });
 
-final checkCounterfeitUseCaseProvider =
-    Provider<CheckCounterfeitUseCase>((ref) {
+final checkCounterfeitUseCaseProvider = Provider<CheckCounterfeitUseCase>((
+  ref,
+) {
   return CheckCounterfeitUseCase(ref.watch(counterfeitRepositoryProvider));
 });
 
@@ -32,13 +34,15 @@ final checkCounterfeitUseCaseProvider =
 
 /// Returns the counterfeit record for a given (barcode, brand) pair, or null
 /// if the product is not in the Tarım Bakanlığı list.
-final counterfeitCheckProvider = FutureProvider.family<CounterfeitEntity?,
-    ({String barcode, String? brand})>((ref, args) async {
-  final useCase = ref.watch(checkCounterfeitUseCaseProvider);
-  final result =
-      await useCase(barcode: args.barcode, brand: args.brand);
-  return result.fold((_) => null, (entity) => entity);
-});
+final counterfeitCheckProvider =
+    FutureProvider.family<
+      CounterfeitEntity?,
+      ({String barcode, String? brand})
+    >((ref, args) async {
+      final useCase = ref.watch(checkCounterfeitUseCaseProvider);
+      final result = await useCase(barcode: args.barcode, brand: args.brand);
+      return result.fold((_) => null, (entity) => entity);
+    });
 
 /// Triggers a manual sync of the counterfeit list from Supabase.
 Future<void> syncCounterfeitList(AppDatabase db) async {

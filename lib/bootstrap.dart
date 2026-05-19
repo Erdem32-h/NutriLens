@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 import 'config/drift/app_database.dart';
 import 'config/supabase/supabase_config.dart';
 import 'core/services/ad_service.dart';
+import 'core/services/home_widget_service.dart';
 import 'core/services/subscription_service.dart';
 import 'features/additive/data/datasources/additive_local_datasource.dart';
 
@@ -72,6 +73,11 @@ Future<void> bootstrap() async {
 
   // Initialize AdMob
   await AdService.initialize();
+
+  // Set the App Group ID before any widget data is written, then push an
+  // initial snapshot so the widget is never blank after install.
+  await HomeWidgetService.initialize();
+  unawaited(HomeWidgetService(database).refresh(userId: currentUser?.id));
 }
 
 /// Seeds the additive database from the bundled JSON asset on first launch.

@@ -17,10 +17,7 @@ final class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     return _handleAuth(
-      () => _remoteDataSource.signInWithEmail(
-        email: email,
-        password: password,
-      ),
+      () => _remoteDataSource.signInWithEmail(email: email, password: password),
     );
   }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Group: lets the main app and the NutriLensHomeWidget
+         extension share a sandboxed UserDefaults container.
+         home_widget's `setAppGroupId('group.app.nutrilens.ios')` must
+         match this identifier. -->
+    <key>com.apple.security.application-groups</key>
+    <array>
+        <string>group.app.nutrilens.ios</string>
+    </array>
+</dict>
+</plist>

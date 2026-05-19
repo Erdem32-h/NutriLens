@@ -15,11 +15,9 @@ class Additives extends Table {
   TextColumn get maxDailyIntake => text().nullable()();
   TextColumn get source => text().nullable()();
   BoolColumn get isVegan => boolean().withDefault(const Constant(true))();
-  BoolColumn get isVegetarian =>
-      boolean().withDefault(const Constant(true))();
+  BoolColumn get isVegetarian => boolean().withDefault(const Constant(true))();
   BoolColumn get isHalal => boolean().withDefault(const Constant(true))();
-  DateTimeColumn get updatedAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};

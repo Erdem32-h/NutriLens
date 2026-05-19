@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -161,6 +163,10 @@ final productByBarcodeProvider = FutureProvider.family<ProductEntity?, String>((
           // Score calculation should still be shown even if local cache fails.
         }
       }
+      // Best-effort: backfill community_products with API-resolved entries
+      // so the TR corpus grows passively. Idempotent + skips entries
+      // missing essential data (those go through manual edit flow).
+      unawaited(_autoImportToCommunity(ref, enriched));
       debugPrint(
         '[Provider] productByBarcode($barcode) → found: '
         'name=${enriched.productName}, hasEssential=${enriched.hasEssentialData}, '
@@ -170,6 +176,35 @@ final productByBarcodeProvider = FutureProvider.family<ProductEntity?, String>((
     },
   );
 });
+
+// Session-scoped dedupe: don't re-fire the upsert for the same barcode
+// in the same app run. The Supabase call is idempotent already (ignore-
+// duplicates) but skipping the network round-trip is cheap and obvious.
+final _autoImportedBarcodes = <String>{};
+
+Future<void> _autoImportToCommunity(Ref ref, ProductEntity product) async {
+  if (_autoImportedBarcodes.contains(product.barcode)) return;
+  // Only push complete rows — partial OFF/3rd-party entries should
+  // route through the user-edit flow instead so they don't pollute the
+  // community DB.
+  if (!product.hasEssentialData) return;
+  final userId = Supabase.instance.client.auth.currentUser?.id;
+  if (userId == null) return;
+  try {
+    final source = ref.read(communityProductSourceProvider);
+    final inserted = await source.autoImportFromApi(
+      product: product,
+      userId: userId,
+      source: 'api_import',
+    );
+    _autoImportedBarcodes.add(product.barcode);
+    if (inserted) {
+      debugPrint('[auto-import] ${product.barcode} → community_products');
+    }
+  } catch (e) {
+    debugPrint('[auto-import] ${product.barcode} failed: $e');
+  }
+}
 
 // --- Submit Community Product ---
 

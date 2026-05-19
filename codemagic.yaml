@@ -31,6 +31,15 @@ workflows:
         script: flutter pub get
       - name: Code generation
         script: dart run build_runner build --delete-conflicting-outputs
+      - name: Add Widget Extension target to Runner.xcodeproj
+        # The pbxproj in the repo only ships the Runner target; the
+        # NutriLensHomeWidget extension is wired in at build time by this
+        # script (idempotent). Must run BEFORE `xcode-project use-profiles`
+        # so the new target gets a matching provisioning profile.
+        script: |
+          cd ios
+          gem install xcodeproj --no-document
+          ruby scripts/add_widget_target.rb Runner.xcodeproj
       - name: Set up iOS code signing
         script: xcode-project use-profiles
       - name: Configure iOS build settings
@@ -107,3 +116,62 @@ workflows:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
         track: internal
         submit_as_draft: false
+
+  android-maestro:
+    name: Android Maestro E2E
+    # Triggered manually (no `triggering:` block). Use it as a smoke
+    # check before promoting an Android build to internal testing.
+    max_build_duration: 45
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+      vars:
+        # Required: a dedicated test account in Supabase auth — does not
+        # need premium, just real credentials the app can log in with.
+        # Defined as encrypted variables in Codemagic.
+        MAESTRO_TEST_EMAIL: $MAESTRO_TEST_EMAIL
+        MAESTRO_TEST_PASSWORD: $MAESTRO_TEST_PASSWORD
+    scripts:
+      - name: Create .env
+        script: |
+          echo "SUPABASE_URL=$SUPABASE_URL" > .env
+          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
+          echo "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY" >> .env
+          echo "RC_API_KEY_ANDROID=$RC_API_KEY_ANDROID" >> .env
+          echo "PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL" >> .env
+          echo "TERMS_OF_USE_URL=$TERMS_OF_USE_URL" >> .env
+      - name: Flutter pub get + codegen
+        script: |
+          flutter pub get
+          dart run build_runner build --delete-conflicting-outputs
+      - name: Build debug APK
+        # Debug build is enough for E2E and avoids signing complexity.
+        script: flutter build apk --debug
+      - name: Install Maestro CLI
+        script: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          export PATH="$PATH":"$HOME/.maestro/bin"
+          maestro --version
+      - name: Start Android emulator
+        script: |
+          # Codemagic linux_x2 ships KVM-enabled AVDs.
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "system-images;android-33;google_apis;x86_64"
+          echo no | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager create avd -n maestro -k "system-images;android-33;google_apis;x86_64" -f
+          $ANDROID_SDK_ROOT/emulator/emulator -avd maestro -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
+          $ANDROID_SDK_ROOT/platform-tools/adb wait-for-device
+          # Wait for boot to complete (sysboot.completed=1).
+          until [ "$($ANDROID_SDK_ROOT/platform-tools/adb shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; do
+            sleep 2
+          done
+      - name: Install APK on emulator
+        script: |
+          $ANDROID_SDK_ROOT/platform-tools/adb install -r build/app/outputs/flutter-apk/app-debug.apk
+      - name: Run Maestro flows
+        script: |
+          export PATH="$PATH":"$HOME/.maestro/bin"
+          maestro test maestro/flows \
+            -e MAESTRO_TEST_EMAIL="$MAESTRO_TEST_EMAIL" \
+            -e MAESTRO_TEST_PASSWORD="$MAESTRO_TEST_PASSWORD"
+    artifacts:
+      - ~/.maestro/tests/**
+      - build/app/outputs/flutter-apk/app-debug.apk

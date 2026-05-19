@@ -52,10 +52,12 @@ class _IngredientsVerificationScreenState
     _brandController = TextEditingController(
       text: extra['brand'] as String? ?? '',
     );
-    _detectedAdditives =
-        List<String>.from(extra['detectedAdditives'] as List? ?? []);
-    _unmatchedAdditives =
-        List<String>.from(extra['unmatchedAdditives'] as List? ?? []);
+    _detectedAdditives = List<String>.from(
+      extra['detectedAdditives'] as List? ?? [],
+    );
+    _unmatchedAdditives = List<String>.from(
+      extra['unmatchedAdditives'] as List? ?? [],
+    );
     _confidence = extra['confidence'] as double?;
 
     // Calculate score after build
@@ -91,8 +93,7 @@ class _IngredientsVerificationScreenState
         productName: _productNameController.text.isNotEmpty
             ? _productNameController.text
             : null,
-        brands:
-            _brandController.text.isNotEmpty ? _brandController.text : null,
+        brands: _brandController.text.isNotEmpty ? _brandController.text : null,
         ingredientsText: _ingredientsController.text,
         additivesTags: allAdditives,
         hpScore: _scoreResult?.hpScore,
@@ -105,11 +106,7 @@ class _IngredientsVerificationScreenState
       if (userId == null) return;
 
       final submitUseCase = ref.read(submitCommunityProductUseCaseProvider);
-      await submitUseCase(
-        product: product,
-        userId: userId,
-        source: 'ocr',
-      );
+      await submitUseCase(product: product, userId: userId, source: 'ocr');
 
       if (!mounted) return;
 
@@ -213,10 +210,7 @@ class _IngredientsVerificationScreenState
                   borderSide: BorderSide(color: context.colors.primary),
                 ),
               ),
-              style: TextStyle(
-                fontSize: 13,
-                color: context.colors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 13, color: context.colors.textPrimary),
             ),
             if (_rawOcrText != null && _rawOcrText!.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -286,10 +280,12 @@ class _IngredientsVerificationScreenState
                 spacing: 8,
                 runSpacing: 8,
                 children: _detectedAdditives
-                    .map((code) => AdditiveChip(
-                          eCode: code,
-                          riskLevel: 3, // Will be resolved from DB at runtime
-                        ))
+                    .map(
+                      (code) => AdditiveChip(
+                        eCode: code,
+                        riskLevel: 3, // Will be resolved from DB at runtime
+                      ),
+                    )
                     .toList(),
               ),
               const SizedBox(height: 16),
@@ -310,10 +306,12 @@ class _IngredientsVerificationScreenState
                 spacing: 8,
                 runSpacing: 8,
                 children: _unmatchedAdditives
-                    .map((code) => AdditiveChip(
-                          eCode: code,
-                          riskLevel: 3, // Default moderate
-                        ))
+                    .map(
+                      (code) => AdditiveChip(
+                        eCode: code,
+                        riskLevel: 3, // Default moderate
+                      ),
+                    )
                     .toList(),
               ),
               const SizedBox(height: 16),
@@ -332,10 +330,7 @@ class _IngredientsVerificationScreenState
             if (_confidence != null)
               Text(
                 'OCR Güvenilirlik: ${(_confidence! * 100).toStringAsFixed(0)}%',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: context.colors.textMuted,
-                ),
+                style: TextStyle(fontSize: 12, color: context.colors.textMuted),
               ),
 
             const SizedBox(height: 24),
@@ -357,8 +352,11 @@ class _IngredientsVerificationScreenState
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.camera_alt_rounded,
-                              color: context.colors.textPrimary, size: 18),
+                          Icon(
+                            Icons.camera_alt_rounded,
+                            color: context.colors.textPrimary,
+                            size: 18,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Tekrar Çek',
@@ -397,8 +395,11 @@ class _IngredientsVerificationScreenState
                               ),
                             )
                           else ...[
-                            const Icon(Icons.check_rounded,
-                                color: Colors.black, size: 18),
+                            const Icon(
+                              Icons.check_rounded,
+                              color: Colors.black,
+                              size: 18,
+                            ),
                             const SizedBox(width: 8),
                             const Text(
                               'Onayla ve Kaydet',

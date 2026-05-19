@@ -64,8 +64,10 @@ class _ManualIngredientsScreenState
 
     // Validate E-code format
     final normalized = HpScoreCalculator.normalizeECode(code);
-    if (!RegExp(r'^E\d{3,4}[a-z]?$', caseSensitive: false)
-        .hasMatch(normalized)) {
+    if (!RegExp(
+      r'^E\d{3,4}[a-z]?$',
+      caseSensitive: false,
+    ).hasMatch(normalized)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Geçersiz E kodu formatı (örn: E471)'),
@@ -111,8 +113,7 @@ class _ManualIngredientsScreenState
         productName: _productNameController.text.isNotEmpty
             ? _productNameController.text
             : null,
-        brands:
-            _brandController.text.isNotEmpty ? _brandController.text : null,
+        brands: _brandController.text.isNotEmpty ? _brandController.text : null,
         ingredientsText: _ingredientsController.text.isNotEmpty
             ? _ingredientsController.text
             : null,
@@ -234,10 +235,7 @@ class _ManualIngredientsScreenState
                   borderSide: BorderSide(color: context.colors.primary),
                 ),
               ),
-              style: TextStyle(
-                fontSize: 13,
-                color: context.colors.textPrimary,
-              ),
+              style: TextStyle(fontSize: 13, color: context.colors.textPrimary),
             ),
             const SizedBox(height: 16),
 
@@ -297,20 +295,14 @@ class _ManualIngredientsScreenState
                 children: _manualECodes.map((code) {
                   return GestureDetector(
                     onTap: () => _removeECode(code),
-                    child: AdditiveChip(
-                      eCode: code,
-                      riskLevel: 3,
-                    ),
+                    child: AdditiveChip(eCode: code, riskLevel: 3),
                   );
                 }).toList(),
               ),
               const SizedBox(height: 8),
               Text(
                 'Kaldırmak için dokunun',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: context.colors.textMuted,
-                ),
+                style: TextStyle(fontSize: 11, color: context.colors.textMuted),
               ),
               const SizedBox(height: 16),
             ],
@@ -348,8 +340,11 @@ class _ManualIngredientsScreenState
                         ),
                       )
                     else ...[
-                      const Icon(Icons.check_rounded,
-                          color: Colors.black, size: 18),
+                      const Icon(
+                        Icons.check_rounded,
+                        color: Colors.black,
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       const Text(
                         'Kaydet',

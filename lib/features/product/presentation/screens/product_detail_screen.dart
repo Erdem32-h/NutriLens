@@ -51,8 +51,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final isBlacklistedAsync = ref.watch(isBlacklistedProvider(widget.barcode));
     final l10n = context.l10n;
 
-    final productLoaded =
-        productAsync.hasValue && productAsync.value != null;
+    final productLoaded = productAsync.hasValue && productAsync.value != null;
 
     return Scaffold(
       backgroundColor: context.colors.background,
@@ -66,14 +65,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   loading: () => const SizedBox(
                     width: 48,
                     child: Center(
-                        child: SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2))),
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
                   ),
                   error: (e, s) => const SizedBox.shrink(),
                   data: (isFav) => IconButton(
-                    tooltip: isFav ? l10n.removeFromFavorites : l10n.addToFavorites,
+                    tooltip: isFav
+                        ? l10n.removeFromFavorites
+                        : l10n.addToFavorites,
                     icon: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
                       color: isFav ? Colors.redAccent : null,
@@ -81,17 +84,21 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     onPressed: () async {
                       final messenger = ScaffoldMessenger.of(context);
                       if (isFav) {
-                        await removeFavoriteByBarcode(ref,
-                            barcode: widget.barcode);
+                        await removeFavoriteByBarcode(
+                          ref,
+                          barcode: widget.barcode,
+                        );
                         if (mounted) {
-                          messenger.showSnackBar(SnackBar(
-                              content: Text(l10n.removedFromFavorites)));
+                          messenger.showSnackBar(
+                            SnackBar(content: Text(l10n.removedFromFavorites)),
+                          );
                         }
                       } else {
                         await addToFavorites(ref, barcode: widget.barcode);
                         if (mounted) {
                           messenger.showSnackBar(
-                              SnackBar(content: Text(l10n.addedToFavorites)));
+                            SnackBar(content: Text(l10n.addedToFavorites)),
+                          );
                         }
                       }
                     },
@@ -111,8 +118,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ),
                     onPressed: () async {
                       if (isBlocked) {
-                        await removeBlacklistByBarcode(ref,
-                            barcode: widget.barcode);
+                        await removeBlacklistByBarcode(
+                          ref,
+                          barcode: widget.barcode,
+                        );
                       } else {
                         await addToBlacklist(ref, barcode: widget.barcode);
                       }
@@ -128,7 +137,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           return _buildShimmer(context);
         },
         error: (error, stack) {
-          debugPrint('[ProductDetail] barcode=${widget.barcode} → ERROR: $error');
+          debugPrint(
+            '[ProductDetail] barcode=${widget.barcode} → ERROR: $error',
+          );
           debugPrint('[ProductDetail] stack: $stack');
           // On error, redirect to edit screen so user can enter data manually
           _redirectToEdit();
@@ -137,20 +148,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         data: (product) {
           // Product not found anywhere -> redirect to edit (creation mode)
           if (product == null) {
-            debugPrint('[ProductDetail] barcode=${widget.barcode} → null, redirect to edit');
+            debugPrint(
+              '[ProductDetail] barcode=${widget.barcode} → null, redirect to edit',
+            );
             _redirectToEdit();
             return _buildShimmer(context);
           }
 
-          debugPrint('[ProductDetail] barcode=${widget.barcode} → found: '
-              'name=${product.productName}, brands=${product.brands}, '
-              'ingredients=${product.ingredientsText != null}, '
-              'energyKcal=${product.nutriments.energyKcal}, '
-              'hasEssentialData=${product.hasEssentialData}');
+          debugPrint(
+            '[ProductDetail] barcode=${widget.barcode} → found: '
+            'name=${product.productName}, brands=${product.brands}, '
+            'ingredients=${product.ingredientsText != null}, '
+            'energyKcal=${product.nutriments.energyKcal}, '
+            'hasEssentialData=${product.hasEssentialData}',
+          );
 
           // Product missing essential data -> redirect to edit to fill gaps
           if (!product.hasEssentialData) {
-            debugPrint('[ProductDetail] → missing essential data, redirect to edit');
+            debugPrint(
+              '[ProductDetail] → missing essential data, redirect to edit',
+            );
             _redirectToEdit();
             return _buildShimmer(context);
           }
@@ -251,7 +268,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   /// health filters (allergens, diets, oils, chemicals).
   Widget _buildFilterWarningBanner(ProductEntity product) {
     final filters = ref.watch(healthFiltersProvider);
-    final hasAnyFilter = filters.allergens.isNotEmpty ||
+    final hasAnyFilter =
+        filters.allergens.isNotEmpty ||
         filters.diets.isNotEmpty ||
         filters.oils.isNotEmpty ||
         filters.chemicals.isNotEmpty;
@@ -283,17 +301,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         decoration: BoxDecoration(
           color: colors.error.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: colors.error.withValues(alpha: 0.25),
-          ),
+          border: Border.all(color: colors.error.withValues(alpha: 0.25)),
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.warning_amber_rounded,
-              color: colors.error,
-              size: 22,
-            ),
+            Icon(Icons.warning_amber_rounded, color: colors.error, size: 22),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -362,10 +374,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           alignment: Alignment.centerLeft,
           child: Text(
             '${context.l10n.barcode}: ${product.barcode}',
-            style: TextStyle(
-              fontSize: 12,
-              color: context.colors.textMuted,
-            ),
+            style: TextStyle(fontSize: 12, color: context.colors.textMuted),
           ),
         ),
       ),
@@ -374,7 +383,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   List<Widget> _buildNutritionTab(ProductEntity product) {
     return [
-      if (product.ingredientsText != null && product.ingredientsText!.isNotEmpty) ...[
+      if (product.ingredientsText != null &&
+          product.ingredientsText!.isNotEmpty) ...[
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(

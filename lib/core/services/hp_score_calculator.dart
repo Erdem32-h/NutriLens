@@ -78,6 +78,7 @@ class HpScoreCalculator {
     final nutriFactor = _calculateNutriFactor(nutriments, novaGroup);
     final ingredientQualityPenalty = _calculateIngredientQualityPenalty(
       ingredientsText,
+      nutriments,
     );
 
     final hpScore =
@@ -258,7 +259,10 @@ class HpScoreCalculator {
         (naturalness * ScoreConstants.naturalnessWeight);
   }
 
-  double _calculateIngredientQualityPenalty(String? ingredientsText) {
+  double _calculateIngredientQualityPenalty(
+    String? ingredientsText,
+    NutrimentsEntity nutriments,
+  ) {
     if (ingredientsText == null || ingredientsText.trim().isEmpty) return 0.0;
 
     final text = ScoreConstants.normalizeTurkish(ingredientsText);
@@ -272,6 +276,20 @@ class HpScoreCalculator {
     if (hasRefinedFlour) penalty += ScoreConstants.refinedFlourPenalty;
     if (hasAddedSugar && hasRefinedFlour) {
       penalty += ScoreConstants.refinedCarbComboPenalty;
+    }
+
+    // Sweet/fatty treat: added-sugar in ingredients AND nutrition shows
+    // it's a sugar/fat-dense product (chocolate spreads, candies, etc.).
+    // Olive oil and similar high-satFat-but-no-added-sugar items are
+    // untouched because the gate is `hasAddedSugar`.
+    if (hasAddedSugar) {
+      final sugars = nutriments.sugars ?? 0;
+      final satFat = nutriments.saturatedFat ?? 0;
+      final isSugarHeavy = sugars >= ScoreConstants.sweetTreatSugarThreshold;
+      final isFatHeavy = satFat >= ScoreConstants.sweetTreatSatFatThreshold;
+      if (isSugarHeavy || isFatHeavy) {
+        penalty += ScoreConstants.sweetTreatPenalty;
+      }
     }
 
     return min(penalty, ScoreConstants.ingredientQualityPenaltyCap);

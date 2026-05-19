@@ -32,9 +32,9 @@ final class CounterfeitLocalDataSourceImpl
   }) async {
     try {
       // 1. Exact barcode match
-      final byBarcode = await (_db.select(_db.counterfeitProducts)
-            ..where((t) => t.barcode.equals(barcode)))
-          .getSingleOrNull();
+      final byBarcode = await (_db.select(
+        _db.counterfeitProducts,
+      )..where((t) => t.barcode.equals(barcode))).getSingleOrNull();
       if (byBarcode != null) return CounterfeitDto.fromRow(byBarcode);
 
       // 2. Brand fuzzy match (case-insensitive contains)
@@ -42,7 +42,8 @@ final class CounterfeitLocalDataSourceImpl
         final lowerBrand = brand.toLowerCase();
         final allRows = await _db.select(_db.counterfeitProducts).get();
         final matched = allRows.firstWhere(
-          (r) => r.brandName.toLowerCase().contains(lowerBrand) ||
+          (r) =>
+              r.brandName.toLowerCase().contains(lowerBrand) ||
               lowerBrand.contains(r.brandName.toLowerCase()),
           orElse: () => throw StateError('not_found'),
         );
@@ -63,7 +64,9 @@ final class CounterfeitLocalDataSourceImpl
       await _db.transaction(() async {
         await _db.delete(_db.counterfeitProducts).go();
         for (final entity in records) {
-          await _db.into(_db.counterfeitProducts).insertOnConflictUpdate(
+          await _db
+              .into(_db.counterfeitProducts)
+              .insertOnConflictUpdate(
                 CounterfeitProductsCompanion.insert(
                   id: entity.id,
                   brandName: entity.brandName,
@@ -87,10 +90,11 @@ final class CounterfeitLocalDataSourceImpl
   @override
   Future<DateTime?> lastSyncedAt() async {
     try {
-      final row = await (_db.select(_db.counterfeitProducts)
-            ..orderBy([(t) => OrderingTerm.desc(t.syncedAt)])
-            ..limit(1))
-          .getSingleOrNull();
+      final row =
+          await (_db.select(_db.counterfeitProducts)
+                ..orderBy([(t) => OrderingTerm.desc(t.syncedAt)])
+                ..limit(1))
+              .getSingleOrNull();
       return row?.syncedAt;
     } catch (_) {
       return null;

@@ -74,10 +74,7 @@ class HistoryScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             l10n.productsWillAppearHere,
-            style: TextStyle(
-              fontSize: 14,
-              color: context.colors.textMuted,
-            ),
+            style: TextStyle(fontSize: 14, color: context.colors.textMuted),
             textAlign: TextAlign.center,
           ),
         ],
@@ -144,21 +141,21 @@ class _HistoryTile extends ConsumerWidget {
                       size: 28,
                     )
                   : item.imageUrl != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            item.imageUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => Icon(
-                              Icons.inventory_2_outlined,
-                              color: context.colors.textMuted,
-                            ),
-                          ),
-                        )
-                      : Icon(
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        item.imageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Icon(
                           Icons.inventory_2_outlined,
                           color: context.colors.textMuted,
                         ),
+                      ),
+                    )
+                  : Icon(
+                      Icons.inventory_2_outlined,
+                      color: context.colors.textMuted,
+                    ),
             ),
             const SizedBox(width: 12),
 
@@ -202,26 +199,32 @@ class _HistoryTile extends ConsumerWidget {
             // HP Score badge (1-5 gauge)
             if (item.effectiveHpScore != null) ...[
               const SizedBox(width: 8),
-              Builder(builder: (context) {
-                final gauge = ScoreConstants.hpToGauge(item.effectiveHpScore!);
-                final color = context.colors.gaugeColor(gauge);
-                return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '$gauge/5',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: color,
+              Builder(
+                builder: (context) {
+                  final gauge = ScoreConstants.hpToGauge(
+                    item.effectiveHpScore!,
+                  );
+                  final color = context.colors.gaugeColor(gauge);
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
                     ),
-                  ),
-                );
-              }),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '$gauge/5',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: color,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ],
 
             const SizedBox(width: 4),
@@ -264,8 +267,10 @@ class _HistoryTile extends ConsumerWidget {
 
               // Delete
               ListTile(
-                leading: Icon(Icons.delete_outline_rounded,
-                    color: context.colors.error),
+                leading: Icon(
+                  Icons.delete_outline_rounded,
+                  color: context.colors.error,
+                ),
                 title: Text(
                   l10n.delete,
                   style: TextStyle(color: context.colors.error),
@@ -278,8 +283,10 @@ class _HistoryTile extends ConsumerWidget {
 
               // Add to Favorites
               ListTile(
-                leading: const Icon(Icons.favorite_rounded,
-                    color: Color(0xFFE91E63)),
+                leading: const Icon(
+                  Icons.favorite_rounded,
+                  color: Color(0xFFE91E63),
+                ),
                 title: Text(l10n.addToFavorites),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -289,8 +296,10 @@ class _HistoryTile extends ConsumerWidget {
 
               // Edit
               ListTile(
-                leading: Icon(Icons.edit_rounded,
-                    color: context.colors.primary),
+                leading: Icon(
+                  Icons.edit_rounded,
+                  color: context.colors.primary,
+                ),
                 title: Text(l10n.edit),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -320,7 +329,9 @@ class _HistoryTile extends ConsumerWidget {
   }
 
   Future<void> _handleAddToFavorites(
-      BuildContext context, WidgetRef ref) async {
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final l10n = context.l10n;
 
     // Check if already in favorites
@@ -332,8 +343,9 @@ class _HistoryTile extends ConsumerWidget {
         SnackBar(
           content: Text(l10n.alreadyInFavorites),
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -356,5 +368,4 @@ class _HistoryTile extends ConsumerWidget {
   void _handleEdit(BuildContext context) {
     context.push('/product/${item.barcode}/edit');
   }
-
 }

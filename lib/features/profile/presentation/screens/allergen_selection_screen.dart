@@ -13,12 +13,13 @@ class AllergenSelectionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final state = ref.watch(healthFiltersProvider);
-    
+
     return FilterSelectionView(
       title: l10n.allergens,
       options: HealthFilterOptions.allergens,
       selectedIds: state.allergens,
-      onToggle: (id) => ref.read(healthFiltersProvider.notifier).toggleAllergen(id),
+      onToggle: (id) =>
+          ref.read(healthFiltersProvider.notifier).toggleAllergen(id),
     );
   }
 }

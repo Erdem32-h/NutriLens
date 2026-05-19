@@ -33,82 +33,101 @@ class EditorialNutrientTable extends StatelessWidget {
     if (nutriments.energyKcal != null) {
       final kcal = nutriments.energyKcal!;
       final kj = (kcal * 4.184).round();
-      entries.add(_NutrientEntry(
-        label: '${l10n.energyValue} (kJ/kcal)',
-        value: '$kj / ${kcal.toStringAsFixed(0)}',
-        isChild: false,
-        isParent: false,
-      ));
+      entries.add(
+        _NutrientEntry(
+          label: '${l10n.energyValue} (kJ/kcal)',
+          value: '$kj / ${kcal.toStringAsFixed(0)}',
+          isChild: false,
+          isParent: false,
+        ),
+      );
     }
 
     // ── Fat group ────────────────────────────────────────────────────
     if (nutriments.fat != null) {
-      entries.add(_NutrientEntry(
-        label: '${l10n.fatLabel} (g)',
-        value: nutriments.fat!.toStringAsFixed(1),
-        isChild: false,
-        isParent: nutriments.saturatedFat != null || nutriments.transFat != null,
-      ));
+      entries.add(
+        _NutrientEntry(
+          label: '${l10n.fatLabel} (g)',
+          value: nutriments.fat!.toStringAsFixed(1),
+          isChild: false,
+          isParent:
+              nutriments.saturatedFat != null || nutriments.transFat != null,
+        ),
+      );
     }
     if (nutriments.saturatedFat != null) {
-      entries.add(_NutrientEntry(
-        label: l10n.saturatedFatLabel,
-        value: '${nutriments.saturatedFat!.toStringAsFixed(1)} g',
-        isChild: true,
-        isParent: false,
-      ));
+      entries.add(
+        _NutrientEntry(
+          label: l10n.saturatedFatLabel,
+          value: '${nutriments.saturatedFat!.toStringAsFixed(1)} g',
+          isChild: true,
+          isParent: false,
+        ),
+      );
     }
     if (nutriments.transFat != null) {
-      entries.add(_NutrientEntry(
-        label: l10n.transFatLabel,
-        value: '${nutriments.transFat!.toStringAsFixed(1)} g',
-        isChild: true,
-        isParent: false,
-      ));
+      entries.add(
+        _NutrientEntry(
+          label: l10n.transFatLabel,
+          value: '${nutriments.transFat!.toStringAsFixed(1)} g',
+          isChild: true,
+          isParent: false,
+        ),
+      );
     }
 
     // ── Carbohydrate group ───────────────────────────────────────────
     if (nutriments.carbohydrates != null) {
-      entries.add(_NutrientEntry(
-        label: '${l10n.carbohydrateLabel} (g)',
-        value: nutriments.carbohydrates!.toStringAsFixed(1),
-        isChild: false,
-        isParent: nutriments.sugars != null,
-      ));
+      entries.add(
+        _NutrientEntry(
+          label: '${l10n.carbohydrateLabel} (g)',
+          value: nutriments.carbohydrates!.toStringAsFixed(1),
+          isChild: false,
+          isParent: nutriments.sugars != null,
+        ),
+      );
     }
     if (nutriments.sugars != null) {
-      entries.add(_NutrientEntry(
-        label: l10n.sugarLabel,
-        value: '${nutriments.sugars!.toStringAsFixed(1)} g',
-        isChild: true,
-        isParent: false,
-      ));
+      entries.add(
+        _NutrientEntry(
+          label: l10n.sugarLabel,
+          value: '${nutriments.sugars!.toStringAsFixed(1)} g',
+          isChild: true,
+          isParent: false,
+        ),
+      );
     }
 
     // ── Standalone rows ──────────────────────────────────────────────
     if (nutriments.fiber != null) {
-      entries.add(_NutrientEntry(
-        label: '${l10n.fiberLabel} (g)',
-        value: nutriments.fiber!.toStringAsFixed(1),
-        isChild: false,
-        isParent: false,
-      ));
+      entries.add(
+        _NutrientEntry(
+          label: '${l10n.fiberLabel} (g)',
+          value: nutriments.fiber!.toStringAsFixed(1),
+          isChild: false,
+          isParent: false,
+        ),
+      );
     }
     if (nutriments.proteins != null) {
-      entries.add(_NutrientEntry(
-        label: '${l10n.proteinLabel} (g)',
-        value: nutriments.proteins!.toStringAsFixed(1),
-        isChild: false,
-        isParent: false,
-      ));
+      entries.add(
+        _NutrientEntry(
+          label: '${l10n.proteinLabel} (g)',
+          value: nutriments.proteins!.toStringAsFixed(1),
+          isChild: false,
+          isParent: false,
+        ),
+      );
     }
     if (nutriments.salt != null) {
-      entries.add(_NutrientEntry(
-        label: '${l10n.saltLabel} (g)',
-        value: nutriments.salt!.toStringAsFixed(2),
-        isChild: false,
-        isParent: false,
-      ));
+      entries.add(
+        _NutrientEntry(
+          label: '${l10n.saltLabel} (g)',
+          value: nutriments.salt!.toStringAsFixed(2),
+          isChild: false,
+          isParent: false,
+        ),
+      );
     }
 
     if (entries.isEmpty) return const SizedBox.shrink();
@@ -143,11 +162,7 @@ class EditorialNutrientTable extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  Expanded(
-                    child: Text(
-                      l10n.detailedContent.isEmpty ? '' : '',
-                    ),
-                  ),
+                  Expanded(child: Text(l10n.detailedContent.isEmpty ? '' : '')),
                   Text(
                     '100g',
                     style: TextStyle(
@@ -271,8 +286,9 @@ class _NutrientRowWidget extends StatelessWidget {
                         entry.label,
                         style: TextStyle(
                           fontSize: isChild ? 13 : 14,
-                          fontWeight:
-                              isParent ? FontWeight.w700 : FontWeight.w500,
+                          fontWeight: isParent
+                              ? FontWeight.w700
+                              : FontWeight.w500,
                           color: isChild
                               ? colors.textMuted
                               : colors.textPrimary,

@@ -13,12 +13,13 @@ class ChemicalFilterScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final state = ref.watch(healthFiltersProvider);
-    
+
     return FilterSelectionView(
       title: l10n.chemicalFilters,
       options: HealthFilterOptions.chemicals,
       selectedIds: state.chemicals,
-      onToggle: (id) => ref.read(healthFiltersProvider.notifier).toggleChemical(id),
+      onToggle: (id) =>
+          ref.read(healthFiltersProvider.notifier).toggleChemical(id),
     );
   }
 }

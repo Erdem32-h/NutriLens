@@ -225,8 +225,9 @@ class _ScannerButtonState extends State<_ScannerButton>
                       height: 72,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: colors.primary
-                            .withValues(alpha: widget.active ? glow : 0.12),
+                        color: colors.primary.withValues(
+                          alpha: widget.active ? glow : 0.12,
+                        ),
                       ),
                     ),
                     // Scanner button core
@@ -238,8 +239,7 @@ class _ScannerButtonState extends State<_ScannerButton>
                         gradient: colors.primaryGradient,
                         boxShadow: [
                           BoxShadow(
-                            color:
-                                colors.primary.withValues(alpha: 0.40),
+                            color: colors.primary.withValues(alpha: 0.40),
                             blurRadius: 18,
                             offset: const Offset(0, 8),
                           ),
@@ -327,8 +327,11 @@ class _ViewfinderPainter extends CustomPainter {
     final scanPaint = Paint()
       ..color = color.withValues(alpha: active ? 0.90 : 0.45)
       ..strokeWidth = 1.4;
-    canvas.drawLine(Offset(inset + 2, y), Offset(size.width - inset - 2, y),
-        scanPaint);
+    canvas.drawLine(
+      Offset(inset + 2, y),
+      Offset(size.width - inset - 2, y),
+      scanPaint,
+    );
   }
 
   @override

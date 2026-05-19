@@ -8,10 +8,7 @@ class ScannerOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColorFiltered(
-      colorFilter: const ColorFilter.mode(
-        Colors.black54,
-        BlendMode.srcOut,
-      ),
+      colorFilter: const ColorFilter.mode(Colors.black54, BlendMode.srcOut),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -46,9 +43,7 @@ class ScannerOverlayBorder extends StatelessWidget {
       child: SizedBox(
         width: 280,
         height: 280,
-        child: CustomPaint(
-          painter: _CornerPainter(context.colors.primary),
-        ),
+        child: CustomPaint(painter: _CornerPainter(context.colors.primary)),
       ),
     );
   }
@@ -74,7 +69,7 @@ class _CornerPainter extends CustomPainter {
     canvas.drawArc(
       const Rect.fromLTWH(0, 0, radius * 2, radius * 2),
       3.14159, // pi
-      1.5708,  // pi/2
+      1.5708, // pi/2
       false,
       paint,
     );

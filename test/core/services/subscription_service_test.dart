@@ -59,4 +59,14 @@ void main() {
       });
     });
   });
+
+  group('RevenueCat log level policy', () {
+    test('uses debug logging outside release builds', () {
+      expect(revenueCatLogLevelFor(releaseMode: false).name, 'debug');
+    });
+
+    test('uses warning logging in release builds', () {
+      expect(revenueCatLogLevelFor(releaseMode: true).name, 'warn');
+    });
+  });
 }

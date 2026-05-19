@@ -22,9 +22,7 @@ class AdditiveLocalDataSourceImpl implements AdditiveLocalDataSource {
   const AdditiveLocalDataSourceImpl(this._db);
 
   @override
-  Future<List<AdditiveEntity>> getAdditivesByCodes(
-    List<String> eCodes,
-  ) async {
+  Future<List<AdditiveEntity>> getAdditivesByCodes(List<String> eCodes) async {
     final normalised = eCodes
         .map(HpScoreCalculator.normalizeECode)
         .toSet()
@@ -32,9 +30,9 @@ class AdditiveLocalDataSourceImpl implements AdditiveLocalDataSource {
 
     if (normalised.isEmpty) return [];
 
-    final rows = await (_db.select(_db.additives)
-          ..where((t) => t.eNumber.isIn(normalised)))
-        .get();
+    final rows = await (_db.select(
+      _db.additives,
+    )..where((t) => t.eNumber.isIn(normalised))).get();
 
     return rows.map(_rowToEntity).toList();
   }
@@ -42,9 +40,9 @@ class AdditiveLocalDataSourceImpl implements AdditiveLocalDataSource {
   @override
   Future<AdditiveEntity?> getAdditiveByCode(String eCode) async {
     final normalised = HpScoreCalculator.normalizeECode(eCode);
-    final row = await (_db.select(_db.additives)
-          ..where((t) => t.eNumber.equals(normalised)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.additives,
+    )..where((t) => t.eNumber.equals(normalised))).getSingleOrNull();
     return row != null ? _rowToEntity(row) : null;
   }
 
@@ -68,8 +66,7 @@ class AdditiveLocalDataSourceImpl implements AdditiveLocalDataSource {
 
     await _db.transaction(() async {
       for (final item in items) {
-        final entity =
-            AdditiveJsonModel.fromJson(item as Map<String, dynamic>);
+        final entity = AdditiveJsonModel.fromJson(item as Map<String, dynamic>);
         await _db
             .into(_db.additives)
             .insertOnConflictUpdate(_entityToCompanion(entity));

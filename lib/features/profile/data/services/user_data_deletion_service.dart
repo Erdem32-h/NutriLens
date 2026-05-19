@@ -104,18 +104,18 @@ class UserDataDeletionService implements UserDataCleaner {
 
   Future<void> _deleteLocalUserData(String userId) async {
     await _db.transaction(() async {
-      await (_db.delete(_db.scanHistory)
-            ..where((table) => table.userId.equals(userId)))
-          .go();
-      await (_db.delete(_db.favorites)
-            ..where((table) => table.userId.equals(userId)))
-          .go();
-      await (_db.delete(_db.blacklist)
-            ..where((table) => table.userId.equals(userId)))
-          .go();
-      await (_db.delete(_db.mealEntries)
-            ..where((table) => table.userId.equals(userId)))
-          .go();
+      await (_db.delete(
+        _db.scanHistory,
+      )..where((table) => table.userId.equals(userId))).go();
+      await (_db.delete(
+        _db.favorites,
+      )..where((table) => table.userId.equals(userId))).go();
+      await (_db.delete(
+        _db.blacklist,
+      )..where((table) => table.userId.equals(userId))).go();
+      await (_db.delete(
+        _db.mealEntries,
+      )..where((table) => table.userId.equals(userId))).go();
     });
   }
 

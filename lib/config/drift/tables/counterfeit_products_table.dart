@@ -11,8 +11,7 @@ class CounterfeitProducts extends Table {
   DateTimeColumn get detectionDate => dateTime().nullable()();
   TextColumn get barcode => text().nullable()();
   TextColumn get sourceUrl => text().nullable()();
-  DateTimeColumn get syncedAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get syncedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};

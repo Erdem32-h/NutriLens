@@ -55,10 +55,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _FavoritesTab(),
-          _BlacklistTab(),
-        ],
+        children: [_FavoritesTab(), _BlacklistTab()],
       ),
     );
   }
@@ -73,8 +70,9 @@ class _FavoritesTab extends ConsumerWidget {
     final favoritesAsync = ref.watch(favoritesProvider);
 
     return favoritesAsync.when(
-      loading: () =>
-          Center(child: CircularProgressIndicator(color: context.colors.primary)),
+      loading: () => Center(
+        child: CircularProgressIndicator(color: context.colors.primary),
+      ),
       error: (e, s) => Center(
         child: Text(
           'Favoriler yuklenemedi',
@@ -101,8 +99,11 @@ class _FavoritesTab extends ConsumerWidget {
               shape: BoxShape.circle,
               border: Border.all(color: context.colors.border),
             ),
-            child: Icon(Icons.favorite_rounded,
-                size: 44, color: context.colors.textMuted),
+            child: Icon(
+              Icons.favorite_rounded,
+              size: 44,
+              color: context.colors.textMuted,
+            ),
           ),
           const SizedBox(height: 24),
           Text(
@@ -125,7 +126,9 @@ class _FavoritesTab extends ConsumerWidget {
   }
 
   Widget _buildList(
-      BuildContext context, List<ScanHistoryWithProduct> favorites) {
+    BuildContext context,
+    List<ScanHistoryWithProduct> favorites,
+  ) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: favorites.length,
@@ -144,8 +147,9 @@ class _BlacklistTab extends ConsumerWidget {
     final blacklistAsync = ref.watch(blacklistProvider);
 
     return blacklistAsync.when(
-      loading: () =>
-          Center(child: CircularProgressIndicator(color: context.colors.primary)),
+      loading: () => Center(
+        child: CircularProgressIndicator(color: context.colors.primary),
+      ),
       error: (e, s) => Center(
         child: Text(
           l10n.noBlacklist,
@@ -177,8 +181,7 @@ class _BlacklistTab extends ConsumerWidget {
               shape: BoxShape.circle,
               border: Border.all(color: context.colors.border),
             ),
-            child:
-                Icon(Icons.block, size: 44, color: context.colors.textMuted),
+            child: Icon(Icons.block, size: 44, color: context.colors.textMuted),
           ),
           const SizedBox(height: 24),
           Text(
@@ -219,8 +222,9 @@ class _FavoriteTile extends ConsumerWidget {
         decoration: BoxDecoration(
           color: context.colors.surfaceCard,
           borderRadius: BorderRadius.circular(16),
-          border:
-              Border.all(color: context.colors.border.withValues(alpha: 0.5)),
+          border: Border.all(
+            color: context.colors.border.withValues(alpha: 0.5),
+          ),
         ),
         child: Row(
           children: [
@@ -233,21 +237,27 @@ class _FavoriteTile extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: isAiFood
-                  ? Icon(Icons.smart_toy_rounded,
-                      color: context.colors.primary, size: 28)
+                  ? Icon(
+                      Icons.smart_toy_rounded,
+                      color: context.colors.primary,
+                      size: 28,
+                    )
                   : item.imageUrl != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            item.imageUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (ctx, e, s) => Icon(
-                                Icons.favorite_rounded,
-                                color: context.colors.textMuted),
-                          ),
-                        )
-                      : Icon(Icons.favorite_rounded,
-                          color: context.colors.textMuted),
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        item.imageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (ctx, e, s) => Icon(
+                          Icons.favorite_rounded,
+                          color: context.colors.textMuted,
+                        ),
+                      ),
+                    )
+                  : Icon(
+                      Icons.favorite_rounded,
+                      color: context.colors.textMuted,
+                    ),
             ),
             const SizedBox(width: 12),
 
@@ -269,8 +279,10 @@ class _FavoriteTile extends ConsumerWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style:
-                        TextStyle(fontSize: 12, color: context.colors.textMuted),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: context.colors.textMuted,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -289,30 +301,40 @@ class _FavoriteTile extends ConsumerWidget {
             // HP Score badge
             if (item.effectiveHpScore != null) ...[
               const SizedBox(width: 8),
-              Builder(builder: (ctx) {
-                final gauge = ScoreConstants.hpToGauge(item.effectiveHpScore!);
-                final color = ctx.colors.gaugeColor(gauge);
-                return Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '$gauge/5',
-                    style: TextStyle(
+              Builder(
+                builder: (ctx) {
+                  final gauge = ScoreConstants.hpToGauge(
+                    item.effectiveHpScore!,
+                  );
+                  final color = ctx.colors.gaugeColor(gauge);
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '$gauge/5',
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: color),
-                  ),
-                );
-              }),
+                        color: color,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ],
 
             const SizedBox(width: 4),
-            Icon(Icons.chevron_right_rounded,
-                size: 20, color: context.colors.textMuted),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: context.colors.textMuted,
+            ),
           ],
         ),
       ),
@@ -344,24 +366,31 @@ class _FavoriteTile extends ConsumerWidget {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.favorite_border_rounded,
-                    color: context.colors.error),
-                title: Text(l10n.removeFromFavorites,
-                    style: TextStyle(color: context.colors.error)),
+                leading: Icon(
+                  Icons.favorite_border_rounded,
+                  color: context.colors.error,
+                ),
+                title: Text(
+                  l10n.removeFromFavorites,
+                  style: TextStyle(color: context.colors.error),
+                ),
                 onTap: () async {
                   Navigator.pop(sheetCtx);
                   final messenger = ScaffoldMessenger.of(context);
-                  final success =
-                      await removeFromFavorites(ref, id: item.id);
+                  final success = await removeFromFavorites(ref, id: item.id);
                   if (!context.mounted) return;
-                  messenger.showSnackBar(SnackBar(
-                    content: Text(
-                        success ? l10n.removedFromFavorites : l10n.saveFailed),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    duration: const Duration(seconds: 2),
-                  ));
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success ? l10n.removedFromFavorites : l10n.saveFailed,
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 },
               ),
             ],
@@ -392,8 +421,7 @@ class _BlacklistTile extends ConsumerWidget {
         decoration: BoxDecoration(
           color: context.colors.surfaceCard,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-              color: Colors.orange.withValues(alpha: 0.3)),
+          border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -411,12 +439,16 @@ class _BlacklistTile extends ConsumerWidget {
                       child: Image.network(
                         item.imageUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (ctx, e, s) => Icon(Icons.block,
-                            color: Colors.orange.withValues(alpha: 0.7)),
+                        errorBuilder: (ctx, e, s) => Icon(
+                          Icons.block,
+                          color: Colors.orange.withValues(alpha: 0.7),
+                        ),
                       ),
                     )
-                  : Icon(Icons.block,
-                      color: Colors.orange.withValues(alpha: 0.7)),
+                  : Icon(
+                      Icons.block,
+                      color: Colors.orange.withValues(alpha: 0.7),
+                    ),
             ),
             const SizedBox(width: 12),
 
@@ -440,7 +472,9 @@ class _BlacklistTile extends ConsumerWidget {
                     Text(
                       item.brands!,
                       style: TextStyle(
-                          fontSize: 12, color: context.colors.textMuted),
+                        fontSize: 12,
+                        color: context.colors.textMuted,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -457,8 +491,11 @@ class _BlacklistTile extends ConsumerWidget {
               ),
             ),
 
-            Icon(Icons.chevron_right_rounded,
-                size: 20, color: context.colors.textMuted),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: context.colors.textMuted,
+            ),
           ],
         ),
       ),
@@ -490,24 +527,32 @@ class _BlacklistTile extends ConsumerWidget {
                 ),
               ),
               ListTile(
-                leading:
-                    const Icon(Icons.block_outlined, color: Colors.orange),
-                title: Text(l10n.removeFromBlacklist,
-                    style: const TextStyle(color: Colors.orange)),
+                leading: const Icon(Icons.block_outlined, color: Colors.orange),
+                title: Text(
+                  l10n.removeFromBlacklist,
+                  style: const TextStyle(color: Colors.orange),
+                ),
                 onTap: () async {
                   Navigator.pop(sheetCtx);
                   final messenger = ScaffoldMessenger.of(context);
-                  final success = await removeFromBlacklist(ref,
-                      id: item.id, barcode: item.barcode);
+                  final success = await removeFromBlacklist(
+                    ref,
+                    id: item.id,
+                    barcode: item.barcode,
+                  );
                   if (!context.mounted) return;
-                  messenger.showSnackBar(SnackBar(
-                    content: Text(
-                        success ? l10n.removedFromFavorites : l10n.saveFailed),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    duration: const Duration(seconds: 2),
-                  ));
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success ? l10n.removedFromFavorites : l10n.saveFailed,
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 },
               ),
             ],

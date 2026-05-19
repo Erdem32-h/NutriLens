@@ -60,13 +60,10 @@ final class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     } on NotFoundException {
       rethrow;
     } catch (e) {
-      if (e.toString().contains('429') ||
-          e.toString().contains('rate limit')) {
+      if (e.toString().contains('429') || e.toString().contains('rate limit')) {
         throw const RateLimitException();
       }
-      throw ServerException(
-        'Failed to fetch product: ${e.toString()}',
-      );
+      throw ServerException('Failed to fetch product: ${e.toString()}');
     }
   }
 }

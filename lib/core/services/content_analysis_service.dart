@@ -62,76 +62,101 @@ abstract final class ContentAnalysisService {
 
     // NOVA Group 4 = ultra-processed
     if (product.novaGroup == 4) {
-      warnings.add(const ContentWarning(
-        messageKey: 'ultraProcessed',
-        icon: Icons.warning_amber_rounded,
-        level: WarningLevel.risky,
-      ));
+      warnings.add(
+        const ContentWarning(
+          messageKey: 'ultraProcessed',
+          icon: Icons.warning_amber_rounded,
+          level: WarningLevel.risky,
+        ),
+      );
     }
 
     // Sugar thresholds (per 100g)
     final sugars = nutriments.sugars;
     if (sugars != null) {
       if (sugars > 22.5) {
-        warnings.add(const ContentWarning(
-          messageKey: 'highSugar',
-          icon: Icons.local_cafe_rounded,
-          level: WarningLevel.risky,
-        ));
+        warnings.add(
+          const ContentWarning(
+            messageKey: 'highSugar',
+            icon: Icons.local_cafe_rounded,
+            level: WarningLevel.risky,
+          ),
+        );
       } else if (sugars > 5.0) {
-        warnings.add(const ContentWarning(
-          messageKey: 'moderateSugar',
-          icon: Icons.local_cafe_outlined,
-          level: WarningLevel.caution,
-        ));
+        warnings.add(
+          const ContentWarning(
+            messageKey: 'moderateSugar',
+            icon: Icons.local_cafe_outlined,
+            level: WarningLevel.caution,
+          ),
+        );
       }
     }
 
     // Saturated fat threshold (per 100g)
     final satFat = nutriments.saturatedFat;
     if (satFat != null && satFat > 5.0) {
-      warnings.add(const ContentWarning(
-        messageKey: 'highSaturatedFat',
-        icon: Icons.water_drop_rounded,
-        level: WarningLevel.risky,
-      ));
+      warnings.add(
+        const ContentWarning(
+          messageKey: 'highSaturatedFat',
+          icon: Icons.water_drop_rounded,
+          level: WarningLevel.risky,
+        ),
+      );
     }
 
     // Salt threshold (per 100g)
     final salt = nutriments.salt;
     if (salt != null && salt > 1.5) {
-      warnings.add(const ContentWarning(
-        messageKey: 'highSalt',
-        icon: Icons.grain_rounded,
-        level: WarningLevel.risky,
-      ));
+      warnings.add(
+        const ContentWarning(
+          messageKey: 'highSalt',
+          icon: Icons.grain_rounded,
+          level: WarningLevel.risky,
+        ),
+      );
     }
 
     // Palm oil detection
     if (_containsAny(ingredients, ['palm', 'palmiye', 'hurma yağı'])) {
-      warnings.add(const ContentWarning(
-        messageKey: 'containsPalmOil',
-        icon: Icons.eco_rounded,
-        level: WarningLevel.risky,
-      ));
+      warnings.add(
+        const ContentWarning(
+          messageKey: 'containsPalmOil',
+          icon: Icons.eco_rounded,
+          level: WarningLevel.risky,
+        ),
+      );
     }
 
     // Trans fat detection
-    if (_containsAny(ingredients, ['trans yağ', 'trans fat', 'partially hydrogenated'])) {
-      warnings.add(const ContentWarning(
-        messageKey: 'mayContainTransFat',
-        icon: Icons.do_not_disturb_alt_rounded,
-        level: WarningLevel.caution,
-      ));
+    if (_containsAny(ingredients, [
+      'trans yağ',
+      'trans fat',
+      'partially hydrogenated',
+    ])) {
+      warnings.add(
+        const ContentWarning(
+          messageKey: 'mayContainTransFat',
+          icon: Icons.do_not_disturb_alt_rounded,
+          level: WarningLevel.caution,
+        ),
+      );
     }
 
     // Flavoring detection
-    if (_containsAny(ingredients, ['aroma', 'flavor', 'flavour', 'aroma verici'])) {
-      warnings.add(const ContentWarning(
-        messageKey: 'containsFlavoring',
-        icon: Icons.science_rounded,
-        level: WarningLevel.caution,
-      ));
+    if (_containsAny(ingredients, [
+      'aroma',
+      'flavor',
+      'flavour',
+      'aroma verici',
+    ])) {
+      warnings.add(
+        const ContentWarning(
+          messageKey: 'containsFlavoring',
+          icon: Icons.science_rounded,
+          level: WarningLevel.caution,
+        ),
+      );
     }
 
     return warnings;
@@ -150,12 +175,14 @@ abstract final class ContentAnalysisService {
       if (option != null) {
         final allTriggers = [...option.triggersTr, ...option.triggersEn];
         if (_containsAny(ingredients, allTriggers)) {
-          warnings.add(ContentWarning(
-            messageKey: 'containsFilteredItem',
-            placeholderKey: option.nameKey,
-            icon: Icons.health_and_safety_rounded,
-            level: WarningLevel.risky, // Highly critical for personal filters
-          ));
+          warnings.add(
+            ContentWarning(
+              messageKey: 'containsFilteredItem',
+              placeholderKey: option.nameKey,
+              icon: Icons.health_and_safety_rounded,
+              level: WarningLevel.risky, // Highly critical for personal filters
+            ),
+          );
         }
       }
     }

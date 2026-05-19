@@ -13,7 +13,7 @@ class DietFilterScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final state = ref.watch(healthFiltersProvider);
-    
+
     return FilterSelectionView(
       title: l10n.dietFilters,
       options: HealthFilterOptions.diets,

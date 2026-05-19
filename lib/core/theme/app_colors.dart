@@ -152,7 +152,10 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   }
 
   @override
-  ThemeExtension<AppColorsExtension> lerp(ThemeExtension<AppColorsExtension>? other, double t) {
+  ThemeExtension<AppColorsExtension> lerp(
+    ThemeExtension<AppColorsExtension>? other,
+    double t,
+  ) {
     if (other is! AppColorsExtension) return this;
     return AppColorsExtension(
       primary: Color.lerp(primary, other.primary, t)!,
@@ -184,8 +187,16 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       riskModerate: Color.lerp(riskModerate, other.riskModerate, t)!,
       riskHigh: Color.lerp(riskHigh, other.riskHigh, t)!,
       riskDangerous: Color.lerp(riskDangerous, other.riskDangerous, t)!,
-      primaryGradient: LinearGradient.lerp(primaryGradient, other.primaryGradient, t)!,
-      backgroundGradient: LinearGradient.lerp(backgroundGradient, other.backgroundGradient, t)!,
+      primaryGradient: LinearGradient.lerp(
+        primaryGradient,
+        other.primaryGradient,
+        t,
+      )!,
+      backgroundGradient: LinearGradient.lerp(
+        backgroundGradient,
+        other.backgroundGradient,
+        t,
+      )!,
     );
   }
 
@@ -300,7 +311,10 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
 extension AppColorsContextExtension on BuildContext {
   AppColorsExtension get colors {
     final ext = Theme.of(this).extension<AppColorsExtension>();
-    assert(ext != null, 'AppColorsExtension not found in theme. Add it to ThemeData.extensions.');
+    assert(
+      ext != null,
+      'AppColorsExtension not found in theme. Add it to ThemeData.extensions.',
+    );
     return ext ?? AppColorsExtension.dark;
   }
 }

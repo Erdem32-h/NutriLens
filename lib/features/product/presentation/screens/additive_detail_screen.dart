@@ -112,10 +112,7 @@ class _AdditiveBody extends StatelessWidget {
                   Text(
                     additive.nameEn,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: colors.textMuted,
-                    ),
+                    style: TextStyle(fontSize: 13, color: colors.textMuted),
                   ),
                 ],
                 const SizedBox(height: 12),
@@ -230,9 +227,7 @@ class _AdditiveBody extends StatelessWidget {
               decoration: BoxDecoration(
                 color: colors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: colors.error.withValues(alpha: 0.4),
-                ),
+                border: Border.all(color: colors.error.withValues(alpha: 0.4)),
               ),
               child: Row(
                 children: [

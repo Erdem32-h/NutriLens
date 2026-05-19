@@ -37,6 +37,17 @@ class MealAnalysisResult {
   });
 }
 
+/// Output of `recalculateMealNutrition`. Carries an updated nutrition
+/// payload PLUS the portion size the model used when computing it — the
+/// user may have written "yarım porsiyon" and we want the UI to reflect
+/// the new gram amount, not just the macros.
+class RecalcResult {
+  final NutrimentsEntity nutriments;
+  final int portionGrams;
+
+  const RecalcResult({required this.nutriments, required this.portionGrams});
+}
+
 /// Direct Anthropic Messages API client for nutrition-table vision OCR.
 ///
 /// This intentionally bypasses the Supabase Gemini proxy. Keep the API key in
@@ -95,12 +106,22 @@ class AnthropicAiService {
     return parseMealAnalysisResponseText(text);
   }
 
-  Future<NutrimentsEntity?> recalculateNutritionFromIngredients(
-    String ingredientsText,
-  ) async {
+  /// Recalculates nutrition for an updated meal. The user may rewrite the
+  /// ingredients (e.g. spotting something the AI missed) AND/OR provide a
+  /// portion hint such as "yarım porsiyon", "tabağın yarısı kaldı, full
+  /// tabak gibi hesapla", or an explicit gram amount. Both inputs are
+  /// optional and feed into the same prompt so the model can reconcile
+  /// them (e.g. "double portion" + 250 g of pasta → portion=500 g).
+  Future<RecalcResult?> recalculateMealNutrition({
+    required String ingredientsText,
+    String? portionNote,
+  }) async {
     final text = await _sendTextPrompt(
-      prompt: _recalcNutritionPrompt(ingredientsText),
-      maxTokens: 600,
+      prompt: _recalcNutritionPrompt(
+        ingredientsText: ingredientsText,
+        portionNote: portionNote,
+      ),
+      maxTokens: 700,
       logLabel: 'recalc',
     );
     return parseRecalcResponseText(text);
@@ -266,20 +287,30 @@ class AnthropicAiService {
   }
 
   @visibleForTesting
-  static NutrimentsEntity? parseRecalcResponseText(String text) {
+  static RecalcResult? parseRecalcResponseText(String text) {
     try {
       final jsonStr = _extractJson(text);
       final json = jsonDecode(jsonStr) as Map<String, dynamic>;
-      return NutrimentsEntity(
-        energyKcal: _number(json['energy_kcal']),
-        fat: _number(json['fat']),
-        saturatedFat: _number(json['saturated_fat']),
-        transFat: _number(json['trans_fat']),
-        carbohydrates: _number(json['carbohydrates']),
-        sugars: _number(json['sugars']),
-        salt: _number(json['salt']),
-        fiber: _number(json['fiber']),
-        proteins: _number(json['protein']),
+      final nutrition = _safeMap(json['nutrition']);
+      // Backward-compat: older prompt returned a flat schema. Detect that
+      // by checking whether energy_kcal lives at the top level.
+      final flatTopLevel = json['energy_kcal'] != null && nutrition.isEmpty;
+      final src = flatTopLevel ? json : nutrition;
+      final nutriments = NutrimentsEntity(
+        energyKcal: _number(src['energy_kcal']),
+        fat: _number(src['fat']),
+        saturatedFat: _number(src['saturated_fat']),
+        transFat: _number(src['trans_fat']),
+        carbohydrates: _number(src['carbohydrates']),
+        sugars: _number(src['sugars']),
+        salt: _number(src['salt']),
+        fiber: _number(src['fiber']),
+        proteins: _number(src['protein']),
+      );
+      final portion = _safeInt(json['portion_grams']);
+      return RecalcResult(
+        nutriments: nutriments,
+        portionGrams: portion > 0 ? portion : 0,
       );
     } catch (e) {
       debugPrint('[AnthropicAI] recalc JSON parse failed: $e');
@@ -542,42 +573,84 @@ Kurallar:
 }
 ''';
 
-String _recalcNutritionPrompt(String ingredientsText) => '''
-Aşağıdaki içerik listesine göre 100 g kişi porsiyonu için tahmini besin değerlerini hesapla.
+String _recalcNutritionPrompt({
+  required String ingredientsText,
+  String? portionNote,
+}) {
+  final hasNote = portionNote != null && portionNote.trim().isNotEmpty;
+  final noteSection = hasNote
+      ? '''
 
+Kullanıcı notu (porsiyon hakkında):
+${portionNote.trim()}
+
+Bu nota öncelik ver. "Yarım porsiyon" → tek kişilik porsiyonun yarısı.
+"Tabak yarı kalmış / full tabak gibi hesapla" → orijinal tam porsiyonu kullan.
+"300 g yedim" gibi açık gramaj varsa onu kullan.
+Belirsizse en makul yorumu seç ve `portion_grams` alanını ona göre döndür.
+'''
+      : '''
+
+Kullanıcı porsiyon notu vermedi. İçeriğe uygun makul bir tek kişilik
+porsiyon belirle ve onu hem `portion_grams`'ta dön hem değerleri ona göre
+hesapla.
+''';
+
+  return '''
+Aşağıdaki içerik listesine göre tek kişilik bir öğünün tahmini besin
+değerlerini hesapla.
+$noteSection
 İçerik:
 $ingredientsText
 
-Kurallar:
-- Değerler toplam 100 g kişi porsiyonu içindir
-- Bulamadığın değerleri 0 döndür
-- Sadece JSON döndür, açıklama yazma
+Genel kurallar:
+- `portion_grams` o porsiyonun toplam gramajıdır (yiyecek + içecek dahil).
+- Nutrition değerleri o portion_grams için TOPLAM değerdir, 100 g için değil.
+- Bulamadığın değerleri 0 döndür.
+- Sadece JSON döndür, açıklama veya markdown yazma.
 
 Şema:
 {
-  "energy_kcal": number,
-  "fat": number,
-  "saturated_fat": number,
-  "trans_fat": number,
-  "carbohydrates": number,
-  "sugars": number,
-  "salt": number,
-  "fiber": number,
-  "protein": number
+  "portion_grams": number,
+  "nutrition": {
+    "energy_kcal": number,
+    "fat": number,
+    "saturated_fat": number,
+    "trans_fat": number,
+    "carbohydrates": number,
+    "sugars": number,
+    "salt": number,
+    "fiber": number,
+    "protein": number
+  }
 }
 ''';
+}
 
 const String _mealAnalysisPrompt = '''
 Bu görseldeki öğünü analiz et.
 
 Kurallar:
 - Görselde görünen yiyecek/içecekleri tahmin et.
-- Fotoğrafta büyük tabak, tencere, tepsi veya paylaşımlı kap varsa tamamının yeneceğini varsayma.
-- Varsayılan kişi porsiyonu toplam 100 g kabul edilir.
-- "portion_grams" alanını varsayılan olarak 100 döndür.
-- Kalori ve besin değerleri bu 100 g kişi porsiyonu içindir; tüm görünen yemek için değildir.
+- TEK KİŞİLİK porsiyonu hesapla. Büyük tabak / tencere / paylaşımlı kap
+  görsen bile tamamının tek kişi tarafından yeneceğini varsayma.
+- Porsiyonu yiyecek türüne göre makul aralıkta seç:
+  * Ana yemek (et, balık, tavuk vs.): 150–250 g
+  * Pilav / makarna / kuru baklagil: 150–250 g
+  * Çorba: 250–350 ml
+  * Salata / garnitür: 80–150 g
+  * Sandviç / dürüm / börek: 150–250 g
+  * Tatlı / pasta: 80–150 g
+  * Atıştırmalık / meze: 30–80 g
+  * Belirsizse 200 g civarı tahmin et.
+- Kullanıcı sonradan "Yeniden Hesapla" ile porsiyon notu yazabileceği için
+  bu ilk tahminde **kesin bir 100 g sabiti dayatma**; fotoğrafta görünene
+  ve yiyecek tipine bak.
+- `portion_grams` seçtiğin porsiyonun toplam gramajıdır.
+- `nutrition` alanındaki tüm değerler o porsiyon içindir (100 g referansı
+  değildir).
 - İçindekiler/tahmini bileşenleri Türkçe düz metin olarak yaz.
-- Görsel belirsizse yine en iyi tahmini yap, confidence değerini düşük ver.
+- Görsel belirsizse yine en iyi tahmini yap, `confidence`'i düşük ver.
 - Bulamadığın besin değerlerini 0 döndür.
 - Sadece JSON döndür, açıklama veya markdown yazma.
 

@@ -17,6 +17,11 @@ class ScanHistoryWithProduct {
   final String? ingredientsText;
   final double? currentHpScore;
 
+  /// HP Score algorithm version the cached row was scored under. Used by
+  /// the background enrichment to detect entries that need a re-resolve
+  /// after the formula bumps (e.g. v2 → v3 sweet-treat penalty).
+  final int? hpScoreVersion;
+
   const ScanHistoryWithProduct({
     required this.id,
     required this.barcode,
@@ -27,6 +32,7 @@ class ScanHistoryWithProduct {
     this.imageUrl,
     this.ingredientsText,
     this.currentHpScore,
+    this.hpScoreVersion,
   });
 
   /// Returns HP score adjusted for critical ingredients, matching
@@ -37,7 +43,9 @@ class ScanHistoryWithProduct {
       return baseScore;
     }
     final t = ScoreConstants.normalizeTurkish(ingredientsText!);
-    final hasCritical = ScoreConstants.criticalPatterns.any((p) => t.contains(p));
+    final hasCritical = ScoreConstants.criticalPatterns.any(
+      (p) => t.contains(p),
+    );
     if (hasCritical) return 10.0;
     return baseScore;
   }
@@ -77,9 +85,11 @@ final class ScanHistoryLocalDataSourceImpl
   }) async {
     try {
       // Önce aynı barkoda sahip kayıt var mı kontrol et
-      final existing = await (_db.select(_db.scanHistory)
-            ..where((t) => t.userId.equals(userId) & t.barcode.equals(barcode)))
-          .getSingleOrNull();
+      final existing =
+          await (_db.select(_db.scanHistory)..where(
+                (t) => t.userId.equals(userId) & t.barcode.equals(barcode),
+              ))
+              .getSingleOrNull();
 
       if (existing != null) {
         // Varsa, sadece tarihini güncelle
@@ -88,7 +98,9 @@ final class ScanHistoryLocalDataSourceImpl
             .write(ScanHistoryCompanion(scannedAt: Value(DateTime.now())));
       } else {
         // Yoksa yeni kayıt ekle
-        await _db.into(_db.scanHistory).insert(
+        await _db
+            .into(_db.scanHistory)
+            .insert(
               ScanHistoryCompanion.insert(
                 id: _uuid.v4(),
                 userId: userId,
@@ -137,6 +149,7 @@ final class ScanHistoryLocalDataSourceImpl
           imageUrl: product?.imageUrl,
           ingredientsText: product?.ingredientsText,
           currentHpScore: product?.hpScore,
+          hpScoreVersion: product?.hpScoreVersion,
         );
       }).toList();
     } catch (e) {
@@ -165,7 +178,11 @@ final class ScanHistoryLocalDataSourceImpl
   }
 
   @override
-  Future<void> updateScan(String id, {String? productName, String? barcode}) async {
+  Future<void> updateScan(
+    String id, {
+    String? productName,
+    String? barcode,
+  }) async {
     try {
       await (_db.update(_db.scanHistory)..where((t) => t.id.equals(id))).write(
         ScanHistoryCompanion(

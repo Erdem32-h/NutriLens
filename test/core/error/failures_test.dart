@@ -56,7 +56,10 @@ void main() {
     test('has default message', () {
       const failure = NetworkFailure();
 
-      expect(failure.message, 'No internet connection. Please check your network.');
+      expect(
+        failure.message,
+        'No internet connection. Please check your network.',
+      );
     });
 
     test('accepts custom message', () {

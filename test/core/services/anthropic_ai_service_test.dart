@@ -117,8 +117,10 @@ Alerjenler: Gluten, fındık, süt.
       expect(result.ingredientsText, isNull);
     });
 
-    test('normalizes oversized visible portions to a 100g personal serving', () {
-      final result = AnthropicAiService.parseMealAnalysisResponseText('''
+    test(
+      'normalizes oversized visible portions to a 100g personal serving',
+      () {
+        final result = AnthropicAiService.parseMealAnalysisResponseText('''
 {
   "food_name": "Tencere yemeği",
   "portion_grams": 500,
@@ -139,12 +141,111 @@ Alerjenler: Gluten, fındık, süt.
 }
 ''');
 
+        expect(result, isNotNull);
+        expect(result!.portionGrams, 100);
+        expect(result.nutriments.energyKcal, 150);
+        expect(result.nutriments.fat, 7);
+        expect(result.nutriments.salt, 0.8);
+        expect(result.nutriments.proteins, 8);
+      },
+    );
+  });
+
+  group('AnthropicAiService.parseRecalcResponseText', () {
+    test('parses v3 schema with nested nutrition + portion_grams', () {
+      final result = AnthropicAiService.parseRecalcResponseText('''
+{
+  "portion_grams": 250,
+  "nutrition": {
+    "energy_kcal": 380,
+    "fat": 12,
+    "saturated_fat": 4,
+    "trans_fat": 0,
+    "carbohydrates": 50,
+    "sugars": 8,
+    "salt": 1.2,
+    "fiber": 5,
+    "protein": 20
+  }
+}
+''');
+
       expect(result, isNotNull);
-      expect(result!.portionGrams, 100);
-      expect(result.nutriments.energyKcal, 150);
-      expect(result.nutriments.fat, 7);
-      expect(result.nutriments.salt, 0.8);
-      expect(result.nutriments.proteins, 8);
+      expect(result!.portionGrams, 250);
+      expect(result.nutriments.energyKcal, 380);
+      expect(result.nutriments.fat, 12);
+      expect(result.nutriments.proteins, 20);
+    });
+
+    test('falls back to legacy flat schema (backward compat)', () {
+      // Pre-v3 prompt put nutrition fields at the top level. The
+      // parser keeps reading that shape so an old cached response
+      // doesn't crash the meal screen.
+      final result = AnthropicAiService.parseRecalcResponseText('''
+{
+  "energy_kcal": 300,
+  "fat": 10,
+  "saturated_fat": 3,
+  "trans_fat": 0,
+  "carbohydrates": 40,
+  "sugars": 5,
+  "salt": 1,
+  "fiber": 4,
+  "protein": 15
+}
+''');
+
+      expect(result, isNotNull);
+      expect(
+        result!.portionGrams,
+        0,
+        reason: 'flat schema has no portion_grams — caller falls back',
+      );
+      expect(result.nutriments.energyKcal, 300);
+      expect(result.nutriments.proteins, 15);
+    });
+
+    test('handles fenced ```json blocks', () {
+      final result = AnthropicAiService.parseRecalcResponseText('''
+Some preamble Claude sometimes adds:
+```json
+{
+  "portion_grams": 150,
+  "nutrition": {"energy_kcal": 200}
+}
+```
+''');
+
+      expect(result, isNotNull);
+      expect(result!.portionGrams, 150);
+      expect(result.nutriments.energyKcal, 200);
+    });
+
+    test('returns null on unparseable garbage', () {
+      expect(AnthropicAiService.parseRecalcResponseText(''), isNull);
+      expect(
+        AnthropicAiService.parseRecalcResponseText('not json at all'),
+        isNull,
+      );
+    });
+
+    test('accepts comma-decimal European numbers as strings', () {
+      // Claude occasionally emits "12,5" for fat values when the
+      // source nutrition label uses comma decimals.
+      final result = AnthropicAiService.parseRecalcResponseText('''
+{
+  "portion_grams": 100,
+  "nutrition": {
+    "energy_kcal": "412",
+    "fat": "12,5",
+    "saturated_fat": "3,2"
+  }
+}
+''');
+      expect(result, isNotNull);
+      expect(result!.nutriments.energyKcal, 412);
+      expect(result.nutriments.fat, 12.5);
+      expect(result.nutriments.saturatedFat, 3.2);
     });
   });
 

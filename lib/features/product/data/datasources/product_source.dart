@@ -33,8 +33,8 @@ class ProductResolver {
   final List<ProductSource> _sources;
 
   ProductResolver(List<ProductSource> sources)
-      : _sources = List.of(sources)
-          ..sort((a, b) => a.priority.compareTo(b.priority));
+    : _sources = List.of(sources)
+        ..sort((a, b) => a.priority.compareTo(b.priority));
 
   Future<ProductResolveResult> resolve(String barcode) async {
     final triedSources = <String>[];
@@ -44,7 +44,8 @@ class ProductResolver {
       try {
         final product = await source.resolve(barcode).timeout(source.timeout);
         if (product != null) {
-          final hasIngredients = product.ingredientsText != null &&
+          final hasIngredients =
+              product.ingredientsText != null &&
               product.ingredientsText!.isNotEmpty;
           return ProductResolveResult(
             product: product,

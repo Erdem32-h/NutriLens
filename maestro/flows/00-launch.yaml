@@ -1,0 +1,13 @@
+# Cold-launch smoke test.
+# Goal: the app reaches the first user-visible screen within 30 seconds
+# and does not crash. We deliberately don't assert the auth state
+# because that depends on whether the test device has a cached session
+# — the flow tolerates either Login or Meals as the landing screen.
+appId: com.nutrilensapp.android
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- assertVisible:
+    text: ".*"   # any text means the UI rendered
+- takeScreenshot: 00-launched

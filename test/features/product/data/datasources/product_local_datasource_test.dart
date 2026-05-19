@@ -18,30 +18,34 @@ void main() {
     await db.close();
   });
 
-  test('treats cached product as stale when score algorithm version is old',
-      () async {
-    await dataSource.cacheProduct(
-      const ProductEntity(
-        barcode: '8690000000001',
-        productName: 'Old Score Product',
-        hpScore: 90,
-        hpScoreVersion: ScoreConstants.hpScoreAlgorithmVersion - 1,
-      ),
-    );
+  test(
+    'treats cached product as stale when score algorithm version is old',
+    () async {
+      await dataSource.cacheProduct(
+        const ProductEntity(
+          barcode: '8690000000001',
+          productName: 'Old Score Product',
+          hpScore: 90,
+          hpScoreVersion: ScoreConstants.hpScoreAlgorithmVersion - 1,
+        ),
+      );
 
-    expect(await dataSource.isStale('8690000000001'), isTrue);
-  });
+      expect(await dataSource.isStale('8690000000001'), isTrue);
+    },
+  );
 
-  test('keeps freshly cached product current when score version matches',
-      () async {
-    await dataSource.cacheProduct(
-      const ProductEntity(
-        barcode: '8690000000001',
-        productName: 'Current Score Product',
-        hpScore: 90,
-      ),
-    );
+  test(
+    'keeps freshly cached product current when score version matches',
+    () async {
+      await dataSource.cacheProduct(
+        const ProductEntity(
+          barcode: '8690000000001',
+          productName: 'Current Score Product',
+          hpScore: 90,
+        ),
+      );
 
-    expect(await dataSource.isStale('8690000000001'), isFalse);
-  });
+      expect(await dataSource.isStale('8690000000001'), isFalse);
+    },
+  );
 }

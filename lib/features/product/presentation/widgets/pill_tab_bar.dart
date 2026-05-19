@@ -42,10 +42,7 @@ class PillTabBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                     border: isActive
                         ? Border(
-                            bottom: BorderSide(
-                              color: colors.primary,
-                              width: 2,
-                            ),
+                            bottom: BorderSide(color: colors.primary, width: 2),
                           )
                         : null,
                     boxShadow: isActive

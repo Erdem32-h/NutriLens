@@ -19,10 +19,7 @@ class ImagePrepOptions {
   final int maxEdge;
   final int jpegQuality;
 
-  const ImagePrepOptions({
-    required this.maxEdge,
-    required this.jpegQuality,
-  });
+  const ImagePrepOptions({required this.maxEdge, required this.jpegQuality});
 }
 
 /// Decode → bake EXIF orientation → downscale → re-encode as JPEG → base64.
@@ -42,14 +39,20 @@ class ImagePrepOptions {
 /// 1600 px on the long edge keeps package OCR payloads small enough for quick
 /// upload while preserving readable label text for the direct AI pass.
 Future<PreparedOcrImage> prepareOcrImage(Uint8List bytes) {
-  return _prepareImage(bytes, const ImagePrepOptions(maxEdge: 1600, jpegQuality: 85));
+  return _prepareImage(
+    bytes,
+    const ImagePrepOptions(maxEdge: 1600, jpegQuality: 85),
+  );
 }
 
 /// Meal analysis benefits from a clearer scene than label OCR: food boundaries,
 /// side dishes, and texture cues are visual rather than text-only. Keep the
 /// camera-capped 2048 px long edge instead of shrinking it again.
 Future<PreparedOcrImage> prepareMealAnalysisImage(Uint8List bytes) {
-  return _prepareImage(bytes, const ImagePrepOptions(maxEdge: 2048, jpegQuality: 90));
+  return _prepareImage(
+    bytes,
+    const ImagePrepOptions(maxEdge: 2048, jpegQuality: 90),
+  );
 }
 
 Future<PreparedOcrImage> _prepareImage(
@@ -76,8 +79,9 @@ PreparedOcrImage _prepareOcrImageSync(_ImagePrepJob job) {
     if (decoded != null) {
       final upright = img.bakeOrientation(decoded);
       final maxEdge = job.options.maxEdge;
-      final longestSide =
-          upright.width > upright.height ? upright.width : upright.height;
+      final longestSide = upright.width > upright.height
+          ? upright.width
+          : upright.height;
       final resized = longestSide > maxEdge
           ? img.copyResize(
               upright,

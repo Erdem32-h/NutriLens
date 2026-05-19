@@ -6,14 +6,13 @@ class Blacklist extends Table {
   TextColumn get userId => text()();
   TextColumn get barcode => text()();
   TextColumn get reason => text().nullable()();
-  DateTimeColumn get addedAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get addedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};
 
   @override
   List<Set<Column>> get uniqueKeys => [
-        {userId, barcode},
-      ];
+    {userId, barcode},
+  ];
 }

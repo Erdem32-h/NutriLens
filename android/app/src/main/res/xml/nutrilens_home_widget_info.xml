@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Widget metadata. Keep attributes within API 23+ baseline so older
+  emulators don't fail to parse this file:
+  - `targetCellWidth` / `targetCellHeight` (API 31+) are omitted.
+  - `previewLayout` (API 31+) is omitted; we still ship a preview via
+    the older `previewImage` attribute (a static drawable).
+  - `updatePeriodMillis` floor is 30 min on Android; we ask for 2h.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="110dp"
+    android:updatePeriodMillis="7200000"
+    android:initialLayout="@layout/nutrilens_home_widget"
+    android:previewImage="@mipmap/ic_launcher"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:description="@string/widget_description" />

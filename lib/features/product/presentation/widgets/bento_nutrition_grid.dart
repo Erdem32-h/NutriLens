@@ -32,7 +32,8 @@ class BentoNutritionGrid extends StatelessWidget {
     final l10n = context.l10n;
     final colors = context.colors;
 
-    final hasData = nutriments.energyKcal != null ||
+    final hasData =
+        nutriments.energyKcal != null ||
         nutriments.fat != null ||
         nutriments.sugars != null;
 
@@ -48,10 +49,7 @@ class BentoNutritionGrid extends StatelessWidget {
           child: Center(
             child: Text(
               l10n.noNutrientData,
-              style: TextStyle(
-                fontSize: 14,
-                color: colors.textMuted,
-              ),
+              style: TextStyle(fontSize: 14, color: colors.textMuted),
             ),
           ),
         ),
@@ -66,10 +64,7 @@ class BentoNutritionGrid extends StatelessWidget {
       child: Column(
         children: [
           // Calorie card (full width)
-          _CalorieCard(
-            kcal: kcal,
-            percent: kcalPercent,
-          ),
+          _CalorieCard(kcal: kcal, percent: kcalPercent),
 
           const SizedBox(height: 12),
 
@@ -315,9 +310,7 @@ class _MacroCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.surfaceCard,
         borderRadius: BorderRadius.circular(24),
-        border: Border(
-          bottom: BorderSide(color: riskColor, width: 3),
-        ),
+        border: Border(bottom: BorderSide(color: riskColor, width: 3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -55,8 +55,7 @@ class AdditiveEntity extends Equatable {
   }
 
   /// Returns true when the additive is banned by Turkish Codex or EFSA.
-  bool get isBanned =>
-      turkishCodexStatus == 'banned' || efsaStatus == 'banned';
+  bool get isBanned => turkishCodexStatus == 'banned' || efsaStatus == 'banned';
 
   AdditiveEntity copyWith({
     String? id,
@@ -94,19 +93,19 @@ class AdditiveEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        eNumber,
-        nameEn,
-        nameTr,
-        category,
-        riskLevel,
-        riskLabel,
-        descriptionEn,
-        descriptionTr,
-        efsaStatus,
-        turkishCodexStatus,
-        isVegan,
-        isVegetarian,
-        isHalal,
-      ];
+    id,
+    eNumber,
+    nameEn,
+    nameTr,
+    category,
+    riskLevel,
+    riskLabel,
+    descriptionEn,
+    descriptionTr,
+    efsaStatus,
+    turkishCodexStatus,
+    isVegan,
+    isVegetarian,
+    isHalal,
+  ];
 }

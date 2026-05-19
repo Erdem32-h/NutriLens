@@ -67,7 +67,6 @@ class AlternativePlaceholder extends StatelessWidget {
               ],
             ),
           ),
-
         ],
       ),
     );

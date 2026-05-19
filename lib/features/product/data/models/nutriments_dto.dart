@@ -21,10 +21,7 @@ abstract final class NutrimentsDto {
         Nutrient.saturatedFat,
         PerSize.oneHundredGrams,
       ),
-      transFat: nutriments.getValue(
-        Nutrient.transFat,
-        PerSize.oneHundredGrams,
-      ),
+      transFat: nutriments.getValue(Nutrient.transFat, PerSize.oneHundredGrams),
       carbohydrates: nutriments.getValue(
         Nutrient.carbohydrates,
         PerSize.oneHundredGrams,
@@ -32,10 +29,7 @@ abstract final class NutrimentsDto {
       sugars: nutriments.getValue(Nutrient.sugars, PerSize.oneHundredGrams),
       salt: nutriments.getValue(Nutrient.salt, PerSize.oneHundredGrams),
       fiber: nutriments.getValue(Nutrient.fiber, PerSize.oneHundredGrams),
-      proteins: nutriments.getValue(
-        Nutrient.proteins,
-        PerSize.oneHundredGrams,
-      ),
+      proteins: nutriments.getValue(Nutrient.proteins, PerSize.oneHundredGrams),
     );
   }
 

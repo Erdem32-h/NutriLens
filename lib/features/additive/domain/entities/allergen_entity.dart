@@ -37,11 +37,11 @@ class AllergenEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        nameEn,
-        nameTr,
-        category,
-        iconName,
-        severityNote,
-      ];
+    id,
+    nameEn,
+    nameTr,
+    category,
+    iconName,
+    severityNote,
+  ];
 }

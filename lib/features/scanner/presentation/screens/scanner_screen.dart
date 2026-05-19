@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/utils/barcode_validator.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -60,8 +61,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   String? _lastBarcode;
   bool _isNavigating = false;
 
-  /// 0 = Barcode mode, 1 = AI Analysis mode
-  int _scanMode = 0;
+  /// 0 = Barcode mode, 1 = AI Analysis mode.
+  /// Default = AI analysis: most users open the scanner to log a meal,
+  /// barcode scanning is the secondary flow.
+  int _scanMode = 1;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -111,12 +114,12 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     switch (state) {
       case AppLifecycleState.resumed:
-        // Only resume scanning if we're on the barcode tab and not
-        // waiting on a pushed navigation. `inactive` fires any time a
-        // system dialog/sheet appears, so a benign interruption (e.g.
-        // permission prompt finishing) shouldn't wake scanning when the
-        // user has already switched to AI mode.
-        if (_scanMode == 0 && !_isNavigating) {
+        // Resume the camera in both modes — in barcode mode for decoding,
+        // in AI mode for the live viewfinder so the user can frame their
+        // food before tapping capture. `_handleBarcode` ignores frames
+        // when `_scanMode != 0`, so leaving the stream attached in AI
+        // mode wastes only a few % CPU on the camera passthrough.
+        if (!_isNavigating) {
           _startScanning();
         }
         break;
@@ -150,8 +153,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     debugPrint('[Scanner] scanned: "$value" (format: ${barcode.format})');
 
-    // Reject URLs and non-barcode values that would break routing
-    if (!_isValidBarcode(value)) {
+    // Reject URLs and non-barcode values that would break routing.
+    // Logic lives in `BarcodeValidator` so it can be unit-tested.
+    if (!BarcodeValidator.isValidBarcode(value)) {
       debugPrint('[Scanner] rejected — not a valid barcode');
       HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -216,50 +220,23 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     });
   }
 
-  /// Returns true if the value looks like a product barcode AND, for EAN/UPC
-  /// lengths, the modulo-10 check digit matches. ~90% of random digit
-  /// scrambles fail this check — it doesn't catch every misread (two
-  /// digits can swap into another valid GTIN by chance) but it does
-  /// reject most pixel-level scanner errors before they hit the DB.
-  bool _isValidBarcode(String value) {
-    if (value.contains('://') || value.contains('/')) return false;
-    if (value.startsWith('http') || value.startsWith('www.')) return false;
-    // Only run check-digit validation on the formats that define one.
-    // QR/code128/code39 carry arbitrary text — accept as-is.
-    final isNumericOnly = RegExp(r'^\d+$').hasMatch(value);
-    if (!isNumericOnly) return true;
-    final len = value.length;
-    if (len == 8 || len == 12 || len == 13 || len == 14) {
-      return _hasValidGtinCheckDigit(value);
-    }
-    return true;
-  }
-
-  /// GS1 mod-10 check digit validation, valid for EAN-8, UPC-A (12),
-  /// EAN-13 and ITF-14 alike. Rightmost digit is the check; remaining
-  /// digits weighted 3,1,3,1,... from the right just before the check
-  /// digit. Sum mod 10, then (10 - r) mod 10 must equal the check.
-  static bool _hasValidGtinCheckDigit(String value) {
-    final digits = value.codeUnits;
-    final check = digits.last - 0x30;
-    var sum = 0;
-    for (var i = 0; i < digits.length - 1; i++) {
-      final d = digits[digits.length - 2 - i] - 0x30;
-      sum += d * (i.isEven ? 3 : 1);
-    }
-    final expected = (10 - (sum % 10)) % 10;
-    return expected == check;
-  }
-
   Future<void> _captureForAi() async {
     try {
+      // Release the camera handle before image_picker opens the system
+      // camera UI — iOS gets unhappy if two clients hold the device.
+      _stopScanning();
       final xFile = await _picker.pickImage(
         source: ImageSource.camera,
         maxWidth: 2048,
         maxHeight: 2048,
         imageQuality: 95,
       );
-      if (xFile == null || !mounted) return;
+      if (xFile == null) {
+        // User cancelled the camera — bring the viewfinder back.
+        if (mounted) _startScanning();
+        return;
+      }
+      if (!mounted) return;
 
       final Uint8List imageBytes = await xFile.readAsBytes();
 
@@ -281,24 +258,23 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
       if (!mounted) return;
       await context.push('/food-result', extra: imageBytes);
+      // Returned from food-result — restore the viewfinder.
+      if (mounted) _startScanning();
     } catch (e) {
       debugPrint('[Scanner] AI capture error: $e');
+      if (mounted) _startScanning();
     }
   }
 
-  /// Toggle scanning mode. In AI mode we stop the camera because the
-  /// capture button launches `image_picker` (which uses the system
-  /// camera). Leaving `MobileScanner` streaming frames while the user
-  /// hasn't tapped capture is pure wasted CPU — the decoder was already
-  /// discarding results for us via the `_scanMode != 0` guard.
+  /// Toggle scanning mode. Camera stays running in both modes so the user
+  /// always sees the live viewfinder — in AI mode it doubles as a "frame
+  /// the food" preview, in barcode mode it feeds the decoder. The mode
+  /// only controls which overlay/button is shown and whether decoded
+  /// barcodes are acted on.
   void _setScanMode(int mode) {
     if (_scanMode == mode) return;
     setState(() => _scanMode = mode);
-    if (mode == 0) {
-      _startScanning();
-    } else {
-      _stopScanning();
-    }
+    _startScanning();
   }
 
   @override

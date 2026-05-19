@@ -155,13 +155,21 @@ class IngredientsOcrService {
   /// like "Sodyum Metabisulfit" against the DB entry "Sodyum Metabisülfit".
   String _normalizeForMatch(String input) {
     const table = {
-      'ı': 'i', 'İ': 'i', 'I': 'i',
-      'ü': 'u', 'Ü': 'u',
-      'ö': 'o', 'Ö': 'o',
-      'ç': 'c', 'Ç': 'c',
-      'ş': 's', 'Ş': 's',
-      'ğ': 'g', 'Ğ': 'g',
-      'ə': 'e', 'Ə': 'e',
+      'ı': 'i',
+      'İ': 'i',
+      'I': 'i',
+      'ü': 'u',
+      'Ü': 'u',
+      'ö': 'o',
+      'Ö': 'o',
+      'ç': 'c',
+      'Ç': 'c',
+      'ş': 's',
+      'Ş': 's',
+      'ğ': 'g',
+      'Ğ': 'g',
+      'ə': 'e',
+      'Ə': 'e',
     };
     final buf = StringBuffer();
     for (final rune in input.runes) {
@@ -169,10 +177,7 @@ class IngredientsOcrService {
       buf.write(table[ch] ?? ch.toLowerCase());
     }
     // Collapse any non-letter/non-digit run into a single space
-    return buf
-        .toString()
-        .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
-        .trim();
+    return buf.toString().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim();
   }
 
   Set<String> _extractECodes(String text) {
@@ -180,9 +185,7 @@ class IngredientsOcrService {
 
     // Pattern: E followed by 3-4 digits and optional letter suffix
     // Handles: E471, E160a, E 471, E-471
-    final pattern = RegExp(
-      r'[Ee]\s?-?\s?(\d{3,4}\s?[a-zA-Z]?)',
-    );
+    final pattern = RegExp(r'[Ee]\s?-?\s?(\d{3,4}\s?[a-zA-Z]?)');
 
     for (final match in pattern.allMatches(text)) {
       final raw = match.group(0) ?? '';

@@ -16,14 +16,13 @@ void main() {
     const oldUser = UserEntity(id: 'old-user', email: 'old@example.com');
     const newUser = UserEntity(id: 'new-user', email: 'new@example.com');
 
-    when(() => repository.authStateChanges())
-        .thenAnswer((_) => authState.stream);
+    when(
+      () => repository.authStateChanges(),
+    ).thenAnswer((_) => authState.stream);
     when(() => repository.currentUser).thenReturn(oldUser);
 
     final container = ProviderContainer(
-      overrides: [
-        authRepositoryProvider.overrideWithValue(repository),
-      ],
+      overrides: [authRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);
     addTearDown(authState.close);
@@ -31,15 +30,11 @@ void main() {
     expect(container.read(currentUserProvider), oldUser);
 
     final emitted = Completer<UserEntity?>();
-    container.listen<AsyncValue<UserEntity?>>(
-      authStateProvider,
-      (_, next) {
-        next.whenData((user) {
-          if (!emitted.isCompleted) emitted.complete(user);
-        });
-      },
-      fireImmediately: true,
-    );
+    container.listen<AsyncValue<UserEntity?>>(authStateProvider, (_, next) {
+      next.whenData((user) {
+        if (!emitted.isCompleted) emitted.complete(user);
+      });
+    }, fireImmediately: true);
     await Future<void>.delayed(Duration.zero);
     authState.add(newUser);
     await expectLater(emitted.future, completion(newUser));

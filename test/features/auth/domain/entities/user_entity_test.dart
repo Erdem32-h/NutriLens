@@ -47,10 +47,12 @@ void main() {
     });
 
     test('props contains all fields', () {
-      expect(
-        user.props,
-        ['user-123', 'test@example.com', 'Test User', 'https://example.com/avatar.png'],
-      );
+      expect(user.props, [
+        'user-123',
+        'test@example.com',
+        'Test User',
+        'https://example.com/avatar.png',
+      ]);
     });
   });
 

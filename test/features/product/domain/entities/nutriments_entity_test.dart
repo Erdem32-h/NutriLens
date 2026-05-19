@@ -76,10 +76,17 @@ void main() {
     });
 
     test('props contains all fields in order', () {
-      expect(
-        nutriments.props,
-        [250.0, 10.5, 3.2, 0.1, 34.0, 12.0, 1.5, 4.0, 8.0],
-      );
+      expect(nutriments.props, [
+        250.0,
+        10.5,
+        3.2,
+        0.1,
+        34.0,
+        12.0,
+        1.5,
+        4.0,
+        8.0,
+      ]);
     });
   });
 

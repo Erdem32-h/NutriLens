@@ -51,14 +51,14 @@ class NutrimentsEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        energyKcal,
-        fat,
-        saturatedFat,
-        transFat,
-        carbohydrates,
-        sugars,
-        salt,
-        fiber,
-        proteins,
-      ];
+    energyKcal,
+    fat,
+    saturatedFat,
+    transFat,
+    carbohydrates,
+    sugars,
+    salt,
+    fiber,
+    proteins,
+  ];
 }

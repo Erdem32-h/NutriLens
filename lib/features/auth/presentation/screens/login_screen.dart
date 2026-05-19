@@ -31,16 +31,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-    await ref.read(authNotifierProvider.notifier).signInWithEmail(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
+    await ref
+        .read(authNotifierProvider.notifier)
+        .signInWithEmail(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
     if (mounted) {
       final authState = ref.read(authNotifierProvider);
       if (authState.hasError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(authState.error.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(authState.error.toString())));
       } else {
         context.goNamed(RouteNames.meals);
       }
@@ -98,7 +100,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Row(
                       children: [
                         Container(
-                          width: 44, height: 44,
+                          width: 44,
+                          height: 44,
                           decoration: BoxDecoration(
                             gradient: context.colors.primaryGradient,
                             borderRadius: BorderRadius.circular(12),
@@ -204,14 +207,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         width: double.infinity,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: isLoading ? null : context.colors.primaryGradient,
+                          gradient: isLoading
+                              ? null
+                              : context.colors.primaryGradient,
                           color: isLoading ? context.colors.surfaceCard2 : null,
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: isLoading
                               ? []
                               : [
                                   BoxShadow(
-                                    color: context.colors.primary.withValues(alpha: 0.3),
+                                    color: context.colors.primary.withValues(
+                                      alpha: 0.3,
+                                    ),
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
                                   ),
@@ -220,7 +227,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         alignment: Alignment.center,
                         child: isLoading
                             ? SizedBox(
-                                width: 22, height: 22,
+                                width: 22,
+                                height: 22,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
                                   color: context.colors.primary,

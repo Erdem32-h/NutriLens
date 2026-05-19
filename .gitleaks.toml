@@ -1,0 +1,94 @@
+# NutriLens gitleaks configuration.
+#
+# Inherits the upstream defaults (AWS, GCP, GitHub PATs, Slack, JWT,
+# generic high-entropy detectors) and adds project-specific rules for
+# the third-party APIs we actually use. False positives are filtered
+# via the `allowlist` block at the bottom.
+#
+# Run locally:
+#   gitleaks detect --source . --config .gitleaks.toml --verbose
+#
+# Pre-commit hook:
+#   gitleaks protect --staged --config .gitleaks.toml
+
+[extend]
+# Use upstream defaults as the base; our rules add to them.
+useDefault = true
+
+# ── Project-specific rules ───────────────────────────────────────────
+
+[[rules]]
+id = "supabase-anon-key"
+description = "Supabase anon/service key (JWT format)"
+# Supabase keys are JWTs with `iss: supabase`. The encoded payload
+# starts with `eyJ` (JSON `{"`). Detect long-ish JWTs that show up
+# alongside the literal string "supabase".
+regex = '''eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}'''
+keywords = ["supabase", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"]
+
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic API key"
+# Format: sk-ant-api03-… (current public format as of 2026)
+regex = '''sk-ant-(?:api|adm)\d{2}-[A-Za-z0-9_-]{30,}'''
+keywords = ["anthropic", "ANTHROPIC_API_KEY", "sk-ant-"]
+
+[[rules]]
+id = "revenuecat-key"
+description = "RevenueCat public SDK key"
+# Public iOS/Android keys: `appl_xxxxxxxxxxxx` or `goog_xxxxxxxxxxxx`.
+# These are NOT secret per RevenueCat policy (they're shipped in the
+# app binary anyway) but flagging on accidental commits to a public
+# repo still helps because it nudges devs to remember rotation.
+regex = '''(?:appl|goog)_[A-Za-z0-9]{20,}'''
+keywords = ["revenuecat", "RC_API_KEY", "appl_", "goog_"]
+
+[[rules]]
+id = "admob-app-id"
+description = "AdMob real App ID (not Google's test ID)"
+# Format: ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY
+# Excludes the official Google test ID `ca-app-pub-3940256099942544~…`
+# via the allowlist below.
+regex = '''ca-app-pub-\d{16}~\d{10}'''
+keywords = ["ADMOB_APP_ID", "GADApplicationIdentifier", "ca-app-pub-"]
+
+[[rules]]
+id = "google-mobile-ads-unit"
+description = "AdMob ad unit ID"
+# Format: ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY  (slash, not tilde)
+regex = '''ca-app-pub-\d{16}/\d{10}'''
+keywords = ["bannerAdUnitId", "rewardedAdUnitId"]
+
+# ── Global allowlist ─────────────────────────────────────────────────
+
+[allowlist]
+description = "Known-safe values, test artifacts, generated files"
+paths = [
+  # Generated code is noisy and never contains real secrets.
+  '''\.g\.dart$''',
+  '''\.freezed\.dart$''',
+  '''\.gr\.dart$''',
+  '''lib/l10n/generated/.*''',
+  '''ios/Pods/.*''',
+  '''build/.*''',
+  # Codemagic build logs / debug-info dumps
+  '''debug-info/.*''',
+  '''logcat\.txt$''',
+  # Documentation can legally reference test IDs.
+  '''ios/Flutter/.*\.xcconfig$''',
+  '''docs/.*\.html?$''',
+  '''ios/NutriLensHomeWidget/README\.md$''',
+  '''.*\.example$''',
+  '''\.env\.example$''',
+  '''README.*\.md$''',
+]
+regexes = [
+  # Google's official AdMob iOS test App ID — we ship this in
+  # Release.xcconfig as the safe fallback. Not a leak.
+  '''ca-app-pub-3940256099942544~1458002511''',
+  # Google's official AdMob test unit IDs (banner + rewarded, both
+  # platforms). All start with `ca-app-pub-3940256099942544/`.
+  '''ca-app-pub-3940256099942544/\d+''',
+  # Placeholder bundle id strings appear in docs.
+  '''app\.nutrilens\.ios(\.NutriLensHomeWidget)?''',
+]

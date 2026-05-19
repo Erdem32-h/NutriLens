@@ -1,9 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/services/home_widget_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../data/datasources/meal_local_datasource.dart';
 import '../../domain/entities/meal_entry_entity.dart';
+
+final homeWidgetServiceProvider = Provider<HomeWidgetService>((ref) {
+  return HomeWidgetService(ref.watch(appDatabaseProvider));
+});
 
 final mealLocalDataSourceProvider = Provider<MealLocalDataSource>((ref) {
   final db = ref.watch(appDatabaseProvider);

@@ -76,8 +76,9 @@ class _IngredientsCameraScreenState
 
       final String? ingredientsText;
       try {
-        ingredientsText =
-            await geminiService.extractIngredientsFromBase64(prepared.base64);
+        ingredientsText = await geminiService.extractIngredientsFromBase64(
+          prepared.base64,
+        );
       } on GeminiServiceException catch (e) {
         // Service-level failure (auth, network, rate limit). No fallback —
         // ask the user to retry or enter manually.
@@ -275,9 +276,7 @@ class _IngredientsCameraScreenState
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(
-                    color: context.colors.primary,
-                  ),
+                  CircularProgressIndicator(color: context.colors.primary),
                   const SizedBox(height: 16),
                   Text(
                     'İçindekiler analiz ediliyor...',
@@ -355,8 +354,11 @@ class _IngredientsCameraScreenState
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.camera_alt_rounded,
-                                color: Colors.black, size: 18),
+                            Icon(
+                              Icons.camera_alt_rounded,
+                              color: Colors.black,
+                              size: 18,
+                            ),
                             SizedBox(width: 8),
                             Text(
                               'Fotoğraf Çek',
@@ -393,10 +395,7 @@ class _TipRow extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
-              fontSize: 13,
-              color: context.colors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 13, color: context.colors.textSecondary),
           ),
         ),
       ],

@@ -8,11 +8,7 @@ class EditorialHeader extends StatelessWidget {
   final ProductEntity product;
   final VoidCallback? onEditPressed;
 
-  const EditorialHeader({
-    super.key,
-    required this.product,
-    this.onEditPressed,
-  });
+  const EditorialHeader({super.key, required this.product, this.onEditPressed});
 
   @override
   Widget build(BuildContext context) {

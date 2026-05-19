@@ -1,0 +1,26 @@
+# "Tüm Verilerimi Sil" happy path.
+#
+# This flow exercises the in-app data deletion that App Store reviewers
+# specifically look for (Account Deletion / Data Deletion guidance).
+# We tap through the confirm dialog and assert the success toast — we
+# don't validate the DB state because that's covered by unit tests on
+# UserAccountService.
+appId: com.nutrilensapp.android
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Giriş Yap"
+    file: ../shared/login-as-test-user.yaml
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: "Tüm Verilerimi Sil"
+    direction: DOWN
+- tapOn: "Tüm Verilerimi Sil"
+- assertVisible: "Tüm verilerini silmek istediğinden emin misin?"
+- tapOn: "Verileri sil"
+- assertVisible:
+    text: "Tüm verilerin silindi"
+    timeout: 15000
+- takeScreenshot: 30-wiped

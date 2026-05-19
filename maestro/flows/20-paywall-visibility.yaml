@@ -1,0 +1,30 @@
+# Paywall renders the App Store-required elements:
+#   - At least one subscription title (Aylık / Yıllık)
+#   - Auto-renewal disclosure text
+#   - Functional Privacy Policy + Terms of Use links
+#
+# We DO NOT execute the purchase — that would require sandbox StoreKit
+# / Play Billing accounts and pollute the test environment with
+# entitlements. Apple 3.1.2 only requires the metadata to be visible
+# inside the app, which is exactly what this flow checks.
+appId: com.nutrilensapp.android
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Giriş Yap"
+    file: ../shared/login-as-test-user.yaml
+- tapOn: "Profil"
+- tapOn:
+    text: "Premium'a Geç"
+    optional: true
+# Some devices land on the paywall via a different button label
+# (e.g. "Premium Aktif" if already premium → flow no-ops gracefully).
+- assertVisible:
+    text: "NutriLens Premium"
+- assertVisible: "Sınırsız tarama"
+- assertVisible:
+    text: "Abonelik otomatik yenilenir"
+- assertVisible: "Gizlilik Politikası"
+- assertVisible: "Kullanım Koşulları"
+- takeScreenshot: 20-paywall

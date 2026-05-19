@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,15 +50,37 @@ class NutriLensApp extends ConsumerStatefulWidget {
 
 class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   late final GoRouter _router;
+  StreamSubscription<Uri?>? _widgetClicked;
 
   @override
   void initState() {
     super.initState();
     _router = createRouter();
+
+    // Home-screen widget tap → deep-link `nutrilens://widget/scan`.
+    // Two entry paths cover cold-launch vs in-foreground:
+    //   1. `initiallyLaunchedFromHomeWidget` returns the URI that woke
+    //      the process when the user opened the app via a widget tap.
+    //   2. `widgetClicked` stream fires while the app is already alive.
+    HomeWidget.initiallyLaunchedFromHomeWidget().then(_handleWidgetUri);
+    _widgetClicked = HomeWidget.widgetClicked.listen(_handleWidgetUri);
+  }
+
+  void _handleWidgetUri(Uri? uri) {
+    if (uri == null) return;
+    final path = uri.host + uri.path;
+    if (path.contains('scan')) {
+      // GoRouter may not be attached yet on cold-launch — defer to the
+      // first frame so the navigator is ready.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _router.go('/scanner');
+      });
+    }
   }
 
   @override
   void dispose() {
+    _widgetClicked?.cancel();
     _router.dispose();
     super.dispose();
   }

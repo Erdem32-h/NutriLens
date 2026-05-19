@@ -62,5 +62,20 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- URL scheme `nutrilens://` is used by the home-screen widget to
+	     deep-link back into the app (e.g. `nutrilens://widget/scan`).
+	     Without this entry iOS refuses to open the URL and the widget
+	     tap is a no-op. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>app.nutrilens.ios.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>nutrilens</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

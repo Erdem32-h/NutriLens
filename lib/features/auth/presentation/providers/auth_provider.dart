@@ -38,10 +38,9 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     required String password,
   }) async {
     state = const AsyncLoading();
-    final result = await ref.read(authRepositoryProvider).signInWithEmail(
-          email: email,
-          password: password,
-        );
+    final result = await ref
+        .read(authRepositoryProvider)
+        .signInWithEmail(email: email, password: password);
     state = result.fold(
       (failure) => AsyncError(failure.message, StackTrace.current),
       (user) => AsyncData(user),
@@ -58,7 +57,9 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     String? displayName,
   }) async {
     state = const AsyncLoading();
-    final result = await ref.read(authRepositoryProvider).signUpWithEmail(
+    final result = await ref
+        .read(authRepositoryProvider)
+        .signUpWithEmail(
           email: email,
           password: password,
           displayName: displayName,
@@ -74,7 +75,7 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     result.fold(
       (failure) => state = AsyncError(failure.message, StackTrace.current),
       (_) {
-         // UI will listen to authStateProvider for successful login
+        // UI will listen to authStateProvider for successful login
       },
     );
   }
@@ -84,7 +85,7 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     result.fold(
       (failure) => state = AsyncError(failure.message, StackTrace.current),
       (_) {
-         // UI will listen to authStateProvider for successful login
+        // UI will listen to authStateProvider for successful login
       },
     );
   }
@@ -97,5 +98,6 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
   }
 }
 
-final authNotifierProvider =
-    AsyncNotifierProvider<AuthNotifier, UserEntity?>(AuthNotifier.new);
+final authNotifierProvider = AsyncNotifierProvider<AuthNotifier, UserEntity?>(
+  AuthNotifier.new,
+);

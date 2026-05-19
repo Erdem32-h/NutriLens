@@ -36,7 +36,31 @@
                     android:scheme="com.nutrilens.nutrilens"
                     android:host="callback" />
             </intent-filter>
+            <!-- Home-screen widget tap deep link (nutrilens://widget/scan) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="nutrilens" android:host="widget" />
+            </intent-filter>
         </activity>
+
+        <!-- Home-screen widget provider. The home_widget plugin sends
+             APPWIDGET_UPDATE broadcasts to this receiver whenever the
+             Flutter side calls HomeWidget.updateWidget(). The OS also
+             refreshes it every updatePeriodMillis (see xml/nutrilens_home_widget_info). -->
+        <receiver
+            android:name=".NutriLensHomeWidgetProvider"
+            android:exported="true"
+            android:label="NutriLens">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/nutrilens_home_widget_info" />
+        </receiver>
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${ADMOB_APP_ID}"/>

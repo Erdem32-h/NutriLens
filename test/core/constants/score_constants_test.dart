@@ -5,7 +5,8 @@ void main() {
   group('ScoreConstants', () {
     group('static weights', () {
       test('HP formula weights sum to 1.0', () {
-        final sum = ScoreConstants.chemicalWeight +
+        final sum =
+            ScoreConstants.chemicalWeight +
             ScoreConstants.riskWeight +
             ScoreConstants.nutriWeight;
 
@@ -13,7 +14,8 @@ void main() {
       });
 
       test('risk factor sub-weights sum to 1.0', () {
-        final sum = ScoreConstants.sugarWeight +
+        final sum =
+            ScoreConstants.sugarWeight +
             ScoreConstants.saltWeight +
             ScoreConstants.saturatedFatWeight;
 
@@ -21,7 +23,8 @@ void main() {
       });
 
       test('nutri factor sub-weights sum to 1.0', () {
-        final sum = ScoreConstants.fiberWeight +
+        final sum =
+            ScoreConstants.fiberWeight +
             ScoreConstants.proteinWeight +
             ScoreConstants.naturalnessWeight;
 
@@ -154,12 +157,18 @@ void main() {
 
     group('gauge thresholds', () {
       test('thresholds are in descending order', () {
-        expect(ScoreConstants.gauge1Threshold,
-            greaterThan(ScoreConstants.gauge2Threshold));
-        expect(ScoreConstants.gauge2Threshold,
-            greaterThan(ScoreConstants.gauge3Threshold));
-        expect(ScoreConstants.gauge3Threshold,
-            greaterThan(ScoreConstants.gauge4Threshold));
+        expect(
+          ScoreConstants.gauge1Threshold,
+          greaterThan(ScoreConstants.gauge2Threshold),
+        );
+        expect(
+          ScoreConstants.gauge2Threshold,
+          greaterThan(ScoreConstants.gauge3Threshold),
+        );
+        expect(
+          ScoreConstants.gauge3Threshold,
+          greaterThan(ScoreConstants.gauge4Threshold),
+        );
       });
     });
   });

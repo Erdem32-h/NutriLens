@@ -49,17 +49,11 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
   }
 
   void _goToOcr() {
-    context.go(
-      '/product/${widget.barcode}/edit',
-      extra: _buildProductInfo(),
-    );
+    context.go('/product/${widget.barcode}/edit', extra: _buildProductInfo());
   }
 
   void _goToManual() {
-    context.go(
-      '/product/${widget.barcode}/manual',
-      extra: _buildProductInfo(),
-    );
+    context.go('/product/${widget.barcode}/manual', extra: _buildProductInfo());
   }
 
   @override
@@ -108,10 +102,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
             Text(
               'Bu ürün henüz veritabanımızda yok.\n'
               'Bilgileri girerek topluluk veritabanına ekleyebilirsiniz!',
-              style: TextStyle(
-                fontSize: 14,
-                color: context.colors.textMuted,
-              ),
+              style: TextStyle(fontSize: 14, color: context.colors.textMuted),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -245,8 +236,11 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.camera_alt_rounded,
-                        color: Colors.black, size: 20),
+                    Icon(
+                      Icons.camera_alt_rounded,
+                      color: Colors.black,
+                      size: 20,
+                    ),
                     SizedBox(width: 8),
                     Text(
                       'Bilgileri Fotoğrafla Tamamla',
@@ -276,8 +270,11 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.edit_note_rounded,
-                        color: context.colors.textPrimary, size: 20),
+                    Icon(
+                      Icons.edit_note_rounded,
+                      color: context.colors.textPrimary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Manuel Gir',

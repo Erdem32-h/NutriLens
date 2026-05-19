@@ -6,11 +6,7 @@ class NovaBadge extends StatelessWidget {
   final int novaGroup;
   final double size;
 
-  const NovaBadge({
-    super.key,
-    required this.novaGroup,
-    this.size = 40,
-  });
+  const NovaBadge({super.key, required this.novaGroup, this.size = 40});
 
   @override
   Widget build(BuildContext context) {

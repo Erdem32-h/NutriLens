@@ -58,80 +58,101 @@ void main() {
 
   group('getProduct', () {
     group('when fresh cache exists', () {
-      test('returns cached product without resolver call when offline', () async {
-        when(() => mockLocal.getProduct('8690000000001'))
-            .thenAnswer((_) async => product);
-        when(() => mockLocal.isStale('8690000000001'))
-            .thenAnswer((_) async => false);
-        when(() => mockNetwork.isConnected).thenAnswer((_) async => false);
+      test(
+        'returns cached product without resolver call when offline',
+        () async {
+          when(
+            () => mockLocal.getProduct('8690000000001'),
+          ).thenAnswer((_) async => product);
+          when(
+            () => mockLocal.isStale('8690000000001'),
+          ).thenAnswer((_) async => false);
+          when(() => mockNetwork.isConnected).thenAnswer((_) async => false);
 
-        final result = await repository.getProduct('8690000000001');
+          final result = await repository.getProduct('8690000000001');
 
-        expect(result, const Right(product));
-        verifyNever(() => mockResolver.resolve(any()));
-      });
+          expect(result, const Right(product));
+          verifyNever(() => mockResolver.resolve(any()));
+        },
+      );
 
-      test('refreshes from community before returning fresh cache when online',
-          () async {
-        const updatedProduct = ProductEntity(
-          barcode: '8690000000001',
-          productName: 'Updated Product',
-          hpScore: 62,
-        );
+      test(
+        'refreshes from community before returning fresh cache when online',
+        () async {
+          const updatedProduct = ProductEntity(
+            barcode: '8690000000001',
+            productName: 'Updated Product',
+            hpScore: 62,
+          );
 
-        when(() => mockLocal.getProduct('8690000000001'))
-            .thenAnswer((_) async => product);
-        when(() => mockLocal.isStale('8690000000001'))
-            .thenAnswer((_) async => false);
-        when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockCommunity.resolve('8690000000001'))
-            .thenAnswer((_) async => updatedProduct);
-        when(() => mockCommunity.timeout).thenReturn(const Duration(seconds: 5));
-        when(() => mockLocal.cacheProduct(any())).thenAnswer((_) async {});
+          when(
+            () => mockLocal.getProduct('8690000000001'),
+          ).thenAnswer((_) async => product);
+          when(
+            () => mockLocal.isStale('8690000000001'),
+          ).thenAnswer((_) async => false);
+          when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
+          when(
+            () => mockCommunity.resolve('8690000000001'),
+          ).thenAnswer((_) async => updatedProduct);
+          when(
+            () => mockCommunity.timeout,
+          ).thenReturn(const Duration(seconds: 5));
+          when(() => mockLocal.cacheProduct(any())).thenAnswer((_) async {});
 
-        final result = await repository.getProduct('8690000000001');
+          final result = await repository.getProduct('8690000000001');
 
-        expect(result, const Right(updatedProduct));
-        verify(() => mockLocal.cacheProduct(updatedProduct)).called(1);
-        verifyNever(() => mockResolver.resolve(any()));
-      });
+          expect(result, const Right(updatedProduct));
+          verify(() => mockLocal.cacheProduct(updatedProduct)).called(1);
+          verifyNever(() => mockResolver.resolve(any()));
+        },
+      );
 
-      test('falls back to fresh cache when online community has no row',
-          () async {
-        when(() => mockLocal.getProduct('8690000000001'))
-            .thenAnswer((_) async => product);
-        when(() => mockLocal.isStale('8690000000001'))
-            .thenAnswer((_) async => false);
-        when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockCommunity.resolve('8690000000001'))
-            .thenAnswer((_) async => null);
-        when(() => mockCommunity.timeout).thenReturn(const Duration(seconds: 5));
+      test(
+        'falls back to fresh cache when online community has no row',
+        () async {
+          when(
+            () => mockLocal.getProduct('8690000000001'),
+          ).thenAnswer((_) async => product);
+          when(
+            () => mockLocal.isStale('8690000000001'),
+          ).thenAnswer((_) async => false);
+          when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
+          when(
+            () => mockCommunity.resolve('8690000000001'),
+          ).thenAnswer((_) async => null);
+          when(
+            () => mockCommunity.timeout,
+          ).thenReturn(const Duration(seconds: 5));
 
-        final result = await repository.getProduct('8690000000001');
+          final result = await repository.getProduct('8690000000001');
 
-        expect(result, const Right(product));
-        verifyNever(() => mockResolver.resolve(any()));
-      });
+          expect(result, const Right(product));
+          verifyNever(() => mockResolver.resolve(any()));
+        },
+      );
     });
 
     group('when stale cache exists', () {
       setUp(() {
-        when(() => mockLocal.getProduct('8690000000001'))
-            .thenAnswer((_) async => staleProduct);
-        when(() => mockLocal.isStale('8690000000001'))
-            .thenAnswer((_) async => true);
+        when(
+          () => mockLocal.getProduct('8690000000001'),
+        ).thenAnswer((_) async => staleProduct);
+        when(
+          () => mockLocal.isStale('8690000000001'),
+        ).thenAnswer((_) async => true);
       });
 
       test('fetches from resolver when online', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockResolver.resolve('8690000000001'))
-            .thenAnswer((_) async => ProductResolveResult(
-                  product: product,
-                  resolvedBy: 'off',
-                  triedSources: ['community', 'off'],
-                ));
-        when(() => mockLocal.cacheProduct(any()))
-            .thenAnswer((_) async {});
+        when(() => mockResolver.resolve('8690000000001')).thenAnswer(
+          (_) async => ProductResolveResult(
+            product: product,
+            resolvedBy: 'off',
+            triedSources: ['community', 'off'],
+          ),
+        );
+        when(() => mockLocal.cacheProduct(any())).thenAnswer((_) async {});
 
         final result = await repository.getProduct('8690000000001');
 
@@ -150,12 +171,13 @@ void main() {
 
       test('returns stale cache when resolver finds nothing', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockResolver.resolve('8690000000001'))
-            .thenAnswer((_) async => ProductResolveResult(
-                  product: null,
-                  resolvedBy: null,
-                  triedSources: ['community', 'off', 'upcitemdb'],
-                ));
+        when(() => mockResolver.resolve('8690000000001')).thenAnswer(
+          (_) async => ProductResolveResult(
+            product: null,
+            resolvedBy: null,
+            triedSources: ['community', 'off', 'upcitemdb'],
+          ),
+        );
 
         final result = await repository.getProduct('8690000000001');
 
@@ -164,8 +186,9 @@ void main() {
 
       test('returns stale cache on resolver exception', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockResolver.resolve('8690000000001'))
-            .thenThrow(Exception('Network error'));
+        when(
+          () => mockResolver.resolve('8690000000001'),
+        ).thenThrow(Exception('Network error'));
 
         final result = await repository.getProduct('8690000000001');
 
@@ -175,20 +198,21 @@ void main() {
 
     group('when no cache exists', () {
       setUp(() {
-        when(() => mockLocal.getProduct('8690000000001'))
-            .thenAnswer((_) async => null);
+        when(
+          () => mockLocal.getProduct('8690000000001'),
+        ).thenAnswer((_) async => null);
       });
 
       test('resolves from sources and caches when online', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockResolver.resolve('8690000000001'))
-            .thenAnswer((_) async => ProductResolveResult(
-                  product: product,
-                  resolvedBy: 'off',
-                  triedSources: ['community', 'off'],
-                ));
-        when(() => mockLocal.cacheProduct(any()))
-            .thenAnswer((_) async {});
+        when(() => mockResolver.resolve('8690000000001')).thenAnswer(
+          (_) async => ProductResolveResult(
+            product: product,
+            resolvedBy: 'off',
+            triedSources: ['community', 'off'],
+          ),
+        );
+        when(() => mockLocal.cacheProduct(any())).thenAnswer((_) async {});
 
         final result = await repository.getProduct('8690000000001');
 
@@ -210,12 +234,13 @@ void main() {
 
       test('returns NotFoundFailure when resolver finds nothing', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockResolver.resolve('8690000000001'))
-            .thenAnswer((_) async => ProductResolveResult(
-                  product: null,
-                  resolvedBy: null,
-                  triedSources: ['community', 'off', 'upcitemdb'],
-                ));
+        when(() => mockResolver.resolve('8690000000001')).thenAnswer(
+          (_) async => ProductResolveResult(
+            product: null,
+            resolvedBy: null,
+            triedSources: ['community', 'off', 'upcitemdb'],
+          ),
+        );
 
         final result = await repository.getProduct('8690000000001');
 
@@ -228,35 +253,34 @@ void main() {
 
       test('returns ServerFailure on unexpected exception', () async {
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockResolver.resolve('8690000000001'))
-            .thenThrow(Exception('Unknown'));
+        when(
+          () => mockResolver.resolve('8690000000001'),
+        ).thenThrow(Exception('Unknown'));
 
         final result = await repository.getProduct('8690000000001');
 
         expect(result.isLeft(), isTrue);
-        result.fold(
-          (failure) {
-            expect(failure, isA<ServerFailure>());
-            expect(failure.message, contains('Unexpected error'));
-          },
-          (_) => fail('Expected Left'),
-        );
+        result.fold((failure) {
+          expect(failure, isA<ServerFailure>());
+          expect(failure.message, contains('Unexpected error'));
+        }, (_) => fail('Expected Left'));
       });
     });
 
     group('when cache read throws CacheException', () {
       test('falls through to resolver', () async {
-        when(() => mockLocal.getProduct('8690000000001'))
-            .thenThrow(const CacheException('DB error'));
+        when(
+          () => mockLocal.getProduct('8690000000001'),
+        ).thenThrow(const CacheException('DB error'));
         when(() => mockNetwork.isConnected).thenAnswer((_) async => true);
-        when(() => mockResolver.resolve('8690000000001'))
-            .thenAnswer((_) async => ProductResolveResult(
-                  product: product,
-                  resolvedBy: 'off',
-                  triedSources: ['community', 'off'],
-                ));
-        when(() => mockLocal.cacheProduct(any()))
-            .thenAnswer((_) async {});
+        when(() => mockResolver.resolve('8690000000001')).thenAnswer(
+          (_) async => ProductResolveResult(
+            product: product,
+            resolvedBy: 'off',
+            triedSources: ['community', 'off'],
+          ),
+        );
+        when(() => mockLocal.cacheProduct(any())).thenAnswer((_) async {});
 
         final result = await repository.getProduct('8690000000001');
 
@@ -267,8 +291,7 @@ void main() {
 
   group('cacheProduct', () {
     test('returns Right(null) on success', () async {
-      when(() => mockLocal.cacheProduct(product))
-          .thenAnswer((_) async {});
+      when(() => mockLocal.cacheProduct(product)).thenAnswer((_) async {});
 
       final result = await repository.cacheProduct(product);
 
@@ -276,26 +299,25 @@ void main() {
     });
 
     test('returns CacheFailure on CacheException', () async {
-      when(() => mockLocal.cacheProduct(product))
-          .thenThrow(const CacheException('Write failed'));
+      when(
+        () => mockLocal.cacheProduct(product),
+      ).thenThrow(const CacheException('Write failed'));
 
       final result = await repository.cacheProduct(product);
 
       expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
-          expect(failure, isA<CacheFailure>());
-          expect(failure.message, 'Write failed');
-        },
-        (_) => fail('Expected Left'),
-      );
+      result.fold((failure) {
+        expect(failure, isA<CacheFailure>());
+        expect(failure.message, 'Write failed');
+      }, (_) => fail('Expected Left'));
     });
   });
 
   group('getCachedProduct', () {
     test('returns product when found in cache', () async {
-      when(() => mockLocal.getProduct('8690000000001'))
-          .thenAnswer((_) async => product);
+      when(
+        () => mockLocal.getProduct('8690000000001'),
+      ).thenAnswer((_) async => product);
 
       final result = await repository.getCachedProduct('8690000000001');
 
@@ -303,8 +325,9 @@ void main() {
     });
 
     test('returns NotFoundFailure when not in cache', () async {
-      when(() => mockLocal.getProduct('8690000000001'))
-          .thenAnswer((_) async => null);
+      when(
+        () => mockLocal.getProduct('8690000000001'),
+      ).thenAnswer((_) async => null);
 
       final result = await repository.getCachedProduct('8690000000001');
 
@@ -316,8 +339,9 @@ void main() {
     });
 
     test('returns CacheFailure on CacheException', () async {
-      when(() => mockLocal.getProduct('8690000000001'))
-          .thenThrow(const CacheException('Read error'));
+      when(
+        () => mockLocal.getProduct('8690000000001'),
+      ).thenThrow(const CacheException('Read error'));
 
       final result = await repository.getCachedProduct('8690000000001');
 

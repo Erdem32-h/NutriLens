@@ -27,10 +27,10 @@ class CounterfeitEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        brandName,
-        productName,
-        violationType,
-        barcode,
-      ];
+    id,
+    brandName,
+    productName,
+    violationType,
+    barcode,
+  ];
 }

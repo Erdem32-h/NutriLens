@@ -36,11 +36,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    await ref.read(authNotifierProvider.notifier).signUpWithEmail(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-      displayName: _nameController.text.trim(),
-    );
+    await ref
+        .read(authNotifierProvider.notifier)
+        .signUpWithEmail(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          displayName: _nameController.text.trim(),
+        );
 
     if (mounted) {
       final authState = ref.read(authNotifierProvider);
@@ -244,14 +246,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         width: double.infinity,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: isLoading ? null : context.colors.primaryGradient,
+                          gradient: isLoading
+                              ? null
+                              : context.colors.primaryGradient,
                           color: isLoading ? context.colors.surfaceCard2 : null,
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: isLoading
                               ? []
                               : [
                                   BoxShadow(
-                                    color: context.colors.primary.withValues(alpha: 0.3),
+                                    color: context.colors.primary.withValues(
+                                      alpha: 0.3,
+                                    ),
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
                                   ),
@@ -260,7 +266,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         alignment: Alignment.center,
                         child: isLoading
                             ? SizedBox(
-                                width: 22, height: 22,
+                                width: 22,
+                                height: 22,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
                                   color: context.colors.primary,

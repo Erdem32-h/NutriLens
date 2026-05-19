@@ -83,9 +83,7 @@ class NutrimentTable extends StatelessWidget {
             final isEven = entry.key.isEven;
             final item = entry.value;
             return Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               color: isEven ? Colors.transparent : context.colors.surfaceCard2,
               child: Row(
                 children: [
@@ -95,7 +93,8 @@ class NutrimentTable extends StatelessWidget {
                       children: [
                         if (item.levelColor != null)
                           Container(
-                            width: 8, height: 8,
+                            width: 8,
+                            height: 8,
                             margin: const EdgeInsets.only(right: 8),
                             decoration: BoxDecoration(
                               color: item.levelColor,
@@ -136,8 +135,18 @@ class NutrimentTable extends StatelessWidget {
     return [
       _NutrimentRow('Enerji', nutriments.energyKcal, 'kcal', null),
       _NutrimentRow('Yağ', nutriments.fat, 'g', _fatLevel(context)),
-      _NutrimentRow('Doymuş Yağ', nutriments.saturatedFat, 'g', _satFatLevel(context)),
-      _NutrimentRow('Trans Yağ', nutriments.transFat, 'g', _transFatLevel(context)),
+      _NutrimentRow(
+        'Doymuş Yağ',
+        nutriments.saturatedFat,
+        'g',
+        _satFatLevel(context),
+      ),
+      _NutrimentRow(
+        'Trans Yağ',
+        nutriments.transFat,
+        'g',
+        _transFatLevel(context),
+      ),
       _NutrimentRow('Karbonhidrat', nutriments.carbohydrates, 'g', null),
       _NutrimentRow('Şeker', nutriments.sugars, 'g', _sugarLevel(context)),
       _NutrimentRow('Lif', nutriments.fiber, 'g', null),

@@ -113,7 +113,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       Row(
                         children: [
                           Container(
-                            width: 32, height: 32,
+                            width: 32,
+                            height: 32,
                             decoration: BoxDecoration(
                               gradient: context.colors.primaryGradient,
                               borderRadius: BorderRadius.circular(8),
@@ -171,7 +172,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             children: [
                               // Icon container with gradient
                               Container(
-                                width: 140, height: 140,
+                                width: 140,
+                                height: 140,
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: page.gradient,
@@ -181,7 +183,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   borderRadius: BorderRadius.circular(40),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: context.colors.primary.withValues(alpha: 0.3),
+                                      color: context.colors.primary.withValues(
+                                        alpha: 0.3,
+                                      ),
                                       blurRadius: 40,
                                       offset: const Offset(0, 16),
                                     ),
@@ -263,7 +267,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             borderRadius: BorderRadius.circular(50),
                             boxShadow: [
                               BoxShadow(
-                                color: context.colors.primary.withValues(alpha: 0.35),
+                                color: context.colors.primary.withValues(
+                                  alpha: 0.35,
+                                ),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),

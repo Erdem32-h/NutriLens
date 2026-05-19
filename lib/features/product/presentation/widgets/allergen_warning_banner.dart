@@ -32,15 +32,17 @@ class AllergenWarningBanner extends ConsumerWidget {
   List<AllergenEntity> _matchedAllergens() {
     if (allergensTags.isEmpty || userAllergenIds.isEmpty) return [];
 
-    final normalizedTags =
-        allergensTags.map((t) => t.toLowerCase()).toList(growable: false);
+    final normalizedTags = allergensTags
+        .map((t) => t.toLowerCase())
+        .toList(growable: false);
 
-    return allAllergens.where((allergen) {
-      final id = allergen.id.toLowerCase();
-      return userAllergenIds
-              .any((uid) => uid.toLowerCase() == id) &&
-          normalizedTags.any((tag) => tag.contains(id));
-    }).toList(growable: false);
+    return allAllergens
+        .where((allergen) {
+          final id = allergen.id.toLowerCase();
+          return userAllergenIds.any((uid) => uid.toLowerCase() == id) &&
+              normalizedTags.any((tag) => tag.contains(id));
+        })
+        .toList(growable: false);
   }
 
   @override
@@ -64,18 +66,12 @@ class AllergenWarningBanner extends ConsumerWidget {
             end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: colors.error.withValues(alpha: 0.45),
-          ),
+          border: Border.all(color: colors.error.withValues(alpha: 0.45)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              Icons.warning_amber_rounded,
-              color: colors.error,
-              size: 24,
-            ),
+            Icon(Icons.warning_amber_rounded, color: colors.error, size: 24),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -95,10 +91,9 @@ class AllergenWarningBanner extends ConsumerWidget {
                     spacing: 6,
                     runSpacing: 4,
                     children: matched
-                        .map((a) => _AllergenTag(
-                              name: a.nameTr,
-                              colors: colors,
-                            ))
+                        .map(
+                          (a) => _AllergenTag(name: a.nameTr, colors: colors),
+                        )
                         .toList(),
                   ),
                 ],

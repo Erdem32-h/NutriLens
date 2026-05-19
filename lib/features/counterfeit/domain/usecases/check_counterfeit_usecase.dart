@@ -12,6 +12,5 @@ class CheckCounterfeitUseCase {
   Future<Either<Failure, CounterfeitEntity?>> call({
     required String barcode,
     String? brand,
-  }) =>
-      _repository.checkProduct(barcode: barcode, brand: brand);
+  }) => _repository.checkProduct(barcode: barcode, brand: brand);
 }

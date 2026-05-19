@@ -15,9 +15,9 @@ class SubmitCommunityProductUseCase {
     String? ingredientsPhotoUrl,
     String source = 'ocr',
   }) => _repository.submitCommunityProduct(
-        product: product,
-        userId: userId,
-        ingredientsPhotoUrl: ingredientsPhotoUrl,
-        source: source,
-      );
+    product: product,
+    userId: userId,
+    ingredientsPhotoUrl: ingredientsPhotoUrl,
+    source: source,
+  );
 }

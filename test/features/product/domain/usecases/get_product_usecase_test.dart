@@ -27,19 +27,17 @@ void main() {
       final result = await useCase('');
 
       expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
-          expect(failure, isA<ValidationFailure>());
-          expect(failure.message, 'Barcode cannot be empty');
-        },
-        (_) => fail('Expected Left'),
-      );
+      result.fold((failure) {
+        expect(failure, isA<ValidationFailure>());
+        expect(failure.message, 'Barcode cannot be empty');
+      }, (_) => fail('Expected Left'));
       verifyNever(() => mockRepository.getProduct(any()));
     });
 
     test('delegates to repository when barcode is valid', () async {
-      when(() => mockRepository.getProduct('8690000000001'))
-          .thenAnswer((_) async => const Right(product));
+      when(
+        () => mockRepository.getProduct('8690000000001'),
+      ).thenAnswer((_) async => const Right(product));
 
       final result = await useCase('8690000000001');
 
@@ -52,8 +50,9 @@ void main() {
     });
 
     test('returns failure from repository on error', () async {
-      when(() => mockRepository.getProduct('unknown'))
-          .thenAnswer((_) async => const Left(NotFoundFailure()));
+      when(
+        () => mockRepository.getProduct('unknown'),
+      ).thenAnswer((_) async => const Left(NotFoundFailure()));
 
       final result = await useCase('unknown');
 
@@ -65,8 +64,9 @@ void main() {
     });
 
     test('returns NetworkFailure from repository', () async {
-      when(() => mockRepository.getProduct('123'))
-          .thenAnswer((_) async => const Left(NetworkFailure()));
+      when(
+        () => mockRepository.getProduct('123'),
+      ).thenAnswer((_) async => const Left(NetworkFailure()));
 
       final result = await useCase('123');
 
@@ -79,19 +79,17 @@ void main() {
 
     test('returns ServerFailure from repository', () async {
       when(() => mockRepository.getProduct('123')).thenAnswer(
-        (_) async => const Left(ServerFailure('Internal error', statusCode: 500)),
+        (_) async =>
+            const Left(ServerFailure('Internal error', statusCode: 500)),
       );
 
       final result = await useCase('123');
 
       expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
-          expect(failure, isA<ServerFailure>());
-          expect((failure as ServerFailure).statusCode, 500);
-        },
-        (_) => fail('Expected Left'),
-      );
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+        expect((failure as ServerFailure).statusCode, 500);
+      }, (_) => fail('Expected Left'));
     });
   });
 }

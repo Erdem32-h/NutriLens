@@ -45,6 +45,11 @@ abstract interface class SubscriptionService {
   Stream<SubscriptionStatus> get statusStream;
 }
 
+@visibleForTesting
+LogLevel revenueCatLogLevelFor({required bool releaseMode}) {
+  return releaseMode ? LogLevel.warn : LogLevel.debug;
+}
+
 final class RevenueCatSubscriptionService implements SubscriptionService {
   // Must match the entitlement identifier in the RevenueCat dashboard:
   // NutriLens project → Product catalog → Entitlements.
@@ -66,7 +71,9 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
       return;
     }
 
-    await Purchases.setLogLevel(LogLevel.debug);
+    await Purchases.setLogLevel(
+      revenueCatLogLevelFor(releaseMode: kReleaseMode),
+    );
 
     final configuration = PurchasesConfiguration(apiKey);
     await Purchases.configure(configuration);

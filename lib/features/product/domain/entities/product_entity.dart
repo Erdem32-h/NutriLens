@@ -96,10 +96,11 @@ class ProductEntity extends Equatable {
   // Returns the cached hpScore, overriding it dynamically if the item contains critical ingredients
   double? get calculatedHpScore {
     if (ingredientsText == null) return hpScore;
-    
+
     final t = ScoreConstants.normalizeTurkish(ingredientsText!);
-    final bool hasCriticalIngredients =
-        ScoreConstants.criticalPatterns.any((pattern) => t.contains(pattern));
+    final bool hasCriticalIngredients = ScoreConstants.criticalPatterns.any(
+      (pattern) => t.contains(pattern),
+    );
 
     if (hasCriticalIngredients) return 10.0;
     return hpScore;
@@ -107,22 +108,22 @@ class ProductEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        barcode,
-        productName,
-        brands,
-        imageUrl,
-        ingredientsText,
-        allergensTags,
-        additivesTags,
-        novaGroup,
-        nutriscoreGrade,
-        nutriments,
-        categoriesTags,
-        countriesTags,
-        hpScore,
-        hpChemicalLoad,
-        hpRiskFactor,
-        hpNutriFactor,
-        hpScoreVersion,
-      ];
+    barcode,
+    productName,
+    brands,
+    imageUrl,
+    ingredientsText,
+    allergensTags,
+    additivesTags,
+    novaGroup,
+    nutriscoreGrade,
+    nutriments,
+    categoriesTags,
+    countriesTags,
+    hpScore,
+    hpChemicalLoad,
+    hpRiskFactor,
+    hpNutriFactor,
+    hpScoreVersion,
+  ];
 }

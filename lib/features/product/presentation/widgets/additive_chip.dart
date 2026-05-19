@@ -26,57 +26,54 @@ class AdditiveChip extends StatelessWidget {
         pathParameters: {'eCode': eCode},
       ),
       child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            eCode,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: color,
+            const SizedBox(width: 8),
+            Text(
+              eCode,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
             ),
-          ),
-          if (name != null) ...[
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                name!,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: context.colors.textSecondary,
+            if (name != null) ...[
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  name!,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.colors.textSecondary,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+            const SizedBox(width: 6),
+            Text(
+              '$riskLevel/5',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: context.colors.textMuted,
               ),
             ),
           ],
-          const SizedBox(width: 6),
-          Text(
-            '$riskLevel/5',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: context.colors.textMuted,
-            ),
-          ),
-        ],
+        ),
       ),
-    ),
     );
   }
 }

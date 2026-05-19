@@ -26,7 +26,8 @@ class ProductHeader extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              width: 100, height: 100,
+              width: 100,
+              height: 100,
               color: context.colors.surfaceCard2,
               child: product.imageUrl != null
                   ? CachedNetworkImage(

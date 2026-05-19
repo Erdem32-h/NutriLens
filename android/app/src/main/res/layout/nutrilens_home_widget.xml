@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  RemoteViews-safe layout: only view types that AppWidgetHost can inflate,
+  no negative margins, no styled drawables that need themed resources.
+  Keep it boring; flash is not worth a "Can't load widget" toast.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="14dp"
+    android:background="@drawable/nutrilens_widget_background">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BUGÜN"
+        android:textColor="#88FFFFFF"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/widget_kcal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="0"
+        android:textColor="#FFFFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/widget_kcal_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="kcal"
+        android:textColor="#AAFFFFFF"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/widget_meal_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="0 öğün · bugün"
+        android:textColor="#BBFFFFFF"
+        android:textSize="12sp" />
+
+    <!-- Spacer pushes the "Tara" button to the bottom edge. AppWidget
+         RemoteViews only allows a small allow-list of view classes;
+         bare <View> and <Space> are rejected, but an empty FrameLayout
+         with layout_weight works fine. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/widget_scan_button"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:gravity="center"
+        android:text="Tara"
+        android:textColor="#1A1A1A"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:background="@drawable/nutrilens_widget_button_background" />
+
+</LinearLayout>

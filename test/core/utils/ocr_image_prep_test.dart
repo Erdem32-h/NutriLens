@@ -19,16 +19,19 @@ void main() {
     expect(decoded.height, 1067);
   });
 
-  test('keeps meal analysis image payload at a clearer 2048px long edge', () async {
-    final source = _jpeg(width: 2400, height: 1600);
+  test(
+    'keeps meal analysis image payload at a clearer 2048px long edge',
+    () async {
+      final source = _jpeg(width: 2400, height: 1600);
 
-    final prepared = await prepareMealAnalysisImage(source);
-    final decoded = img.decodeImage(base64Decode(prepared.base64));
+      final prepared = await prepareMealAnalysisImage(source);
+      final decoded = img.decodeImage(base64Decode(prepared.base64));
 
-    expect(decoded, isNotNull);
-    expect(decoded!.width, 2048);
-    expect(decoded.height, 1365);
-  });
+      expect(decoded, isNotNull);
+      expect(decoded!.width, 2048);
+      expect(decoded.height, 1365);
+    },
+  );
 }
 
 Uint8List _jpeg({required int width, required int height}) {

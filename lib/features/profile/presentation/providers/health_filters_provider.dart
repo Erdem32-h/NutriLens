@@ -115,6 +115,7 @@ class HealthFiltersNotifier extends Notifier<HealthFiltersState> {
   }
 }
 
-final healthFiltersProvider = NotifierProvider<HealthFiltersNotifier, HealthFiltersState>(() {
-  return HealthFiltersNotifier();
-});
+final healthFiltersProvider =
+    NotifierProvider<HealthFiltersNotifier, HealthFiltersState>(() {
+      return HealthFiltersNotifier();
+    });

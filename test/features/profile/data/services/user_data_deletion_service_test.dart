@@ -33,35 +33,45 @@ void main() {
   });
 
   test('deletes only user-scoped data and keeps product records', () async {
-    await db.into(db.scanHistory).insert(
+    await db
+        .into(db.scanHistory)
+        .insert(
           ScanHistoryCompanion.insert(
             id: 'scan-user-1',
             userId: 'user-1',
             barcode: '8691',
           ),
         );
-    await db.into(db.scanHistory).insert(
+    await db
+        .into(db.scanHistory)
+        .insert(
           ScanHistoryCompanion.insert(
             id: 'scan-user-2',
             userId: 'user-2',
             barcode: '8692',
           ),
         );
-    await db.into(db.favorites).insert(
+    await db
+        .into(db.favorites)
+        .insert(
           FavoritesCompanion.insert(
             id: 'fav-user-1',
             userId: 'user-1',
             barcode: '8691',
           ),
         );
-    await db.into(db.blacklist).insert(
+    await db
+        .into(db.blacklist)
+        .insert(
           BlacklistCompanion.insert(
             id: 'block-user-1',
             userId: 'user-1',
             barcode: '8693',
           ),
         );
-    await db.into(db.mealEntries).insert(
+    await db
+        .into(db.mealEntries)
+        .insert(
           MealEntriesCompanion.insert(
             id: 'meal-user-1',
             userId: 'user-1',
@@ -70,7 +80,9 @@ void main() {
             capturedAt: DateTime(2026, 5, 10, 8),
           ),
         );
-    await db.into(db.foodProducts).insert(
+    await db
+        .into(db.foodProducts)
+        .insert(
           FoodProductsCompanion.insert(
             barcode: '8691',
             productName: const Value('Kullanıcı Eklediği Ürün'),
@@ -88,18 +100,26 @@ void main() {
     expect(prefs.getStringList('health_filters_allergens'), isNull);
   });
 
-  test('clears remote user tables without deleting community products', () async {
-    await service.deleteAllUserData('user-1');
+  test(
+    'clears remote user tables without deleting community products',
+    () async {
+      await service.deleteAllUserData('user-1');
 
-    expect(remote.deletedTables, [
-      'scan_history:user_id:user-1',
-      'favorites:user_id:user-1',
-      'blacklist:user_id:user-1',
-      'daily_scans:user_id:user-1',
-    ]);
-    expect(remote.resetProfiles, ['user-1']);
-    expect(remote.deletedTables.any((entry) => entry.startsWith('community_products')), isFalse);
-  });
+      expect(remote.deletedTables, [
+        'scan_history:user_id:user-1',
+        'favorites:user_id:user-1',
+        'blacklist:user_id:user-1',
+        'daily_scans:user_id:user-1',
+      ]);
+      expect(remote.resetProfiles, ['user-1']);
+      expect(
+        remote.deletedTables.any(
+          (entry) => entry.startsWith('community_products'),
+        ),
+        isFalse,
+      );
+    },
+  );
 }
 
 class _RecordingRemoteUserDataStore implements RemoteUserDataStore {

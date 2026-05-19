@@ -65,7 +65,9 @@ final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
   @override
   Future<void> cacheProduct(ProductEntity product) async {
     try {
-      await _db.into(_db.foodProducts).insertOnConflictUpdate(
+      await _db
+          .into(_db.foodProducts)
+          .insertOnConflictUpdate(
             FoodProductsCompanion.insert(
               barcode: product.barcode,
               productName: Value(product.productName),
@@ -76,9 +78,7 @@ final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
               additivesTags: Value(_listToJsonString(product.additivesTags)),
               novaGroup: Value(product.novaGroup),
               nutriscoreGrade: Value(product.nutriscoreGrade),
-              nutriments: Value(
-                NutrimentsDto.toJsonString(product.nutriments),
-              ),
+              nutriments: Value(NutrimentsDto.toJsonString(product.nutriments)),
               categoriesTags: Value(_listToJsonString(product.categoriesTags)),
               countriesTags: Value(_listToJsonString(product.countriesTags)),
               hpScore: Value(product.hpScore),
@@ -120,11 +120,16 @@ final class ProductLocalDataSourceImpl implements ProductLocalDataSource {
     int limit = 5,
   }) async {
     try {
+      // Only consider alternatives scored under the CURRENT algorithm
+      // version — a v2-scored "better" alternative may actually be worse
+      // under v3 (e.g. before the sweet-treat penalty existed). Filtering
+      // here avoids surfacing misleading comparisons.
       final query = _db.select(_db.foodProducts)
         ..where(
           (t) =>
               t.barcode.equals(barcode).not() &
-              t.hpScore.isBiggerThanValue(currentHpScore),
+              t.hpScore.isBiggerThanValue(currentHpScore) &
+              t.hpScoreVersion.equals(ScoreConstants.hpScoreAlgorithmVersion),
         )
         ..orderBy([(t) => OrderingTerm.desc(t.hpScore)])
         ..limit(limit);

@@ -18,8 +18,7 @@ class FoodProducts extends Table {
   RealColumn get hpRiskFactor => real().nullable()();
   RealColumn get hpNutriFactor => real().nullable()();
   IntColumn get hpScoreVersion => integer().withDefault(const Constant(0))();
-  DateTimeColumn get cachedAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get cachedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {barcode};

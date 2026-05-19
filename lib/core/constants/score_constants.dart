@@ -1,5 +1,5 @@
 abstract final class ScoreConstants {
-  static const int hpScoreAlgorithmVersion = 2;
+  static const int hpScoreAlgorithmVersion = 3;
 
   // ── HP Formula Weights ──────────────────────────────────────────────
   // These weights define how much each component contributes to the
@@ -23,10 +23,22 @@ abstract final class ScoreConstants {
   // ── Ingredient Quality Penalty ─────────────────────────────────────────
   // Applied after the weighted formula so ingredient-list red flags still
   // matter when nutrition values are missing or OCR returns zeros.
-  static const double ingredientQualityPenaltyCap = 35.0;
+  static const double ingredientQualityPenaltyCap = 40.0;
   static const double addedSugarPenalty = 18.0;
   static const double refinedFlourPenalty = 12.0;
   static const double refinedCarbComboPenalty = 10.0;
+
+  // Sweet / fatty treat penalty — added-sugar PLUS heavy sugar or
+  // saturated fat in the nutrition panel. Catches chocolates, nut
+  // spreads, biscuits that would otherwise float at gauge 2 because no
+  // single component crosses a threshold individually.
+  //
+  // Crucially gated on `hasAddedSugar` (ingredient-text match), so plain
+  // dairy fat, olive oil, nuts etc. — which have satFat but no added
+  // sugar — are NOT penalised.
+  static const double sweetTreatSugarThreshold = 25.0; // g/100g
+  static const double sweetTreatSatFatThreshold = 8.0; // g/100g
+  static const double sweetTreatPenalty = 15.0;
 
   // ── Chemical Load ───────────────────────────────────────────────────
   // Penalties per additive risk level (summed, capped at 100)

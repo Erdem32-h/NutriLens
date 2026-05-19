@@ -105,25 +105,32 @@ void main() {
     });
 
     group('checkAndIncrement', () {
-      test('returns denied immediately when user is not authenticated', () async {
-        when(() => mockAuth.currentUser).thenReturn(null);
+      test(
+        'returns denied immediately when user is not authenticated',
+        () async {
+          when(() => mockAuth.currentUser).thenReturn(null);
 
-        final result = await service.checkAndIncrement();
+          final result = await service.checkAndIncrement();
 
-        expect(result.allowed, isFalse);
-        expect(result.remaining, 0);
-        expect(result.isPremium, isFalse);
-        verifyNever(() => mockClient.rpc(any(), params: any(named: 'params')));
-      });
+          expect(result.allowed, isFalse);
+          expect(result.remaining, 0);
+          expect(result.isPremium, isFalse);
+          verifyNever(
+            () => mockClient.rpc(any(), params: any(named: 'params')),
+          );
+        },
+      );
 
       test('returns unlimited fallback when RPC throws', () async {
         final mockUser = MockUser();
         when(() => mockAuth.currentUser).thenReturn(mockUser);
         when(() => mockUser.id).thenReturn('user-123');
-        when(() => mockClient.rpc(
-              'check_and_increment_scan',
-              params: any(named: 'params'),
-            )).thenThrow(Exception('network error'));
+        when(
+          () => mockClient.rpc(
+            'check_and_increment_scan',
+            params: any(named: 'params'),
+          ),
+        ).thenThrow(Exception('network error'));
 
         final result = await service.checkAndIncrement();
 
@@ -148,10 +155,10 @@ void main() {
         final mockUser = MockUser();
         when(() => mockAuth.currentUser).thenReturn(mockUser);
         when(() => mockUser.id).thenReturn('user-123');
-        when(() => mockClient.rpc(
-              'grant_bonus_scan',
-              params: any(named: 'params'),
-            )).thenThrow(Exception('network error'));
+        when(
+          () =>
+              mockClient.rpc('grant_bonus_scan', params: any(named: 'params')),
+        ).thenThrow(Exception('network error'));
 
         final result = await service.grantBonusScan();
 

@@ -1,0 +1,30 @@
+# Shared sub-flow: logs in with the dedicated test account.
+#
+# Credentials are injected via Maestro env vars (set in Codemagic /
+# locally via `MAESTRO_TEST_EMAIL` / `MAESTRO_TEST_PASSWORD`). NEVER
+# commit real credentials here — these are placeholders that
+# `maestro test -e MAESTRO_TEST_EMAIL=foo@bar` overrides at runtime.
+#
+# To use locally:
+#   set MAESTRO_TEST_EMAIL=test@nutrilens.app
+#   set MAESTRO_TEST_PASSWORD=...
+#   maestro test maestro/flows/10-navigation.yaml
+appId: com.nutrilensapp.android
+---
+- assertVisible: "Giriş Yap"
+- tapOn:
+    id: "email"
+    optional: true
+- tapOn:
+    text: "E-posta"
+    optional: true
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn:
+    text: "Şifre"
+    optional: true
+- inputText: ${MAESTRO_TEST_PASSWORD}
+- hideKeyboard
+- tapOn: "Giriş Yap"
+- assertVisible:
+    text: "Öğünlerim"
+    timeout: 20000

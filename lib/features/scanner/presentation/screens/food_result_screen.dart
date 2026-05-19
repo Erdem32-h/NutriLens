@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   late final TextEditingController _mealNameController;
   late final TextEditingController _brandController;
   late final TextEditingController _ingredientsController;
+  late final TextEditingController _portionNoteController;
 
   MealAnalysisResult? _result;
   bool _loading = true;
@@ -51,6 +53,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     _mealNameController = TextEditingController(text: defaults.name);
     _brandController = TextEditingController(text: defaults.brand);
     _ingredientsController = TextEditingController();
+    _portionNoteController = TextEditingController();
     _analyzeFood();
   }
 
@@ -59,6 +62,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     _mealNameController.dispose();
     _brandController.dispose();
     _ingredientsController.dispose();
+    _portionNoteController.dispose();
     super.dispose();
   }
 
@@ -100,20 +104,27 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
 
   Future<void> _recalculateNutrition() async {
     final text = _ingredientsController.text.trim();
-    if (text.isEmpty || _recalcLoading || _result == null) return;
+    final portionNote = _portionNoteController.text.trim();
+    if (_recalcLoading || _result == null) return;
+    if (text.isEmpty && portionNote.isEmpty) return;
     setState(() => _recalcLoading = true);
     try {
       final aiService = ref.read(anthropicAiServiceProvider);
-      final newNutriments =
-          await aiService.recalculateNutritionFromIngredients(text);
+      final recalc = await aiService.recalculateMealNutrition(
+        ingredientsText: text.isEmpty ? (_result!.ingredientsText ?? '') : text,
+        portionNote: portionNote.isEmpty ? null : portionNote,
+      );
       if (!mounted) return;
-      if (newNutriments != null) {
+      if (recalc != null) {
         setState(() {
           _result = MealAnalysisResult(
             foodName: _result!.foodName,
-            portionGrams: _result!.portionGrams,
-            ingredientsText: text,
-            nutriments: newNutriments,
+            // Prefer the model's new portion estimate; fall back to old.
+            portionGrams: recalc.portionGrams > 0
+                ? recalc.portionGrams
+                : _result!.portionGrams,
+            ingredientsText: text.isEmpty ? _result!.ingredientsText : text,
+            nutriments: recalc.nutriments,
             confidence: _result!.confidence,
             description: _result!.description,
             rawJson: _result!.rawJson,
@@ -195,6 +206,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       await ref.read(mealLocalDataSourceProvider).saveMeal(meal);
       ref.invalidate(mealsProvider);
       ref.invalidate(mealCalorieSummaryProvider);
+      // Home-screen widget reflects today's kcal — refresh on save so the
+      // user sees the new total without waiting for the OS scheduler.
+      unawaited(ref.read(homeWidgetServiceProvider).refresh(userId: userId));
 
       if (!mounted) return;
 
@@ -240,13 +254,27 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     );
   }
 
+  /// Loading view: shows the captured photo with a scanning-line animation
+  /// sweeping vertically — gives the user concrete visual feedback that
+  /// the image is being processed instead of a generic spinner.
   Widget _buildLoading(dynamic l10n, AppColorsExtension colors) {
-    return Center(
+    return SingleChildScrollView(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: _ScanningPhoto(imageBytes: widget.imageBytes),
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
           CircularProgressIndicator(color: colors.primary),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           Text(
             l10n.aiAnalyzing,
             style: TextStyle(
@@ -255,6 +283,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
               color: colors.textPrimary,
             ),
           ),
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -466,6 +495,39 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 12),
+                Text(
+                  'Porsiyon notu (opsiyonel)',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: _portionNoteController,
+                  maxLines: 2,
+                  minLines: 1,
+                  textInputAction: TextInputAction.done,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.4,
+                    color: colors.textSecondary,
+                  ),
+                  decoration: InputDecoration(
+                    hintText:
+                        'Örn: "yarım porsiyon" · "tabağın yarısı kaldı, full hesapla" · "300 g yedim"',
+                    hintStyle: TextStyle(
+                      color: colors.textMuted,
+                      fontSize: 12.5,
+                    ),
+                    contentPadding: const EdgeInsets.all(12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
@@ -479,6 +541,15 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                           )
                         : const Icon(Icons.refresh_rounded, size: 18),
                     label: const Text('Yeniden Hesapla'),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'İçeriği düzenle ve/veya porsiyon notu ekle; ikisini de hesaba katar.',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: colors.textMuted,
+                    height: 1.4,
                   ),
                 ),
                 if (result.description.isNotEmpty) ...[
@@ -593,4 +664,142 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             nutriFactor * ScoreConstants.nutriWeight)
         .clamp(0.0, 100.0);
   }
+}
+
+/// Meal photo with a scanning-line overlay. The line sweeps from top to
+/// bottom (and back) while AI analysis is in flight. A soft tint band
+/// trails behind the line so the effect reads even on low-contrast
+/// photos. Stops automatically when the widget is disposed.
+class _ScanningPhoto extends StatefulWidget {
+  final Uint8List imageBytes;
+
+  const _ScanningPhoto({required this.imageBytes});
+
+  @override
+  State<_ScanningPhoto> createState() => _ScanningPhotoState();
+}
+
+class _ScanningPhotoState extends State<_ScanningPhoto>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1600),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.memory(widget.imageBytes, fit: BoxFit.cover),
+        // Subtle dim so the scan line stays readable.
+        Container(color: Colors.black.withValues(alpha: 0.18)),
+        AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            return CustomPaint(
+              painter: _ScanLinePainter(
+                progress: _controller.value,
+                color: colors.primary,
+              ),
+            );
+          },
+        ),
+        // Viewfinder corner accents — completes the "scanning" feel.
+        IgnorePointer(
+          child: CustomPaint(
+            painter: _ViewfinderCornersPainter(color: colors.primary),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ScanLinePainter extends CustomPainter {
+  final double progress; // 0..1
+  final Color color;
+
+  _ScanLinePainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final inset = 12.0;
+    final top = inset;
+    final bottom = size.height - inset;
+    final y = top + (bottom - top) * progress;
+
+    // Trailing gradient band behind the line for a glow effect.
+    final bandHeight = size.height * 0.18;
+    final bandTop = y - bandHeight;
+    final bandRect = Rect.fromLTWH(
+      inset,
+      bandTop,
+      size.width - inset * 2,
+      bandHeight,
+    );
+    final bandPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [color.withValues(alpha: 0.0), color.withValues(alpha: 0.22)],
+      ).createShader(bandRect);
+    canvas.drawRect(bandRect, bandPaint);
+
+    // The line itself.
+    final linePaint = Paint()
+      ..color = color
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset(inset, y), Offset(size.width - inset, y), linePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ScanLinePainter old) =>
+      old.progress != progress || old.color != color;
+}
+
+class _ViewfinderCornersPainter extends CustomPainter {
+  final Color color;
+
+  _ViewfinderCornersPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Paint()
+      ..color = color.withValues(alpha: 0.85)
+      ..strokeWidth = 3.0
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final pad = 12.0;
+    final len = size.shortestSide * 0.10;
+
+    void corner(Offset origin, double dx, double dy) {
+      canvas.drawLine(origin, origin.translate(len * dx, 0), p);
+      canvas.drawLine(origin, origin.translate(0, len * dy), p);
+    }
+
+    corner(Offset(pad, pad), 1, 1);
+    corner(Offset(size.width - pad, pad), -1, 1);
+    corner(Offset(pad, size.height - pad), 1, -1);
+    corner(Offset(size.width - pad, size.height - pad), -1, -1);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ViewfinderCornersPainter old) =>
+      old.color != color;
 }

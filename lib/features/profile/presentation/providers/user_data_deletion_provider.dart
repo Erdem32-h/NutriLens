@@ -5,7 +5,9 @@ import '../../../product/presentation/providers/product_provider.dart';
 import '../../data/services/account_deletion_service.dart';
 import '../../data/services/user_data_deletion_service.dart';
 
-final userDataDeletionServiceProvider = Provider<UserDataDeletionService>((ref) {
+final userDataDeletionServiceProvider = Provider<UserDataDeletionService>((
+  ref,
+) {
   return UserDataDeletionService(
     db: ref.watch(appDatabaseProvider),
     remoteStore: SupabaseRemoteUserDataStore(ref.watch(supabaseClientProvider)),

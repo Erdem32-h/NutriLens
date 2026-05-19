@@ -6,7 +6,7 @@ import 'app_typography.dart';
 abstract final class AppTheme {
   static ThemeData get dark {
     final colors = AppColorsExtension.dark;
-    
+
     final colorScheme = ColorScheme(
       brightness: Brightness.dark,
       primary: colors.primary,
@@ -29,7 +29,7 @@ abstract final class AppTheme {
 
   static ThemeData get light {
     final colors = AppColorsExtension.light;
-    
+
     final colorScheme = ColorScheme(
       brightness: Brightness.light,
       primary: colors.primary,
@@ -50,7 +50,11 @@ abstract final class AppTheme {
     return _buildTheme(colors, colorScheme, Brightness.light);
   }
 
-  static ThemeData _buildTheme(AppColorsExtension colors, ColorScheme colorScheme, Brightness brightness) {
+  static ThemeData _buildTheme(
+    AppColorsExtension colors,
+    ColorScheme colorScheme,
+    Brightness brightness,
+  ) {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
@@ -66,7 +70,9 @@ abstract final class AppTheme {
         centerTitle: false,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarBrightness: brightness,
-          statusBarIconBrightness: brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+          statusBarIconBrightness: brightness == Brightness.dark
+              ? Brightness.light
+              : Brightness.dark,
         ),
         titleTextStyle: TextStyle(
           fontSize: 20,
@@ -85,7 +91,8 @@ abstract final class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: colors.primary,
-          foregroundColor: colors.background, // Or white if preferred, but onPrimary works
+          foregroundColor:
+              colors.background, // Or white if preferred, but onPrimary works
           minimumSize: const Size(double.infinity, 54),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(50),
@@ -106,19 +113,13 @@ abstract final class AppTheme {
             borderRadius: BorderRadius.circular(50),
           ),
           side: BorderSide(color: colors.primary),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: colors.primary,
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -145,7 +146,8 @@ abstract final class AppTheme {
         prefixIconColor: colors.textMuted,
         suffixIconColor: colors.textMuted,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20, vertical: 16,
+          horizontal: 20,
+          vertical: 16,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
@@ -160,11 +162,15 @@ abstract final class AppTheme {
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w600, color: colors.primary,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: colors.primary,
             );
           }
           return TextStyle(
-            fontSize: 11, fontWeight: FontWeight.w400, color: colors.textMuted,
+            fontSize: 11,
+            fontWeight: FontWeight.w400,
+            color: colors.textMuted,
           );
         }),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
@@ -177,7 +183,9 @@ abstract final class AppTheme {
         backgroundColor: colors.surfaceCard2,
         selectedColor: colors.primary.withValues(alpha: 0.2),
         labelStyle: TextStyle(
-          fontSize: 13, fontWeight: FontWeight.w500, color: colors.textSecondary,
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: colors.textSecondary,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -185,10 +193,7 @@ abstract final class AppTheme {
         ),
         elevation: 0,
       ),
-      dividerTheme: DividerThemeData(
-        color: colors.border,
-        thickness: 1,
-      ),
+      dividerTheme: DividerThemeData(color: colors.border, thickness: 1),
       listTileTheme: ListTileThemeData(
         tileColor: Colors.transparent,
         iconColor: colors.textMuted,

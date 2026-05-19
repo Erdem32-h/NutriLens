@@ -1,0 +1,35 @@
+# Tab navigation smoke test.
+# Assumes the user is already signed in (auth flow lives in 05-login;
+# in CI we pre-seed the session via test credentials). If we land on
+# Login first, tap "Misafir devam" or skip the flow — but the simpler
+# contract here is: from any tabbed screen, every tab opens without
+# crash.
+appId: com.nutrilensapp.android
+---
+- launchApp
+# If Login is the current screen, log in with test credentials.
+# The runOptional pattern prevents the flow from failing when we're
+# already authenticated.
+- runFlow:
+    when:
+      visible: "Giriş Yap"
+    file: ../shared/login-as-test-user.yaml
+
+# Cycle through every nav tab. `index:` is the position in the bottom
+# bar — Öğünlerim (0), Ürün Geçmişi (1), Tarayıcı (2 center), Favoriler
+# (3), Profil (4). Tarayıcı tab opens the camera so we skip it here.
+- tapOn: "Öğünlerim"
+- assertVisible: "Öğünlerim"
+- takeScreenshot: 10-meals
+
+- tapOn: "Ürün Geçmişi"
+- assertVisible: "Ürün Geçmişi"
+- takeScreenshot: 11-history
+
+- tapOn: "Favoriler"
+- assertVisible: "Favoriler"
+- takeScreenshot: 12-favorites
+
+- tapOn: "Profil"
+- assertVisible: "Profil"
+- takeScreenshot: 13-profile

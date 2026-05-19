@@ -26,10 +26,12 @@ void main() {
 
   group('signInWithEmail', () {
     test('returns UserEntity on success', () async {
-      when(() => mockDataSource.signInWithEmail(
-            email: 'test@example.com',
-            password: 'password123',
-          )).thenAnswer((_) async => user);
+      when(
+        () => mockDataSource.signInWithEmail(
+          email: 'test@example.com',
+          password: 'password123',
+        ),
+      ).thenAnswer((_) async => user);
 
       final result = await repository.signInWithEmail(
         email: 'test@example.com',
@@ -37,17 +39,21 @@ void main() {
       );
 
       expect(result, const Right(user));
-      verify(() => mockDataSource.signInWithEmail(
-            email: 'test@example.com',
-            password: 'password123',
-          )).called(1);
+      verify(
+        () => mockDataSource.signInWithEmail(
+          email: 'test@example.com',
+          password: 'password123',
+        ),
+      ).called(1);
     });
 
     test('returns AuthFailure on AuthException', () async {
-      when(() => mockDataSource.signInWithEmail(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenThrow(AuthException('Invalid credentials'));
+      when(
+        () => mockDataSource.signInWithEmail(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(AuthException('Invalid credentials'));
 
       final result = await repository.signInWithEmail(
         email: 'bad@example.com',
@@ -55,20 +61,19 @@ void main() {
       );
 
       expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
-          expect(failure, isA<AuthFailure>());
-          expect(failure.message, 'Invalid credentials');
-        },
-        (_) => fail('Expected Left'),
-      );
+      result.fold((failure) {
+        expect(failure, isA<AuthFailure>());
+        expect(failure.message, 'Invalid credentials');
+      }, (_) => fail('Expected Left'));
     });
 
     test('returns ServerFailure on unexpected exception', () async {
-      when(() => mockDataSource.signInWithEmail(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenThrow(Exception('Unknown error'));
+      when(
+        () => mockDataSource.signInWithEmail(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(Exception('Unknown error'));
 
       final result = await repository.signInWithEmail(
         email: 'test@example.com',
@@ -85,11 +90,13 @@ void main() {
 
   group('signUpWithEmail', () {
     test('returns UserEntity on success', () async {
-      when(() => mockDataSource.signUpWithEmail(
-            email: 'new@example.com',
-            password: 'password123',
-            displayName: 'New User',
-          )).thenAnswer((_) async => user);
+      when(
+        () => mockDataSource.signUpWithEmail(
+          email: 'new@example.com',
+          password: 'password123',
+          displayName: 'New User',
+        ),
+      ).thenAnswer((_) async => user);
 
       final result = await repository.signUpWithEmail(
         email: 'new@example.com',
@@ -101,11 +108,13 @@ void main() {
     });
 
     test('returns AuthFailure on AuthException', () async {
-      when(() => mockDataSource.signUpWithEmail(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-            displayName: any(named: 'displayName'),
-          )).thenThrow(AuthException('Email already exists'));
+      when(
+        () => mockDataSource.signUpWithEmail(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          displayName: any(named: 'displayName'),
+        ),
+      ).thenThrow(AuthException('Email already exists'));
 
       final result = await repository.signUpWithEmail(
         email: 'existing@example.com',
@@ -113,29 +122,33 @@ void main() {
       );
 
       expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
-          expect(failure, isA<AuthFailure>());
-          expect(failure.message, 'Email already exists');
-        },
-        (_) => fail('Expected Left'),
-      );
+      result.fold((failure) {
+        expect(failure, isA<AuthFailure>());
+        expect(failure.message, 'Email already exists');
+      }, (_) => fail('Expected Left'));
     });
   });
 
   group('signInWithGoogle', () {
-    test('returns UserEntity on success', () async {
-      when(() => mockDataSource.signInWithGoogle())
-          .thenAnswer((_) async => user);
+    test(
+      'returns Right(null) on success (OAuth completes via redirect)',
+      () async {
+        // signInWithOAuth on the data source returns void — the actual
+        // user object arrives later via the auth state stream after the
+        // OS-level browser redirect resolves. The repo therefore only
+        // signals "initiation succeeded" with a void Right.
+        when(() => mockDataSource.signInWithGoogle()).thenAnswer((_) async {});
 
-      final result = await repository.signInWithGoogle();
+        final result = await repository.signInWithGoogle();
 
-      expect(result, const Right(user));
-    });
+        expect(result.isRight(), isTrue);
+      },
+    );
 
     test('returns AuthFailure on AuthException', () async {
-      when(() => mockDataSource.signInWithGoogle())
-          .thenThrow(AuthException('Google sign-in failed'));
+      when(
+        () => mockDataSource.signInWithGoogle(),
+      ).thenThrow(AuthException('Google sign-in failed'));
 
       final result = await repository.signInWithGoogle();
 
@@ -148,18 +161,21 @@ void main() {
   });
 
   group('signInWithApple', () {
-    test('returns UserEntity on success', () async {
-      when(() => mockDataSource.signInWithApple())
-          .thenAnswer((_) async => user);
+    test(
+      'returns Right(null) on success (OAuth completes via redirect)',
+      () async {
+        when(() => mockDataSource.signInWithApple()).thenAnswer((_) async {});
 
-      final result = await repository.signInWithApple();
+        final result = await repository.signInWithApple();
 
-      expect(result, const Right(user));
-    });
+        expect(result.isRight(), isTrue);
+      },
+    );
 
     test('returns AuthFailure on AuthException', () async {
-      when(() => mockDataSource.signInWithApple())
-          .thenThrow(AuthException('Apple sign-in failed'));
+      when(
+        () => mockDataSource.signInWithApple(),
+      ).thenThrow(AuthException('Apple sign-in failed'));
 
       final result = await repository.signInWithApple();
 
@@ -178,24 +194,23 @@ void main() {
     });
 
     test('returns AuthFailure on AuthException', () async {
-      when(() => mockDataSource.signOut())
-          .thenThrow(AuthException('Sign out failed'));
+      when(
+        () => mockDataSource.signOut(),
+      ).thenThrow(AuthException('Sign out failed'));
 
       final result = await repository.signOut();
 
       expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
-          expect(failure, isA<AuthFailure>());
-          expect(failure.message, 'Sign out failed');
-        },
-        (_) => fail('Expected Left'),
-      );
+      result.fold((failure) {
+        expect(failure, isA<AuthFailure>());
+        expect(failure.message, 'Sign out failed');
+      }, (_) => fail('Expected Left'));
     });
 
     test('returns ServerFailure on unexpected exception', () async {
-      when(() => mockDataSource.signOut())
-          .thenThrow(Exception('Network error'));
+      when(
+        () => mockDataSource.signOut(),
+      ).thenThrow(Exception('Network error'));
 
       final result = await repository.signOut();
 
@@ -209,8 +224,9 @@ void main() {
 
   group('authStateChanges', () {
     test('delegates to data source', () {
-      when(() => mockDataSource.authStateChanges())
-          .thenAnswer((_) => Stream.value(user));
+      when(
+        () => mockDataSource.authStateChanges(),
+      ).thenAnswer((_) => Stream.value(user));
 
       final stream = repository.authStateChanges();
 
@@ -218,8 +234,9 @@ void main() {
     });
 
     test('emits null when no user', () {
-      when(() => mockDataSource.authStateChanges())
-          .thenAnswer((_) => Stream.value(null));
+      when(
+        () => mockDataSource.authStateChanges(),
+      ).thenAnswer((_) => Stream.value(null));
 
       final stream = repository.authStateChanges();
 

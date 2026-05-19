@@ -191,5 +191,4 @@ void main() {
       expect(entity.nutriments.proteins, 6.0);
     });
   });
-
 }

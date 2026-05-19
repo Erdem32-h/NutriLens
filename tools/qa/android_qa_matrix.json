@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "owner": "release-qa",
+  "platform": "android",
+  "purpose": "Risk-based Android emulator and device QA coverage for NutriLens release validation.",
+  "suites": [
+    {
+      "id": "emulator_smoke",
+      "name": "Emulator smoke",
+      "automation": "scripts/android_qa_smoke.ps1",
+      "scope": [
+        "install_debug_apk",
+        "cold_launch",
+        "ui_tree_capture",
+        "screenshot_capture",
+        "crash_log_capture"
+      ]
+    },
+    {
+      "id": "boundary_regression",
+      "name": "Boundary regression",
+      "automation": "flutter test",
+      "scope": [
+        "hp_score_bounds",
+        "nutrition_ocr_units",
+        "ai_missing_values_default_to_zero",
+        "dto_round_trip",
+        "meal_defaults"
+      ]
+    },
+    {
+      "id": "security_release",
+      "name": "Security release",
+      "automation": "manual_checklist_plus_static_scan",
+      "scope": [
+        "client_secret_exposure_review",
+        "supabase_rls_review",
+        "release_manifest_review",
+        "network_timeout_and_retry_review"
+      ]
+    },
+    {
+      "id": "performance_smoke",
+      "name": "Performance smoke",
+      "automation": "scripts/android_qa_smoke.ps1 -CapturePerformance",
+      "scope": [
+        "startup_wall_clock",
+        "gfxinfo_frames",
+        "logcat_errors",
+        "meminfo_snapshot"
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "free_user_daily_scan_limit",
+      "priority": "p0",
+      "suite": "emulator_smoke",
+      "flow": "Fresh install, free user performs daily scans until limit.",
+      "expected": "Scan limit sheet is shown after the free allowance is exhausted.",
+      "automation_level": "fixture_or_manual_account_required"
+    },
+    {
+      "id": "rewarded_ad_bonus_scan",
+      "priority": "p0",
+      "suite": "emulator_smoke",
+      "flow": "Free user hits scan limit and watches rewarded ad.",
+      "expected": "One bonus scan is granted and the scan flow can continue.",
+      "automation_level": "manual_or_test_ad_account_required"
+    },
+    {
+      "id": "purchase_unlocks_premium",
+      "priority": "p0",
+      "suite": "emulator_smoke",
+      "flow": "User purchases premium from paywall.",
+      "expected": "Premium status unlocks unlimited scans and removes ads.",
+      "automation_level": "real_device_store_sandbox_required"
+    },
+    {
+      "id": "restore_purchase",
+      "priority": "p0",
+      "suite": "emulator_smoke",
+      "flow": "Existing subscriber taps restore purchase.",
+      "expected": "Active entitlement is restored and app state refreshes.",
+      "automation_level": "real_device_store_sandbox_required"
+    },
+    {
+      "id": "revenuecat_webhook_delay",
+      "priority": "p0",
+      "suite": "boundary_regression",
+      "flow": "RevenueCat says premium before Supabase webhook has updated the profile.",
+      "expected": "Local RevenueCat verification allows premium behavior during delay.",
+      "automation_level": "unit_or_widget_test"
+    },
+    {
+      "id": "offline_premium_fallback",
+      "priority": "p0",
+      "suite": "emulator_smoke",
+      "flow": "Premium user launches app while offline.",
+      "expected": "Cached/local premium state prevents false scan limiting.",
+      "automation_level": "adb_network_toggle_plus_manual_account_required"
+    },
+    {
+      "id": "barcode_not_found_contribution",
+      "priority": "p1",
+      "suite": "emulator_smoke",
+      "flow": "Unknown barcode falls through to contribution/edit flow.",
+      "expected": "User can review OCR/manual data and save a community product.",
+      "automation_level": "integration_test_candidate"
+    },
+    {
+      "id": "meal_photo_analysis_save",
+      "priority": "p1",
+      "suite": "emulator_smoke",
+      "flow": "Meal image is analyzed and saved locally.",
+      "expected": "Meal entry persists with thumbnail, default source, calories, and score.",
+      "automation_level": "integration_test_candidate"
+    }
+  ],
+  "artifact_policy": {
+    "default_dir": "build/qa/android",
+    "capture": [
+      "device.txt",
+      "packages.txt",
+      "launch.txt",
+      "ui.xml",
+      "screenshot.png",
+      "logcat.txt",
+      "crash.txt",
+      "gfxinfo.txt",
+      "meminfo.txt"
+    ]
+  }
+}
