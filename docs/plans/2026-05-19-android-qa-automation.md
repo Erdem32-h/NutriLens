@@ -19,11 +19,11 @@ still own payment-store truth.
 | Area | Automation | Notes |
 | --- | --- | --- |
 | Free scan limit | Emulator + account fixture/manual | Requires controlled auth and scan state. |
-| Rewarded ad bonus | Emulator/manual | Depends on rewarded test ad readiness. |
+| Rewarded ad bonus | Widget regression + emulator/manual | Sheet behavior is covered for grant, cancel, and denial; AdMob delivery still needs test ad readiness. |
 | Purchase premium | Real device sandbox | Store purchase cannot be fully trusted on generic emulator. |
 | Restore purchase | Real device sandbox | Same store sandbox dependency. |
-| Webhook delay | Unit/widget regression | Model RevenueCat premium before Supabase catches up. |
-| Offline premium fallback | Emulator + network toggle | Needs premium fixture account. |
+| Webhook delay | Unit regression | `localPremium` bypasses the scan RPC so RevenueCat can unlock before the Supabase webhook catches up. |
+| Offline premium fallback | Unit regression + emulator network toggle | Unit covers local premium fallback; full launch behavior still needs a premium fixture account. |
 | Startup/log smoke | PowerShell adb script | Captures launch, UI tree, screenshot, logs, crash buffer. |
 | Performance smoke | PowerShell adb script | Adds `gfxinfo` and `meminfo` snapshots. |
 

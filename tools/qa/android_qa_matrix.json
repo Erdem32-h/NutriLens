@@ -25,7 +25,9 @@
         "nutrition_ocr_units",
         "ai_missing_values_default_to_zero",
         "dto_round_trip",
-        "meal_defaults"
+        "meal_defaults",
+        "scan_limit_rpc_fallback",
+        "rewarded_ad_bonus_sheet_states"
       ]
     },
     {
@@ -66,7 +68,7 @@
       "suite": "emulator_smoke",
       "flow": "Free user hits scan limit and watches rewarded ad.",
       "expected": "One bonus scan is granted and the scan flow can continue.",
-      "automation_level": "manual_or_test_ad_account_required"
+      "automation_level": "widget_test_plus_manual_or_test_ad_account_required"
     },
     {
       "id": "purchase_unlocks_premium",
@@ -98,7 +100,7 @@
       "suite": "emulator_smoke",
       "flow": "Premium user launches app while offline.",
       "expected": "Cached/local premium state prevents false scan limiting.",
-      "automation_level": "adb_network_toggle_plus_manual_account_required"
+      "automation_level": "unit_test_plus_adb_network_toggle_manual_account_required"
     },
     {
       "id": "barcode_not_found_contribution",

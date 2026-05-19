@@ -15,13 +15,17 @@ import 'package:nutrilens/core/services/subscription_service.dart';
 
 class FakeAdService extends Fake implements AdService {
   final bool _adReady;
-  FakeAdService({bool adReady = false}) : _adReady = adReady;
+  final bool _rewardedResult;
+
+  FakeAdService({bool adReady = false, bool rewardedResult = true})
+    : _adReady = adReady,
+      _rewardedResult = rewardedResult;
 
   @override
   bool get isRewardedAdReady => _adReady;
 
   @override
-  Future<bool> showRewardedAd() async => true;
+  Future<bool> showRewardedAd() async => _rewardedResult;
 
   @override
   void loadRewardedAd() {}
@@ -32,13 +36,18 @@ class FakeAdService extends Fake implements AdService {
 
 class FakeScanLimitService extends Fake implements ScanLimitService {
   final BonusScanResult _bonusResult;
+  int grantBonusScanCallCount = 0;
+
   FakeScanLimitService({BonusScanResult? bonusResult})
     : _bonusResult =
           bonusResult ??
           const BonusScanResult(granted: true, bonusRemaining: 1);
 
   @override
-  Future<BonusScanResult> grantBonusScan() async => _bonusResult;
+  Future<BonusScanResult> grantBonusScan() async {
+    grantBonusScanCallCount++;
+    return _bonusResult;
+  }
 
   @override
   Future<ScanCheckResult> checkAndIncrement({
@@ -204,5 +213,52 @@ void main() {
         expect(find.text('Günlük Tarama Hakkın Doldu'), findsNothing);
       },
     );
+
+    testWidgets('rewarded ad cancellation does not grant bonus or dismiss', (
+      tester,
+    ) async {
+      final scanLimitService = FakeScanLimitService();
+
+      await tester.pumpWidget(
+        _buildSubject(
+          adService: FakeAdService(adReady: true, rewardedResult: false),
+          scanLimitService: scanLimitService,
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Reklam İzle → +1 Tarama'));
+      await tester.pumpAndSettle();
+
+      expect(scanLimitService.grantBonusScanCallCount, 0);
+      expect(find.text('Günlük Tarama Hakkın Doldu'), findsOneWidget);
+    });
+
+    testWidgets('rewarded ad keeps sheet open when bonus is denied', (
+      tester,
+    ) async {
+      final scanLimitService = FakeScanLimitService(
+        bonusResult: const BonusScanResult(
+          granted: false,
+          reason: 'max_bonus_reached',
+        ),
+      );
+
+      await tester.pumpWidget(
+        _buildSubject(
+          adService: FakeAdService(adReady: true),
+          scanLimitService: scanLimitService,
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Reklam İzle → +1 Tarama'));
+      await tester.pumpAndSettle();
+
+      expect(scanLimitService.grantBonusScanCallCount, 1);
+      expect(find.text('Günlük Tarama Hakkın Doldu'), findsOneWidget);
+    });
   });
 }
