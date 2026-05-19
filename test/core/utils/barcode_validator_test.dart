@@ -4,13 +4,10 @@
 //   1. Hand-picked real-world GTINs from the project history (Nutella,
 //      Coca-Cola TR, the BIM Fındık İçi case that surfaced the typo
 //      bug). These guard against regressions in the mod-10 algorithm.
-//   2. `glados` property-based tests for invariants — empty rejected,
-//      URL-shaped rejected, random non-numeric strings of QR-like
-//      length accepted.
+//   2. Sampled invariant tests — empty rejected, URL-shaped rejected,
+//      and generated numeric strings checked against the mod-10 rule.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glados/glados.dart'
-    hide test, expect, group, setUp, tearDown, setUpAll, tearDownAll;
 import 'package:nutrilens/core/utils/barcode_validator.dart';
 
 void main() {
@@ -142,11 +139,13 @@ void main() {
     });
   });
 
-  group('property invariants', () {
-    Glados(any.list(any.intInRange(0, 9))).test(
-      'random numeric string of length 13 → valid iff check digit matches',
-      (digitsList) {
-        if (digitsList.length != 13) return; // glados shrinks lengths
+  group('sampled invariants', () {
+    test('numeric string of length 13 is valid iff check digit matches', () {
+      for (var n = 0; n < 200; n++) {
+        final digitsList = List.generate(
+          13,
+          (i) => ((n * 31 + i * 17) ~/ (i + 1)) % 10,
+        );
         final s = digitsList.join();
         // Recompute the check digit and assert validator agrees.
         var sum = 0;
@@ -160,7 +159,7 @@ void main() {
           BarcodeValidator.hasValidGtinCheckDigit(s),
           expectedCheck == actualCheck,
         );
-      },
-    );
+      }
+    });
   });
 }

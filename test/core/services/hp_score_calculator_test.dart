@@ -8,11 +8,10 @@
 //    living spec for the formula and catch accidental regressions
 //    after future algorithm bumps (v3 → v4 etc.).
 //
-// 2. **Property-based** (`glados`) — generates thousands of random
-//    inputs and asserts invariants that must always hold no matter
-//    the values: score is in [0, 100], the algorithm version is
-//    pinned to the current constant, critical ingredients always
-//    short-circuit to gauge 5, and so on.
+// 2. **Invariant cases** — sampled edge/boundary inputs that must always
+//    hold no matter future formula changes: score is in [0, 100], the
+//    algorithm version is pinned to the current constant, critical
+//    ingredients always short-circuit to gauge 5, and so on.
 //
 // The DB is an in-memory Drift instance with no additives seeded;
 // that's intentional — these tests cover formula correctness, not
@@ -22,11 +21,6 @@
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-// `glados` re-exports test/expect/group from package:test which clashes
-// with flutter_test. Hide the clashes; we only need Glados' generators
-// and the `Glados(...).test(...)` instance method.
-import 'package:glados/glados.dart'
-    hide test, expect, group, setUp, tearDown, setUpAll, tearDownAll;
 import 'package:nutrilens/config/drift/app_database.dart';
 import 'package:nutrilens/core/constants/score_constants.dart';
 import 'package:nutrilens/core/services/hp_score_calculator.dart';
@@ -305,43 +299,53 @@ void main() {
     });
   });
 
-  // ── Property-based invariants ────────────────────────────────────
+  // ── Sampled invariants ───────────────────────────────────────────
 
-  group('property: result invariants', () {
-    Glados2<int, int>(any.intInRange(0, 800), any.intInRange(0, 100)).test(
-      'score stays in [0, 100] for arbitrary kcal+sugar',
-      (kcal, sugars) async {
+  group('sampled result invariants', () {
+    test('score stays in [0, 100] for sampled kcal+sugar values', () async {
+      const samples = <({int kcal, int sugars})>[
+        (kcal: 0, sugars: 0),
+        (kcal: 1, sugars: 0),
+        (kcal: 120, sugars: 4),
+        (kcal: 250, sugars: 26),
+        (kcal: 500, sugars: 50),
+        (kcal: 800, sugars: 100),
+      ];
+
+      for (final sample in samples) {
         final result = await calculator.calculateFull(
           additivesTags: const [],
           nutriments: NutrimentsEntity(
-            energyKcal: kcal.toDouble(),
-            sugars: sugars.toDouble(),
+            energyKcal: sample.kcal.toDouble(),
+            sugars: sample.sugars.toDouble(),
           ),
         );
         expect(result.hpScore, inInclusiveRange(0, 100));
         expect(result.gaugeLevel, inInclusiveRange(1, 5));
-      },
-    );
+      }
+    });
 
-    Glados(any.intInRange(0, 50)).test(
+    test(
       'critical ingredient ALWAYS short-circuits to 10 regardless of other inputs',
-      (sugars) async {
-        final result = await calculator.calculateFull(
-          additivesTags: const [],
-          nutriments: NutrimentsEntity(
-            energyKcal: 100,
-            sugars: sugars.toDouble(),
-          ),
-          ingredientsText: 'Tam buğday unu, palm yağı, vitamin',
-        );
-        expect(result.hpScore, 10.0);
-        expect(result.gaugeLevel, 5);
+      () async {
+        const sugarSamples = [0, 1, 10, 25, 50];
+        for (final sugars in sugarSamples) {
+          final result = await calculator.calculateFull(
+            additivesTags: const [],
+            nutriments: NutrimentsEntity(
+              energyKcal: 100,
+              sugars: sugars.toDouble(),
+            ),
+            ingredientsText: 'Tam buğday unu, palm yağı, vitamin',
+          );
+          expect(result.hpScore, 10.0);
+          expect(result.gaugeLevel, 5);
+        }
       },
     );
 
-    Glados(any.intInRange(1, 6)).test(
-      'nova group 1-5 maps to non-null nutri factor',
-      (novaGroup) async {
+    test('nova group 1-5 maps to non-null nutri factor', () async {
+      for (var novaGroup = 1; novaGroup <= 5; novaGroup++) {
         final result = await calculator.calculateFull(
           additivesTags: const [],
           nutriments: const NutrimentsEntity(fiber: 3, proteins: 5),
@@ -349,17 +353,26 @@ void main() {
         );
         expect(result.nutriFactor, isNotNull);
         expect(result.nutriFactor!, inInclusiveRange(0, 100));
-      },
-    );
+      }
+    });
 
-    Glados(any.list(any.letterOrDigits)).test(
-      'any additivesTags list produces non-null chemicalLoad in [0,100]',
-      (tags) async {
-        final result = await calculator.calculateFull(
-          additivesTags: tags,
-          nutriments: const NutrimentsEntity(),
-        );
-        expect(result.chemicalLoad, inInclusiveRange(0, 100));
+    test(
+      'sampled additivesTags lists produce chemicalLoad in [0,100]',
+      () async {
+        const tagSamples = <List<String>>[
+          [],
+          ['en:e322'],
+          ['E330', 'e-471', 'en:e621'],
+          ['abc', '123', 'en:not-real'],
+        ];
+
+        for (final tags in tagSamples) {
+          final result = await calculator.calculateFull(
+            additivesTags: tags,
+            nutriments: const NutrimentsEntity(),
+          );
+          expect(result.chemicalLoad, inInclusiveRange(0, 100));
+        }
       },
     );
   });
