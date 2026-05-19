@@ -106,6 +106,21 @@ void main() {
 
     group('checkAndIncrement', () {
       test(
+        'returns unlimited immediately when local premium is already known',
+        () async {
+          final result = await service.checkAndIncrement(localPremium: true);
+
+          expect(result.allowed, isTrue);
+          expect(result.remaining, -1);
+          expect(result.isPremium, isTrue);
+          verifyNever(() => mockClient.auth);
+          verifyNever(
+            () => mockClient.rpc(any(), params: any(named: 'params')),
+          );
+        },
+      );
+
+      test(
         'returns denied immediately when user is not authenticated',
         () async {
           when(() => mockAuth.currentUser).thenReturn(null);
