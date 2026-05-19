@@ -66,6 +66,9 @@ void main() {
       expect(content, contains('logcat'));
       expect(content, contains('NavigateTabs'));
       expect(content, contains('uiautomator dump'));
+      expect(content, contains('android.permission.CAMERA'));
+      expect(content, contains('qa-summary.json'));
+      expect(content, contains('FATAL EXCEPTION'));
     });
   });
 }

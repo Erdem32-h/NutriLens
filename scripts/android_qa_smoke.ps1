@@ -126,6 +126,67 @@ function Capture-CurrentScreen {
     -OutputPath (Join-Path $ArtifactDir "$Name-screenshot.png")
 }
 
+function Count-FileMatches {
+  param(
+    [string]$Path,
+    [string]$Pattern
+  )
+
+  if (-not (Test-Path $Path)) {
+    return 0
+  }
+
+  return @(Select-String -Path $Path -Pattern $Pattern -CaseSensitive:$false).Count
+}
+
+function Get-LaunchMetric {
+  param(
+    [string]$Path,
+    [string]$Name
+  )
+
+  if (-not (Test-Path $Path)) {
+    return $null
+  }
+
+  $match = [regex]::Match((Get-Content -Raw -Path $Path), "$Name`: (\d+)")
+  if ($match.Success) {
+    return [int]$match.Groups[1].Value
+  }
+
+  return $null
+}
+
+function Write-QaSummary {
+  $launchPath = Join-Path $ArtifactDir "launch.txt"
+  $crashPath = Join-Path $ArtifactDir "crash.txt"
+  $logcatPath = Join-Path $ArtifactDir "logcat.txt"
+
+  $navScreens = Get-ChildItem -Path $ArtifactDir -Filter "nav-*-screenshot.png" -ErrorAction SilentlyContinue |
+    Sort-Object Name |
+    ForEach-Object { $_.Name }
+
+  $summary = [ordered]@{
+    generatedAt = (Get-Date).ToString("o")
+    package = $Package
+    buildMode = $BuildMode
+    navigateTabs = [bool]$NavigateTabs
+    capturePerformance = [bool]$CapturePerformance
+    launchTotalTimeMs = Get-LaunchMetric -Path $launchPath -Name "TotalTime"
+    launchWaitTimeMs = Get-LaunchMetric -Path $launchPath -Name "WaitTime"
+    crashBytes = if (Test-Path $crashPath) { (Get-Item $crashPath).Length } else { $null }
+    fatalExceptionCount = Count-FileMatches -Path $logcatPath -Pattern "FATAL EXCEPTION"
+    anrCount = Count-FileMatches -Path $logcatPath -Pattern "\bANR\b"
+    revenueCatDebugLogCount = Count-FileMatches -Path $logcatPath -Pattern "\[Purchases\]\s+-\s+DEBUG:|Debug logging enabled"
+    purchaseNotAllowedCount = Count-FileMatches -Path $logcatPath -Pattern "PurchaseNotAllowedError|BILLING_UNAVAILABLE"
+    navScreens = @($navScreens)
+  }
+
+  $summary |
+    ConvertTo-Json -Depth 4 |
+    Out-File -Encoding utf8 (Join-Path $ArtifactDir "qa-summary.json")
+}
+
 New-Item -ItemType Directory -Force -Path $ArtifactDir | Out-Null
 
 Run-Step "List adb devices" {
@@ -156,6 +217,12 @@ if ($UninstallFirst) {
 
 Run-Step "Install APK" {
   Invoke-Adb install -r $apk
+}
+
+if ($NavigateTabs) {
+  Run-Step "Grant camera permission for navigation smoke" {
+    Invoke-Adb shell pm grant $Package android.permission.CAMERA
+  }
 }
 
 Run-Step "Record installed packages" {
@@ -232,6 +299,10 @@ Run-Step "Capture logcat" {
 Run-Step "Capture crash buffer" {
   Invoke-Adb logcat -b crash -d |
     Out-File -Encoding utf8 (Join-Path $ArtifactDir "crash.txt")
+}
+
+Run-Step "Write QA summary" {
+  Write-QaSummary
 }
 
 Write-Host "Android QA smoke completed. Artifacts: $ArtifactDir"
