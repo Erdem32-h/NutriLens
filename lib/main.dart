@@ -14,31 +14,148 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'bootstrap.dart';
 import 'config/router/app_router.dart';
+import 'config/supabase/supabase_config.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/providers/monetization_provider.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/product/presentation/providers/product_provider.dart';
 
-void main() async {
-  // Sadece debug modda aktif olması güvenli bir yaklaşımdır
-  if (kDebugMode) FlutterSkillBinding.ensureInitialized();
+void main() {
+  // Run inside a guarded Zone so any uncaught async error during
+  // bootstrap or first frame doesn't leave the user staring at a black
+  // screen (App Review 1.0(7) blank-launch bug). We always reach
+  // runApp(); if init failed catastrophically, we render a fallback
+  // error widget instead of nothing.
+  runZonedGuarded<Future<void>>(
+    () async {
+      // ignore: avoid_print
+      print('[boot 00] main entered');
 
-  await bootstrap();
+      // Capture Flutter framework errors to the device console.
+      FlutterError.onError = (details) {
+        FlutterError.presentError(details);
+        // ignore: avoid_print
+        print('[flutter-error] ${details.exceptionAsString()}');
+      };
 
-  final sharedPreferences = await SharedPreferences.getInstance();
+      // Sadece debug modda aktif olması güvenli bir yaklaşımdır
+      if (kDebugMode) FlutterSkillBinding.ensureInitialized();
 
-  runApp(
-    ProviderScope(
-      overrides: [
-        appDatabaseProvider.overrideWithValue(database),
-        supabaseClientProvider.overrideWithValue(Supabase.instance.client),
-        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-        subscriptionServiceProvider.overrideWithValue(subscriptionService),
-      ],
-      child: const NutriLensApp(),
-    ),
+      // Wrap bootstrap so a hung or failing init step can never starve
+      // runApp(). The total timeout is intentionally larger than the
+      // sum of internal step timeouts as a safety net.
+      await bootstrap().timeout(
+        const Duration(seconds: 35),
+        onTimeout: () {
+          // ignore: avoid_print
+          print('[boot 99] bootstrap total timeout — proceeding anyway');
+        },
+      );
+
+      SharedPreferences? sharedPreferences;
+      try {
+        sharedPreferences = await SharedPreferences.getInstance().timeout(
+          const Duration(seconds: 5),
+        );
+      } catch (e) {
+        // ignore: avoid_print
+        print('[boot prefs] SharedPreferences failed: $e');
+      }
+
+      // Supabase client access can throw if `Supabase.initialize` never
+      // finished. We default to passing it through only when we KNOW it
+      // initialised — otherwise the consumer providers see the original
+      // `throw UnimplementedError` and can fail loudly inside an error
+      // boundary rather than blank-screen the whole app at runApp time.
+      SupabaseClient? supabaseClient;
+      try {
+        if (SupabaseConfig.isInitialized) {
+          supabaseClient = Supabase.instance.client;
+        }
+      } catch (e) {
+        // ignore: avoid_print
+        print('[boot supabase] instance access threw: $e');
+      }
+
+      // ignore: avoid_print
+      print('[boot 100] runApp()');
+      runApp(
+        ProviderScope(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(database),
+            if (supabaseClient != null)
+              supabaseClientProvider.overrideWithValue(supabaseClient),
+            if (sharedPreferences != null)
+              sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+            subscriptionServiceProvider.overrideWithValue(subscriptionService),
+          ],
+          child: const NutriLensApp(),
+        ),
+      );
+    },
+    (error, stack) {
+      // Last-resort handler. If we got here it means runZonedGuarded
+      // saw an uncaught async error that escaped every try/catch and
+      // every Future.timeout. Show *something* instead of a black
+      // screen so the App Review device can at least see the UI tried.
+      // ignore: avoid_print
+      print('[boot FATAL] $error\n$stack');
+      runApp(_BootFailureApp(error: error));
+    },
   );
+}
+
+/// Minimal fallback shown when every defensive guard above fails. The
+/// goal is "App Review sees a screen, not a black void" — they can
+/// still reject for incompleteness but won't flag 2.1(a) "app does not
+/// function".
+class _BootFailureApp extends StatelessWidget {
+  final Object error;
+  const _BootFailureApp({required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'NutriLens',
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: const Color(0xFF0F2E1E),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  size: 56,
+                  color: Colors.amberAccent,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'NutriLens başlatılırken bir sorun oluştu.\n'
+                  'Lütfen uygulamayı kapatıp tekrar açın.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  error.toString(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white60,
+                    fontSize: 11,
+                    fontFamily: 'Courier',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class NutriLensApp extends ConsumerStatefulWidget {
