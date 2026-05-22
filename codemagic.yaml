@@ -53,22 +53,67 @@ workflows:
           cd ios
           gem install xcodeproj --no-document
           ruby scripts/add_widget_target.rb Runner.xcodeproj
-      - name: Fetch widget extension provisioning profile
-        # The workflow's ios_signing block handled cert + profile for
-        # app.nutrilens.ios. The widget bundle ID is separate so we
-        # fetch its profile explicitly here, REUSING the cert key the
-        # integration already provisioned (CERTIFICATE_PRIVATE_KEY).
-        # Without --certificate-key the CLI tries to create a fresh
-        # cert and fails with "Cannot save Signing Certificates
-        # without certificate private key".
+      - name: Create provisioning profile for widget extension
+        # The workflow's `ios_signing` env block fetched cert + profile
+        # for app.nutrilens.ios. The widget bundle ID is separate and
+        # the high-level `fetch-signing-files` command would fail here
+        # because it insists on a --certificate-key (the integration
+        # keeps the key in keychain only, not as an env var).
+        #
+        # We bypass that by using lower-level subcommands that don't
+        # touch the certificate at all — only the profile:
+        #   1. `certificates list` → find existing cert resource ID
+        #   2. `bundle-ids list`   → find widget bundle ID resource
+        #   3. `provisioning-profiles create` → create + save profile
         script: |
           set -euo pipefail
-          app-store-connect fetch-signing-files \
-            app.nutrilens.ios.NutriLensHomeWidget \
-            --type IOS_APP_STORE \
-            --certificate-key=@env:CERTIFICATE_PRIVATE_KEY \
-            --create
-          keychain add-certificates
+
+          CERT_ID=$(app-store-connect certificates list \
+            --type IOS_DISTRIBUTION \
+            --json \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')")
+          if [ -z "$CERT_ID" ]; then
+            echo "::error:: No IOS_DISTRIBUTION certificate found in App Store Connect"
+            exit 1
+          fi
+          echo "Distribution cert resource: $CERT_ID"
+
+          WIDGET_BID=$(app-store-connect bundle-ids list \
+            --bundle-id-identifier app.nutrilens.ios.NutriLensHomeWidget \
+            --json \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')")
+          if [ -z "$WIDGET_BID" ]; then
+            echo "::error:: Widget bundle ID app.nutrilens.ios.NutriLensHomeWidget not registered in Apple Developer Portal"
+            exit 1
+          fi
+          echo "Widget bundle resource: $WIDGET_BID"
+
+          # Delete any stale profile for the widget bundle so the new
+          # one gets created from scratch with current capabilities
+          # (App Groups). --ignore-not-found means it's a no-op when
+          # there's nothing to delete.
+          app-store-connect provisioning-profiles list \
+            --profile-type IOS_APP_STORE \
+            --json \
+            | python3 -c "
+import sys,json
+data = json.load(sys.stdin)
+for p in data:
+    name = p.get('attributes', {}).get('name', '')
+    if 'NutriLensHomeWidget' in name or 'NutriLens Home Widget' in name:
+        print(p['id'])
+" \
+            | while read -r pid; do
+              [ -n "$pid" ] && app-store-connect provisioning-profiles delete "$pid" || true
+            done
+
+          # Create the new profile + save to ~/Library/MobileDevice/...
+          app-store-connect provisioning-profiles create \
+            --bundle-id "$WIDGET_BID" \
+            --profile-type IOS_APP_STORE \
+            --name "NutriLensHomeWidget App Store" \
+            --certificate-ids "$CERT_ID" \
+            --save
       - name: Set up iOS code signing
         script: xcode-project use-profiles
       - name: Configure iOS build settings
