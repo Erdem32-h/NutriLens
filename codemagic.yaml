@@ -10,7 +10,16 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: app.nutrilens.ios
+        # List form so Codemagic creates/fetches profiles for BOTH
+        # targets at clone time, regardless of whether the widget is
+        # already present in pbxproj (the Ruby script below adds it
+        # if missing). Without the widget entry here, the workflow's
+        # auto-signing only handles the first bundle ID and the
+        # widget archive step later fails with "requires a
+        # provisioning profile" / "doesn't include App Groups".
+        bundle_identifier:
+          - app.nutrilens.ios
+          - app.nutrilens.ios.NutriLensHomeWidget
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -42,43 +51,24 @@ workflows:
         script: flutter pub get
       - name: Code generation
         script: dart run build_runner build --delete-conflicting-outputs
-      - name: Add Widget Extension target to Runner.xcodeproj
-        # The pbxproj in the repo only ships the Runner target; the
-        # NutriLensHomeWidget extension is wired in at build time by this
-        # script (idempotent). Must run BEFORE `xcode-project use-profiles`
-        # so the new target gets a matching provisioning profile.
+      - name: Ensure Widget Extension target in Runner.xcodeproj
+        # Idempotent safety net: the widget target is COMMITTED in the
+        # repo's pbxproj (see tools/setup_widget_target.ps1) so the
+        # `ios_signing` env block at the top of this workflow can see
+        # both bundle IDs at clone time and auto-create profiles for
+        # both. This script is a no-op when the target already exists;
+        # it only re-runs if pbxproj somehow lost the target (e.g.
+        # accidental revert) so the build still succeeds.
         script: |
           cd ios
           gem install xcodeproj --no-document
           ruby scripts/add_widget_target.rb Runner.xcodeproj
-      - name: Fetch provisioning profiles for both targets
-        # Codemagic's automatic `ios_signing` block at the top of this
-        # workflow ran at clone time, when the widget target was NOT
-        # yet in pbxproj — it only created a profile for the main
-        # bundle. Now that the widget target exists we explicitly
-        # fetch/create profiles for BOTH bundle IDs.
-        #
-        # We also do this even for the main bundle because Apple
-        # Developer Portal capability changes (e.g. adding App Groups
-        # to the App ID after the profile was created) require the
-        # profile to be regenerated; this call picks up the latest
-        # capabilities.
-        script: |
-          set -euo pipefail
-          app-store-connect fetch-signing-files \
-            app.nutrilens.ios \
-            --type IOS_APP_STORE \
-            --create
-          app-store-connect fetch-signing-files \
-            app.nutrilens.ios.NutriLensHomeWidget \
-            --type IOS_APP_STORE \
-            --create
-          # Re-add any newly-downloaded certificates to the keychain so
-          # codesign can find their private keys at archive time.
-          keychain add-certificates
       - name: Set up iOS code signing
-        # Patches pbxproj DEVELOPMENT_TEAM / PROVISIONING_PROFILE_SPECIFIER
-        # for every target based on what's in ~/Library/MobileDevice.
+        # `ios_signing` env block + workflow-level app_store_connect
+        # integration handled cert+profile fetch automatically at
+        # clone time (for ALL bundle IDs in pbxproj). Here we just
+        # patch the pbxproj to point each target at its downloaded
+        # profile.
         script: xcode-project use-profiles
       - name: Configure iOS build settings
         script: |
