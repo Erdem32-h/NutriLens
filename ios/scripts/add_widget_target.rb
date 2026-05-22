@@ -111,12 +111,48 @@ widget.build_configurations.each do |config|
 end
 
 # 5. Embed extension into Runner ──────────────────────────────────────────
-existing_embed = runner.build_phases.find do |p|
+# Xcode's new build system traces dependencies via file I/O, not phase
+# order. A plain `Embed Foundation Extensions` Copy-Files phase writes
+# into Runner.app/PlugIns/ — the same Runner.app that Flutter's Thin
+# Binary, the Pods Embed Frameworks script, and ProcessInfoPlistFile
+# all also modify. With no explicit input/output declared, Xcode can't
+# disambiguate the order and forms a "Cycle inside Runner" error.
+#
+# Fix: use a Run Script phase with EXPLICIT input_paths + output_paths
+# so the dep graph is unambiguous. Functionally identical to Copy Files
+# (cp -R the .appex into PlugIns/), but Xcode now knows the precise
+# inputs/outputs and orders the phase correctly relative to all the
+# other things that touch Runner.app.
+
+# Remove any previous Copy-Files embed phase from earlier runs of this
+# script (idempotency: don't accumulate phases).
+runner.build_phases.delete_if do |p|
   p.respond_to?(:name) && p.name == 'Embed Foundation Extensions'
 end
-embed_phase = existing_embed || runner.new_copy_files_build_phase('Embed Foundation Extensions')
-embed_phase.symbol_dst_subfolder_spec = :plug_ins
-embed_phase.add_file_reference(widget.product_reference, true)
+
+embed_phase = runner.new_shell_script_build_phase('Embed Foundation Extensions')
+embed_phase.shell_script = <<~SH
+  set -e
+  mkdir -p "${TARGET_BUILD_DIR}/${WRAPPER_NAME}/PlugIns"
+  rm -rf "${TARGET_BUILD_DIR}/${WRAPPER_NAME}/PlugIns/NutriLensHomeWidget.appex"
+  cp -R "${BUILT_PRODUCTS_DIR}/NutriLensHomeWidget.appex" \
+        "${TARGET_BUILD_DIR}/${WRAPPER_NAME}/PlugIns/"
+SH
+embed_phase.input_paths  = ['$(BUILT_PRODUCTS_DIR)/NutriLensHomeWidget.appex']
+embed_phase.output_paths = ['$(TARGET_BUILD_DIR)/$(WRAPPER_NAME)/PlugIns/NutriLensHomeWidget.appex']
+
+# Place the embed phase AFTER Thin Binary so the thinned binary is
+# what gets copied into the host bundle. With explicit input/output
+# this ordering is unambiguous and no cycle forms.
+thin_binary_phase = runner.build_phases.find do |p|
+  p.respond_to?(:name) && p.name == 'Thin Binary'
+end
+if thin_binary_phase
+  phases = runner.build_phases
+  phases.delete(embed_phase)
+  thin_index = phases.index(thin_binary_phase)
+  phases.insert(thin_index + 1, embed_phase)
+end
 
 # 6. Runner depends on widget (forces widget to build first) ──────────────
 runner.add_dependency(widget) unless runner.dependencies.any? { |d| d.target == widget }
