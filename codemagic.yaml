@@ -61,10 +61,11 @@ workflows:
         # keeps the key in keychain only, not as an env var).
         #
         # We bypass that by using lower-level subcommands that don't
-        # touch the certificate at all — only the profile:
+        # touch the certificate private key at all — only the profile:
         #   1. `certificates list` → find existing cert resource ID
         #   2. `bundle-ids list`   → find widget bundle ID resource
-        #   3. `provisioning-profiles create` → create + save profile
+        #   3. `profiles create` → create profile
+        #   4. `bundle-ids profiles --save` → download profile locally
         script: |
           set -euo pipefail
 
@@ -95,21 +96,26 @@ workflows:
           # Delete any stale profile that references the widget bundle
           # so the new one gets created with current capabilities
           # (App Groups). No-op if there's nothing matching.
-          STALE_IDS=$(app-store-connect list-profiles \
-            --profile-type IOS_APP_STORE \
+          STALE_IDS=$(app-store-connect profiles list \
+            --type IOS_APP_STORE \
             --json \
             | python3 -c "import sys,json; print('\n'.join(p['id'] for p in json.load(sys.stdin) if 'NutriLensHomeWidget' in p.get('attributes',{}).get('name','') or 'NutriLens Home Widget' in p.get('attributes',{}).get('name','')))")
           for pid in $STALE_IDS; do
             echo "Deleting stale widget profile: $pid"
-            app-store-connect delete-profile "$pid" || true
+            app-store-connect profiles delete "$pid" --ignore-not-found --skip-confirmation || true
           done
 
-          # Create the new profile + save to ~/Library/MobileDevice/...
-          app-store-connect create-profile \
-            --bundle-id "$WIDGET_BID" \
-            --profile-type IOS_APP_STORE \
+          # Create the new profile, then save it to the default
+          # provisioning profiles directory for xcode-project use-profiles.
+          app-store-connect profiles create \
+            --bundle-id-id "$WIDGET_BID" \
+            --type IOS_APP_STORE \
             --name "NutriLensHomeWidget App Store" \
-            --certificate-ids "$CERT_ID" \
+            --certificate-ids "$CERT_ID"
+          app-store-connect bundle-ids profiles \
+            --bundle-ids "$WIDGET_BID" \
+            --type IOS_APP_STORE \
+            --name "NutriLensHomeWidget App Store" \
             --save
       - name: Set up iOS code signing
         script: xcode-project use-profiles
