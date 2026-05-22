@@ -95,17 +95,17 @@ workflows:
           # Delete any stale profile that references the widget bundle
           # so the new one gets created with current capabilities
           # (App Groups). No-op if there's nothing matching.
-          STALE_IDS=$(app-store-connect provisioning-profiles list \
+          STALE_IDS=$(app-store-connect list-profiles \
             --profile-type IOS_APP_STORE \
             --json \
             | python3 -c "import sys,json; print('\n'.join(p['id'] for p in json.load(sys.stdin) if 'NutriLensHomeWidget' in p.get('attributes',{}).get('name','') or 'NutriLens Home Widget' in p.get('attributes',{}).get('name','')))")
           for pid in $STALE_IDS; do
             echo "Deleting stale widget profile: $pid"
-            app-store-connect provisioning-profiles delete "$pid" || true
+            app-store-connect delete-profile "$pid" || true
           done
 
           # Create the new profile + save to ~/Library/MobileDevice/...
-          app-store-connect provisioning-profiles create \
+          app-store-connect create-profile \
             --bundle-id "$WIDGET_BID" \
             --profile-type IOS_APP_STORE \
             --name "NutriLensHomeWidget App Store" \
