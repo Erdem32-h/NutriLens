@@ -95,7 +95,12 @@ widget.build_configurations.each do |config|
     'SWIFT_VERSION'                   => SWIFT_VERSION,
     'TARGETED_DEVICE_FAMILY'          => '1,2',
     'GENERATE_INFOPLIST_FILE'         => 'NO',
-    'CODE_SIGN_STYLE'                 => 'Automatic',
+    # Manual signing on CI: Codemagic's `xcode-project use-profiles`
+    # patches DEVELOPMENT_TEAM, PROVISIONING_PROFILE_SPECIFIER and
+    # CODE_SIGN_IDENTITY at build time based on the App Store Connect
+    # integration. Automatic style would try to log in to Xcode's
+    # signing UI and fail on a headless runner.
+    'CODE_SIGN_STYLE'                 => 'Manual',
     'SKIP_INSTALL'                    => 'NO',
     'LD_RUNPATH_SEARCH_PATHS'         =>
       '$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks',
