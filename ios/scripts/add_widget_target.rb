@@ -90,6 +90,8 @@ widget.build_configurations.each do |config|
     'INFOPLIST_FILE'                  => "#{WIDGET_FOLDER}/Info.plist",
     'PRODUCT_BUNDLE_IDENTIFIER'       => WIDGET_BUNDLE,
     'PRODUCT_NAME'                    => '$(TARGET_NAME)',
+    'PRODUCT_BUNDLE_PACKAGE_TYPE'     => 'XPC!',
+    'WRAPPER_EXTENSION'               => 'appex',
     'CODE_SIGN_ENTITLEMENTS'          => "#{WIDGET_FOLDER}/#{WIDGET_TARGET}.entitlements",
     'IPHONEOS_DEPLOYMENT_TARGET'      => DEPLOYMENT_TARGET,
     'SWIFT_VERSION'                   => SWIFT_VERSION,

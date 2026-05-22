@@ -168,6 +168,22 @@ workflows:
             --dart-define=PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL \
             --dart-define=TERMS_OF_USE_URL=$TERMS_OF_USE_URL \
             --export-options-plist=/Users/builder/export_options.plist
+      - name: Validate IPA bundle structure
+        script: |
+          set -euo pipefail
+          IPA_PATH=$(ls build/ios/ipa/*.ipa | head -n 1)
+          TMP_DIR=$(mktemp -d)
+          unzip -q "$IPA_PATH" -d "$TMP_DIR"
+          WIDGET_DIR="$TMP_DIR/Payload/Runner.app/PlugIns/NutriLensHomeWidget.appex"
+          if [ ! -d "$WIDGET_DIR" ]; then
+            echo "::error:: NutriLensHomeWidget.appex is missing from Runner.app/PlugIns"
+            find "$TMP_DIR/Payload/Runner.app" -maxdepth 3 -type d | sort
+            exit 1
+          fi
+          echo "Embedded widget bundle: $WIDGET_DIR"
+          /usr/libexec/PlistBuddy -c "Print :CFBundlePackageType" "$WIDGET_DIR/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$WIDGET_DIR/Info.plist"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundlePackageType' "$WIDGET_DIR/Info.plist")" = "XPC!"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
