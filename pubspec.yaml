@@ -113,6 +113,9 @@ flutter_launcher_icons:
     image_path: "assets/icon/nutrilens_icon_1024.png"
 
 flutter:
+  config:
+    enable-swift-package-manager: false
+
   uses-material-design: true
   generate: true
 

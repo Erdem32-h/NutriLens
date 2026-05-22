@@ -29,6 +29,15 @@ workflows:
           echo "ADMOB_REWARDED_IOS=$ADMOB_REWARDED_IOS" >> .env
           echo "PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL" >> .env
           echo "TERMS_OF_USE_URL=$TERMS_OF_USE_URL" >> .env
+      - name: Disable Swift Package Manager
+        # google_mobile_ads is CocoaPods-only and depends on
+        # webview_flutter_wkwebview, which Flutter's auto-SPM integration
+        # tries to resolve via SPM. The two collide and `pod install`
+        # fails with "Unable to find a specification for
+        # webview_flutter_wkwebview". Until google_mobile_ads ships an
+        # SPM manifest we force the whole project onto CocoaPods.
+        # See: https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers#how-to-turn-off-swift-package-manager
+        script: flutter config --no-enable-swift-package-manager
       - name: Flutter pub get
         script: flutter pub get
       - name: Code generation
