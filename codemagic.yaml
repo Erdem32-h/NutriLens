@@ -110,16 +110,25 @@ workflows:
               --capability "App Groups" || true
           done
 
-          # Delete stale profiles so the new ones are created after the
-          # App Groups capability exists on both Bundle IDs.
-          STALE_IDS=$(app-store-connect profiles list \
-            --type IOS_APP_STORE \
-            --json \
-            | python3 -c "import sys,json; names=('NutriLens App Store','NutriLensHomeWidget App Store','NutriLens Home Widget'); print('\n'.join(p['id'] for p in json.load(sys.stdin) if any(n in p.get('attributes',{}).get('name','') for n in names)))")
-          for pid in $STALE_IDS; do
-            echo "Deleting stale App Store profile: $pid"
-            app-store-connect profiles delete "$pid" --ignore-not-found --skip-confirmation || true
-          done
+          # Delete stale profiles by exact name so duplicate widget
+          # profiles do not make `profiles create` fail with 409.
+          delete_profiles_by_name() {
+            local profile_name="$1"
+            local stale_ids
+            stale_ids=$(app-store-connect profiles list \
+              --type IOS_APP_STORE \
+              --name "$profile_name" \
+              --json \
+              | python3 -c "import sys,json; print('\n'.join(p['id'] for p in json.load(sys.stdin)))")
+            for pid in $stale_ids; do
+              echo "Deleting stale App Store profile '$profile_name': $pid"
+              yes | app-store-connect profiles delete "$pid" --ignore-not-found || true
+            done
+          }
+
+          delete_profiles_by_name "NutriLens App Store"
+          delete_profiles_by_name "NutriLensHomeWidget App Store"
+          delete_profiles_by_name "NutriLens Home Widget"
 
           # Create fresh profiles, then save them to the default
           # provisioning profiles directory for xcode-project use-profiles.
