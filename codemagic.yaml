@@ -64,8 +64,7 @@ workflows:
         # touch the certificate private key at all — only the profile:
         #   1. `certificates list` → find existing cert resource ID
         #   2. `bundle-ids list`   → find widget bundle ID resource
-        #   3. `profiles create` → create profile
-        #   4. `bundle-ids profiles --save` → download profile locally
+        #   3. `profiles create ... --save` → create + download profile
         script: |
           set -euo pipefail
 
@@ -108,14 +107,10 @@ workflows:
           # Create the new profile, then save it to the default
           # provisioning profiles directory for xcode-project use-profiles.
           app-store-connect profiles create \
-            --bundle-id-id "$WIDGET_BID" \
+            "$WIDGET_BID" \
             --type IOS_APP_STORE \
             --name "NutriLensHomeWidget App Store" \
-            --certificate-ids "$CERT_ID"
-          app-store-connect bundle-ids profiles \
-            --bundle-ids "$WIDGET_BID" \
-            --type IOS_APP_STORE \
-            --name "NutriLensHomeWidget App Store" \
+            --certificate-ids "$CERT_ID" \
             --save
       - name: Set up iOS code signing
         script: xcode-project use-profiles
