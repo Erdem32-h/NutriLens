@@ -68,12 +68,16 @@ workflows:
         script: |
           set -euo pipefail
 
-          CERT_ID=$(app-store-connect certificates list \
-            --type IOS_DISTRIBUTION \
-            --json \
-            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['id'] if d else '')")
+          # No --type filter: Apple uses 'DISTRIBUTION' (modern generic
+          # iOS+macOS+tvOS cert) or 'IOS_DISTRIBUTION' (legacy iOS-only).
+          # Filter in Python to accept either; prefer DISTRIBUTION when
+          # both exist.
+          CERT_ID=$(app-store-connect certificates list --json \
+            | python3 -c "import sys,json; c=json.load(sys.stdin); d=[x for x in c if x.get('attributes',{}).get('certificateType') in ('DISTRIBUTION','IOS_DISTRIBUTION')]; d.sort(key=lambda x: 0 if x['attributes']['certificateType']=='DISTRIBUTION' else 1); print(d[0]['id'] if d else '')")
           if [ -z "$CERT_ID" ]; then
-            echo "::error:: No IOS_DISTRIBUTION certificate found in App Store Connect"
+            echo "::error:: No DISTRIBUTION or IOS_DISTRIBUTION certificate found in App Store Connect. Available types:"
+            app-store-connect certificates list --json \
+              | python3 -c "import sys,json; [print('  -',c.get('attributes',{}).get('certificateType','?'),c.get('id','?')) for c in json.load(sys.stdin)]"
             exit 1
           fi
           echo "Distribution cert resource: $CERT_ID"
