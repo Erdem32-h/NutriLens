@@ -51,7 +51,34 @@ workflows:
           cd ios
           gem install xcodeproj --no-document
           ruby scripts/add_widget_target.rb Runner.xcodeproj
+      - name: Fetch provisioning profiles for both targets
+        # Codemagic's automatic `ios_signing` block at the top of this
+        # workflow ran at clone time, when the widget target was NOT
+        # yet in pbxproj — it only created a profile for the main
+        # bundle. Now that the widget target exists we explicitly
+        # fetch/create profiles for BOTH bundle IDs.
+        #
+        # We also do this even for the main bundle because Apple
+        # Developer Portal capability changes (e.g. adding App Groups
+        # to the App ID after the profile was created) require the
+        # profile to be regenerated; this call picks up the latest
+        # capabilities.
+        script: |
+          set -euo pipefail
+          app-store-connect fetch-signing-files \
+            app.nutrilens.ios \
+            --type IOS_APP_STORE \
+            --create
+          app-store-connect fetch-signing-files \
+            app.nutrilens.ios.NutriLensHomeWidget \
+            --type IOS_APP_STORE \
+            --create
+          # Re-add any newly-downloaded certificates to the keychain so
+          # codesign can find their private keys at archive time.
+          keychain add-certificates
       - name: Set up iOS code signing
+        # Patches pbxproj DEVELOPMENT_TEAM / PROVISIONING_PROFILE_SPECIFIER
+        # for every target based on what's in ~/Library/MobileDevice.
         script: xcode-project use-profiles
       - name: Configure iOS build settings
         script: |
