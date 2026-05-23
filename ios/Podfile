@@ -39,4 +39,29 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
   end
+
+  # Cycle-breaker: Xcode 16's new build system treats CocoaPods'
+  # `[CP] Embed Pods Frameworks` Run-Script phase as if it reads &
+  # writes the whole Runner.app/Frameworks tree. Combined with the
+  # widget extension's Embed Foundation Extensions Copy phase + the
+  # Flutter Thin Binary phase, that triggers "Cycle inside Runner".
+  # Marking the CP script `alwaysOutOfDate = 1` opts it out of
+  # implicit dependency tracking so the cycle never forms. See:
+  # https://github.com/flutter/flutter/issues/149998
+  runner_project_path = File.expand_path('Runner.xcodeproj', __dir__)
+  if File.exist?(runner_project_path)
+    require 'xcodeproj'
+    runner_project = Xcodeproj::Project.open(runner_project_path)
+    runner_target = runner_project.targets.find { |t| t.name == 'Runner' }
+    if runner_target
+      ['[CP] Embed Pods Frameworks', '[CP] Copy Pods Resources'].each do |name|
+        phase = runner_target.build_phases.find { |p| p.respond_to?(:name) && p.name == name }
+        if phase && phase.respond_to?(:always_out_of_date=)
+          phase.always_out_of_date = '1'
+          puts "[Podfile] marked '#{name}' as alwaysOutOfDate"
+        end
+      end
+      runner_project.save
+    end
+  end
 end

@@ -138,8 +138,29 @@ embed_phase.symbol_dst_subfolder_spec = :plug_ins
 embed_phase.add_file_reference(widget.product_reference, true)
 
 # Use Apple's default phase ordering (embed at the end, after Thin
-# Binary). With ENABLE_USER_SCRIPT_SANDBOXING=NO below, this no longer
-# triggers the implicit-deps cycle.
+# Binary).
+#
+# Cycle-breaker: Xcode 16's new build system treats Run-Script phases
+# without explicit input_paths/output_paths as if they read & write
+# the entire Runner.app directory tree. That's what creates the
+# "Cycle inside Runner" between Flutter's Thin Binary, CocoaPods'
+# Embed Pods Frameworks, and our Embed Foundation Extensions.
+#
+# Flutter team's documented workaround: set `alwaysOutOfDate = '1'`
+# on those Run-Script phases. Xcode then stops trying to compute
+# implicit dependencies for them — they just always run when their
+# phase order says so. This is the canonical fix; Flutter itself is
+# moving toward shipping it on new projects but existing apps need
+# to opt in.
+['Thin Binary', '[CP] Embed Pods Frameworks'].each do |phase_name|
+  phase = runner.build_phases.find do |p|
+    p.respond_to?(:name) && p.name == phase_name
+  end
+  if phase && phase.respond_to?(:always_out_of_date=)
+    phase.always_out_of_date = '1'
+    puts "[add_widget_target] marked '#{phase_name}' as alwaysOutOfDate"
+  end
+end
 
 # 6. Runner depends on widget (forces widget to build first) ──────────────
 runner.add_dependency(widget) unless runner.dependencies.any? { |d| d.target == widget }
