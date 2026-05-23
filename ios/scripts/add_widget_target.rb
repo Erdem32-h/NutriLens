@@ -137,21 +137,20 @@ embed_phase = runner.new_copy_files_build_phase('Embed Foundation Extensions')
 embed_phase.symbol_dst_subfolder_spec = :plug_ins
 embed_phase.add_file_reference(widget.product_reference, true)
 
-# Use Apple's default phase ordering (embed at the end, after Thin
-# Binary).
+# Cycle-breaker — TWO complementary tricks needed because Xcode 16's
+# new build system computes deps via directory I/O, not phase order:
 #
-# Cycle-breaker: Xcode 16's new build system treats Run-Script phases
-# without explicit input_paths/output_paths as if they read & write
-# the entire Runner.app directory tree. That's what creates the
-# "Cycle inside Runner" between Flutter's Thin Binary, CocoaPods'
-# Embed Pods Frameworks, and our Embed Foundation Extensions.
+#  (1) Mark Flutter's Thin Binary Run-Script phase alwaysOutOfDate=1
+#      so Xcode skips implicit-dep tracking for it (otherwise it scans
+#      the whole Runner.app tree and sees PlugIns/appex as an input).
 #
-# Flutter team's documented workaround: set `alwaysOutOfDate = '1'`
-# on those Run-Script phases. Xcode then stops trying to compute
-# implicit dependencies for them — they just always run when their
-# phase order says so. This is the canonical fix; Flutter itself is
-# moving toward shipping it on new projects but existing apps need
-# to opt in.
+#  (2) Move the Embed Foundation Extensions Copy phase BEFORE Thin
+#      Binary in the phase list. Default ordering puts embed last,
+#      which makes the embed-copy depend on thin-binary-gate, which
+#      depends on Info.plist (Runner.app/Info.plist directory),
+#      which depends on PlugIns/appex (sibling in Runner.app) — cycle.
+#      Running embed first means PlugIns/appex already exists when
+#      Thin Binary scans, no back-edge.
 ['Thin Binary', '[CP] Embed Pods Frameworks'].each do |phase_name|
   phase = runner.build_phases.find do |p|
     p.respond_to?(:name) && p.name == phase_name
@@ -160,6 +159,18 @@ embed_phase.add_file_reference(widget.product_reference, true)
     phase.always_out_of_date = '1'
     puts "[add_widget_target] marked '#{phase_name}' as alwaysOutOfDate"
   end
+end
+
+# Reorder: Embed Foundation Extensions BEFORE Thin Binary.
+thin_binary_phase = runner.build_phases.find do |p|
+  p.respond_to?(:name) && p.name == 'Thin Binary'
+end
+if thin_binary_phase
+  phases = runner.build_phases
+  phases.delete(embed_phase)
+  thin_index = phases.index(thin_binary_phase)
+  phases.insert(thin_index, embed_phase)
+  puts "[add_widget_target] moved Embed Foundation Extensions before Thin Binary"
 end
 
 # 6. Runner depends on widget (forces widget to build first) ──────────────
