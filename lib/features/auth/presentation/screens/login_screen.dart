@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../config/router/route_names.dart';
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/social_login_buttons.dart';
@@ -294,7 +295,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     const SocialLoginButtons(),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
+
+                    // Guest mode entry — App Review 5.1.1(v) requires
+                    // that core functionality is reachable without a
+                    // signup wall. We show this CTA below the social
+                    // buttons so registered flows still feel primary.
+                    Center(
+                      child: TextButton.icon(
+                        onPressed: isLoading
+                            ? null
+                            : () async {
+                                await ref
+                                    .read(appSessionControllerProvider)
+                                    .enterGuestMode();
+                                if (!context.mounted) return;
+                                context.go('/meals');
+                              },
+                        icon: Icon(
+                          Icons.explore_outlined,
+                          color: context.colors.textSecondary,
+                          size: 18,
+                        ),
+                        label: Text(
+                          'Misafir olarak devam et',
+                          style: TextStyle(
+                            color: context.colors.textSecondary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
 
                     // Register link
                     Row(

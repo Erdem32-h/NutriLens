@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../supabase/supabase_config.dart';
+import '../../core/session/app_session.dart';
 import '../../features/app_shell/app_shell_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
@@ -35,7 +37,7 @@ import 'route_names.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
-GoRouter createRouter() {
+GoRouter createRouter(WidgetRef ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     // Land on Meals: scanner is heavy (camera init + permission), so a
@@ -75,15 +77,20 @@ GoRouter createRouter() {
 
       final session = Supabase.instance.client.auth.currentSession;
       final isLoggedIn = session != null;
+      // Guest mode: user explicitly chose "continue without account".
+      // They get the same route access as logged-in users; the only
+      // gated screens (premium purchase, community submit) check
+      // `isGuestProvider` themselves and show a register prompt.
+      final isGuest = ref.read(isGuestProvider);
       final isAuthRoute =
           state.matchedLocation == '/login' ||
           state.matchedLocation == '/register' ||
           state.matchedLocation == '/forgot-password';
 
-      if (!isLoggedIn && !isAuthRoute) {
+      if (!isLoggedIn && !isGuest && !isAuthRoute) {
         return '/login';
       }
-      if (isLoggedIn && isAuthRoute) {
+      if ((isLoggedIn || isGuest) && isAuthRoute) {
         return '/meals';
       }
       return null;

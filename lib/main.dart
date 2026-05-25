@@ -207,7 +207,7 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   @override
   void initState() {
     super.initState();
-    _router = createRouter();
+    _router = createRouter(ref);
 
     // Home-screen widget tap → deep-link `nutrilens://widget/scan`.
     // Two entry paths cover cold-launch vs in-foreground:
