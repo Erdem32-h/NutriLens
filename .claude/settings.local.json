@@ -28,7 +28,9 @@
       "Bash(ls lib/features/profile/domain/)",
       "Bash(ls lib/features/profile/data/)",
       "Bash(dart analyze:*)",
-      "Bash(supabase functions *)"
+      "Bash(supabase functions *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

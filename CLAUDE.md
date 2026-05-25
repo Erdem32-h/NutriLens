@@ -70,3 +70,4 @@ Geliştirici hakkında genel bağlam için:
 ```
 C:\Users\m_fat\OneDrive\Belgeler\Obsidian Vault\Proje Prensipleri\02-ai-handoff.md
 ```
+
