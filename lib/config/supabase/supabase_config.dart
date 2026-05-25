@@ -6,7 +6,11 @@ abstract final class SupabaseConfig {
   static bool isInitialized = false;
 
   static Future<void> initialize() async {
-    await dotenv.load(fileName: '.env');
+    await dotenv.load(
+      fileName: '.env',
+      isOptional: true,
+      mergeWith: _dartDefineValues(),
+    );
 
     final url = dotenv.env['SUPABASE_URL'];
     final anonKey = dotenv.env['SUPABASE_ANON_KEY'];
@@ -21,5 +25,16 @@ abstract final class SupabaseConfig {
     await Supabase.initialize(url: url, anonKey: anonKey);
     client = Supabase.instance.client;
     isInitialized = true;
+  }
+
+  static Map<String, String> _dartDefineValues() {
+    const values = {
+      'SUPABASE_URL': String.fromEnvironment('SUPABASE_URL'),
+      'SUPABASE_ANON_KEY': String.fromEnvironment('SUPABASE_ANON_KEY'),
+    };
+    return {
+      for (final entry in values.entries)
+        if (entry.value.isNotEmpty) entry.key: entry.value,
+    };
   }
 }

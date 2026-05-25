@@ -6,8 +6,12 @@ import 'package:mocktail/mocktail.dart';
 import 'package:nutrilens/features/auth/domain/entities/user_entity.dart';
 import 'package:nutrilens/features/auth/domain/repositories/auth_repository.dart';
 import 'package:nutrilens/features/auth/presentation/providers/auth_provider.dart';
+import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockSupabaseClient extends Mock implements SupabaseClient {}
 
 void main() {
   test('currentUserProvider follows auth state changes', () async {
@@ -40,5 +44,16 @@ void main() {
     await expectLater(emitted.future, completion(newUser));
 
     expect(container.read(currentUserProvider), newUser);
+  });
+
+  test('auth data source uses the overridden Supabase client provider', () {
+    final container = ProviderContainer(
+      overrides: [
+        supabaseClientProvider.overrideWithValue(MockSupabaseClient()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    expect(container.read(authRemoteDataSourceProvider), isNotNull);
   });
 }

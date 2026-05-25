@@ -1,14 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/providers/monetization_provider.dart';
+import '../../../product/presentation/providers/product_provider.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
-  return AuthRemoteDataSourceImpl(Supabase.instance.client);
+  return AuthRemoteDataSourceImpl(ref.watch(supabaseClientProvider));
 });
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
