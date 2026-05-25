@@ -90,6 +90,25 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     );
   }
 
+  /// Returns `null` on success, or an error message on failure.
+  /// Does NOT touch `state` — the UI handles its own loading flag for
+  /// this transient action (we don't want to flip the global auth state
+  /// to loading/error just because the user typed a wrong email).
+  Future<String?> sendPasswordResetEmail(String email) async {
+    final result = await ref
+        .read(authRepositoryProvider)
+        .sendPasswordResetEmail(email);
+    return result.fold((failure) => failure.message, (_) => null);
+  }
+
+  /// Returns `null` on success, or an error message on failure.
+  Future<String?> updatePassword(String newPassword) async {
+    final result = await ref
+        .read(authRepositoryProvider)
+        .updatePassword(newPassword);
+    return result.fold((failure) => failure.message, (_) => null);
+  }
+
   Future<void> signOut() async {
     final subscriptionService = ref.read(subscriptionServiceProvider);
     await subscriptionService.logOut();

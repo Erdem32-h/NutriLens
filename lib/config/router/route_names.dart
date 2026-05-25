@@ -3,6 +3,8 @@ abstract final class RouteNames {
   static const String login = 'login';
   static const String register = 'register';
   static const String onboarding = 'onboarding';
+  static const String forgotPassword = 'forgotPassword';
+  static const String resetPassword = 'resetPassword';
 
   // Main tabs
   static const String scanner = 'scanner';

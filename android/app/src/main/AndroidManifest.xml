@@ -26,17 +26,16 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <!-- Supabase Deep Link Callback -->
-            <intent-filter>
+            <!-- Unified app scheme: nutrilens://
+                 - nutrilens://auth/callback  → OAuth + email confirmation
+                 - nutrilens://auth/reset     → password reset deep-link
+                 - nutrilens://widget/scan    → home-screen widget tap -->
+            <intent-filter android:autoVerify="false">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with "com.nutrilens.nutrilens://callback" -->
-                <data
-                    android:scheme="com.nutrilens.nutrilens"
-                    android:host="callback" />
+                <data android:scheme="nutrilens" android:host="auth" />
             </intent-filter>
-            <!-- Home-screen widget tap deep link (nutrilens://widget/scan) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

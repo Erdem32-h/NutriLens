@@ -168,6 +168,7 @@ class NutriLensApp extends ConsumerStatefulWidget {
 class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   late final GoRouter _router;
   StreamSubscription<Uri?>? _widgetClicked;
+  StreamSubscription<AuthState>? _authSub;
 
   @override
   void initState() {
@@ -181,6 +182,20 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
     //   2. `widgetClicked` stream fires while the app is already alive.
     HomeWidget.initiallyLaunchedFromHomeWidget().then(_handleWidgetUri);
     _widgetClicked = HomeWidget.widgetClicked.listen(_handleWidgetUri);
+
+    // Password-reset deep-link: supabase_flutter intercepts the
+    // `nutrilens://auth/reset` URI, exchanges the recovery token for a
+    // (short-lived) session, then emits `AuthChangeEvent.passwordRecovery`.
+    // That's our cue to route the user into the new-password screen.
+    if (SupabaseConfig.isInitialized) {
+      _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+        if (data.event == AuthChangeEvent.passwordRecovery) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _router.go('/reset-password');
+          });
+        }
+      });
+    }
   }
 
   void _handleWidgetUri(Uri? uri) {
@@ -198,6 +213,7 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   @override
   void dispose() {
     _widgetClicked?.cancel();
+    _authSub?.cancel();
     _router.dispose();
     super.dispose();
   }

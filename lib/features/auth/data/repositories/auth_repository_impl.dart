@@ -47,6 +47,20 @@ final class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, void>> sendPasswordResetEmail(String email) async {
+    return _handleAuthVoid(
+      () => _remoteDataSource.sendPasswordResetEmail(email),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> updatePassword(String newPassword) async {
+    return _handleAuthVoid(
+      () => _remoteDataSource.updatePassword(newPassword),
+    );
+  }
+
+  @override
   Future<Either<Failure, void>> signOut() async {
     try {
       await _remoteDataSource.signOut();

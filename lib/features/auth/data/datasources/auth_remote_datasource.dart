@@ -18,6 +18,10 @@ abstract interface class AuthRemoteDataSource {
 
   Future<void> signInWithApple();
 
+  Future<void> sendPasswordResetEmail(String email);
+
+  Future<void> updatePassword(String newPassword);
+
   Future<void> signOut();
 
   Stream<UserEntity?> authStateChanges();
@@ -60,7 +64,7 @@ final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> signInWithGoogle() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: 'com.nutrilens.nutrilens://callback',
+      redirectTo: 'nutrilens://auth/callback',
     );
   }
 
@@ -68,8 +72,21 @@ final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> signInWithApple() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.apple,
-      redirectTo: 'com.nutrilens.nutrilens://callback',
+      redirectTo: 'nutrilens://auth/callback',
     );
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'nutrilens://auth/reset',
+    );
+  }
+
+  @override
+  Future<void> updatePassword(String newPassword) async {
+    await _client.auth.updateUser(UserAttributes(password: newPassword));
   }
 
   @override

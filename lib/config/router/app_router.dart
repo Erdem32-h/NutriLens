@@ -8,6 +8,8 @@ import '../../features/app_shell/app_shell_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/onboarding_screen.dart';
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/auth/presentation/screens/reset_password_screen.dart';
 import '../../features/scanner/presentation/screens/scanner_screen.dart';
 import '../../features/history/presentation/screens/history_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
@@ -52,11 +54,21 @@ GoRouter createRouter() {
       // Root path has no route — send to meals (initial landing).
       if (path == '/' || path.isEmpty) return '/meals';
 
+      // The /reset-password route is allowed regardless of auth state:
+      // the deep-link from the password reset email puts Supabase into
+      // a `passwordRecovery` session, so the user IS technically signed
+      // in, but redirecting them straight to /meals would skip the
+      // whole point of the email link. Treat it as a special-case
+      // public route.
+      final isResetRoute = state.matchedLocation == '/reset-password';
+      if (isResetRoute) return null;
+
       // Supabase başlatılmamışsa login'e yönlendir
       if (!SupabaseConfig.isInitialized) {
         final isAuthRoute =
             state.matchedLocation == '/login' ||
-            state.matchedLocation == '/register';
+            state.matchedLocation == '/register' ||
+            state.matchedLocation == '/forgot-password';
         if (!isAuthRoute) return '/login';
         return null;
       }
@@ -65,7 +77,8 @@ GoRouter createRouter() {
       final isLoggedIn = session != null;
       final isAuthRoute =
           state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register';
+          state.matchedLocation == '/register' ||
+          state.matchedLocation == '/forgot-password';
 
       if (!isLoggedIn && !isAuthRoute) {
         return '/login';
@@ -90,6 +103,16 @@ GoRouter createRouter() {
         path: '/onboarding',
         name: RouteNames.onboarding,
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        name: RouteNames.forgotPassword,
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/reset-password',
+        name: RouteNames.resetPassword,
+        builder: (context, state) => const ResetPasswordScreen(),
       ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
