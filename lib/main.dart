@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_skill/flutter_skill.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -21,7 +22,35 @@ import 'core/providers/theme_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/product/presentation/providers/product_provider.dart';
 
-void main() {
+Future<void> main() async {
+  // Sentry — Crash + error reporting. DSN is injected at build time via
+  // `--dart-define=SENTRY_DSN=...` (see codemagic.yaml). In local debug
+  // builds where the dart-define is absent we skip init entirely so
+  // local runs never report noise to the production Sentry project.
+  const sentryDsn = String.fromEnvironment('SENTRY_DSN');
+
+  if (sentryDsn.isEmpty) {
+    _bootApp();
+    return;
+  }
+
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = sentryDsn;
+      // Performance sampling — 10% in prod is enough to spot regressions
+      // without blowing through the free tier (5K events/month).
+      options.tracesSampleRate = 0.1;
+      options.environment = kReleaseMode ? 'production' : 'debug';
+      // Don't ship PII (email, IP) by default. We tag user id manually
+      // post-login (see auth listener) without exposing email.
+      options.sendDefaultPii = false;
+      options.attachStacktrace = true;
+    },
+    appRunner: _bootApp,
+  );
+}
+
+void _bootApp() {
   // Run inside a guarded Zone so any uncaught async error during
   // bootstrap or first frame doesn't leave the user staring at a black
   // screen (App Review 1.0(7) blank-launch bug). We always reach
@@ -32,11 +61,15 @@ void main() {
       // ignore: avoid_print
       print('[boot 00] main entered');
 
-      // Capture Flutter framework errors to the device console.
+      // Capture Flutter framework errors to the device console. Sentry's
+      // FlutterError.onError chain still fires because SentryFlutter
+      // installs its hook before this main() runs and our override
+      // calls FlutterError.presentError() which forwards to it.
       FlutterError.onError = (details) {
         FlutterError.presentError(details);
         // ignore: avoid_print
         print('[flutter-error] ${details.exceptionAsString()}');
+        Sentry.captureException(details.exception, stackTrace: details.stack);
       };
 
       // Sadece debug modda aktif olması güvenli bir yaklaşımdır
@@ -101,6 +134,7 @@ void main() {
       // screen so the App Review device can at least see the UI tried.
       // ignore: avoid_print
       print('[boot FATAL] $error\n$stack');
+      Sentry.captureException(error, stackTrace: stack);
       runApp(_BootFailureApp(error: error));
     },
   );
@@ -187,6 +221,10 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
     // `nutrilens://auth/reset` URI, exchanges the recovery token for a
     // (short-lived) session, then emits `AuthChangeEvent.passwordRecovery`.
     // That's our cue to route the user into the new-password screen.
+    //
+    // We also use this listener to tag Sentry events with the current
+    // user id (no email/PII) so crash reports can be grouped per-user
+    // without leaking personal data.
     if (SupabaseConfig.isInitialized) {
       _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
         if (data.event == AuthChangeEvent.passwordRecovery) {
@@ -194,6 +232,10 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
             if (mounted) _router.go('/reset-password');
           });
         }
+        final userId = data.session?.user.id;
+        Sentry.configureScope((scope) {
+          scope.setUser(userId == null ? null : SentryUser(id: userId));
+        });
       });
     }
   }

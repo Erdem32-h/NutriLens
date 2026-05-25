@@ -166,6 +166,7 @@ workflows:
             --build-number=$BUILD_NUMBER \
             --dart-define=SUPABASE_URL=$SUPABASE_URL \
             --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+            --dart-define=SENTRY_DSN=$SENTRY_DSN \
             --dart-define=ADMOB_APP_ID_IOS=$ADMOB_APP_ID_IOS \
             --dart-define=ADMOB_BANNER_IOS=$ADMOB_BANNER_IOS \
             --dart-define=ADMOB_REWARDED_IOS=$ADMOB_REWARDED_IOS \
@@ -232,6 +233,7 @@ workflows:
             --build-number=$BUILD_NUMBER \
             --dart-define=SUPABASE_URL=$SUPABASE_URL \
             --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+            --dart-define=SENTRY_DSN=$SENTRY_DSN \
             --dart-define=ADMOB_BANNER_ANDROID=$ADMOB_BANNER_ANDROID \
             --dart-define=ADMOB_REWARDED_ANDROID=$ADMOB_REWARDED_ANDROID \
             --dart-define=PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL \
