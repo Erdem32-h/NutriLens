@@ -214,7 +214,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          'Şifremi unuttum',
+                          l10n.forgotPassword,
                           style: TextStyle(
                             color: context.colors.primary,
                             fontSize: 13,
@@ -320,7 +320,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           size: 18,
                         ),
                         label: Text(
-                          'Misafir olarak devam et',
+                          l10n.continueAsGuest,
                           style: TextStyle(
                             color: context.colors.textSecondary,
                             fontSize: 14,

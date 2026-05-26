@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 
 /// Modal bottom sheet shown to guest users when they hit a gated
@@ -42,12 +43,12 @@ class GuestRegisterSheet extends StatelessWidget {
 
   /// Convenience preset for the lifetime-scan-limit hard block.
   static Future<bool> showScanLimitReached(BuildContext context) {
+    final l10n = context.l10n;
     return show(
       context,
-      title: '5 ücretsiz tarama bitti',
-      message:
-          'Hesap açtığında tarama hakkın yenilenir, geçmişin ve öğünlerin her cihazda görünür.',
-      primaryActionLabel: 'Hesap aç',
+      title: l10n.guestScanLimitTitle,
+      message: l10n.guestScanLimitMessage,
+      primaryActionLabel: l10n.createAccountCta,
     );
   }
 
@@ -57,12 +58,12 @@ class GuestRegisterSheet extends StatelessWidget {
     BuildContext context, {
     required String feature,
   }) {
+    final l10n = context.l10n;
     return show(
       context,
-      title: '$feature için hesap gerekli',
-      message:
-          'Bu özellik bulutta saklanır. Hesap açıp giriş yapınca aktif olur.',
-      primaryActionLabel: 'Hesap aç',
+      title: l10n.guestFeatureLockedTitle(feature),
+      message: l10n.guestFeatureLockedMessage,
+      primaryActionLabel: l10n.createAccountCta,
     );
   }
 
@@ -145,7 +146,7 @@ class GuestRegisterSheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Text(
-                primaryActionLabel ?? 'Hesap aç',
+                primaryActionLabel ?? context.l10n.createAccountCta,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -156,11 +157,11 @@ class GuestRegisterSheet extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Secondary: "Şu an değil"
+          // Secondary
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
-              'Şu an değil',
+              context.l10n.notNow,
               style: TextStyle(
                 color: colors.textMuted,
                 fontWeight: FontWeight.w600,

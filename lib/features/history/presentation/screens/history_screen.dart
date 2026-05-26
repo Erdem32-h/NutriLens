@@ -353,7 +353,9 @@ class _HistoryTile extends ConsumerWidget {
       return;
     }
 
-    if (!await ref.requireAuthOr(context, feature: 'Favoriler')) return;
+    if (!await ref.requireAuthOr(context, feature: l10n.featureFavorites)) {
+      return;
+    }
     if (!context.mounted) return;
 
     final success = await addToFavorites(ref, barcode: item.barcode);

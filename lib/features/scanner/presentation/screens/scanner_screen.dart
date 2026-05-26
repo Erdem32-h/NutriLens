@@ -201,11 +201,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       final newCount = await counter.increment();
       if (newCount == GuestScanCounter.lifetimeLimit && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.',
-            ),
-            duration: Duration(seconds: 4),
+          SnackBar(
+            content: Text(context.l10n.guestLastFreeScan),
+            duration: const Duration(seconds: 4),
           ),
         );
       }

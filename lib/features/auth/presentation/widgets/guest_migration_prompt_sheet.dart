@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/session/guest_migration_service.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -35,9 +36,10 @@ class GuestMigrationPromptSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final l10n = context.l10n;
     final parts = <String>[
-      if (summary.scanCount > 0) '${summary.scanCount} tarama',
-      if (summary.mealCount > 0) '${summary.mealCount} öğün',
+      if (summary.scanCount > 0) l10n.scanCountUnit(summary.scanCount),
+      if (summary.mealCount > 0) l10n.mealCountUnit(summary.mealCount),
     ];
     final dataLine = parts.join(', ');
 
@@ -79,7 +81,7 @@ class GuestMigrationPromptSheet extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'Misafir verilerin var',
+            l10n.migrationTitle,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
@@ -89,7 +91,7 @@ class GuestMigrationPromptSheet extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Bu cihazda $dataLine bulunuyor. Bunları yeni hesabına yükleyelim mi?',
+            l10n.migrationMessage(dataLine),
             style: TextStyle(
               fontSize: 14,
               color: colors.textMuted,
@@ -107,9 +109,9 @@ class GuestMigrationPromptSheet extends StatelessWidget {
                 gradient: colors.primaryGradient,
                 borderRadius: BorderRadius.circular(50),
               ),
-              child: const Text(
-                'Evet, hesabıma yükle',
-                style: TextStyle(
+              child: Text(
+                l10n.migrationYes,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Colors.black,
@@ -121,7 +123,7 @@ class GuestMigrationPromptSheet extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
-              'Sıfırdan başla',
+              l10n.migrationNo,
               style: TextStyle(
                 color: colors.textMuted,
                 fontWeight: FontWeight.w600,

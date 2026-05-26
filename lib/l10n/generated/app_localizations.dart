@@ -443,7 +443,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmPassword.
   ///
   /// In tr, this message translates to:
-  /// **'Şifre Tekrar'**
+  /// **'Şifre tekrar'**
   String get confirmPassword;
 
   /// No description provided for @passwordsDoNotMatch.
@@ -1765,6 +1765,240 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'UYARI: Alerjen İçeriyor'**
   String get allergenWarningTitle;
+
+  /// No description provided for @continueAsGuest.
+  ///
+  /// In tr, this message translates to:
+  /// **'Misafir olarak devam et'**
+  String get continueAsGuest;
+
+  /// No description provided for @guestUser.
+  ///
+  /// In tr, this message translates to:
+  /// **'Misafir Kullanıcısı'**
+  String get guestUser;
+
+  /// No description provided for @guestDataLocal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilerin sadece bu cihazda'**
+  String get guestDataLocal;
+
+  /// No description provided for @createAccountBackupTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap aç, verilerini yedekle'**
+  String get createAccountBackupTitle;
+
+  /// No description provided for @createAccountBackupSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tarama geçmişin, öğünlerin her cihazda'**
+  String get createAccountBackupSubtitle;
+
+  /// No description provided for @guestLastFreeScan.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.'**
+  String get guestLastFreeScan;
+
+  /// No description provided for @guestScanLimitTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'5 ücretsiz tarama bitti'**
+  String get guestScanLimitTitle;
+
+  /// No description provided for @guestScanLimitMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap açtığında tarama hakkın yenilenir, geçmişin ve öğünlerin her cihazda görünür.'**
+  String get guestScanLimitMessage;
+
+  /// No description provided for @guestFeatureLockedTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'{feature} için hesap gerekli'**
+  String guestFeatureLockedTitle(String feature);
+
+  /// No description provided for @guestFeatureLockedMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu özellik bulutta saklanır. Hesap açıp giriş yapınca aktif olur.'**
+  String get guestFeatureLockedMessage;
+
+  /// No description provided for @createAccountCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap aç'**
+  String get createAccountCta;
+
+  /// No description provided for @notNow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şu an değil'**
+  String get notNow;
+
+  /// No description provided for @featureFavorites.
+  ///
+  /// In tr, this message translates to:
+  /// **'Favoriler'**
+  String get featureFavorites;
+
+  /// No description provided for @featureBlacklist.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kara liste'**
+  String get featureBlacklist;
+
+  /// No description provided for @featurePremium.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium'**
+  String get featurePremium;
+
+  /// No description provided for @featureAddProduct.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ürün ekleme'**
+  String get featureAddProduct;
+
+  /// No description provided for @migrationTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Misafir verilerin var'**
+  String get migrationTitle;
+
+  /// No description provided for @migrationMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu cihazda {dataLine} bulunuyor. Bunları yeni hesabına yükleyelim mi?'**
+  String migrationMessage(String dataLine);
+
+  /// No description provided for @migrationYes.
+  ///
+  /// In tr, this message translates to:
+  /// **'Evet, hesabıma yükle'**
+  String get migrationYes;
+
+  /// No description provided for @migrationNo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıfırdan başla'**
+  String get migrationNo;
+
+  /// No description provided for @scanCountUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} tarama'**
+  String scanCountUnit(int count);
+
+  /// No description provided for @mealCountUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} öğün'**
+  String mealCountUnit(int count);
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifremi unuttum'**
+  String get forgotPassword;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreni mi unuttun?'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabına bağlı email adresini gir, sıfırlama bağlantısı gönderelim.'**
+  String get forgotPasswordSubtitle;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıfırlama bağlantısı gönder'**
+  String get sendResetLink;
+
+  /// No description provided for @resetLinkSentTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı gönderildi'**
+  String get resetLinkSentTitle;
+
+  /// No description provided for @resetLinkSentMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Email kutunu kontrol et. Bağlantıya dokunarak yeni şifreni belirleyebilirsin.'**
+  String get resetLinkSentMessage;
+
+  /// No description provided for @backToLogin.
+  ///
+  /// In tr, this message translates to:
+  /// **'Girişe dön'**
+  String get backToLogin;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni şifre belirle'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabını korumak için güçlü bir şifre seç.'**
+  String get resetPasswordSubtitle;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni şifre'**
+  String get newPassword;
+
+  /// No description provided for @updatePassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreyi güncelle'**
+  String get updatePassword;
+
+  /// No description provided for @passwordsDontMatch.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreler eşleşmiyor'**
+  String get passwordsDontMatch;
+
+  /// No description provided for @passwordUpdated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifren güncellendi'**
+  String get passwordUpdated;
+
+  /// No description provided for @enterPasswordAgain.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifre tekrar girin'**
+  String get enterPasswordAgain;
+
+  /// No description provided for @guestScanCounter.
+  ///
+  /// In tr, this message translates to:
+  /// **'{remaining}/5 ücretsiz tarama'**
+  String guestScanCounter(int remaining);
+
+  /// No description provided for @appVersion.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sürüm'**
+  String get appVersion;
+
+  /// No description provided for @testCrashReporting.
+  ///
+  /// In tr, this message translates to:
+  /// **'Crash raporlamayı test et'**
+  String get testCrashReporting;
 }
 
 class _AppLocalizationsDelegate

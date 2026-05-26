@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 
@@ -45,7 +46,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Şifren güncellendi')),
+      SnackBar(content: Text(context.l10n.passwordUpdated)),
     );
     context.go('/meals');
   }
@@ -69,7 +70,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               children: [
                 const SizedBox(height: 24),
                 Text(
-                  'Yeni şifre belirle',
+                  context.l10n.resetPasswordTitle,
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.w800,
@@ -79,14 +80,14 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Hesabını korumak için güçlü bir şifre seç.',
+                  context.l10n.resetPasswordSubtitle,
                   style: TextStyle(
                     fontSize: 15,
                     color: context.colors.textMuted,
                   ),
                 ),
                 const SizedBox(height: 32),
-                _label('Yeni şifre'),
+                _label(context.l10n.newPassword),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
@@ -104,13 +105,13 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     ),
                   ),
                   validator: (v) {
-                    if (v == null || v.isEmpty) return 'Şifre girin';
-                    if (v.length < 6) return 'En az 6 karakter olmalı';
+                    if (v == null || v.isEmpty) return context.l10n.enterPassword;
+                    if (v.length < 6) return context.l10n.passwordMinLength;
                     return null;
                   },
                 ),
                 const SizedBox(height: 20),
-                _label('Şifre tekrar'),
+                _label(context.l10n.confirmPassword),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _confirmController,
@@ -128,9 +129,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     ),
                   ),
                   validator: (v) {
-                    if (v == null || v.isEmpty) return 'Şifre tekrar girin';
+                    if (v == null || v.isEmpty) return context.l10n.enterPasswordAgain;
                     if (v != _passwordController.text) {
-                      return 'Şifreler eşleşmiyor';
+                      return context.l10n.passwordsDontMatch;
                     }
                     return null;
                   },
@@ -158,9 +159,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                               color: context.colors.primary,
                             ),
                           )
-                        : const Text(
-                            'Şifreyi güncelle',
-                            style: TextStyle(
+                        : Text(
+                            context.l10n.updatePassword,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: Colors.black,

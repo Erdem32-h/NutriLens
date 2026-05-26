@@ -181,7 +181,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterName => 'Enter your name';
 
   @override
-  String get confirmPassword => 'Confirm Password';
+  String get confirmPassword => 'Confirm password';
 
   @override
   String get passwordsDoNotMatch => 'Passwords do not match';
@@ -875,4 +875,138 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allergenWarningTitle => 'WARNING: Contains Allergen';
+
+  @override
+  String get continueAsGuest => 'Continue as guest';
+
+  @override
+  String get guestUser => 'Guest user';
+
+  @override
+  String get guestDataLocal => 'Your data stays on this device only';
+
+  @override
+  String get createAccountBackupTitle => 'Create an account, back up your data';
+
+  @override
+  String get createAccountBackupSubtitle =>
+      'Scan history and meals on every device';
+
+  @override
+  String get guestLastFreeScan =>
+      'Your last free scan. Sign up to keep your history.';
+
+  @override
+  String get guestScanLimitTitle => '5 free scans used';
+
+  @override
+  String get guestScanLimitMessage =>
+      'Creating an account refreshes your quota; your history and meals sync across devices.';
+
+  @override
+  String guestFeatureLockedTitle(String feature) {
+    return '$feature requires an account';
+  }
+
+  @override
+  String get guestFeatureLockedMessage =>
+      'This feature lives in the cloud. Create an account and sign in to enable it.';
+
+  @override
+  String get createAccountCta => 'Create account';
+
+  @override
+  String get notNow => 'Not now';
+
+  @override
+  String get featureFavorites => 'Favorites';
+
+  @override
+  String get featureBlacklist => 'Blocklist';
+
+  @override
+  String get featurePremium => 'Premium';
+
+  @override
+  String get featureAddProduct => 'Adding a product';
+
+  @override
+  String get migrationTitle => 'You have guest data';
+
+  @override
+  String migrationMessage(String dataLine) {
+    return 'This device has $dataLine. Move it to your new account?';
+  }
+
+  @override
+  String get migrationYes => 'Yes, upload to my account';
+
+  @override
+  String get migrationNo => 'Start fresh';
+
+  @override
+  String scanCountUnit(int count) {
+    return '$count scans';
+  }
+
+  @override
+  String mealCountUnit(int count) {
+    return '$count meals';
+  }
+
+  @override
+  String get forgotPassword => 'Forgot password';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot your password?';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Enter the email tied to your account; we\'ll send a reset link.';
+
+  @override
+  String get sendResetLink => 'Send reset link';
+
+  @override
+  String get resetLinkSentTitle => 'Link sent';
+
+  @override
+  String get resetLinkSentMessage =>
+      'Check your inbox. Tap the link to set a new password.';
+
+  @override
+  String get backToLogin => 'Back to login';
+
+  @override
+  String get resetPasswordTitle => 'Set a new password';
+
+  @override
+  String get resetPasswordSubtitle =>
+      'Pick a strong password to protect your account.';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get updatePassword => 'Update password';
+
+  @override
+  String get passwordsDontMatch => 'Passwords don\'t match';
+
+  @override
+  String get passwordUpdated => 'Password updated';
+
+  @override
+  String get enterPasswordAgain => 'Enter password again';
+
+  @override
+  String guestScanCounter(int remaining) {
+    return '$remaining/5 free scans';
+  }
+
+  @override
+  String get appVersion => 'Version';
+
+  @override
+  String get testCrashReporting => 'Test crash reporting';
 }

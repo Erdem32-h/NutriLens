@@ -181,7 +181,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get enterName => 'Adınızı girin';
 
   @override
-  String get confirmPassword => 'Şifre Tekrar';
+  String get confirmPassword => 'Şifre tekrar';
 
   @override
   String get passwordsDoNotMatch => 'Şifreler uyuşmuyor';
@@ -875,4 +875,138 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get allergenWarningTitle => 'UYARI: Alerjen İçeriyor';
+
+  @override
+  String get continueAsGuest => 'Misafir olarak devam et';
+
+  @override
+  String get guestUser => 'Misafir Kullanıcısı';
+
+  @override
+  String get guestDataLocal => 'Verilerin sadece bu cihazda';
+
+  @override
+  String get createAccountBackupTitle => 'Hesap aç, verilerini yedekle';
+
+  @override
+  String get createAccountBackupSubtitle =>
+      'Tarama geçmişin, öğünlerin her cihazda';
+
+  @override
+  String get guestLastFreeScan =>
+      'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.';
+
+  @override
+  String get guestScanLimitTitle => '5 ücretsiz tarama bitti';
+
+  @override
+  String get guestScanLimitMessage =>
+      'Hesap açtığında tarama hakkın yenilenir, geçmişin ve öğünlerin her cihazda görünür.';
+
+  @override
+  String guestFeatureLockedTitle(String feature) {
+    return '$feature için hesap gerekli';
+  }
+
+  @override
+  String get guestFeatureLockedMessage =>
+      'Bu özellik bulutta saklanır. Hesap açıp giriş yapınca aktif olur.';
+
+  @override
+  String get createAccountCta => 'Hesap aç';
+
+  @override
+  String get notNow => 'Şu an değil';
+
+  @override
+  String get featureFavorites => 'Favoriler';
+
+  @override
+  String get featureBlacklist => 'Kara liste';
+
+  @override
+  String get featurePremium => 'Premium';
+
+  @override
+  String get featureAddProduct => 'Ürün ekleme';
+
+  @override
+  String get migrationTitle => 'Misafir verilerin var';
+
+  @override
+  String migrationMessage(String dataLine) {
+    return 'Bu cihazda $dataLine bulunuyor. Bunları yeni hesabına yükleyelim mi?';
+  }
+
+  @override
+  String get migrationYes => 'Evet, hesabıma yükle';
+
+  @override
+  String get migrationNo => 'Sıfırdan başla';
+
+  @override
+  String scanCountUnit(int count) {
+    return '$count tarama';
+  }
+
+  @override
+  String mealCountUnit(int count) {
+    return '$count öğün';
+  }
+
+  @override
+  String get forgotPassword => 'Şifremi unuttum';
+
+  @override
+  String get forgotPasswordTitle => 'Şifreni mi unuttun?';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Hesabına bağlı email adresini gir, sıfırlama bağlantısı gönderelim.';
+
+  @override
+  String get sendResetLink => 'Sıfırlama bağlantısı gönder';
+
+  @override
+  String get resetLinkSentTitle => 'Bağlantı gönderildi';
+
+  @override
+  String get resetLinkSentMessage =>
+      'Email kutunu kontrol et. Bağlantıya dokunarak yeni şifreni belirleyebilirsin.';
+
+  @override
+  String get backToLogin => 'Girişe dön';
+
+  @override
+  String get resetPasswordTitle => 'Yeni şifre belirle';
+
+  @override
+  String get resetPasswordSubtitle =>
+      'Hesabını korumak için güçlü bir şifre seç.';
+
+  @override
+  String get newPassword => 'Yeni şifre';
+
+  @override
+  String get updatePassword => 'Şifreyi güncelle';
+
+  @override
+  String get passwordsDontMatch => 'Şifreler eşleşmiyor';
+
+  @override
+  String get passwordUpdated => 'Şifren güncellendi';
+
+  @override
+  String get enterPasswordAgain => 'Şifre tekrar girin';
+
+  @override
+  String guestScanCounter(int remaining) {
+    return '$remaining/5 ücretsiz tarama';
+  }
+
+  @override
+  String get appVersion => 'Sürüm';
+
+  @override
+  String get testCrashReporting => 'Crash raporlamayı test et';
 }

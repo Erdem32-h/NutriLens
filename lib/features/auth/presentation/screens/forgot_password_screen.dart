@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 
@@ -71,7 +72,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               children: [
                 const SizedBox(height: 24),
                 Text(
-                  'Şifreni mi unuttun?',
+                  context.l10n.forgotPasswordTitle,
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.w800,
@@ -81,7 +82,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Hesabına bağlı email adresini gir, sıfırlama bağlantısı gönderelim.',
+                  context.l10n.forgotPasswordSubtitle,
                   style: TextStyle(
                     fontSize: 15,
                     color: context.colors.textMuted,
@@ -99,11 +100,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   Widget _buildForm() {
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Email',
+          l10n.email,
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -121,8 +123,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             prefixIcon: Icon(Icons.email_outlined),
           ),
           validator: (v) {
-            if (v == null || v.trim().isEmpty) return 'Email girin';
-            if (!v.contains('@')) return 'Geçerli bir email girin';
+            if (v == null || v.trim().isEmpty) return l10n.enterEmail;
+            if (!v.contains('@')) return l10n.validEmail;
             return null;
           },
         ),
@@ -148,9 +150,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       color: context.colors.primary,
                     ),
                   )
-                : const Text(
-                    'Sıfırlama bağlantısı gönder',
-                    style: TextStyle(
+                : Text(
+                    l10n.sendResetLink,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Colors.black,
@@ -163,6 +165,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   Widget _buildSentBanner() {
+    final l10n = context.l10n;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -177,7 +180,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               color: context.colors.primary, size: 32),
           const SizedBox(height: 12),
           Text(
-            'Bağlantı gönderildi',
+            l10n.resetLinkSentTitle,
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w700,
@@ -186,7 +189,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Email kutunu kontrol et. Bağlantıya dokunarak yeni şifreni belirleyebilirsin.',
+            l10n.resetLinkSentMessage,
             style: TextStyle(
               fontSize: 14,
               color: context.colors.textMuted,
@@ -197,7 +200,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           TextButton(
             onPressed: () => context.go('/login'),
             child: Text(
-              'Girişe dön',
+              l10n.backToLogin,
               style: TextStyle(
                 color: context.colors.primary,
                 fontWeight: FontWeight.w600,

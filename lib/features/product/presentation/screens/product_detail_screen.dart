@@ -85,7 +85,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     onPressed: () async {
                       if (!await ref.requireAuthOr(
                         context,
-                        feature: 'Favoriler',
+                        feature: l10n.featureFavorites,
                       )) {
                         return;
                       }
@@ -127,7 +127,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     onPressed: () async {
                       if (!await ref.requireAuthOr(
                         context,
-                        feature: 'Kara liste',
+                        feature: l10n.featureBlacklist,
                       )) {
                         return;
                       }

@@ -287,5 +287,60 @@
   "gaugeWeak": "Zayıf",
   "gaugeBad": "Kötü",
   "hpScoreLabel": "HP Puanı",
-  "allergenWarningTitle": "UYARI: Alerjen İçeriyor"
+  "allergenWarningTitle": "UYARI: Alerjen İçeriyor",
+  "continueAsGuest": "Misafir olarak devam et",
+  "guestUser": "Misafir Kullanıcısı",
+  "guestDataLocal": "Verilerin sadece bu cihazda",
+  "createAccountBackupTitle": "Hesap aç, verilerini yedekle",
+  "createAccountBackupSubtitle": "Tarama geçmişin, öğünlerin her cihazda",
+  "guestLastFreeScan": "Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.",
+  "guestScanLimitTitle": "5 ücretsiz tarama bitti",
+  "guestScanLimitMessage": "Hesap açtığında tarama hakkın yenilenir, geçmişin ve öğünlerin her cihazda görünür.",
+  "guestFeatureLockedTitle": "{feature} için hesap gerekli",
+  "@guestFeatureLockedTitle": {
+    "placeholders": { "feature": { "type": "String" } }
+  },
+  "guestFeatureLockedMessage": "Bu özellik bulutta saklanır. Hesap açıp giriş yapınca aktif olur.",
+  "createAccountCta": "Hesap aç",
+  "notNow": "Şu an değil",
+  "featureFavorites": "Favoriler",
+  "featureBlacklist": "Kara liste",
+  "featurePremium": "Premium",
+  "featureAddProduct": "Ürün ekleme",
+  "migrationTitle": "Misafir verilerin var",
+  "migrationMessage": "Bu cihazda {dataLine} bulunuyor. Bunları yeni hesabına yükleyelim mi?",
+  "@migrationMessage": {
+    "placeholders": { "dataLine": { "type": "String" } }
+  },
+  "migrationYes": "Evet, hesabıma yükle",
+  "migrationNo": "Sıfırdan başla",
+  "scanCountUnit": "{count} tarama",
+  "@scanCountUnit": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "mealCountUnit": "{count} öğün",
+  "@mealCountUnit": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "forgotPassword": "Şifremi unuttum",
+  "forgotPasswordTitle": "Şifreni mi unuttun?",
+  "forgotPasswordSubtitle": "Hesabına bağlı email adresini gir, sıfırlama bağlantısı gönderelim.",
+  "sendResetLink": "Sıfırlama bağlantısı gönder",
+  "resetLinkSentTitle": "Bağlantı gönderildi",
+  "resetLinkSentMessage": "Email kutunu kontrol et. Bağlantıya dokunarak yeni şifreni belirleyebilirsin.",
+  "backToLogin": "Girişe dön",
+  "resetPasswordTitle": "Yeni şifre belirle",
+  "resetPasswordSubtitle": "Hesabını korumak için güçlü bir şifre seç.",
+  "newPassword": "Yeni şifre",
+  "confirmPassword": "Şifre tekrar",
+  "updatePassword": "Şifreyi güncelle",
+  "passwordsDontMatch": "Şifreler eşleşmiyor",
+  "passwordUpdated": "Şifren güncellendi",
+  "enterPasswordAgain": "Şifre tekrar girin",
+  "guestScanCounter": "{remaining}/5 ücretsiz tarama",
+  "@guestScanCounter": {
+    "placeholders": { "remaining": { "type": "int" } }
+  },
+  "appVersion": "Sürüm",
+  "testCrashReporting": "Crash raporlamayı test et"
 }

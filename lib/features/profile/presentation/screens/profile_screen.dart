@@ -89,7 +89,7 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       Text(
                         isGuest
-                            ? 'Misafir Kullanıcısı'
+                            ? l10n.guestUser
                             : (user?.displayName ?? l10n.user),
                         style: TextStyle(
                           fontSize: 18,
@@ -100,7 +100,7 @@ class ProfileScreen extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Text(
                         isGuest
-                            ? 'Verilerin sadece bu cihazda'
+                            ? l10n.guestDataLocal
                             : (user?.email ?? ''),
                         style: TextStyle(
                           fontSize: 13,
@@ -212,7 +212,7 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () async {
                   if (!await ref.requireAuthOr(
                     context,
-                    feature: 'Premium',
+                    feature: context.l10n.featurePremium,
                   )) {
                     return;
                   }
@@ -511,6 +511,7 @@ class ProfileScreen extends ConsumerWidget {
 class _GuestRegisterBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -546,7 +547,7 @@ class _GuestRegisterBanner extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hesap aç, verilerini yedekle',
+                      l10n.createAccountBackupTitle,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -555,7 +556,7 @@ class _GuestRegisterBanner extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Tarama geçmişin, öğünlerin her cihazda',
+                      l10n.createAccountBackupSubtitle,
                       style: TextStyle(
                         fontSize: 12,
                         color: context.colors.textMuted,

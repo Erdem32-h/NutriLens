@@ -287,5 +287,60 @@
   "gaugeWeak": "Poor",
   "gaugeBad": "Bad",
   "hpScoreLabel": "HP Score",
-  "allergenWarningTitle": "WARNING: Contains Allergen"
+  "allergenWarningTitle": "WARNING: Contains Allergen",
+  "continueAsGuest": "Continue as guest",
+  "guestUser": "Guest user",
+  "guestDataLocal": "Your data stays on this device only",
+  "createAccountBackupTitle": "Create an account, back up your data",
+  "createAccountBackupSubtitle": "Scan history and meals on every device",
+  "guestLastFreeScan": "Your last free scan. Sign up to keep your history.",
+  "guestScanLimitTitle": "5 free scans used",
+  "guestScanLimitMessage": "Creating an account refreshes your quota; your history and meals sync across devices.",
+  "guestFeatureLockedTitle": "{feature} requires an account",
+  "@guestFeatureLockedTitle": {
+    "placeholders": { "feature": { "type": "String" } }
+  },
+  "guestFeatureLockedMessage": "This feature lives in the cloud. Create an account and sign in to enable it.",
+  "createAccountCta": "Create account",
+  "notNow": "Not now",
+  "featureFavorites": "Favorites",
+  "featureBlacklist": "Blocklist",
+  "featurePremium": "Premium",
+  "featureAddProduct": "Adding a product",
+  "migrationTitle": "You have guest data",
+  "migrationMessage": "This device has {dataLine}. Move it to your new account?",
+  "@migrationMessage": {
+    "placeholders": { "dataLine": { "type": "String" } }
+  },
+  "migrationYes": "Yes, upload to my account",
+  "migrationNo": "Start fresh",
+  "scanCountUnit": "{count} scans",
+  "@scanCountUnit": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "mealCountUnit": "{count} meals",
+  "@mealCountUnit": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "forgotPassword": "Forgot password",
+  "forgotPasswordTitle": "Forgot your password?",
+  "forgotPasswordSubtitle": "Enter the email tied to your account; we'll send a reset link.",
+  "sendResetLink": "Send reset link",
+  "resetLinkSentTitle": "Link sent",
+  "resetLinkSentMessage": "Check your inbox. Tap the link to set a new password.",
+  "backToLogin": "Back to login",
+  "resetPasswordTitle": "Set a new password",
+  "resetPasswordSubtitle": "Pick a strong password to protect your account.",
+  "newPassword": "New password",
+  "confirmPassword": "Confirm password",
+  "updatePassword": "Update password",
+  "passwordsDontMatch": "Passwords don't match",
+  "passwordUpdated": "Password updated",
+  "enterPasswordAgain": "Enter password again",
+  "guestScanCounter": "{remaining}/5 free scans",
+  "@guestScanCounter": {
+    "placeholders": { "remaining": { "type": "int" } }
+  },
+  "appVersion": "Version",
+  "testCrashReporting": "Test crash reporting"
 }

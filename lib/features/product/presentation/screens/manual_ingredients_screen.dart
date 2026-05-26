@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/hp_score_calculator.dart';
 import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -106,7 +107,12 @@ class _ManualIngredientsScreenState
   }
 
   Future<void> _saveProduct() async {
-    if (!await ref.requireAuthOr(context, feature: 'Ürün ekleme')) return;
+    if (!await ref.requireAuthOr(
+      context,
+      feature: context.l10n.featureAddProduct,
+    )) {
+      return;
+    }
     if (!mounted) return;
     setState(() => _isSaving = true);
 
