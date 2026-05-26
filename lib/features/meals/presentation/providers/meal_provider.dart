@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/services/home_widget_service.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/session/app_session.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../data/datasources/meal_local_datasource.dart';
 import '../../domain/entities/meal_entry_entity.dart';
@@ -18,7 +18,7 @@ final mealLocalDataSourceProvider = Provider<MealLocalDataSource>((ref) {
 });
 
 final mealsProvider = FutureProvider<List<MealEntryEntity>>((ref) async {
-  final userId = ref.watch(currentUserProvider)?.id;
+  final userId = ref.watch(effectiveUserIdProvider);
   if (userId == null) return [];
   final dataSource = ref.watch(mealLocalDataSourceProvider);
   return dataSource.getMeals(userId: userId);
@@ -27,7 +27,7 @@ final mealsProvider = FutureProvider<List<MealEntryEntity>>((ref) async {
 final mealCalorieSummaryProvider = FutureProvider<MealCalorieSummary>((
   ref,
 ) async {
-  final userId = ref.watch(currentUserProvider)?.id;
+  final userId = ref.watch(effectiveUserIdProvider);
   if (userId == null) return const MealCalorieSummary();
 
   final dataSource = ref.watch(mealLocalDataSourceProvider);

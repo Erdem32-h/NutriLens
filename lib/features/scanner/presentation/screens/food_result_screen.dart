@@ -4,12 +4,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
+import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
 import '../../../meals/data/services/meal_thumbnail_service.dart';
@@ -156,7 +156,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     setState(() => _saving = true);
 
     try {
-      final userId = Supabase.instance.client.auth.currentUser?.id;
+      // Guests get the kGuestUserId sentinel so meals land in local
+      // Drift the same as authenticated users — no auth check needed.
+      final userId = ref.read(effectiveUserIdProvider);
       if (userId == null) {
         if (mounted) {
           ScaffoldMessenger.of(

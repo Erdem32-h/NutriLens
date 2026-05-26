@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/score_constants.dart';
+import '../../../../core/session/app_session.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
 import '../../../product/presentation/providers/product_provider.dart';
@@ -113,53 +114,59 @@ final scanHistoryLocalDataSourceProvider = Provider<ScanHistoryLocalDataSource>(
 
 /// Fetches scan history from Supabase first, falls back to local Drift cache.
 /// Enriches Supabase results with product info from local Drift cache.
+///
+/// Guest mode: skip Supabase entirely (the sentinel id is meaningless
+/// server-side), read straight from local Drift where guest scans live.
 final scanHistoryProvider = FutureProvider<List<ScanHistoryWithProduct>>((
   ref,
 ) async {
-  final userId = ref.watch(currentUserProvider)?.id;
+  final userId = ref.watch(effectiveUserIdProvider);
   if (userId == null) return [];
+  final isGuest = ref.watch(isGuestProvider);
 
-  // Try Supabase first for cross-device sync
-  try {
-    final response = await Supabase.instance.client
-        .from('scan_history')
-        .select()
-        .eq('user_id', userId)
-        .order('scanned_at', ascending: false)
-        .limit(50);
+  // Try Supabase first for cross-device sync (authenticated only)
+  if (!isGuest) {
+    try {
+      final response = await Supabase.instance.client
+          .from('scan_history')
+          .select()
+          .eq('user_id', userId)
+          .order('scanned_at', ascending: false)
+          .limit(50);
 
-    final rows = response as List<dynamic>;
-    if (rows.isNotEmpty) {
-      final productLocal = ref.watch(productLocalDataSourceProvider);
-      final results = await Future.wait(
-        rows.map((row) async {
-          final map = row as Map<String, dynamic>;
-          final barcode = map['barcode'] as String;
-          // Enrich with local product cache for display info
-          final product = await productLocal.getProduct(barcode);
-          return ScanHistoryWithProduct(
-            id: map['id'] as String,
-            barcode: barcode,
-            scannedAt: DateTime.parse(map['scanned_at'] as String),
-            hpScoreAtScan: map['hp_score_at_scan'] != null
-                ? (map['hp_score_at_scan'] as num).toDouble()
-                : null,
-            productName: product?.productName,
-            brands: product?.brands,
-            imageUrl: product?.imageUrl,
-            ingredientsText: product?.ingredientsText,
-            currentHpScore: product?.calculatedHpScore,
-            hpScoreVersion: product?.hpScoreVersion,
-          );
-        }),
-      );
-      // Background enrichment for rows missing local product data
-      // (common after a fresh install).
-      unawaited(_enrichMissingProducts(ref, results));
-      return results;
+      final rows = response as List<dynamic>;
+      if (rows.isNotEmpty) {
+        final productLocal = ref.watch(productLocalDataSourceProvider);
+        final results = await Future.wait(
+          rows.map((row) async {
+            final map = row as Map<String, dynamic>;
+            final barcode = map['barcode'] as String;
+            // Enrich with local product cache for display info
+            final product = await productLocal.getProduct(barcode);
+            return ScanHistoryWithProduct(
+              id: map['id'] as String,
+              barcode: barcode,
+              scannedAt: DateTime.parse(map['scanned_at'] as String),
+              hpScoreAtScan: map['hp_score_at_scan'] != null
+                  ? (map['hp_score_at_scan'] as num).toDouble()
+                  : null,
+              productName: product?.productName,
+              brands: product?.brands,
+              imageUrl: product?.imageUrl,
+              ingredientsText: product?.ingredientsText,
+              currentHpScore: product?.calculatedHpScore,
+              hpScoreVersion: product?.hpScoreVersion,
+            );
+          }),
+        );
+        // Background enrichment for rows missing local product data
+        // (common after a fresh install).
+        unawaited(_enrichMissingProducts(ref, results));
+        return results;
+      }
+    } catch (_) {
+      // Supabase failed — fall back to local
     }
-  } catch (_) {
-    // Supabase failed — fall back to local
   }
 
   // Fallback: local Drift cache (already joins with food_products)
@@ -171,14 +178,17 @@ final scanHistoryProvider = FutureProvider<List<ScanHistoryWithProduct>>((
 
 // --- Add Scan ---
 
-/// Saves a barcode scan to history (both local + Supabase).
+/// Saves a barcode scan to history. Always writes to local Drift; only
+/// pushes to Supabase when the user is authenticated (guest scans stay
+/// on-device until the user signs up — see migration flow).
 Future<void> addScanToHistory(
   WidgetRef ref, {
   required String barcode,
   double? hpScore,
 }) async {
-  final userId = ref.read(currentUserProvider)?.id;
+  final userId = ref.read(effectiveUserIdProvider);
   if (userId == null) return;
+  final isGuest = ref.read(isGuestProvider);
 
   try {
     // Write to local Drift
@@ -187,6 +197,8 @@ Future<void> addScanToHistory(
     ref.invalidate(scanHistoryProvider);
     // Push the new "last scan" / meal-count snapshot to the home widget.
     unawaited(ref.read(homeWidgetServiceProvider).refresh(userId: userId));
+
+    if (isGuest) return;
 
     // Sync to Supabase with hp_score
     await Supabase.instance.client.from('scan_history').upsert({
@@ -203,11 +215,15 @@ Future<void> addScanToHistory(
 // --- Delete Scan ---
 
 Future<void> deleteScanFromHistory(WidgetRef ref, String id) async {
-  // Delete from Supabase first
-  try {
-    await Supabase.instance.client.from('scan_history').delete().eq('id', id);
-  } catch (_) {
-    // Non-critical
+  final isGuest = ref.read(isGuestProvider);
+
+  // Delete from Supabase first (skip for guests — they have no remote row)
+  if (!isGuest) {
+    try {
+      await Supabase.instance.client.from('scan_history').delete().eq('id', id);
+    } catch (_) {
+      // Non-critical
+    }
   }
 
   // Delete from local
