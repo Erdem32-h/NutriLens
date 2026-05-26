@@ -11,8 +11,11 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/barcode_validator.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
+import '../../../../core/services/guest_scan_counter.dart';
+import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../widgets/scanner_overlay.dart';
+import '../../../auth/presentation/widgets/guest_register_sheet.dart';
 import '../../../premium/presentation/widgets/scan_limit_sheet.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
@@ -173,20 +176,55 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     _isNavigating = true;
 
-    // Check scan limit
-    final scanLimitService = ref.read(scanLimitServiceProvider);
-    final scanResult = await scanLimitService.checkAndIncrement(
-      localPremium: ref.read(isPremiumProvider),
-    );
-    if (!scanResult.allowed) {
-      if (mounted) {
-        final granted = await ScanLimitSheet.show(context);
-        if (!granted) {
-          setState(() => _isNavigating = false);
+    // Guest mode has its own lifetime cap (5 scans) backed by
+    // SharedPreferences — the server-side RPC isn't even reachable
+    // because there's no auth token. Hit the local counter first;
+    // only authenticated users go through Supabase.
+    if (ref.read(isGuestProvider)) {
+      final counter = ref.read(guestScanCounterProvider);
+      if (!counter.canScan) {
+        if (mounted) {
+          final wantsRegister = await GuestRegisterSheet.showScanLimitReached(
+            context,
+          );
+          if (!mounted) {
+            return;
+          }
+          if (wantsRegister) {
+            context.go('/register');
+            return;
+          }
+        }
+        setState(() => _isNavigating = false);
+        return;
+      }
+      final newCount = await counter.increment();
+      if (newCount == GuestScanCounter.lifetimeLimit && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.',
+            ),
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+    } else {
+      // Check scan limit
+      final scanLimitService = ref.read(scanLimitServiceProvider);
+      final scanResult = await scanLimitService.checkAndIncrement(
+        localPremium: ref.read(isPremiumProvider),
+      );
+      if (!scanResult.allowed) {
+        if (mounted) {
+          final granted = await ScanLimitSheet.show(context);
+          if (!granted) {
+            setState(() => _isNavigating = false);
+            return;
+          }
+        } else {
           return;
         }
-      } else {
-        return;
       }
     }
 
@@ -242,17 +280,47 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
       if (!mounted) return;
 
-      // Check scan limit
-      final scanLimitService = ref.read(scanLimitServiceProvider);
-      final scanResult = await scanLimitService.checkAndIncrement(
-        localPremium: ref.read(isPremiumProvider),
-      );
-      if (!scanResult.allowed) {
-        if (mounted) {
-          final granted = await ScanLimitSheet.show(context);
-          if (!granted) return;
-        } else {
+      // Guest mode: local lifetime counter, no server hop. Same logic
+      // as the barcode-scan path above.
+      if (ref.read(isGuestProvider)) {
+        final counter = ref.read(guestScanCounterProvider);
+        if (!counter.canScan) {
+          if (mounted) {
+            final wantsRegister = await GuestRegisterSheet.showScanLimitReached(
+              context,
+            );
+            if (!mounted) return;
+            if (wantsRegister) {
+              context.go('/register');
+              return;
+            }
+          }
           return;
+        }
+        final newCount = await counter.increment();
+        if (newCount == GuestScanCounter.lifetimeLimit && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.',
+              ),
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
+      } else {
+        // Check scan limit
+        final scanLimitService = ref.read(scanLimitServiceProvider);
+        final scanResult = await scanLimitService.checkAndIncrement(
+          localPremium: ref.read(isPremiumProvider),
+        );
+        if (!scanResult.allowed) {
+          if (mounted) {
+            final granted = await ScanLimitSheet.show(context);
+            if (!granted) return;
+          } else {
+            return;
+          }
         }
       }
 
