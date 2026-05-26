@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../config/router/route_names.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/post_auth_flow.dart';
 import '../widgets/social_login_buttons.dart';
 import '../../../../core/providers/monetization_provider.dart';
 
@@ -53,9 +53,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             backgroundColor: context.colors.error,
           ),
         );
-      } else {
-        context.goNamed(RouteNames.meals);
       }
+      // Success navigation is handled by the authStateProvider
+      // listener in build() → runPostAuthFlow (covers migration).
     }
   }
 
@@ -63,8 +63,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     ref.listen(authStateProvider, (previous, next) {
       if (next.hasValue && next.value != null) {
-        ref.read(subscriptionServiceProvider).logIn(next.value!.id);
-        if (mounted) context.go('/meals');
+        final user = next.value!;
+        ref.read(subscriptionServiceProvider).logIn(user.id);
+        if (!mounted) return;
+        runPostAuthFlow(ref, context, userId: user.id);
       }
     });
 

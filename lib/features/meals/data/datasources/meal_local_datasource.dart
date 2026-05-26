@@ -17,6 +17,18 @@ abstract interface class MealLocalDataSource {
     required DateTime to,
   });
   Future<void> deleteMeal(String id);
+
+  /// Total rows belonging to [userId]. Used by the guest→register
+  /// migration prompt to tell the user how many meals would move.
+  Future<int> countByUser(String userId);
+
+  /// Re-key all rows owned by [fromUserId] to [toUserId]. Used during
+  /// the guest→register migration so the new account inherits the
+  /// data the user accumulated while browsing as a guest.
+  Future<void> reassignOwner({
+    required String fromUserId,
+    required String toUserId,
+  });
 }
 
 final class MealLocalDataSourceImpl implements MealLocalDataSource {
@@ -98,6 +110,32 @@ final class MealLocalDataSourceImpl implements MealLocalDataSource {
       await (_db.delete(_db.mealEntries)..where((t) => t.id.equals(id))).go();
     } catch (e) {
       throw CacheException('Failed to delete meal: $e');
+    }
+  }
+
+  @override
+  Future<int> countByUser(String userId) async {
+    try {
+      final rows = await (_db.select(_db.mealEntries)
+            ..where((t) => t.userId.equals(userId)))
+          .get();
+      return rows.length;
+    } catch (e) {
+      throw CacheException('Failed to count meals: $e');
+    }
+  }
+
+  @override
+  Future<void> reassignOwner({
+    required String fromUserId,
+    required String toUserId,
+  }) async {
+    try {
+      await (_db.update(_db.mealEntries)
+            ..where((t) => t.userId.equals(fromUserId)))
+          .write(MealEntriesCompanion(userId: Value(toUserId)));
+    } catch (e) {
+      throw CacheException('Failed to reassign meals: $e');
     }
   }
 

@@ -68,6 +68,24 @@ abstract interface class ScanHistoryLocalDataSource {
   Future<void> deleteScan(String id);
 
   Future<void> updateScan(String id, {String? productName, String? barcode});
+
+  /// Total scan rows owned by [userId] (used by the guest→register
+  /// migration summary).
+  Future<int> countByUser(String userId);
+
+  /// Raw list of {barcode, scannedAt, hpScore} rows for [userId].
+  /// Used by the migration to bulk-upsert to Supabase without going
+  /// through the join-aware getHistory query.
+  Future<List<Map<String, dynamic>>> rawByUser(String userId);
+
+  /// Re-key all scans from [fromUserId] to [toUserId]. The (userId,
+  /// barcode) unique constraint means we need to delete any rows that
+  /// would collide first — but during migration the new user has no
+  /// rows yet, so a straight update is safe.
+  Future<void> reassignOwner({
+    required String fromUserId,
+    required String toUserId,
+  });
 }
 
 final class ScanHistoryLocalDataSourceImpl
@@ -192,6 +210,52 @@ final class ScanHistoryLocalDataSourceImpl
       // Not: Ürün adı için food_products tablosunun güncellenmesi gerekebilir
     } catch (e) {
       throw CacheException('Failed to update scan: $e');
+    }
+  }
+
+  @override
+  Future<int> countByUser(String userId) async {
+    try {
+      final rows = await (_db.select(_db.scanHistory)
+            ..where((t) => t.userId.equals(userId)))
+          .get();
+      return rows.length;
+    } catch (e) {
+      throw CacheException('Failed to count scans: $e');
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> rawByUser(String userId) async {
+    try {
+      final rows = await (_db.select(_db.scanHistory)
+            ..where((t) => t.userId.equals(userId)))
+          .get();
+      return rows
+          .map(
+            (r) => {
+              'barcode': r.barcode,
+              'scanned_at': r.scannedAt.toIso8601String(),
+              'hp_score_at_scan': r.hpScoreAtScan,
+            },
+          )
+          .toList();
+    } catch (e) {
+      throw CacheException('Failed to read raw scans: $e');
+    }
+  }
+
+  @override
+  Future<void> reassignOwner({
+    required String fromUserId,
+    required String toUserId,
+  }) async {
+    try {
+      await (_db.update(_db.scanHistory)
+            ..where((t) => t.userId.equals(fromUserId)))
+          .write(ScanHistoryCompanion(userId: Value(toUserId)));
+    } catch (e) {
+      throw CacheException('Failed to reassign scans: $e');
     }
   }
 }
