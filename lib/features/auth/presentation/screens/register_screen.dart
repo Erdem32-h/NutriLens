@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -24,6 +25,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
 
+  /// Set to the registered email after a successful signup that requires
+  /// email confirmation. While non-null we swap the form for a "check
+  /// your inbox" banner with resend + back-to-login actions, instead of
+  /// leaving the user staring at an unchanged form.
+  String? _pendingConfirmationEmail;
+  bool _resending = false;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -35,27 +43,68 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
+    final email = _emailController.text.trim();
 
     await ref
         .read(authNotifierProvider.notifier)
         .signUpWithEmail(
-          email: _emailController.text.trim(),
+          email: email,
           password: _passwordController.text,
           displayName: _nameController.text.trim(),
         );
 
-    if (mounted) {
-      final authState = ref.read(authNotifierProvider);
-      if (authState.hasError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(authState.error.toString()),
-            backgroundColor: context.colors.error,
-          ),
-        );
-      }
-      // Success navigation is handled by the authStateProvider
-      // listener in build() → runPostAuthFlow (covers migration).
+    if (!mounted) return;
+    final authState = ref.read(authNotifierProvider);
+    if (authState.hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authState.error.toString()),
+          backgroundColor: context.colors.error,
+        ),
+      );
+      return;
+    }
+
+    // If "Confirm email" is ON in Supabase Auth, signUp succeeds but
+    // creates the user with email_confirmed_at=null and does NOT emit
+    // a session. authStateProvider stays empty, so runPostAuthFlow
+    // never runs. Swap the form for the "check your inbox" banner so
+    // the user gets feedback instead of a silent no-op.
+    //
+    // If confirmation is OFF, a session lands immediately, the
+    // listener in build() picks it up and routes to /meals. We skip
+    // showing the banner in that case.
+    final hasSession =
+        Supabase.instance.client.auth.currentSession != null;
+    if (!hasSession) {
+      setState(() => _pendingConfirmationEmail = email);
+    }
+  }
+
+  Future<void> _resendConfirmation() async {
+    final email = _pendingConfirmationEmail;
+    if (email == null || _resending) return;
+    setState(() => _resending = true);
+    try {
+      await Supabase.instance.client.auth.resend(
+        type: OtpType.signup,
+        email: email,
+        emailRedirectTo: 'nutrilens://auth/callback',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Yeni doğrulama maili gönderildi'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Mail gönderilemedi: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _resending = false);
     }
   }
 
@@ -101,7 +150,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Form(
+              child: _pendingConfirmationEmail != null
+                  ? _ConfirmationSentView(
+                      email: _pendingConfirmationEmail!,
+                      isResending: _resending,
+                      onResend: _resendConfirmation,
+                    )
+                  : Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,4 +413,165 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       letterSpacing: 0.2,
     ),
   );
+}
+
+/// Shown after a successful signUpWithEmail when Supabase's "Confirm
+/// email" toggle is ON — the user is created but unauthenticated
+/// until they click the verification link. We surface a clear "check
+/// your inbox + spam" message + a resend button so they don't think
+/// the app silently swallowed their signup.
+class _ConfirmationSentView extends StatelessWidget {
+  final String email;
+  final bool isResending;
+  final VoidCallback onResend;
+
+  const _ConfirmationSentView({
+    required this.email,
+    required this.isResending,
+    required this.onResend,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        IconButton(
+          onPressed: () => context.go('/login'),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: context.colors.textPrimary,
+          ),
+          padding: EdgeInsets.zero,
+          alignment: Alignment.centerLeft,
+        ),
+        const SizedBox(height: 32),
+        Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            gradient: context.colors.primaryGradient,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          alignment: Alignment.center,
+          child: const Icon(
+            Icons.mark_email_read_outlined,
+            color: Colors.black,
+            size: 36,
+          ),
+        ),
+        const SizedBox(height: 28),
+        Text(
+          'Email adresini doğrula',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
+            color: context.colors.textPrimary,
+            height: 1.1,
+          ),
+        ),
+        const SizedBox(height: 12),
+        RichText(
+          text: TextSpan(
+            style: TextStyle(
+              fontSize: 15,
+              color: context.colors.textMuted,
+              height: 1.5,
+            ),
+            children: [
+              const TextSpan(text: 'Doğrulama bağlantısı '),
+              TextSpan(
+                text: email,
+                style: TextStyle(
+                  color: context.colors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const TextSpan(
+                text:
+                    ' adresine gönderildi. Bağlantıya **telefonundan** dokun, hesabın aktif olsun.',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: context.colors.surfaceCard,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: context.colors.border,
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.info_outline_rounded,
+                size: 18,
+                color: context.colors.textMuted,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Spam / Gereksiz klasörünü de kontrol et. Yeni gönderici domaini olduğu için bazı sağlayıcılar ilk maili oraya atabilir.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: context.colors.textMuted,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 28),
+        GestureDetector(
+          onTap: isResending ? null : onResend,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: 52,
+            decoration: BoxDecoration(
+              gradient: isResending ? null : context.colors.primaryGradient,
+              color: isResending ? context.colors.surfaceCard2 : null,
+              borderRadius: BorderRadius.circular(50),
+            ),
+            alignment: Alignment.center,
+            child: isResending
+                ? SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: context.colors.primary,
+                    ),
+                  )
+                : const Text(
+                    'Maili tekrar gönder',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Center(
+          child: TextButton(
+            onPressed: () => context.go('/login'),
+            child: Text(
+              'Girişe dön',
+              style: TextStyle(
+                color: context.colors.textMuted,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
