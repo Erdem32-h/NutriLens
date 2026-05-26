@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../../../config/router/route_names.dart';
 import '../../../../core/extensions/l10n_extension.dart';
@@ -245,6 +247,15 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => _confirmDeleteAccount(context, ref),
             ),
           ],
+
+          const SizedBox(height: 24),
+
+          // Version footer — also acts as a hidden Sentry verification
+          // entry point: long-pressing the version line sends a test
+          // exception to Sentry so we can confirm the SDK is wired up
+          // on real devices (TestFlight / Play Internal) without
+          // shipping a visible debug button.
+          const _VersionFooter(),
 
           const SizedBox(height: 24),
         ],
@@ -500,6 +511,82 @@ class ProfileScreen extends ConsumerWidget {
           if (isSelected)
             Icon(Icons.check_rounded, color: context.colors.primary, size: 18),
         ],
+      ),
+    );
+  }
+}
+
+/// App version line at the bottom of the profile screen. Tap to see
+/// the version, long-press to fire a test Sentry event (verifies the
+/// crash pipeline end-to-end on real TestFlight / Play Internal
+/// devices). Kept low-key so beta testers don't trigger it by
+/// accident; the long-press is intentional friction.
+class _VersionFooter extends StatefulWidget {
+  const _VersionFooter();
+
+  @override
+  State<_VersionFooter> createState() => _VersionFooterState();
+}
+
+class _VersionFooterState extends State<_VersionFooter> {
+  String _label = '...';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() => _label = '${info.version} (${info.buildNumber})');
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _label = '—');
+    }
+  }
+
+  Future<void> _fireSentryTest() async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await Sentry.captureException(
+        StateError('NutriLens manual Sentry verification ping'),
+        stackTrace: StackTrace.current,
+      );
+      if (!mounted) return;
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Sentry test event sent ✓'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text('Sentry test failed: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: GestureDetector(
+        onLongPress: _fireSentryTest,
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+          child: Text(
+            '${context.l10n.appVersion} $_label',
+            style: TextStyle(
+              fontSize: 11,
+              color: context.colors.textMuted.withValues(alpha: 0.6),
+              letterSpacing: 0.3,
+            ),
+          ),
+        ),
       ),
     );
   }

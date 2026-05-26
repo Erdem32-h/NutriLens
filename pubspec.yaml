@@ -26,6 +26,9 @@ dependencies:
   # Crash + error reporting (Sentry)
   sentry_flutter: ^9.6.0
 
+  # App version display (profile footer)
+  package_info_plus: ^9.0.0
+
   # Local Database
   drift: ^2.22.1
   sqlite3_flutter_libs: ^0.5.0
