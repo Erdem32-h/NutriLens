@@ -90,7 +90,12 @@ GoRouter createRouter(WidgetRef ref) {
       if (!isLoggedIn && !isGuest && !isAuthRoute) {
         return '/login';
       }
-      if ((isLoggedIn || isGuest) && isAuthRoute) {
+      // Only fully-authenticated users get bounced off the auth
+      // routes. Guests must be allowed to walk into /register so
+      // they can upgrade their session — the previous version of
+      // this branch trapped guests on /meals when they tapped the
+      // "Hesap aç" CTA.
+      if (isLoggedIn && isAuthRoute) {
         return '/meals';
       }
       return null;
