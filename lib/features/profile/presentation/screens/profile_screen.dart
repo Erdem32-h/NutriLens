@@ -7,6 +7,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
+import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../history/presentation/providers/history_provider.dart';
@@ -20,15 +21,17 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final isGuest = ref.watch(isGuestProvider);
     final l10n = context.l10n;
     final currentThemeMode = ref.watch(themeModeProvider);
     final currentLocale = ref.watch(localeProvider);
 
-    final initial =
-        (user?.displayName?.isNotEmpty == true
-                ? user!.displayName![0]
-                : user?.email[0] ?? '?')
-            .toUpperCase();
+    final initial = isGuest
+        ? 'M'
+        : (user?.displayName?.isNotEmpty == true
+                  ? user!.displayName![0]
+                  : user?.email[0] ?? '?')
+              .toUpperCase();
 
     return Scaffold(
       backgroundColor: context.colors.background,
@@ -84,7 +87,9 @@ class ProfileScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user?.displayName ?? l10n.user,
+                        isGuest
+                            ? 'Misafir Kullanıcısı'
+                            : (user?.displayName ?? l10n.user),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -93,7 +98,9 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        user?.email ?? '',
+                        isGuest
+                            ? 'Verilerin sadece bu cihazda'
+                            : (user?.email ?? ''),
                         style: TextStyle(
                           fontSize: 13,
                           color: context.colors.textMuted,
@@ -106,6 +113,11 @@ class ProfileScreen extends ConsumerWidget {
               ],
             ),
           ),
+
+          if (isGuest) ...[
+            const SizedBox(height: 16),
+            _GuestRegisterBanner(),
+          ],
 
           const SizedBox(height: 28),
 
@@ -201,26 +213,29 @@ class ProfileScreen extends ConsumerWidget {
             },
           ),
 
-          const SizedBox(height: 28),
-
-          _SectionLabel(l10n.dataManagement),
-          const SizedBox(height: 10),
-
-          _SettingsTile(
-            icon: Icons.delete_sweep_rounded,
-            title: l10n.deleteAllData,
-            value: l10n.userData,
-            accentColor: context.colors.error,
-            onTap: () => _confirmDeleteAllData(context, ref),
-          ),
-          const SizedBox(height: 8),
-          _SettingsTile(
-            icon: Icons.person_remove_rounded,
-            title: l10n.deleteAccount,
-            value: l10n.permanent,
-            accentColor: context.colors.error,
-            onTap: () => _confirmDeleteAccount(context, ref),
-          ),
+          // Data management — only meaningful for authenticated users.
+          // Guests have no Supabase rows to delete and no account to
+          // remove; their local data is wiped on uninstall.
+          if (!isGuest) ...[
+            const SizedBox(height: 28),
+            _SectionLabel(l10n.dataManagement),
+            const SizedBox(height: 10),
+            _SettingsTile(
+              icon: Icons.delete_sweep_rounded,
+              title: l10n.deleteAllData,
+              value: l10n.userData,
+              accentColor: context.colors.error,
+              onTap: () => _confirmDeleteAllData(context, ref),
+            ),
+            const SizedBox(height: 8),
+            _SettingsTile(
+              icon: Icons.person_remove_rounded,
+              title: l10n.deleteAccount,
+              value: l10n.permanent,
+              accentColor: context.colors.error,
+              onTap: () => _confirmDeleteAccount(context, ref),
+            ),
+          ],
 
           const SizedBox(height: 24),
         ],
@@ -476,6 +491,77 @@ class ProfileScreen extends ConsumerWidget {
           if (isSelected)
             Icon(Icons.check_rounded, color: context.colors.primary, size: 18),
         ],
+      ),
+    );
+  }
+}
+
+/// Soft CTA shown to guest users on the profile screen. Tapping it
+/// sends them to /register so their next session is authenticated and
+/// the migration prompt kicks in.
+class _GuestRegisterBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.go('/register'),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: context.colors.surfaceCard,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: context.colors.primary.withValues(alpha: 0.5),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  gradient: context.colors.primaryGradient,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.cloud_upload_outlined,
+                  color: Colors.black,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hesap aç, verilerini yedekle',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: context.colors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Tarama geçmişin, öğünlerin her cihazda',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.colors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: context.colors.textMuted,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

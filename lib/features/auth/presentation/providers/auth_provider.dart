@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/monetization_provider.dart';
+import '../../../../core/session/app_session.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -113,6 +114,10 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     final subscriptionService = ref.read(subscriptionServiceProvider);
     await subscriptionService.logOut();
     await ref.read(authRepositoryProvider).signOut();
+    // Also clear the guest flag — otherwise a logged-in user signing
+    // out would not get back to the login screen if they had ever
+    // tapped "continue as guest" earlier.
+    await ref.read(appSessionControllerProvider).exitGuestMode();
     state = const AsyncData(null);
   }
 }
