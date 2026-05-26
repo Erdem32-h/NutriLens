@@ -10,7 +10,6 @@ import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/session/app_session.dart';
-import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../history/presentation/providers/history_provider.dart';
@@ -192,37 +191,34 @@ class ProfileScreen extends ConsumerWidget {
 
           const SizedBox(height: 28),
 
-          // Subscription section
-          const _SectionLabel('Abonelik'),
-          const SizedBox(height: 10),
-
-          Consumer(
-            builder: (context, ref, _) {
-              final isPremium = ref.watch(isPremiumProvider);
-              if (isPremium) {
+          // Subscription section — only meaningful for authenticated
+          // users. Guests get the register banner up top instead;
+          // showing them "Premium'a Geç" here is misleading because
+          // RevenueCat needs an identity before any purchase can be
+          // attributed.
+          if (!isGuest) ...[
+            const _SectionLabel('Abonelik'),
+            const SizedBox(height: 10),
+            Consumer(
+              builder: (context, ref, _) {
+                final isPremium = ref.watch(isPremiumProvider);
+                if (isPremium) {
+                  return _SettingsTile(
+                    icon: Icons.star,
+                    title: 'Premium Aktif',
+                    value: 'Aktif',
+                    onTap: () {},
+                  );
+                }
                 return _SettingsTile(
-                  icon: Icons.star,
-                  title: 'Premium Aktif',
-                  value: 'Aktif',
-                  onTap: () {},
+                  icon: Icons.star_outline,
+                  title: "Premium'a Geç",
+                  value: 'Sınırsız tarama, reklamsız',
+                  onTap: () => context.push('/paywall'),
                 );
-              }
-              return _SettingsTile(
-                icon: Icons.star_outline,
-                title: "Premium'a Geç",
-                value: 'Sınırsız tarama, reklamsız',
-                onTap: () async {
-                  if (!await ref.requireAuthOr(
-                    context,
-                    feature: context.l10n.featurePremium,
-                  )) {
-                    return;
-                  }
-                  if (context.mounted) context.push('/paywall');
-                },
-              );
-            },
-          ),
+              },
+            ),
+          ],
 
           // Data management — only meaningful for authenticated users.
           // Guests have no Supabase rows to delete and no account to
