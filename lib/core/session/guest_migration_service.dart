@@ -114,6 +114,6 @@ final guestMigrationServiceProvider = Provider<GuestMigrationService>((ref) {
     scanDs: ref.watch(scanHistoryLocalDataSourceProvider),
     mealDs: ref.watch(mealLocalDataSourceProvider),
     supabase: Supabase.instance.client,
-    counter: ref.watch(guestScanCounterProvider),
+    counter: ref.watch(guestScanCounterProvider.notifier),
   );
 });

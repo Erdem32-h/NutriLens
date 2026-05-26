@@ -10,31 +10,39 @@ import '../providers/locale_provider.dart';
 /// in SharedPreferences and resets only on app uninstall, so the abuse
 /// surface is intentionally small (a determined user reinstalls and
 /// scrubs their device — not a realistic conversion threat).
-class GuestScanCounter {
+///
+/// Exposed as a [Notifier] so widgets watching the budget (e.g. the
+/// scanner-screen badge) rebuild automatically after each increment.
+class GuestScanCounter extends Notifier<int> {
   static const _kCountKey = 'guest.scan_count_v1';
   static const int lifetimeLimit = 5;
 
-  final SharedPreferences _prefs;
+  late SharedPreferences _prefs;
 
-  GuestScanCounter(this._prefs);
+  @override
+  int build() {
+    _prefs = ref.watch(sharedPreferencesProvider);
+    return _prefs.getInt(_kCountKey) ?? 0;
+  }
 
-  int get count => _prefs.getInt(_kCountKey) ?? 0;
+  int get count => state;
 
   int get remaining {
-    final r = lifetimeLimit - count;
+    final r = lifetimeLimit - state;
     return r < 0 ? 0 : r;
   }
 
   /// True if the user still has scans left in their guest budget.
   /// False at exactly [lifetimeLimit] consumed scans — the caller
   /// should show the hard-block register sheet.
-  bool get canScan => count < lifetimeLimit;
+  bool get canScan => state < lifetimeLimit;
 
   /// Called after a successful scan check. Returns the new count so
   /// the caller can decide whether to fire the 5th-scan soft prompt.
   Future<int> increment() async {
-    final next = count + 1;
+    final next = state + 1;
     await _prefs.setInt(_kCountKey, next);
+    state = next;
     return next;
   }
 
@@ -43,9 +51,10 @@ class GuestScanCounter {
   /// server-side daily limit instead of inheriting the local cap.
   Future<void> reset() async {
     await _prefs.remove(_kCountKey);
+    state = 0;
   }
 }
 
-final guestScanCounterProvider = Provider<GuestScanCounter>((ref) {
-  return GuestScanCounter(ref.watch(sharedPreferencesProvider));
-});
+final guestScanCounterProvider = NotifierProvider<GuestScanCounter, int>(
+  GuestScanCounter.new,
+);

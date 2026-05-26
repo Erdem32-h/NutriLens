@@ -181,7 +181,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     // because there's no auth token. Hit the local counter first;
     // only authenticated users go through Supabase.
     if (ref.read(isGuestProvider)) {
-      final counter = ref.read(guestScanCounterProvider);
+      final counter = ref.read(guestScanCounterProvider.notifier);
       if (!counter.canScan) {
         if (mounted) {
           final wantsRegister = await GuestRegisterSheet.showScanLimitReached(
@@ -281,7 +281,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       // Guest mode: local lifetime counter, no server hop. Same logic
       // as the barcode-scan path above.
       if (ref.read(isGuestProvider)) {
-        final counter = ref.read(guestScanCounterProvider);
+        final counter = ref.read(guestScanCounterProvider.notifier);
         if (!counter.canScan) {
           if (mounted) {
             final wantsRegister = await GuestRegisterSheet.showScanLimitReached(
@@ -362,6 +362,22 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               return _buildCameraError(context, error);
             },
           ),
+
+          // Guest budget badge — visible only while browsing as a
+          // guest. Shows the remaining lifetime scan quota so users
+          // understand the limit before they hit the hard block.
+          // Hidden after registration (isGuest=false).
+          if (ref.watch(isGuestProvider))
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 12,
+              right: 16,
+              child: _GuestScanBadge(
+                remaining: ((GuestScanCounter.lifetimeLimit -
+                            ref.watch(guestScanCounterProvider))
+                        .clamp(0, GuestScanCounter.lifetimeLimit))
+                    .toInt(),
+              ),
+            ),
 
           // Barcode mode: overlay + hint
           if (_scanMode == 0) ...[
@@ -681,6 +697,54 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Floating badge in the top-right of the scanner that shows how many
+/// scans the guest has left out of [GuestScanCounter.lifetimeLimit].
+/// Updates automatically because `guestScanCounterProvider` is a
+/// Notifier — every `increment()` call re-emits the count.
+class _GuestScanBadge extends StatelessWidget {
+  final int remaining;
+
+  const _GuestScanBadge({required this.remaining});
+
+  @override
+  Widget build(BuildContext context) {
+    final isEmpty = remaining == 0;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(50),
+        border: Border.all(
+          color: isEmpty
+              ? Colors.redAccent.withValues(alpha: 0.6)
+              : Colors.white.withValues(alpha: 0.18),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isEmpty
+                ? Icons.lock_outline_rounded
+                : Icons.qr_code_scanner_rounded,
+            color: isEmpty ? Colors.redAccent : Colors.white,
+            size: 14,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            context.l10n.guestScanCounter(remaining),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
