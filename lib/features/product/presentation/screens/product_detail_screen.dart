@@ -5,6 +5,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/content_analysis_service.dart';
+import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../counterfeit/presentation/widgets/counterfeit_warning_banner.dart';
 import '../../../history/presentation/providers/history_provider.dart';
@@ -82,6 +83,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       color: isFav ? Colors.redAccent : null,
                     ),
                     onPressed: () async {
+                      if (!await ref.requireAuthOr(
+                        context,
+                        feature: 'Favoriler',
+                      )) {
+                        return;
+                      }
+                      if (!context.mounted) return;
                       final messenger = ScaffoldMessenger.of(context);
                       if (isFav) {
                         await removeFavoriteByBarcode(
@@ -117,6 +125,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       color: isBlocked ? Colors.orange : null,
                     ),
                     onPressed: () async {
+                      if (!await ref.requireAuthOr(
+                        context,
+                        feature: 'Kara liste',
+                      )) {
+                        return;
+                      }
                       if (isBlocked) {
                         await removeBlacklistByBarcode(
                           ref,

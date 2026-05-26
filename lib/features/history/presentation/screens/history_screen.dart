@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/datasources/scan_history_local_datasource.dart';
 import '../providers/history_provider.dart';
@@ -351,6 +352,9 @@ class _HistoryTile extends ConsumerWidget {
       );
       return;
     }
+
+    if (!await ref.requireAuthOr(context, feature: 'Favoriler')) return;
+    if (!context.mounted) return;
 
     final success = await addToFavorites(ref, barcode: item.barcode);
     if (!context.mounted) return;

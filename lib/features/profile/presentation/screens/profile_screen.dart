@@ -8,6 +8,7 @@ import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/session/app_session.dart';
+import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../history/presentation/providers/history_provider.dart';
@@ -208,7 +209,15 @@ class ProfileScreen extends ConsumerWidget {
                 icon: Icons.star_outline,
                 title: "Premium'a Geç",
                 value: 'Sınırsız tarama, reklamsız',
-                onTap: () => context.push('/paywall'),
+                onTap: () async {
+                  if (!await ref.requireAuthOr(
+                    context,
+                    feature: 'Premium',
+                  )) {
+                    return;
+                  }
+                  if (context.mounted) context.push('/paywall');
+                },
               );
             },
           ),

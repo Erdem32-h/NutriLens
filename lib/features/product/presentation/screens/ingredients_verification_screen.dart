@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/services/hp_score_calculator.dart';
+import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/product_entity.dart';
 import '../providers/product_provider.dart';
@@ -84,6 +85,10 @@ class _IngredientsVerificationScreenState
   }
 
   Future<void> _saveProduct() async {
+    // Community submit requires identity — guests get sent through
+    // the register sheet before any save attempt.
+    if (!await ref.requireAuthOr(context, feature: 'Ürün ekleme')) return;
+    if (!mounted) return;
     setState(() => _isSaving = true);
 
     try {
