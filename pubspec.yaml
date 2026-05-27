@@ -23,8 +23,8 @@ dependencies:
   # Backend
   supabase_flutter: ^2.8.0
 
-  # Crash + error reporting (Sentry)
-  sentry_flutter: ^9.6.0
+  # Crash + error reporting (Sentry) — 9.20+ required for Session Replay
+  sentry_flutter: ^9.20.0
 
   # App version display (profile footer)
   package_info_plus: ^9.0.0

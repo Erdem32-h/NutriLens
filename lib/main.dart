@@ -45,6 +45,24 @@ Future<void> main() async {
       // post-login (see auth listener) without exposing email.
       options.sendDefaultPii = false;
       options.attachStacktrace = true;
+
+      // Session Replay — records every tap/scroll/screen change so we
+      // can play back exactly what a user did before a crash or stuck
+      // state. While we're still in beta the on-error sample rate is
+      // 1.0 (every error attaches a replay) and the session rate is
+      // 1.0 (every session is recorded). Lower the session rate to
+      // ~0.1 after public launch to stay inside the free quota; the
+      // on-error rate stays at 1.0 because those are the most
+      // valuable recordings.
+      options.replay.sessionSampleRate = 1.0;
+      options.replay.onErrorSampleRate = 1.0;
+      // Default-on aggressive privacy: every text field and image is
+      // masked in the replay (these are default-true in 9.20+, set
+      // explicitly so future SDK changes can't silently flip them).
+      // Profile email, allergens, scan history would otherwise be
+      // visible to Sentry viewers.
+      options.privacy.maskAllText = true;
+      options.privacy.maskAllImages = true;
     },
     appRunner: _bootApp,
   );
@@ -113,6 +131,10 @@ void _bootApp() {
 
       // ignore: avoid_print
       print('[boot 100] runApp()');
+      // SentryWidget is the host that Session Replay attaches its
+      // capture overlay to. Wrapping at the ProviderScope's child
+      // keeps Riverpod working unchanged while making the entire app
+      // recordable. It's a no-op when Sentry isn't initialised.
       runApp(
         ProviderScope(
           overrides: [
@@ -123,7 +145,7 @@ void _bootApp() {
               sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             subscriptionServiceProvider.overrideWithValue(subscriptionService),
           ],
-          child: const NutriLensApp(),
+          child: SentryWidget(child: const NutriLensApp()),
         ),
       );
     },
