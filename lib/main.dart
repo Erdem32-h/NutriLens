@@ -63,6 +63,25 @@ Future<void> main() async {
       // visible to Sentry viewers.
       options.privacy.maskAllText = true;
       options.privacy.maskAllImages = true;
+
+      // Drop known-benign noise so real bugs don't get buried.
+      options.beforeSend = (event, hint) {
+        final ex = event.throwable;
+        // Supabase fires AuthApiException on cold launch when no
+        // saved session exists or the refresh token has rotated.
+        // The app already handles this gracefully (falls through to
+        // the login screen) — no developer action is ever needed.
+        if (ex is AuthApiException) {
+          final code = ex.code;
+          if (code == 'refresh_token_not_found' ||
+              code == 'session_not_found' ||
+              code == 'invalid_refresh_token' ||
+              code == 'refresh_token_already_used') {
+            return null;
+          }
+        }
+        return event;
+      };
     },
     appRunner: _bootApp,
   );
