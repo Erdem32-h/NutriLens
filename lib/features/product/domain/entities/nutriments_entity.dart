@@ -25,6 +25,27 @@ class NutrimentsEntity extends Equatable {
 
   static const empty = NutrimentsEntity();
 
+  /// Multiplies every nutrient by [factor] — used by the food-result
+  /// portion selector so a ½× / 1× / 1½× / 2× pick reflects directly
+  /// in calories, macros, salt and fiber. Nulls stay null (the AI may
+  /// genuinely not know a field; scaling unknown × factor is still
+  /// unknown). [factor] of 1.0 returns the same values.
+  NutrimentsEntity scaled(double factor) {
+    if (factor == 1.0) return this;
+    double? mul(double? v) => v == null ? null : v * factor;
+    return NutrimentsEntity(
+      energyKcal: mul(energyKcal),
+      fat: mul(fat),
+      saturatedFat: mul(saturatedFat),
+      transFat: mul(transFat),
+      carbohydrates: mul(carbohydrates),
+      sugars: mul(sugars),
+      salt: mul(salt),
+      fiber: mul(fiber),
+      proteins: mul(proteins),
+    );
+  }
+
   NutrimentsEntity copyWith({
     double? energyKcal,
     double? fat,

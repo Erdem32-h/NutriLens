@@ -491,15 +491,35 @@ class AnthropicAiService {
     return 0;
   }
 
+  /// Per-person realistic portion bounds. The model is already prompted
+  /// to estimate "what one adult eats" (and to cap shared dishes at a
+  /// single person's share), but we clamp defensively in case it returns
+  /// an outlier — e.g. a serving-platter total or a misread label.
+  /// 50g floor stops drink-only or appetiser-sized portions from looking
+  /// negligible; 350g ceiling covers a hearty Turkish main without
+  /// blessing values that would only make sense as 2-person totals.
+  static const int _mealPortionFloor = 50;
+  static const int _mealPortionCeiling = 350;
+
   static int _normalizeMealPortionGrams(int portionGrams) {
-    if (portionGrams <= 0) return 100;
-    if (portionGrams > 100) return 100;
+    if (portionGrams <= 0) return 200; // sensible default when AI omits
+    if (portionGrams < _mealPortionFloor) return _mealPortionFloor;
+    if (portionGrams > _mealPortionCeiling) return _mealPortionCeiling;
     return portionGrams;
   }
 
+  /// Scale the model's nutrition payload to match the clamped portion.
+  /// The prompt asks the model to return totals for the portion it
+  /// estimated, so a clamp from 500g to 350g should drop nutrition to
+  /// 350/500 = 0.7×. When the model is already inside the bounds the
+  /// scale is 1.0 and the data passes through unchanged.
   static double _mealNutritionScale(int portionGrams) {
-    if (portionGrams <= 100) return 1;
-    return 100 / portionGrams;
+    if (portionGrams <= 0) return 1; // default-200g path uses raw values
+    if (portionGrams < _mealPortionFloor) return _mealPortionFloor / portionGrams;
+    if (portionGrams > _mealPortionCeiling) {
+      return _mealPortionCeiling / portionGrams;
+    }
+    return 1;
   }
 
   static double _scaledNumber(dynamic value, double scale) {
@@ -628,29 +648,44 @@ Genel kurallar:
 }
 
 const String _mealAnalysisPrompt = '''
-Bu görseldeki öğünü analiz et.
+Bu görseldeki öğünü analiz et. Amacın TEK KİŞİNİN yediği porsiyonu
+gramaj + besin değeri olarak döndürmek.
 
-Kurallar:
-- Görselde görünen yiyecek/içecekleri tahmin et.
-- TEK KİŞİLİK porsiyonu hesapla. Büyük tabak / tencere / paylaşımlı kap
-  görsen bile tamamının tek kişi tarafından yeneceğini varsayma.
-- Porsiyonu yiyecek türüne göre makul aralıkta seç:
+Önce şu kararı ver:
+1. BİREYSEL porsiyon mu? (Bir kişinin önünde duran, tek başına yeneceği
+   bir kase/tabak. Genelde çorba kasesi, salata tabağı, kahvaltı tabağı,
+   tek bir ana yemek tabağı.)
+2. PAYLAŞIMLI tabak/tencere mi? (Ortaya konmuş büyük servis tabağı,
+   tencere, sini, börek tepsisi, pizza, ızgara tabağı, meze platter'ı —
+   birden fazla kişinin bölüşmesi için.)
+
+PAYLAŞIMLI ise: Sadece BİR kişinin alacağı tipik porsiyonu hesapla
+(yaklaşık 150–250 g). Tabaktaki toplam yemeği DEĞİL.
+
+BİREYSEL ise: Görseldeki gerçek miktarı tahmin et — tabak boyutu, dolma
+seviyesi, kullanılan kap.
+
+Yiyecek tipi referans aralıkları (bir kişilik):
   * Ana yemek (et, balık, tavuk vs.): 150–250 g
-  * Pilav / makarna / kuru baklagil: 150–250 g
+  * Pilav / makarna / kuru baklagil garnitürü: 80–150 g
+  * Pilav / makarna ana yemek olarak: 200–300 g
   * Çorba: 250–350 ml
-  * Salata / garnitür: 80–150 g
+  * Salata / meze: 80–150 g
   * Sandviç / dürüm / börek: 150–250 g
+  * Pizza dilimi: 100–180 g
   * Tatlı / pasta: 80–150 g
-  * Atıştırmalık / meze: 30–80 g
-  * Belirsizse 200 g civarı tahmin et.
-- Kullanıcı sonradan "Yeniden Hesapla" ile porsiyon notu yazabileceği için
-  bu ilk tahminde **kesin bir 100 g sabiti dayatma**; fotoğrafta görünene
-  ve yiyecek tipine bak.
-- `portion_grams` seçtiğin porsiyonun toplam gramajıdır.
-- `nutrition` alanındaki tüm değerler o porsiyon içindir (100 g referansı
-  değildir).
-- İçindekiler/tahmini bileşenleri Türkçe düz metin olarak yaz.
-- Görsel belirsizse yine en iyi tahmini yap, `confidence`'i düşük ver.
+  * Atıştırmalık: 30–80 g
+  * Kahvaltı tabağı (karışık): 150–250 g
+  * İçecek: 200–400 ml
+
+Sert kurallar:
+- 50 g'dan az veya 350 g'dan fazla TEK KİŞİLİK porsiyon DÖNDÜRME. Bu
+  bandın dışına çıkarsan değerler reddedilir.
+- Default olarak 100 g sabiti KULLANMA. Fotoğrafa ve yemek tipine bak.
+- `portion_grams`: bir kişinin yediği toplam gramaj.
+- `nutrition`: o porsiyonun TOPLAM besin değerleri (100 g için değil).
+- İçindekileri Türkçe düz metin olarak yaz.
+- Belirsizse yine en iyi tahmini yap, `confidence` düşük olur.
 - Bulamadığın besin değerlerini 0 döndür.
 - Sadece JSON döndür, açıklama veya markdown yazma.
 

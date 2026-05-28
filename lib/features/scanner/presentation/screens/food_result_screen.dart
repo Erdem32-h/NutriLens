@@ -45,6 +45,12 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   bool _saving = false;
   bool _recalcLoading = false;
 
+  /// User-tunable multiplier applied to portion grams + nutrition before
+  /// the meal is saved. 1.0 = trust the AI estimate (default), 0.5 =
+  /// "I ate half", 1.5 = "bigger portion", 2.0 = "I ate twice the
+  /// estimate". Reset on a fresh _analyzeFood / _recalculateNutrition.
+  double _portionMultiplier = 1.0;
+
   @override
   void initState() {
     super.initState();
@@ -129,6 +135,11 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             description: _result!.description,
             rawJson: _result!.rawJson,
           );
+          // Fresh estimate → discard any portion adjustment the user
+          // had applied to the previous values. The new portion_note
+          // they may have just typed is already baked into the
+          // recalc result, so 1× is the right starting point.
+          _portionMultiplier = 1.0;
         });
       } else {
         if (mounted) {
@@ -176,6 +187,12 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         imageBytes: widget.imageBytes,
       );
 
+      // Apply the user-chosen portion multiplier (½× / 1× / 1½× / 2×)
+      // to both the macros and the kcal total before persistence. HP
+      // Score is calculated on the original per-portion nutrition (it
+      // measures food quality, not quantity), so scaling there would
+      // distort the result — we score before scaling.
+      final scaledNutriments = _result!.nutriments.scaled(_portionMultiplier);
       final calculator = ref.read(hpScoreCalculatorProvider);
       final hpResult = await calculator.calculateFull(
         additivesTags: const [],
@@ -198,8 +215,8 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         ingredientsText: _ingredientsController.text.trim().isNotEmpty
             ? _ingredientsController.text.trim()
             : _result!.ingredientsText,
-        nutriments: _result!.nutriments,
-        calories: _result!.nutriments.energyKcal ?? 0,
+        nutriments: scaledNutriments,
+        calories: scaledNutriments.energyKcal ?? 0,
         hpScore: hpResult.hpScore,
         confidence: _result!.confidence,
         aiRawJson: _result!.rawJson,
@@ -338,8 +355,13 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   Widget _buildResult(dynamic l10n, AppColorsExtension colors) {
     final result = _result!;
     final confidencePercent = (result.confidence * 100).toInt();
-    final nutriments = result.nutriments;
-    final hpScore = _estimateHpScore(nutriments);
+    // All UI below renders the SCALED nutrients so the BentoGrid,
+    // EditorialTable and HP-Score bar update live as the user picks a
+    // portion-multiplier chip. Save path applies the same factor (see
+    // _saveMeal).
+    final nutriments = result.nutriments.scaled(_portionMultiplier);
+    final hpScore = _estimateHpScore(result.nutriments);
+    final scaledPortion = (result.portionGrams * _portionMultiplier).round();
 
     return SingleChildScrollView(
       child: Column(
@@ -402,7 +424,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             child: Row(
               children: [
                 _buildBadge(
-                  '${l10n.aiEstimatedPortion}: ~${result.portionGrams}g',
+                  '${l10n.aiEstimatedPortion}: ~${scaledPortion}g',
                   colors,
                 ),
                 const SizedBox(width: 8),
@@ -412,6 +434,15 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                   isWarning: result.confidence < 0.6,
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: _PortionMultiplierSelector(
+              value: _portionMultiplier,
+              onChanged: (v) => setState(() => _portionMultiplier = v),
+              colors: colors,
             ),
           ),
           if (result.confidence < 0.6) ...[
@@ -804,4 +835,114 @@ class _ViewfinderCornersPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _ViewfinderCornersPainter old) =>
       old.color != color;
+}
+
+/// Four-chip portion selector shown below the AI's portion badge.
+/// Lets the user say "AI guessed roughly right, but I ate
+/// half / 1.5× / twice as much" without having to write a free-form
+/// portion note. The multiplier scales both the visible nutrition
+/// preview and the values that ultimately land in the meal_entries
+/// row. 1× is the default; the chip with the matching value renders
+/// filled with the brand gradient.
+class _PortionMultiplierSelector extends StatelessWidget {
+  final double value;
+  final ValueChanged<double> onChanged;
+  final AppColorsExtension colors;
+
+  const _PortionMultiplierSelector({
+    required this.value,
+    required this.onChanged,
+    required this.colors,
+  });
+
+  static const _options = <_PortionOption>[
+    _PortionOption(value: 0.5, emoji: '🥄', label: 'Az', sub: '½'),
+    _PortionOption(value: 1.0, emoji: '🍽', label: 'Normal', sub: '1×'),
+    _PortionOption(value: 1.5, emoji: '🍴', label: 'Bol', sub: '1½×'),
+    _PortionOption(value: 2.0, emoji: '🍛', label: 'İki kişilik', sub: '2×'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Ne kadar yedin?',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: colors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            for (final opt in _options) ...[
+              Expanded(child: _chip(opt)),
+              if (opt != _options.last) const SizedBox(width: 8),
+            ],
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _chip(_PortionOption opt) {
+    final selected = (value - opt.value).abs() < 0.001;
+    return GestureDetector(
+      onTap: () => onChanged(opt.value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          gradient: selected ? colors.primaryGradient : null,
+          color: selected ? null : colors.surfaceCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: selected
+                ? Colors.transparent
+                : colors.border,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(opt.emoji, style: const TextStyle(fontSize: 20)),
+            const SizedBox(height: 2),
+            Text(
+              opt.label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: selected ? Colors.black : colors.textPrimary,
+              ),
+            ),
+            Text(
+              opt.sub,
+              style: TextStyle(
+                fontSize: 10,
+                color: selected
+                    ? Colors.black.withValues(alpha: 0.6)
+                    : colors.textMuted,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PortionOption {
+  final double value;
+  final String emoji;
+  final String label;
+  final String sub;
+  const _PortionOption({
+    required this.value,
+    required this.emoji,
+    required this.label,
+    required this.sub,
+  });
 }
