@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../../core/constants/app_constants.dart';
@@ -69,13 +69,27 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   /// barcode scanning is the secondary flow.
   int _scanMode = 1;
 
-  final ImagePicker _picker = ImagePicker();
+  /// Native camera handle used in AI mode for one-tap photo capture.
+  /// mobile_scanner can't grab stills, so we swap to this controller
+  /// whenever the user is in AI mode. Only one of the two cameras is
+  /// alive at any moment — see [_setScanMode] for the hand-off.
+  CameraController? _aiCamera;
+  Future<void>? _aiCameraInit;
+  bool _capturing = false;
+
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _startScanning();
+    // Default mode is AI (_scanMode = 1) so initialise the native
+    // camera right away. Barcode mode users will trigger the swap to
+    // mobile_scanner when they tap the toggle.
+    if (_scanMode == 1) {
+      _initAiCamera();
+    } else {
+      _startScanning();
+    }
   }
 
   @override
@@ -83,8 +97,57 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_subscription?.cancel());
     _subscription = null;
+    final ai = _aiCamera;
+    _aiCamera = null;
     super.dispose();
+    if (ai != null) await ai.dispose();
     await _controller.dispose();
+  }
+
+  /// Boot the native camera for AI mode. Picks the back camera, lowest
+  /// reasonable resolution that still works for meal analysis. Audio
+  /// is disabled — we never record video here, just take stills.
+  Future<void> _initAiCamera() async {
+    if (_aiCamera != null) return; // already alive
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) return;
+      final back = cameras.firstWhere(
+        (c) => c.lensDirection == CameraLensDirection.back,
+        orElse: () => cameras.first,
+      );
+      final controller = CameraController(
+        back,
+        ResolutionPreset.high, // ~1280x720 — plenty for Claude vision
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+      );
+      _aiCamera = controller;
+      _aiCameraInit = controller.initialize();
+      await _aiCameraInit;
+      if (!mounted) {
+        await controller.dispose();
+        _aiCamera = null;
+        return;
+      }
+      setState(() {});
+    } catch (e) {
+      debugPrint('[Scanner] AI camera init failed: $e');
+      _aiCamera = null;
+      _aiCameraInit = null;
+    }
+  }
+
+  Future<void> _disposeAiCamera() async {
+    final c = _aiCamera;
+    _aiCamera = null;
+    _aiCameraInit = null;
+    if (c != null) {
+      try {
+        await c.dispose();
+      } catch (_) {}
+    }
+    if (mounted) setState(() {});
   }
 
   /// Subscribe to the barcode stream and start the camera.
@@ -117,20 +180,23 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     switch (state) {
       case AppLifecycleState.resumed:
-        // Resume the camera in both modes — in barcode mode for decoding,
-        // in AI mode for the live viewfinder so the user can frame their
-        // food before tapping capture. `_handleBarcode` ignores frames
-        // when `_scanMode != 0`, so leaving the stream attached in AI
-        // mode wastes only a few % CPU on the camera passthrough.
         if (!_isNavigating) {
-          _startScanning();
+          if (_scanMode == 0) {
+            _startScanning();
+          } else {
+            _initAiCamera();
+          }
         }
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.hidden:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        _stopScanning();
+        if (_scanMode == 0) {
+          _stopScanning();
+        } else {
+          _disposeAiCamera();
+        }
         break;
     }
   }
@@ -257,23 +323,16 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   }
 
   Future<void> _captureForAi() async {
+    if (_capturing) return;
+    final camera = _aiCamera;
+    if (camera == null || !camera.value.isInitialized) return;
+    setState(() => _capturing = true);
     try {
-      // Release the camera handle before image_picker opens the system
-      // camera UI — iOS gets unhappy if two clients hold the device.
-      _stopScanning();
-      final xFile = await _picker.pickImage(
-        source: ImageSource.camera,
-        maxWidth: 2048,
-        maxHeight: 2048,
-        imageQuality: 95,
-      );
-      if (xFile == null) {
-        // User cancelled the camera — bring the viewfinder back.
-        if (mounted) _startScanning();
-        return;
-      }
+      // One-tap shutter: grab the current frame directly from the
+      // live viewfinder. No second camera UI, no confirmation screen.
+      final xFile = await camera.takePicture();
       if (!mounted) return;
-
+      HapticFeedback.lightImpact();
       final Uint8List imageBytes = await xFile.readAsBytes();
 
       if (!mounted) return;
@@ -324,23 +383,33 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
       if (!mounted) return;
       await context.push('/food-result', extra: imageBytes);
-      // Returned from food-result — restore the viewfinder.
-      if (mounted) _startScanning();
+      // Returned from food-result — the AI camera survives across
+      // the push/pop, so nothing to restart. If user backgrounded
+      // the app while away didChangeAppLifecycleState reinitialises.
     } catch (e) {
       debugPrint('[Scanner] AI capture error: $e');
-      if (mounted) _startScanning();
+    } finally {
+      if (mounted) setState(() => _capturing = false);
     }
   }
 
-  /// Toggle scanning mode. Camera stays running in both modes so the user
-  /// always sees the live viewfinder — in AI mode it doubles as a "frame
-  /// the food" preview, in barcode mode it feeds the decoder. The mode
-  /// only controls which overlay/button is shown and whether decoded
-  /// barcodes are acted on.
-  void _setScanMode(int mode) {
+  /// Toggle scanning mode and swap the underlying camera package.
+  ///
+  /// Barcode (0) uses mobile_scanner — it's tuned for fast format
+  /// detection and feeds a stream of decoded values.
+  /// AI (1) uses the `camera` package — it's the only way to grab a
+  /// still in one tap. iOS rejects two simultaneous camera clients,
+  /// so we always tear the previous one down before booting the next.
+  Future<void> _setScanMode(int mode) async {
     if (_scanMode == mode) return;
     setState(() => _scanMode = mode);
-    _startScanning();
+    if (mode == 1) {
+      _stopScanning();
+      await _initAiCamera();
+    } else {
+      await _disposeAiCamera();
+      _startScanning();
+    }
   }
 
   @override
@@ -352,16 +421,23 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Camera preview. We read barcodes via `controller.barcodes`
-          // (see `_startScanning`) so `onDetect` is intentionally omitted
-          // — that's the canonical v7 pattern for manual lifecycle
-          // management.
-          MobileScanner(
-            controller: _controller,
-            errorBuilder: (context, error) {
-              return _buildCameraError(context, error);
-            },
-          ),
+          // Camera preview. Two implementations, swapped by mode:
+          //   - barcode: MobileScanner, decoded via `controller.barcodes`
+          //     stream (no onDetect — canonical v7 manual lifecycle).
+          //   - AI: `camera` package preview, lets _captureForAi grab
+          //     a still in one tap. While the controller is still
+          //     initialising we show a plain black background.
+          if (_scanMode == 0)
+            MobileScanner(
+              controller: _controller,
+              errorBuilder: (context, error) {
+                return _buildCameraError(context, error);
+              },
+            )
+          else if (_aiCamera?.value.isInitialized ?? false)
+            Positioned.fill(child: CameraPreview(_aiCamera!))
+          else
+            const SizedBox.shrink(),
 
           // Guest budget badge — visible only while browsing as a
           // guest. Shows the remaining lifetime scan quota so users

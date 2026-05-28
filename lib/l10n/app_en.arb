@@ -254,7 +254,7 @@
   "aiAnalyzing": "AI is analyzing...",
   "aiAnalysisResult": "AI Analysis Result",
   "aiEstimatedPortion": "Estimated portion",
-  "aiConfidence": "Confidence",
+  "aiConfidence": "AI accuracy estimate",
   "aiSaveToHistory": "Save to History",
   "aiRetake": "Retake Photo",
   "aiSaved": "AI analysis result saved",

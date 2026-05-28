@@ -1565,7 +1565,7 @@ abstract class AppLocalizations {
   /// No description provided for @aiConfidence.
   ///
   /// In tr, this message translates to:
-  /// **'Güven'**
+  /// **'AI Doğruluk Tahmini'**
   String get aiConfidence;
 
   /// No description provided for @aiSaveToHistory.

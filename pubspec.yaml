@@ -40,6 +40,14 @@ dependencies:
   # Barcode Scanning
   mobile_scanner: ^7.0.1
 
+  # Native camera for AI meal capture (one-tap shutter without leaving
+  # the scanner screen). mobile_scanner is barcode-only — it can't grab
+  # stills — so we run `camera` as a sibling whenever the user is in
+  # the AI scan mode. Only one camera handle exists at a time; we
+  # explicitly stop mobile_scanner before initialising CameraController
+  # and vice versa to avoid the dual-client error on iOS.
+  camera: ^0.11.0
+
   # On-device OCR (used for nutrition-table scanning — numbers are the
   # payload, and ML Kit's local text recognizer is both faster and more
   # tolerant of perspective/lighting than the Gemini vision path we use

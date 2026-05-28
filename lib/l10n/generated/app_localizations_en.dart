@@ -770,7 +770,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiEstimatedPortion => 'Estimated portion';
 
   @override
-  String get aiConfidence => 'Confidence';
+  String get aiConfidence => 'AI accuracy estimate';
 
   @override
   String get aiSaveToHistory => 'Save to History';

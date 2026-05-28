@@ -771,7 +771,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get aiEstimatedPortion => 'Tahmini porsiyon';
 
   @override
-  String get aiConfidence => 'Güven';
+  String get aiConfidence => 'AI Doğruluk Tahmini';
 
   @override
   String get aiSaveToHistory => 'Geçmişe Kaydet';

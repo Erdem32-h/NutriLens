@@ -254,7 +254,7 @@
   "aiAnalyzing": "AI analiz ediyor...",
   "aiAnalysisResult": "AI Analiz Sonucu",
   "aiEstimatedPortion": "Tahmini porsiyon",
-  "aiConfidence": "Güven",
+  "aiConfidence": "AI Doğruluk Tahmini",
   "aiSaveToHistory": "Geçmişe Kaydet",
   "aiRetake": "Tekrar Çek",
   "aiSaved": "AI analiz sonucu kaydedildi",
