@@ -11,13 +11,17 @@ class BentoNutritionGrid extends StatelessWidget {
 
   const BentoNutritionGrid({super.key, required this.nutriments});
 
-  // Daily reference values (grams)
+  // Daily reference values (grams). Protein RDA is 0.8 g/kg body
+  // weight × 70 kg adult ≈ 56 g — we round to 50 to match the kind
+  // of "good enough for at-a-glance %" baseline the other macros
+  // use, and so a typical Turkish breakfast hits a meaningful share.
   static const _dailyFat = 70.0;
   static const _dailySugar = 50.0;
   static const _dailySatFat = 20.0;
   static const _dailySalt = 6.0;
   static const _dailyCalories = 2000.0;
   static const _dailyCarbs = 260.0;
+  static const _dailyProtein = 50.0;
 
   static int _riskLevel(double percent) {
     if (percent < 15) return 1;
@@ -115,20 +119,36 @@ class BentoNutritionGrid extends StatelessWidget {
             ],
           ),
 
-          if (nutriments.carbohydrates != null) ...[
+          // Carb + protein row: keep them paired so we don't end up
+          // with a lonely card. If only one of the two values exists
+          // we still show that one alongside an empty cell — it's
+          // visually consistent with the other rows.
+          if (nutriments.carbohydrates != null ||
+              nutriments.proteins != null) ...[
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: _MacroCard(
-                    label: l10n.carbohydrateLabel,
-                    value: nutriments.carbohydrates,
-                    dailyRef: _dailyCarbs,
-                    unit: 'g',
-                  ),
+                  child: nutriments.carbohydrates != null
+                      ? _MacroCard(
+                          label: l10n.carbohydrateLabel,
+                          value: nutriments.carbohydrates,
+                          dailyRef: _dailyCarbs,
+                          unit: 'g',
+                        )
+                      : const SizedBox(),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(child: SizedBox()),
+                Expanded(
+                  child: nutriments.proteins != null
+                      ? _MacroCard(
+                          label: l10n.proteinLabel,
+                          value: nutriments.proteins,
+                          dailyRef: _dailyProtein,
+                          unit: 'g',
+                        )
+                      : const SizedBox(),
+                ),
               ],
             ),
           ],
