@@ -6,6 +6,18 @@ HP Score (0-100) üretir. Türkiye pazarı odaklı.
 
 **Stack:** Flutter, Riverpod, Drift, GoRouter, fpdart, Supabase, Clean Architecture
 
+**Supabase migration kuralı (2026-10-30'dan sonra zorunlu olacak):**
+Yeni `public` schema tabloları artık otomatik Data API'ye expose
+edilmiyor. Her yeni tablo migration'ı şu üçlüyü içermeli:
+```sql
+create table public.x (...);
+grant select, insert, update, delete on public.x to authenticated;
+grant select on public.x to anon;  -- sadece public-okunabilir tablolar için
+alter table public.x enable row level security;
+create policy "..." on public.x ...;
+```
+Eksik `GRANT` → PostgREST `42501 permission denied` döner.
+
 **HP Score:**
 ```
 HP Score = (Chemical Load x 0.50) + (Risk Factor x 0.30) + (Nutri Factor x 0.20)
