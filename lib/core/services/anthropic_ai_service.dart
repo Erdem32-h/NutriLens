@@ -96,10 +96,13 @@ class AnthropicAiService {
     return parseNutritionResponseText(text);
   }
 
-  Future<MealAnalysisResult?> analyzeMealFromBase64(String base64Image) async {
+  Future<MealAnalysisResult?> analyzeMealFromBase64(
+    String base64Image, {
+    String languageCode = 'tr',
+  }) async {
     final text = await _sendVisionPrompt(
       base64Image: base64Image,
-      prompt: _mealAnalysisPrompt,
+      prompt: _mealAnalysisPrompt(languageCode),
       maxTokens: 1000,
       logLabel: 'meal',
     );
@@ -647,9 +650,15 @@ Genel kurallar:
 ''';
 }
 
-const String _mealAnalysisPrompt = '''
+String _mealAnalysisPrompt(String languageCode) {
+  final languageName = _languageName(languageCode);
+  return '''
 Bu görseldeki öğünü analiz et. Amacın TEK KİŞİNİN yediği porsiyonu
 gramaj + besin değeri olarak döndürmek.
+
+Yanıt dili: $languageName. `food_name`, `ingredients_text` ve
+`description` alanlarını $languageName dilinde yaz (yemek adını da bu dile
+çevir; örn. İngilizce için "Etli Pilav" → "Rice with Meat").
 
 Önce şu kararı ver:
 1. BİREYSEL porsiyon mu? (Bir kişinin önünde duran, tek başına yeneceği
@@ -684,7 +693,7 @@ Sert kurallar:
 - Default olarak 100 g sabiti KULLANMA. Fotoğrafa ve yemek tipine bak.
 - `portion_grams`: bir kişinin yediği toplam gramaj.
 - `nutrition`: o porsiyonun TOPLAM besin değerleri (100 g için değil).
-- İçindekileri Türkçe düz metin olarak yaz.
+- İçindekileri ($languageName) düz metin olarak yaz.
 - Belirsizse yine en iyi tahmini yap, `confidence` düşük olur.
 - Bulamadığın besin değerlerini 0 döndür.
 - Sadece JSON döndür, açıklama veya markdown yazma.
@@ -709,3 +718,4 @@ Sert kurallar:
   "description": string
 }
 ''';
+}

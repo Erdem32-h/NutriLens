@@ -25,3 +25,22 @@ MealDefaults mealDefaultsFor(DateTime capturedAt) {
   }
   return const MealDefaults(name: 'Ara Öğün', type: MealType.snack);
 }
+
+/// All app-generated default meal names across supported locales. A stored
+/// name in this set is *not* user-authored, so the UI is free to re-render
+/// it in the active language (via [MealType]) instead of showing the frozen
+/// string that happened to be active at capture time.
+const Set<String> kDefaultMealNames = {
+  // tr
+  'Kahvaltı', 'Öğlen Yemeği', 'Akşam Yemeği', 'Ara Öğün',
+  // en
+  'Breakfast', 'Lunch', 'Dinner', 'Snack',
+};
+
+/// App-generated default brand/source labels across locales.
+const Set<String> kDefaultMealBrands = {'Ev yapımı', 'Homemade'};
+
+bool isDefaultMealName(String name) => kDefaultMealNames.contains(name.trim());
+
+bool isDefaultMealBrand(String brand) =>
+    kDefaultMealBrands.contains(brand.trim());

@@ -62,7 +62,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
         onTap: (index) {
           if (index != currentIndex) context.go(_paths[index]);
         },
-        mealsLabel: 'Öğünlerim',
+        mealsLabel: l10n.myMeals,
         historyLabel: l10n.history,
         scannerLabel: l10n.scanner,
         favoritesLabel: l10n.favorites,

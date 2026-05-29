@@ -7,8 +7,10 @@ import 'package:intl/intl.dart';
 
 import '../../../../config/router/route_names.dart';
 import '../../../../core/constants/score_constants.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/meal_entry_entity.dart';
+import '../meal_display.dart';
 import '../providers/meal_provider.dart';
 
 class MealsScreen extends ConsumerWidget {
@@ -23,7 +25,7 @@ class MealsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text('Öğünlerim'),
+        title: Text(context.l10n.myMeals),
         backgroundColor: Colors.transparent,
       ),
       body: RefreshIndicator(
@@ -63,8 +65,8 @@ class MealsScreen extends ConsumerWidget {
               loading: () => const SliverFillRemaining(
                 child: Center(child: CircularProgressIndicator()),
               ),
-              error: (error, stackTrace) => const SliverFillRemaining(
-                child: Center(child: Text('Öğünler yüklenemedi.')),
+              error: (error, stackTrace) => SliverFillRemaining(
+                child: Center(child: Text(context.l10n.mealsLoadError)),
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
@@ -82,20 +84,21 @@ class _SummaryCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
       child: Row(
         children: [
           Expanded(
-            child: _SummaryCard(label: 'Bugün', kcal: summary.today),
+            child: _SummaryCard(label: l10n.summaryToday, kcal: summary.today),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: _SummaryCard(label: 'Hafta', kcal: summary.week),
+            child: _SummaryCard(label: l10n.summaryWeek, kcal: summary.week),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: _SummaryCard(label: 'Ay', kcal: summary.month),
+            child: _SummaryCard(label: l10n.summaryMonth, kcal: summary.month),
           ),
         ],
       ),
@@ -150,6 +153,7 @@ class _MealTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
+    final l10n = context.l10n;
     final time = DateFormat('dd MMM HH:mm').format(meal.capturedAt);
     final gauge = meal.hpScore != null
         ? ScoreConstants.hpToGauge(meal.hpScore!)
@@ -190,7 +194,7 @@ class _MealTile extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      meal.mealName,
+                      displayMealName(l10n, meal),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -201,7 +205,7 @@ class _MealTile extends ConsumerWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      '${meal.brand} • $time',
+                      '${displayMealBrand(l10n, meal.brand)} • $time',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: colors.textMuted, fontSize: 12),
@@ -212,7 +216,8 @@ class _MealTile extends ConsumerWidget {
                       runSpacing: 6,
                       children: [
                         _Pill(text: '${meal.calories.round()} kcal'),
-                        if (gauge != null) _Pill(text: 'Skor $gauge'),
+                        if (gauge != null)
+                          _Pill(text: '${context.l10n.scoreLabel} $gauge'),
                         if (meal.confidence != null)
                           _Pill(text: '%${(meal.confidence! * 100).round()}'),
                       ],
@@ -236,20 +241,21 @@ class _MealTile extends ConsumerWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Öğünü sil'),
-        content: Text('"${meal.mealName}" silinsin mi?'),
+        title: Text(l10n.deleteMealTitle),
+        content: Text(l10n.deleteMealConfirm(displayMealName(l10n, meal))),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('İptal'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Sil'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -294,6 +300,7 @@ class _EmptyMeals extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(32),
       child: Column(
@@ -306,7 +313,7 @@ class _EmptyMeals extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Henüz öğün yok',
+            l10n.noMealsYet,
             style: TextStyle(
               color: colors.textPrimary,
               fontSize: 18,
@@ -315,7 +322,7 @@ class _EmptyMeals extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Tarama ekranındaki AI Analysis ile yemeğini fotoğraflayıp buraya kaydedebilirsin.',
+            l10n.noMealsHint,
             textAlign: TextAlign.center,
             style: TextStyle(color: colors.textMuted),
           ),

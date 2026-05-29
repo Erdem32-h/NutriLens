@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/score_constants.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../product/presentation/widgets/bento_nutrition_grid.dart';
 import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
 import '../../../product/presentation/widgets/health_score_bar.dart';
 import '../../domain/entities/meal_entry_entity.dart';
+import '../meal_display.dart';
 
 class MealDetailScreen extends StatelessWidget {
   final MealEntryEntity meal;
@@ -18,12 +20,15 @@ class MealDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
     final time = DateFormat('dd MMMM yyyy, HH:mm').format(meal.capturedAt);
+    final mealName = displayMealName(l10n, meal);
+    final mealBrand = displayMealBrand(l10n, meal.brand);
 
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: Text(meal.mealName),
+        title: Text(mealName),
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
@@ -50,7 +55,7 @@ class MealDetailScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                meal.mealName,
+                mealName,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
@@ -62,7 +67,7 @@ class MealDetailScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                '${meal.brand} • $time',
+                '$mealBrand • $time',
                 style: TextStyle(fontSize: 13, color: colors.textMuted),
               ),
             ),
@@ -76,12 +81,14 @@ class MealDetailScreen extends StatelessWidget {
                   _Chip(text: '${meal.calories.round()} kcal', colors: colors),
                   if (meal.hpScore != null)
                     _Chip(
-                      text: 'Skor ${ScoreConstants.hpToGauge(meal.hpScore!)}',
+                      text:
+                          '${l10n.scoreLabel} ${ScoreConstants.hpToGauge(meal.hpScore!)}',
                       colors: colors,
                     ),
                   if (meal.confidence != null)
                     _Chip(
-                      text: '%${(meal.confidence! * 100).round()} güven',
+                      text:
+                          '%${(meal.confidence! * 100).round()} ${l10n.confidenceSuffix}',
                       colors: colors,
                     ),
                 ],
@@ -110,7 +117,7 @@ class MealDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'İçerik',
+                      l10n.ingredientsTitle,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,

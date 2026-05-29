@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -15,6 +16,7 @@ import '../../../../core/utils/ocr_image_prep.dart';
 import '../../../meals/data/services/meal_thumbnail_service.dart';
 import '../../../meals/domain/entities/meal_entry_entity.dart';
 import '../../../meals/domain/services/meal_defaults.dart';
+import '../../../meals/presentation/meal_display.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
 import '../../../product/domain/entities/nutriments_entity.dart';
 import '../../../product/presentation/providers/product_provider.dart';
@@ -51,16 +53,31 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   /// estimate". Reset on a fresh _analyzeFood / _recalculateNutrition.
   double _portionMultiplier = 1.0;
 
+  /// Prefill is deferred to [didChangeDependencies] so the default meal
+  /// name/source render in the *active* locale (Localizations isn't ready
+  /// inside initState).
+  bool _defaultsPrefilled = false;
+
   @override
   void initState() {
     super.initState();
     _capturedAt = DateTime.now();
-    final defaults = mealDefaultsFor(_capturedAt);
-    _mealNameController = TextEditingController(text: defaults.name);
-    _brandController = TextEditingController(text: defaults.brand);
+    _mealNameController = TextEditingController();
+    _brandController = TextEditingController();
     _ingredientsController = TextEditingController();
     _portionNoteController = TextEditingController();
     _analyzeFood();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_defaultsPrefilled) return;
+    _defaultsPrefilled = true;
+    final defaults = mealDefaultsFor(_capturedAt);
+    final l10n = context.l10n;
+    _mealNameController.text = mealTypeLabel(l10n, defaults.type);
+    _brandController.text = l10n.mealBrandHomemade;
   }
 
   @override
@@ -82,7 +99,14 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     try {
       final prepared = await prepareMealAnalysisImage(widget.imageBytes);
       final aiService = ref.read(anthropicAiServiceProvider);
-      final result = await aiService.analyzeMealFromBase64(prepared.base64);
+      // Generate the food name / ingredients / description in the app's
+      // active language so an English user gets "Rice with Meat" rather
+      // than "Etli Pilav" from the start (locale-aware generation).
+      final languageCode = ref.read(localeProvider).languageCode;
+      final result = await aiService.analyzeMealFromBase64(
+        prepared.base64,
+        languageCode: languageCode,
+      );
       if (result == null) throw Exception('AI returned empty meal result');
       if (!mounted) return;
       setState(() {
@@ -144,16 +168,14 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Besin değerleri hesaplanamadı, tekrar dene.'),
-            ),
+            SnackBar(content: Text(context.l10n.recalcFailedNutrition)),
           );
         }
       }
     } on AnthropicServiceException {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Yeniden hesaplama başarısız.')),
+          SnackBar(content: Text(context.l10n.recalcFailed)),
         );
       }
     } finally {
@@ -232,10 +254,11 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       if (!mounted) return;
 
       final messenger = ScaffoldMessenger.of(context);
+      final savedMsg = context.l10n.mealSavedToast;
       context.pop();
       messenger.showSnackBar(
         SnackBar(
-          content: const Text('Öğün kaydedildi'),
+          content: Text(savedMsg),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -399,9 +422,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                 Expanded(
                   child: TextField(
                     controller: _mealNameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Öğün adı',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.mealNameLabel,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -409,9 +432,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                 Expanded(
                   child: TextField(
                     controller: _brandController,
-                    decoration: const InputDecoration(
-                      labelText: 'Kaynak',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.mealSourceLabel,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -434,6 +457,18 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                   isWarning: result.confidence < 0.6,
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              l10n.aiConfidenceHint,
+              style: TextStyle(
+                fontSize: 11.5,
+                height: 1.35,
+                color: colors.textMuted,
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -501,7 +536,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tahmini içerik',
+                  l10n.estimatedContent,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
@@ -573,12 +608,12 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.refresh_rounded, size: 18),
-                    label: const Text('Yeniden Hesapla'),
+                    label: Text(l10n.recalculate),
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'İçeriği düzenle ve/veya porsiyon notu ekle; ikisini de hesaba katar.',
+                  l10n.recalcHint,
                   style: TextStyle(
                     fontSize: 11.5,
                     color: colors.textMuted,
@@ -619,7 +654,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                             ),
                           )
                         : const Icon(Icons.save_rounded),
-                    label: const Text('Öğünlere kaydet'),
+                    label: Text(l10n.saveToMeals),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -856,11 +891,19 @@ class _PortionMultiplierSelector extends StatelessWidget {
   });
 
   static const _options = <_PortionOption>[
-    _PortionOption(value: 0.5, emoji: '🥄', label: 'Az', sub: '½'),
-    _PortionOption(value: 1.0, emoji: '🍽', label: 'Normal', sub: '1×'),
-    _PortionOption(value: 1.5, emoji: '🍴', label: 'Bol', sub: '1½×'),
-    _PortionOption(value: 2.0, emoji: '🍛', label: 'İki kişilik', sub: '2×'),
+    _PortionOption(value: 0.5, emoji: '🥄', sub: '½'),
+    _PortionOption(value: 1.0, emoji: '🍽', sub: '1×'),
+    _PortionOption(value: 1.5, emoji: '🍴', sub: '1½×'),
+    _PortionOption(value: 2.0, emoji: '🍛', sub: '2×'),
   ];
+
+  String _label(BuildContext context, double value) {
+    final l10n = context.l10n;
+    if (value <= 0.5) return l10n.portionLittle;
+    if (value <= 1.0) return l10n.portionNormal;
+    if (value <= 1.5) return l10n.portionLots;
+    return l10n.portionTwoServings;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -868,7 +911,7 @@ class _PortionMultiplierSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Ne kadar yedin?',
+          context.l10n.portionQuestion,
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -879,7 +922,7 @@ class _PortionMultiplierSelector extends StatelessWidget {
         Row(
           children: [
             for (final opt in _options) ...[
-              Expanded(child: _chip(opt)),
+              Expanded(child: _chip(context, opt)),
               if (opt != _options.last) const SizedBox(width: 8),
             ],
           ],
@@ -888,7 +931,7 @@ class _PortionMultiplierSelector extends StatelessWidget {
     );
   }
 
-  Widget _chip(_PortionOption opt) {
+  Widget _chip(BuildContext context, _PortionOption opt) {
     final selected = (value - opt.value).abs() < 0.001;
     return GestureDetector(
       onTap: () => onChanged(opt.value),
@@ -911,7 +954,7 @@ class _PortionMultiplierSelector extends StatelessWidget {
             Text(opt.emoji, style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 2),
             Text(
-              opt.label,
+              _label(context, opt.value),
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
@@ -937,12 +980,10 @@ class _PortionMultiplierSelector extends StatelessWidget {
 class _PortionOption {
   final double value;
   final String emoji;
-  final String label;
   final String sub;
   const _PortionOption({
     required this.value,
     required this.emoji,
-    required this.label,
     required this.sub,
   });
 }

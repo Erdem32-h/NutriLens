@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -93,6 +94,14 @@ void _bootApp() {
   // screen (App Review 1.0(7) blank-launch bug). We always reach
   // runApp(); if init failed catastrophically, we render a fallback
   // error widget instead of nothing.
+  // Tracks whether runApp() has been reached. Once the UI is mounted, a
+  // stray *async* error that escapes into the zone (most commonly a
+  // background Supabase token refresh failing on a flaky network / DNS
+  // lookup — `AuthRetryableFetchException`) must NOT tear down the
+  // already-running app. The fatal fallback screen is only appropriate
+  // for catastrophic *pre-launch* failures.
+  var appStarted = false;
+
   runZonedGuarded<Future<void>>(
     () async {
       // ignore: avoid_print
@@ -167,18 +176,50 @@ void _bootApp() {
           child: SentryWidget(child: const NutriLensApp()),
         ),
       );
+      // From here on the UI owns the screen; later async errors are
+      // non-fatal (see appStarted guard below).
+      appStarted = true;
     },
     (error, stack) {
-      // Last-resort handler. If we got here it means runZonedGuarded
-      // saw an uncaught async error that escaped every try/catch and
-      // every Future.timeout. Show *something* instead of a black
-      // screen so the App Review device can at least see the UI tried.
       // ignore: avoid_print
       print('[boot FATAL] $error\n$stack');
       Sentry.captureException(error, stackTrace: stack);
+
+      // If the app already launched, a stray async error (e.g. a
+      // background token refresh failing because the network/DNS is
+      // momentarily unreachable) is benign — supabase_flutter retries on
+      // its own and the app's offline/guest flow keeps working. Report
+      // it and leave the running UI untouched. Replacing it with the
+      // fatal screen here was bricking cold launches on flaky networks.
+      if (appStarted) return;
+
+      // Transient network / retryable-auth errors are never fatal even
+      // pre-launch: the Supabase session refresh fires fire-and-forget
+      // during bootstrap and can land before runApp() on a slow DNS.
+      // bootstrap() itself degrades gracefully (lands on login/guest),
+      // so swallow these and let the normal launch continue.
+      if (_isTransientNetworkError(error)) return;
+
+      // Pre-launch catastrophe: show *something* instead of a black
+      // screen so the user (and App Review) sees the app tried to start.
       runApp(_BootFailureApp(error: error));
     },
   );
+}
+
+/// True for errors caused by a momentarily unreachable network (DNS
+/// lookup failure, dropped socket) or a Supabase auth refresh that is
+/// retryable by design. These must never blank-screen the app — they
+/// resolve on their own once connectivity returns.
+bool _isTransientNetworkError(Object error) {
+  if (error is AuthRetryableFetchException) return true;
+  if (error is SocketException) return true;
+  // Nested cases: the thrown object's message often embeds the socket
+  // failure even when the concrete type isn't one of the above.
+  final text = error.toString();
+  return text.contains('Failed host lookup') ||
+      text.contains('SocketException') ||
+      text.contains('No address associated with hostname');
 }
 
 /// Minimal fallback shown when every defensive guard above fails. The

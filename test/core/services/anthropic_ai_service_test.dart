@@ -100,10 +100,12 @@ Alerjenler: Gluten, fındık, süt.
 
       expect(result, isNotNull);
       expect(result!.foodName, 'Menemen ve ekmek');
-      expect(result.portionGrams, 100);
+      // 420g exceeds the 350g per-person ceiling → clamped to 350 and the
+      // nutrition is scaled by 350/420 = 0.8333.
+      expect(result.portionGrams, 350);
       expect(result.ingredientsText, contains('Yumurta'));
-      expect(result.nutriments.energyKcal, 145.24);
-      expect(result.nutriments.carbohydrates, 13.1);
+      expect(result.nutriments.energyKcal, 508.33);
+      expect(result.nutriments.carbohydrates, 45.83);
       expect(result.confidence, 0.72);
     });
 
@@ -118,7 +120,7 @@ Alerjenler: Gluten, fındık, süt.
     });
 
     test(
-      'normalizes oversized visible portions to a 100g personal serving',
+      'normalizes oversized visible portions to the 350g personal ceiling',
       () {
         final result = AnthropicAiService.parseMealAnalysisResponseText('''
 {
@@ -142,11 +144,12 @@ Alerjenler: Gluten, fındık, süt.
 ''');
 
         expect(result, isNotNull);
-        expect(result!.portionGrams, 100);
-        expect(result.nutriments.energyKcal, 150);
-        expect(result.nutriments.fat, 7);
-        expect(result.nutriments.salt, 0.8);
-        expect(result.nutriments.proteins, 8);
+        // 500g → clamped to the 350g ceiling, nutrition scaled by 350/500 = 0.7.
+        expect(result!.portionGrams, 350);
+        expect(result.nutriments.energyKcal, 525);
+        expect(result.nutriments.fat, 24.5);
+        expect(result.nutriments.salt, 2.8);
+        expect(result.nutriments.proteins, 28);
       },
     );
   });
