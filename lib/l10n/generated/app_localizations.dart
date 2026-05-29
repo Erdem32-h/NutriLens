@@ -728,6 +728,108 @@ abstract class AppLocalizations {
   /// **'SAĞLIK PUANI'**
   String get healthScoreLabel;
 
+  /// No description provided for @scoreBreakdownWhy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Neden'**
+  String get scoreBreakdownWhy;
+
+  /// No description provided for @scoreBreakdownSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Puanın nasıl oluştuğunu gör'**
+  String get scoreBreakdownSubtitle;
+
+  /// No description provided for @scoreBreakdownBase.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlangıç puanı'**
+  String get scoreBreakdownBase;
+
+  /// No description provided for @scoreBreakdownChemical.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kimyasal yük'**
+  String get scoreBreakdownChemical;
+
+  /// No description provided for @scoreBreakdownAdditives.
+  ///
+  /// In tr, this message translates to:
+  /// **'katkı maddesi'**
+  String get scoreBreakdownAdditives;
+
+  /// No description provided for @scoreBreakdownRisk.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besinsel risk'**
+  String get scoreBreakdownRisk;
+
+  /// No description provided for @scoreBreakdownRiskSub.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şeker · tuz · doymuş yağ'**
+  String get scoreBreakdownRiskSub;
+
+  /// No description provided for @scoreBreakdownNutri.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besin kalitesi'**
+  String get scoreBreakdownNutri;
+
+  /// No description provided for @scoreBreakdownPenalty.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik cezası'**
+  String get scoreBreakdownPenalty;
+
+  /// No description provided for @scoreBreakdownPenaltySub.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rafine karbonhidrat / tatlı-yağlı atıştırmalık'**
+  String get scoreBreakdownPenaltySub;
+
+  /// No description provided for @scoreBreakdownResult.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuç'**
+  String get scoreBreakdownResult;
+
+  /// No description provided for @scoreBreakdownCritical.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kritik içerik (ör. palm yağı, glikoz şurubu) tespit edildi — puan otomatik en düşük seviyeye sabitlendi.'**
+  String get scoreBreakdownCritical;
+
+  /// No description provided for @nova1Label.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlenmemiş / minimal işlenmiş'**
+  String get nova1Label;
+
+  /// No description provided for @nova2Label.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlenmiş mutfak malzemesi'**
+  String get nova2Label;
+
+  /// No description provided for @nova3Label.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlenmiş gıda'**
+  String get nova3Label;
+
+  /// No description provided for @nova4Label.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ultra işlenmiş'**
+  String get nova4Label;
+
+  /// No description provided for @novaUnknownLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bilinmiyor'**
+  String get novaUnknownLabel;
+
   /// No description provided for @worstIsBad.
   ///
   /// In tr, this message translates to:
@@ -1999,6 +2101,228 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Crash raporlamayı test et'**
   String get testCrashReporting;
+
+  /// No description provided for @myMeals.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğünlerim'**
+  String get myMeals;
+
+  /// No description provided for @mealsLoadError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğünler yüklenemedi.'**
+  String get mealsLoadError;
+
+  /// No description provided for @summaryToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün'**
+  String get summaryToday;
+
+  /// No description provided for @summaryWeek.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hafta'**
+  String get summaryWeek;
+
+  /// No description provided for @summaryMonth.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ay'**
+  String get summaryMonth;
+
+  /// No description provided for @scoreLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Skor'**
+  String get scoreLabel;
+
+  /// No description provided for @deleteMealTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğünü sil'**
+  String get deleteMealTitle;
+
+  /// No description provided for @deleteMealConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'\"{name}\" silinsin mi?'**
+  String deleteMealConfirm(String name);
+
+  /// No description provided for @noMealsYet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz öğün yok'**
+  String get noMealsYet;
+
+  /// No description provided for @noMealsHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tarama ekranındaki AI Analizi ile yemeğini fotoğraflayıp buraya kaydedebilirsin.'**
+  String get noMealsHint;
+
+  /// No description provided for @ingredientsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik'**
+  String get ingredientsTitle;
+
+  /// No description provided for @confidenceSuffix.
+  ///
+  /// In tr, this message translates to:
+  /// **'güven'**
+  String get confidenceSuffix;
+
+  /// No description provided for @aiConfidenceHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay zekânın tespit ettiği yemek, porsiyon ve kalori tahmininden ne kadar emin olduğunu gösterir.'**
+  String get aiConfidenceHint;
+
+  /// No description provided for @risk1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Risksiz'**
+  String get risk1;
+
+  /// No description provided for @risk2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Az riskli'**
+  String get risk2;
+
+  /// No description provided for @risk3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orta riskli'**
+  String get risk3;
+
+  /// No description provided for @risk4.
+  ///
+  /// In tr, this message translates to:
+  /// **'Riskli'**
+  String get risk4;
+
+  /// No description provided for @risk5.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çok riskli'**
+  String get risk5;
+
+  /// No description provided for @mealSavedToast.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğün kaydedildi'**
+  String get mealSavedToast;
+
+  /// No description provided for @mealNameLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğün adı'**
+  String get mealNameLabel;
+
+  /// No description provided for @mealSourceLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaynak'**
+  String get mealSourceLabel;
+
+  /// No description provided for @estimatedContent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahmini içerik'**
+  String get estimatedContent;
+
+  /// No description provided for @recalculate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeniden Hesapla'**
+  String get recalculate;
+
+  /// No description provided for @recalcHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçeriği düzenle ve/veya porsiyon notu ekle; ikisini de hesaba katar.'**
+  String get recalcHint;
+
+  /// No description provided for @saveToMeals.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğünlere kaydet'**
+  String get saveToMeals;
+
+  /// No description provided for @portionQuestion.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ne kadar yedin?'**
+  String get portionQuestion;
+
+  /// No description provided for @portionLittle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Az'**
+  String get portionLittle;
+
+  /// No description provided for @portionNormal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Normal'**
+  String get portionNormal;
+
+  /// No description provided for @portionLots.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bol'**
+  String get portionLots;
+
+  /// No description provided for @portionTwoServings.
+  ///
+  /// In tr, this message translates to:
+  /// **'İki kişilik'**
+  String get portionTwoServings;
+
+  /// No description provided for @recalcFailedNutrition.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besin değerleri hesaplanamadı, tekrar dene.'**
+  String get recalcFailedNutrition;
+
+  /// No description provided for @recalcFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeniden hesaplama başarısız.'**
+  String get recalcFailed;
+
+  /// No description provided for @mealTypeBreakfast.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kahvaltı'**
+  String get mealTypeBreakfast;
+
+  /// No description provided for @mealTypeLunch.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğlen Yemeği'**
+  String get mealTypeLunch;
+
+  /// No description provided for @mealTypeDinner.
+  ///
+  /// In tr, this message translates to:
+  /// **'Akşam Yemeği'**
+  String get mealTypeDinner;
+
+  /// No description provided for @mealTypeSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ara Öğün'**
+  String get mealTypeSnack;
+
+  /// No description provided for @mealBrandHomemade.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ev yapımı'**
+  String get mealBrandHomemade;
 }
 
 class _AppLocalizationsDelegate

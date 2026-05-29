@@ -20,6 +20,7 @@ import '../widgets/editorial_header.dart';
 import '../widgets/editorial_nutrient_table.dart';
 import '../widgets/health_score_bar.dart';
 import '../widgets/pill_tab_bar.dart';
+import '../widgets/score_breakdown_card.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String barcode;
@@ -379,6 +380,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   List<Widget> _buildHealthTab(ProductEntity product) {
     return [
       HealthScoreBar(hpScore: product.calculatedHpScore),
+      const SizedBox(height: 8),
+      ScoreBreakdownCard(product: product),
       const SizedBox(height: 8),
       ContentAnalysisSection(product: product),
       const SizedBox(height: 16),

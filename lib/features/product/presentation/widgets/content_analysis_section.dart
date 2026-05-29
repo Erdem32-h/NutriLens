@@ -4,10 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/content_analysis_service.dart';
+import '../../../../core/services/hp_score_calculator.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../config/router/route_names.dart';
 import '../../domain/entities/product_entity.dart';
-import '../providers/product_provider.dart';
+import '../../../additive/presentation/providers/additive_provider.dart';
 import '../../../profile/presentation/providers/health_filters_provider.dart';
 
 class ContentAnalysisSection extends ConsumerWidget {
@@ -28,8 +29,9 @@ class ContentAnalysisSection extends ConsumerWidget {
       activeChemicals: filters.chemicals,
     );
     final additivesAsync = ref.watch(
-      additivesByCodesProvider(product.additivesTags),
+      additiveEntitiesByCodesProvider(product.additivesTags),
     );
+    final isTr = Localizations.localeOf(context).languageCode == 'tr';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -67,19 +69,45 @@ class ContentAnalysisSection extends ConsumerWidget {
               ),
             ),
             error: (_, _) => _EmptyAdditives(),
-            data: (additiveMap) {
-              if (additiveMap.isEmpty) return _EmptyAdditives();
+            data: (additives) {
+              if (product.additivesTags.isEmpty) return _EmptyAdditives();
 
-              final sorted = additiveMap.entries.toList()
-                ..sort((a, b) => b.value.compareTo(a.value));
+              // Index DB matches by normalised E-code so we can attach a name
+              // and a precise risk level; codes not in the DB fall back to a
+              // moderate risk with no name (still shown).
+              final byCode = {
+                for (final a in additives)
+                  HpScoreCalculator.normalizeECode(a.eNumber): a,
+              };
+
+              final cards = <_AdditiveCardData>[];
+              final seen = <String>{};
+              for (final raw in product.additivesTags) {
+                final code = HpScoreCalculator.normalizeECode(raw);
+                if (!seen.add(code)) continue;
+                final entity = byCode[code];
+                cards.add(
+                  _AdditiveCardData(
+                    eCode: code,
+                    name: entity == null
+                        ? null
+                        : (isTr ? (entity.nameTr ?? entity.nameEn) : entity.nameEn),
+                    riskLevel: entity?.riskLevel ?? 3,
+                  ),
+                );
+              }
+
+              if (cards.isEmpty) return _EmptyAdditives();
+              cards.sort((a, b) => b.riskLevel.compareTo(a.riskLevel));
 
               return Column(
-                children: sorted.map((entry) {
+                children: cards.map((c) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: _AdditiveCard(
-                      eCode: entry.key,
-                      riskLevel: entry.value,
+                      eCode: c.eCode,
+                      name: c.name,
+                      riskLevel: c.riskLevel,
                     ),
                   );
                 }).toList(),
@@ -219,22 +247,36 @@ class _WarningCard extends StatelessWidget {
   }
 }
 
-class _AdditiveCard extends StatelessWidget {
+class _AdditiveCardData {
   final String eCode;
+  final String? name;
   final int riskLevel;
 
-  const _AdditiveCard({required this.eCode, required this.riskLevel});
+  const _AdditiveCardData({
+    required this.eCode,
+    required this.name,
+    required this.riskLevel,
+  });
+}
+
+class _AdditiveCard extends StatelessWidget {
+  final String eCode;
+  final String? name;
+  final int riskLevel;
+
+  const _AdditiveCard({
+    required this.eCode,
+    required this.name,
+    required this.riskLevel,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final l10n = context.l10n;
 
-    final (badgeColor, badgeText) = switch (riskLevel) {
-      1 || 2 => (colors.riskSafe, l10n.safeLabel),
-      3 => (colors.warning, l10n.caution),
-      _ => (colors.error, l10n.risky),
-    };
+    final riskColor = colors.riskColor(riskLevel);
+    final badgeText = _riskLabel(l10n, riskLevel);
 
     // Clean e-code display
     final displayCode = eCode.startsWith('en:') ? eCode.substring(3) : eCode;
@@ -247,7 +289,7 @@ class _AdditiveCard extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: colors.surfaceCard,
+          color: riskColor.withValues(alpha: 0.10),
           borderRadius: BorderRadius.circular(20),
         ),
         child: IntrinsicHeight(
@@ -256,7 +298,7 @@ class _AdditiveCard extends StatelessWidget {
               Container(
                 width: 4,
                 decoration: BoxDecoration(
-                  color: badgeColor,
+                  color: riskColor,
                   borderRadius: const BorderRadius.horizontal(
                     left: Radius.circular(20),
                   ),
@@ -270,20 +312,38 @@ class _AdditiveCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.science_outlined, size: 18, color: badgeColor),
+                      Icon(Icons.science_outlined, size: 18, color: riskColor),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: Text(
-                          displayCode.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: colors.textPrimary,
-                            letterSpacing: 0.5,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              navigateCode,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: colors.textPrimary,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            if (name != null && name!.isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                name!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  color: colors.textMuted,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
-                      _Badge(text: badgeText, color: badgeColor),
+                      const SizedBox(width: 8),
+                      _Badge(text: badgeText, color: riskColor),
                       const SizedBox(width: 4),
                       Icon(
                         Icons.chevron_right,
@@ -300,6 +360,14 @@ class _AdditiveCard extends StatelessWidget {
       ),
     );
   }
+
+  String _riskLabel(dynamic l10n, int level) => switch (level) {
+    1 => l10n.risk1,
+    2 => l10n.risk2,
+    3 => l10n.risk3,
+    4 => l10n.risk4,
+    _ => l10n.risk5,
+  };
 }
 
 class _Badge extends StatelessWidget {

@@ -332,6 +332,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get healthScoreLabel => 'HEALTH SCORE';
 
   @override
+  String get scoreBreakdownWhy => 'Why';
+
+  @override
+  String get scoreBreakdownSubtitle => 'See how the score is built';
+
+  @override
+  String get scoreBreakdownBase => 'Base score';
+
+  @override
+  String get scoreBreakdownChemical => 'Chemical load';
+
+  @override
+  String get scoreBreakdownAdditives => 'additives';
+
+  @override
+  String get scoreBreakdownRisk => 'Nutritional risk';
+
+  @override
+  String get scoreBreakdownRiskSub => 'Sugar · salt · saturated fat';
+
+  @override
+  String get scoreBreakdownNutri => 'Nutritional quality';
+
+  @override
+  String get scoreBreakdownPenalty => 'Ingredient penalty';
+
+  @override
+  String get scoreBreakdownPenaltySub => 'Refined carbs / sweet-fatty snack';
+
+  @override
+  String get scoreBreakdownResult => 'Result';
+
+  @override
+  String get scoreBreakdownCritical =>
+      'Critical ingredient (e.g. palm oil, glucose syrup) detected — score is locked to the lowest level.';
+
+  @override
+  String get nova1Label => 'Unprocessed / minimally processed';
+
+  @override
+  String get nova2Label => 'Processed culinary ingredient';
+
+  @override
+  String get nova3Label => 'Processed food';
+
+  @override
+  String get nova4Label => 'Ultra-processed';
+
+  @override
+  String get novaUnknownLabel => 'Unknown';
+
+  @override
   String get worstIsBad => '(5 IS WORST)';
 
   @override
@@ -1009,4 +1061,121 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get testCrashReporting => 'Test crash reporting';
+
+  @override
+  String get myMeals => 'My Meals';
+
+  @override
+  String get mealsLoadError => 'Meals could not be loaded.';
+
+  @override
+  String get summaryToday => 'Today';
+
+  @override
+  String get summaryWeek => 'Week';
+
+  @override
+  String get summaryMonth => 'Month';
+
+  @override
+  String get scoreLabel => 'Score';
+
+  @override
+  String get deleteMealTitle => 'Delete meal';
+
+  @override
+  String deleteMealConfirm(String name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
+  String get noMealsYet => 'No meals yet';
+
+  @override
+  String get noMealsHint =>
+      'Use AI Analysis on the scan screen to photograph your food and save it here.';
+
+  @override
+  String get ingredientsTitle => 'Ingredients';
+
+  @override
+  String get confidenceSuffix => 'confidence';
+
+  @override
+  String get aiConfidenceHint =>
+      'How sure the AI is about the detected food, portion size and calorie estimate.';
+
+  @override
+  String get risk1 => 'Risk-free';
+
+  @override
+  String get risk2 => 'Low risk';
+
+  @override
+  String get risk3 => 'Moderate risk';
+
+  @override
+  String get risk4 => 'Risky';
+
+  @override
+  String get risk5 => 'Very risky';
+
+  @override
+  String get mealSavedToast => 'Meal saved';
+
+  @override
+  String get mealNameLabel => 'Meal name';
+
+  @override
+  String get mealSourceLabel => 'Source';
+
+  @override
+  String get estimatedContent => 'Estimated content';
+
+  @override
+  String get recalculate => 'Recalculate';
+
+  @override
+  String get recalcHint =>
+      'Edit the content and/or add a portion note; both are factored in.';
+
+  @override
+  String get saveToMeals => 'Save to meals';
+
+  @override
+  String get portionQuestion => 'How much did you eat?';
+
+  @override
+  String get portionLittle => 'Little';
+
+  @override
+  String get portionNormal => 'Normal';
+
+  @override
+  String get portionLots => 'Lots';
+
+  @override
+  String get portionTwoServings => 'Two servings';
+
+  @override
+  String get recalcFailedNutrition =>
+      'Couldn\'t calculate nutrition values, try again.';
+
+  @override
+  String get recalcFailed => 'Recalculation failed.';
+
+  @override
+  String get mealTypeBreakfast => 'Breakfast';
+
+  @override
+  String get mealTypeLunch => 'Lunch';
+
+  @override
+  String get mealTypeDinner => 'Dinner';
+
+  @override
+  String get mealTypeSnack => 'Snack';
+
+  @override
+  String get mealBrandHomemade => 'Homemade';
 }

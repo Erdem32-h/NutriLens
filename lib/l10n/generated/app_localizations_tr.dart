@@ -330,6 +330,59 @@ class AppLocalizationsTr extends AppLocalizations {
   String get healthScoreLabel => 'SAĞLIK PUANI';
 
   @override
+  String get scoreBreakdownWhy => 'Neden';
+
+  @override
+  String get scoreBreakdownSubtitle => 'Puanın nasıl oluştuğunu gör';
+
+  @override
+  String get scoreBreakdownBase => 'Başlangıç puanı';
+
+  @override
+  String get scoreBreakdownChemical => 'Kimyasal yük';
+
+  @override
+  String get scoreBreakdownAdditives => 'katkı maddesi';
+
+  @override
+  String get scoreBreakdownRisk => 'Besinsel risk';
+
+  @override
+  String get scoreBreakdownRiskSub => 'Şeker · tuz · doymuş yağ';
+
+  @override
+  String get scoreBreakdownNutri => 'Besin kalitesi';
+
+  @override
+  String get scoreBreakdownPenalty => 'İçerik cezası';
+
+  @override
+  String get scoreBreakdownPenaltySub =>
+      'Rafine karbonhidrat / tatlı-yağlı atıştırmalık';
+
+  @override
+  String get scoreBreakdownResult => 'Sonuç';
+
+  @override
+  String get scoreBreakdownCritical =>
+      'Kritik içerik (ör. palm yağı, glikoz şurubu) tespit edildi — puan otomatik en düşük seviyeye sabitlendi.';
+
+  @override
+  String get nova1Label => 'İşlenmemiş / minimal işlenmiş';
+
+  @override
+  String get nova2Label => 'İşlenmiş mutfak malzemesi';
+
+  @override
+  String get nova3Label => 'İşlenmiş gıda';
+
+  @override
+  String get nova4Label => 'Ultra işlenmiş';
+
+  @override
+  String get novaUnknownLabel => 'Bilinmiyor';
+
+  @override
   String get worstIsBad => '(5 EN KÖTÜ)';
 
   @override
@@ -1009,4 +1062,121 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get testCrashReporting => 'Crash raporlamayı test et';
+
+  @override
+  String get myMeals => 'Öğünlerim';
+
+  @override
+  String get mealsLoadError => 'Öğünler yüklenemedi.';
+
+  @override
+  String get summaryToday => 'Bugün';
+
+  @override
+  String get summaryWeek => 'Hafta';
+
+  @override
+  String get summaryMonth => 'Ay';
+
+  @override
+  String get scoreLabel => 'Skor';
+
+  @override
+  String get deleteMealTitle => 'Öğünü sil';
+
+  @override
+  String deleteMealConfirm(String name) {
+    return '\"$name\" silinsin mi?';
+  }
+
+  @override
+  String get noMealsYet => 'Henüz öğün yok';
+
+  @override
+  String get noMealsHint =>
+      'Tarama ekranındaki AI Analizi ile yemeğini fotoğraflayıp buraya kaydedebilirsin.';
+
+  @override
+  String get ingredientsTitle => 'İçerik';
+
+  @override
+  String get confidenceSuffix => 'güven';
+
+  @override
+  String get aiConfidenceHint =>
+      'Yapay zekânın tespit ettiği yemek, porsiyon ve kalori tahmininden ne kadar emin olduğunu gösterir.';
+
+  @override
+  String get risk1 => 'Risksiz';
+
+  @override
+  String get risk2 => 'Az riskli';
+
+  @override
+  String get risk3 => 'Orta riskli';
+
+  @override
+  String get risk4 => 'Riskli';
+
+  @override
+  String get risk5 => 'Çok riskli';
+
+  @override
+  String get mealSavedToast => 'Öğün kaydedildi';
+
+  @override
+  String get mealNameLabel => 'Öğün adı';
+
+  @override
+  String get mealSourceLabel => 'Kaynak';
+
+  @override
+  String get estimatedContent => 'Tahmini içerik';
+
+  @override
+  String get recalculate => 'Yeniden Hesapla';
+
+  @override
+  String get recalcHint =>
+      'İçeriği düzenle ve/veya porsiyon notu ekle; ikisini de hesaba katar.';
+
+  @override
+  String get saveToMeals => 'Öğünlere kaydet';
+
+  @override
+  String get portionQuestion => 'Ne kadar yedin?';
+
+  @override
+  String get portionLittle => 'Az';
+
+  @override
+  String get portionNormal => 'Normal';
+
+  @override
+  String get portionLots => 'Bol';
+
+  @override
+  String get portionTwoServings => 'İki kişilik';
+
+  @override
+  String get recalcFailedNutrition =>
+      'Besin değerleri hesaplanamadı, tekrar dene.';
+
+  @override
+  String get recalcFailed => 'Yeniden hesaplama başarısız.';
+
+  @override
+  String get mealTypeBreakfast => 'Kahvaltı';
+
+  @override
+  String get mealTypeLunch => 'Öğlen Yemeği';
+
+  @override
+  String get mealTypeDinner => 'Akşam Yemeği';
+
+  @override
+  String get mealTypeSnack => 'Ara Öğün';
+
+  @override
+  String get mealBrandHomemade => 'Ev yapımı';
 }

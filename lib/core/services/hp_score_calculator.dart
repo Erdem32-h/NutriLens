@@ -262,6 +262,14 @@ class HpScoreCalculator {
   double _calculateIngredientQualityPenalty(
     String? ingredientsText,
     NutrimentsEntity nutriments,
+  ) => ingredientQualityPenalty(ingredientsText, nutriments);
+
+  /// Pure, DB-free ingredient-quality penalty. Exposed statically so the
+  /// score-breakdown UI can reconstruct the penalty line from a
+  /// [ProductEntity] without re-running the full calculator.
+  static double ingredientQualityPenalty(
+    String? ingredientsText,
+    NutrimentsEntity nutriments,
   ) {
     if (ingredientsText == null || ingredientsText.trim().isEmpty) return 0.0;
 

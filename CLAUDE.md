@@ -18,10 +18,15 @@ create policy "..." on public.x ...;
 ```
 Eksik `GRANT` → PostgREST `42501 permission denied` döner.
 
-**HP Score:**
+**HP Score (v3, `hpScoreAlgorithmVersion = 3`):**
 ```
-HP Score = (Chemical Load x 0.50) + (Risk Factor x 0.30) + (Nutri Factor x 0.20)
+HP Score = 100 − (Chemical Load × 0.45) − (Risk Factor × 0.40)
+               + (Nutri Factor × 0.15) − ingredientQualityPenalty
 ```
+- Chemical Load & Risk Factor → ceza (puan düşürür); Nutri Factor → bonus.
+- Gauge eşikleri: g1≥75, g2≥55, g3≥35, g4≥18, <18→g5.
+- Kritik ingredient blacklist (palm yağ, glikoz/mısır şurubu vb.) → anında 10/100 (gauge 5).
+- NOVA şu an yalnızca Nutri Factor içinde (etkisi ±6 puan, zayıf). NOVA-omurgalı rework ertelendi → bkz. Obsidian `02-decisions-log` 2026-05.
 Katsayılar → `lib/core/constants/score_constants.dart`
 
 **Barkod zinciri:** Kendi DB → Open Food Facts → 3. parti API → OCR → Topluluk DB
