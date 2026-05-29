@@ -2,9 +2,9 @@ workflows:
   ios-testflight:
     name: iOS TestFlight
     max_build_duration: 60
-    # mac_mini_m2 requires a paid Codemagic plan; m1 is included in
-    # all tiers and builds iOS Flutter apps just fine (5-10 min slower).
-    instance_type: mac_mini_m1
+    # Codemagic retired Mac mini M1; M2 is now provided at the same price
+    # and is the current default for iOS Flutter builds.
+    instance_type: mac_mini_m2
     integrations:
       app_store_connect: Codemagic
     environment:
