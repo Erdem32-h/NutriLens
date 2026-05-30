@@ -53,7 +53,13 @@ class RecalcResult {
 /// This intentionally bypasses the Supabase Gemini proxy. Keep the API key in
 /// `.env`; never hard-code it here because mobile binaries are inspectable.
 class AnthropicAiService {
-  static const model = 'claude-opus-4-7';
+  /// Default Messages API model. Vision meal-analysis is a structured
+  /// extraction task (image → JSON), not deep reasoning, so Sonnet is the
+  /// right cost/quality point and is vision-capable. Overridable at runtime
+  /// via the `ANTHROPIC_MODEL` env var so a future model retirement is an
+  /// ops change, not an app release (the previous hardcoded
+  /// `claude-opus-4-7` was retired and 404'd, taking the whole AI flow down).
+  static const _defaultModel = 'claude-sonnet-4-0';
   static const _messagesUrl = 'https://api.anthropic.com/v1/messages';
   static const _apiVersion = '2023-06-01';
   static const _timeout = Duration(seconds: 45);
@@ -61,14 +67,19 @@ class AnthropicAiService {
 
   final Dio _dio;
   final String _apiKey;
+  final String model;
   final Duration _retryDelay;
 
   AnthropicAiService({
     required Dio dio,
     required String apiKey,
+    String? model,
     Duration retryDelay = const Duration(milliseconds: 550),
   }) : _dio = dio,
        _apiKey = apiKey.trim(),
+       model = (model == null || model.trim().isEmpty)
+           ? _defaultModel
+           : model.trim(),
        _retryDelay = retryDelay;
 
   Future<String?> extractIngredientsFromBase64(

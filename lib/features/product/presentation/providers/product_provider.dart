@@ -122,6 +122,8 @@ final anthropicAiServiceProvider = Provider<AnthropicAiService>((ref) {
   return AnthropicAiService(
     dio: ref.watch(dioProvider),
     apiKey: dotenv.env['ANTHROPIC_API_KEY'] ?? '',
+    // Optional ops override; falls back to the service's default model.
+    model: dotenv.env['ANTHROPIC_MODEL'],
   );
 });
 
