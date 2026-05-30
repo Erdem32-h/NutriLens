@@ -399,5 +399,7 @@
   "mealTypeLunch": "Öğlen Yemeği",
   "mealTypeDinner": "Akşam Yemeği",
   "mealTypeSnack": "Ara Öğün",
-  "mealBrandHomemade": "Ev yapımı"
+  "mealBrandHomemade": "Ev yapımı",
+  "additiveNotFound": "Bu katkı maddesi hakkında bilgi bulunamadı.",
+  "dietarySuitabilityNote": "Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir."
 }

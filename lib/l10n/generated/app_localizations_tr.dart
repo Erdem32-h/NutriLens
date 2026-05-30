@@ -1179,4 +1179,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get mealBrandHomemade => 'Ev yapımı';
+
+  @override
+  String get additiveNotFound => 'Bu katkı maddesi hakkında bilgi bulunamadı.';
+
+  @override
+  String get dietarySuitabilityNote =>
+      'Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir.';
 }

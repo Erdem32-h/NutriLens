@@ -2323,6 +2323,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Ev yapımı'**
   String get mealBrandHomemade;
+
+  /// No description provided for @additiveNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu katkı maddesi hakkında bilgi bulunamadı.'**
+  String get additiveNotFound;
+
+  /// No description provided for @dietarySuitabilityNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir.'**
+  String get dietarySuitabilityNote;
 }
 
 class _AppLocalizationsDelegate

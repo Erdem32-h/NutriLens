@@ -53,7 +53,21 @@ class _AdditiveBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final l10n = context.l10n;
+    final isTr = Localizations.localeOf(context).languageCode == 'tr';
     final riskColor = additive.riskColor;
+
+    // Locale-aware name: in English show the English name only (no Turkish
+    // subtitle); in Turkish show the Turkish name with the English (often
+    // the scientific) name as a helpful subtitle.
+    final primaryName = isTr
+        ? (additive.nameTr ?? additive.nameEn)
+        : additive.nameEn;
+    final secondaryName = isTr && additive.nameTr != null
+        ? additive.nameEn
+        : null;
+    final description = isTr
+        ? (additive.descriptionTr ?? additive.descriptionEn)
+        : (additive.descriptionEn ?? additive.descriptionTr);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -99,7 +113,7 @@ class _AdditiveBody extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  additive.nameTr ?? additive.nameEn,
+                  primaryName,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
@@ -107,10 +121,10 @@ class _AdditiveBody extends StatelessWidget {
                     color: colors.textPrimary,
                   ),
                 ),
-                if (additive.nameTr != null) ...[
+                if (secondaryName != null) ...[
                   const SizedBox(height: 2),
                   Text(
-                    additive.nameEn,
+                    secondaryName,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 13, color: colors.textMuted),
                   ),
@@ -128,14 +142,13 @@ class _AdditiveBody extends StatelessWidget {
           const SizedBox(height: 20),
 
           // ── Description ───────────────────────────────────────────
-          if (additive.descriptionTr != null ||
-              additive.descriptionEn != null) ...[
+          if (description != null && description.isNotEmpty) ...[
             _SectionCard(
               icon: Icons.info_outline,
               title: l10n.description,
               color: colors.primary,
               child: Text(
-                additive.descriptionTr ?? additive.descriptionEn ?? '',
+                description,
                 style: TextStyle(
                   fontSize: 14,
                   color: colors.textSecondary,
@@ -153,7 +166,7 @@ class _AdditiveBody extends StatelessWidget {
                 child: _InfoTile(
                   icon: Icons.category_outlined,
                   label: l10n.category,
-                  value: _categoryLabel(additive.category),
+                  value: _categoryLabel(additive.category, isTr),
                   color: colors.primary,
                 ),
               ),
@@ -162,7 +175,7 @@ class _AdditiveBody extends StatelessWidget {
                 child: _InfoTile(
                   icon: Icons.shield_outlined,
                   label: 'EFSA',
-                  value: _statusLabel(additive.efsaStatus),
+                  value: _statusLabel(additive.efsaStatus, isTr),
                   color: _statusColor(additive.efsaStatus, colors),
                 ),
               ),
@@ -175,7 +188,7 @@ class _AdditiveBody extends StatelessWidget {
                 child: _InfoTile(
                   icon: Icons.flag_outlined,
                   label: l10n.turkishCodex,
-                  value: _statusLabel(additive.turkishCodexStatus),
+                  value: _statusLabel(additive.turkishCodexStatus, isTr),
                   color: _statusColor(additive.turkishCodexStatus, colors),
                 ),
               ),
@@ -254,39 +267,73 @@ class _AdditiveBody extends StatelessWidget {
     );
   }
 
-  String _categoryLabel(String? category) {
+  String _categoryLabel(String? category, bool isTr) {
+    if (isTr) {
+      return switch (category) {
+        'colorant' => 'Renklendirici',
+        'preservative' => 'Koruyucu',
+        'antioxidant' => 'Antioksidan',
+        'emulsifier' => 'Emülgatör',
+        'thickener' => 'Koyulaştırıcı',
+        'sweetener' => 'Tatlandırıcı',
+        'flavor_enhancer' => 'Lezzet Artırıcı',
+        'acidity_regulator' => 'Asitlik Düzenleyici',
+        'anti_caking' => 'Topaklanma Önleyici',
+        'bulking_agent' => 'Hacim Artırıcı',
+        'modified_starch' => 'Modifiye Nişasta',
+        'gelling_agent' => 'Jelleştirici',
+        'humectant' => 'Nemlendirici',
+        'leavening_agent' => 'Kabartıcı',
+        'flour_treatment' => 'Un İyileştirici',
+        'glazing_agent' => 'Parlatıcı',
+        'packaging_gas' => 'Ambalaj Gazı',
+        'firming_agent' => 'Sertleştirici',
+        'anti_foaming' => 'Köpük Önleyici',
+        'enzyme' => 'Enzim',
+        _ => category ?? 'Diğer',
+      };
+    }
     return switch (category) {
-      'colorant' => 'Renklendirici',
-      'preservative' => 'Koruyucu',
-      'antioxidant' => 'Antioksidan',
-      'emulsifier' => 'Emülgatör',
-      'thickener' => 'Koyulaştırıcı',
-      'sweetener' => 'Tatlandırıcı',
-      'flavor_enhancer' => 'Lezzet Artırıcı',
-      'acidity_regulator' => 'Asitlik Düzenleyici',
-      'anti_caking' => 'Topaklanma Önleyici',
-      'bulking_agent' => 'Hacim Artırıcı',
-      'modified_starch' => 'Modifiye Nişasta',
-      'gelling_agent' => 'Jelleştirici',
-      'humectant' => 'Nemlendirici',
-      'leavening_agent' => 'Kabartıcı',
-      'flour_treatment' => 'Un İyileştirici',
-      'glazing_agent' => 'Parlatıcı',
-      'packaging_gas' => 'Ambalaj Gazı',
-      'firming_agent' => 'Sertleştirici',
-      'anti_foaming' => 'Köpük Önleyici',
-      'enzyme' => 'Enzim',
-      _ => category ?? 'Diğer',
+      'colorant' => 'Colorant',
+      'preservative' => 'Preservative',
+      'antioxidant' => 'Antioxidant',
+      'emulsifier' => 'Emulsifier',
+      'thickener' => 'Thickener',
+      'sweetener' => 'Sweetener',
+      'flavor_enhancer' => 'Flavor Enhancer',
+      'acidity_regulator' => 'Acidity Regulator',
+      'anti_caking' => 'Anti-caking Agent',
+      'bulking_agent' => 'Bulking Agent',
+      'modified_starch' => 'Modified Starch',
+      'gelling_agent' => 'Gelling Agent',
+      'humectant' => 'Humectant',
+      'leavening_agent' => 'Leavening Agent',
+      'flour_treatment' => 'Flour Treatment Agent',
+      'glazing_agent' => 'Glazing Agent',
+      'packaging_gas' => 'Packaging Gas',
+      'firming_agent' => 'Firming Agent',
+      'anti_foaming' => 'Anti-foaming Agent',
+      'enzyme' => 'Enzyme',
+      _ => category ?? 'Other',
     };
   }
 
-  String _statusLabel(String? status) {
+  String _statusLabel(String? status, bool isTr) {
+    if (isTr) {
+      return switch (status) {
+        'approved' => 'Onaylı',
+        'restricted' => 'Kısıtlı',
+        'banned' => 'Yasaklı',
+        'under_review' => 'İnceleniyor',
+        _ => 'Bilinmiyor',
+      };
+    }
     return switch (status) {
-      'approved' => 'Onaylı',
-      'restricted' => 'Kısıtlı',
-      'banned' => 'Yasaklı',
-      'under_review' => 'İnceleniyor',
-      _ => 'Bilinmiyor',
+      'approved' => 'Approved',
+      'restricted' => 'Restricted',
+      'banned' => 'Banned',
+      'under_review' => 'Under Review',
+      _ => 'Unknown',
     };
   }
 
@@ -518,7 +565,7 @@ class _NotFoundBody extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Bu katkı maddesi hakkında bilgi bulunamadı.',
+            context.l10n.additiveNotFound,
             style: TextStyle(color: colors.textMuted),
           ),
         ],

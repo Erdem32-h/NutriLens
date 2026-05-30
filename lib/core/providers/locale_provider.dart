@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,8 +18,23 @@ class LocaleNotifier extends Notifier<Locale> {
   @override
   Locale build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    final languageCode = prefs.getString(_localePrefKey) ?? 'tr';
-    return Locale(languageCode);
+    final saved = prefs.getString(_localePrefKey);
+    if (saved != null && saved.isNotEmpty) {
+      return Locale(saved);
+    }
+    // First launch (no explicit choice yet): follow the device language.
+    // Turkish phones open in Turkish; everything else falls back to English.
+    return Locale(_deviceDefaultLanguageCode());
+  }
+
+  /// Resolves the OS locale to one of the app's supported languages.
+  /// Turkish → 'tr'; any other device language → 'en'.
+  static String _deviceDefaultLanguageCode() {
+    final deviceLocales = ui.PlatformDispatcher.instance.locales;
+    final primary = deviceLocales.isNotEmpty
+        ? deviceLocales.first.languageCode
+        : ui.PlatformDispatcher.instance.locale.languageCode;
+    return primary == 'tr' ? 'tr' : 'en';
   }
 
   Future<void> setLocale(Locale locale) async {
