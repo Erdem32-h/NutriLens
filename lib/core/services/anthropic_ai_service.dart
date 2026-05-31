@@ -321,7 +321,8 @@ class AnthropicAiService {
     throw const AnthropicServiceException('Anthropic request failed');
   }
 
-  @visibleForTesting
+  /// Public: also used by the proxy-backed meal flow to parse OpenRouter
+  /// output, so it reuses the same portion-clamping logic.
   static RecalcResult? parseRecalcResponseText(String text) {
     try {
       final jsonStr = _extractJson(text);
@@ -408,7 +409,8 @@ class AnthropicAiService {
     }
   }
 
-  @visibleForTesting
+  /// Public: also used by the proxy-backed meal flow to parse OpenRouter
+  /// output, so it reuses the same portion-clamping + scaling logic.
   static MealAnalysisResult? parseMealAnalysisResponseText(String text) {
     try {
       final jsonStr = _extractJson(text);

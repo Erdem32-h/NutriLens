@@ -11,6 +11,7 @@ import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
+import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
@@ -101,20 +102,42 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
 
     try {
       final prepared = await prepareMealAnalysisImage(widget.imageBytes);
-      final aiService = ref.read(anthropicAiServiceProvider);
       // Generate the food name / ingredients / description in the app's
       // active language so an English user gets "Rice with Meat" rather
       // than "Etli Pilav" from the start (locale-aware generation).
       final languageCode = ref.read(localeProvider).languageCode;
-      final result = await aiService.analyzeMealFromBase64(
-        prepared.base64,
-        languageCode: languageCode,
-      );
-      if (result == null) throw Exception('AI returned empty meal result');
+      // Signed-in users go through the server-side OpenRouter proxy (cheap
+      // model, key never on the client, no runaway credit drain). Guests
+      // keep the direct-Anthropic path so the free 5-scan flow still works
+      // without an account.
+      final authed = ref.read(isAuthenticatedProvider);
+      final MealAnalysisResult result;
+      if (authed) {
+        result = await ref
+            .read(geminiAiServiceProvider)
+            .analyzeMeal(prepared.base64, languageCode: languageCode);
+      } else {
+        final r = await ref
+            .read(anthropicAiServiceProvider)
+            .analyzeMealFromBase64(prepared.base64, languageCode: languageCode);
+        if (r == null) throw Exception('AI returned empty meal result');
+        result = r;
+      }
       if (!mounted) return;
       setState(() {
         _result = result;
         _ingredientsController.text = result.ingredientsText ?? '';
+        _loading = false;
+      });
+    } on GeminiServiceException catch (e, st) {
+      debugPrint('[FoodResult] proxy meal analysis failed: $e');
+      unawaited(Sentry.captureException(e, stackTrace: st));
+      if (!mounted) return;
+      setState(() {
+        _serviceUnavailable = true;
+        // Proxy maps OpenRouter out-of-credit/rate-limit to HTTP 429.
+        _quotaExhausted = e.statusCode == 429;
+        _error = e.toString();
         _loading = false;
       });
     } on AnthropicServiceException catch (e, st) {
@@ -147,11 +170,21 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     if (text.isEmpty && portionNote.isEmpty) return;
     setState(() => _recalcLoading = true);
     try {
-      final aiService = ref.read(anthropicAiServiceProvider);
-      final recalc = await aiService.recalculateMealNutrition(
-        ingredientsText: text.isEmpty ? (_result!.ingredientsText ?? '') : text,
-        portionNote: portionNote.isEmpty ? null : portionNote,
-      );
+      final ingredients = text.isEmpty
+          ? (_result!.ingredientsText ?? '')
+          : text;
+      final note = portionNote.isEmpty ? null : portionNote;
+      // Same provider split as _analyzeFood: proxy for signed-in users,
+      // direct Anthropic for guests.
+      final recalc = ref.read(isAuthenticatedProvider)
+          ? await ref.read(geminiAiServiceProvider).recalculateMeal(
+              ingredientsText: ingredients,
+              portionNote: note,
+            )
+          : await ref.read(anthropicAiServiceProvider).recalculateMealNutrition(
+              ingredientsText: ingredients,
+              portionNote: note,
+            );
       if (!mounted) return;
       if (recalc != null) {
         setState(() {
@@ -181,6 +214,12 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         }
       }
     } on AnthropicServiceException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.recalcFailed)),
+        );
+      }
+    } on GeminiServiceException {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.recalcFailed)),

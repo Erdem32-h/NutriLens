@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/product/domain/entities/nutriments_entity.dart';
+import 'anthropic_ai_service.dart'
+    show AnthropicAiService, MealAnalysisResult, RecalcResult;
 
 /// Result of AI food recognition from a photo.
 class FoodRecognitionResult {
@@ -253,6 +255,48 @@ class GeminiAiService {
     final jsonStr = _extractJson(result);
     final json = jsonDecode(jsonStr) as Map<String, dynamic>;
     return FoodRecognitionResult.fromJson(json);
+  }
+
+  /// Full meal-photo analysis via the server-side OpenRouter proxy (cheap
+  /// model, key never on the client). Returns the same [MealAnalysisResult]
+  /// shape as the direct-Anthropic path and reuses its parser so portion
+  /// clamping/scaling stays identical across providers.
+  ///
+  /// Throws [GeminiServiceException] on service failure (auth/network/quota)
+  /// so the caller can show a "service unavailable" / "quota" message.
+  Future<MealAnalysisResult> analyzeMeal(
+    String base64Image, {
+    String languageCode = 'tr',
+  }) async {
+    final response = await _invoke('meal_analysis', {
+      'image_base64': base64Image,
+      'language_code': languageCode,
+    });
+    final result = (response['result'] as String?)?.trim();
+    if (result == null || result.isEmpty) {
+      throw const GeminiServiceException('AI returned empty meal result');
+    }
+    final parsed = AnthropicAiService.parseMealAnalysisResponseText(result);
+    if (parsed == null) {
+      throw const GeminiServiceException('AI returned unparseable meal result');
+    }
+    return parsed;
+  }
+
+  /// Recalculate nutrition for edited ingredients and/or a portion note via
+  /// the proxy. Returns `null` when the model produced nothing usable.
+  Future<RecalcResult?> recalculateMeal({
+    required String ingredientsText,
+    String? portionNote,
+  }) async {
+    final response = await _invoke('recalc_nutrition', {
+      'ingredients_text': ingredientsText,
+      if (portionNote != null && portionNote.trim().isNotEmpty)
+        'portion_note': portionNote,
+    });
+    final result = (response['result'] as String?)?.trim();
+    if (result == null || result.isEmpty) return null;
+    return AnthropicAiService.parseRecalcResponseText(result);
   }
 
   /// Invoke the gemini-proxy Edge Function.

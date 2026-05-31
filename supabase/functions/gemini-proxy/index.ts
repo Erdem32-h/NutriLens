@@ -34,6 +34,165 @@ function modelFor(action: string): string {
   }
 }
 
+// ── OpenRouter (cheap vision meal analysis) ───────────────────────────
+// Signed-in users' meal analysis is routed here instead of the client's
+// direct Anthropic call: the key lives server-side (no abuse / runaway
+// credit drain), the model is swappable via env, and gpt-4.1-nano matched
+// or beat Claude in our bake-off at ~37x lower cost.
+const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const OPENROUTER_MEAL_MODEL =
+  Deno.env.get("OPENROUTER_MEAL_MODEL") ?? "openai/gpt-4.1-nano";
+
+function languageName(code?: string): string {
+  switch ((code ?? "tr").toLowerCase()) {
+    case "en":
+      return "English";
+    case "de":
+      return "German";
+    case "fr":
+      return "French";
+    case "es":
+      return "Spanish";
+    case "ar":
+      return "Arabic";
+    default:
+      return "Turkish";
+  }
+}
+
+// Kept in sync with AnthropicAiService._mealAnalysisPrompt (Dart). The schema
+// MUST stay identical — the client reuses parseMealAnalysisResponseText.
+function mealAnalysisPrompt(code?: string): string {
+  const ln = languageName(code);
+  return `Bu görseldeki öğünü analiz et. Amacın TEK KİŞİNİN yediği porsiyonu
+gramaj + besin değeri olarak döndürmek.
+
+Yanıt dili: ${ln}. food_name, ingredients_text ve description alanlarını
+${ln} dilinde yaz (yemek adını da bu dile çevir; örn. İngilizce için
+"Etli Pilav" -> "Rice with Meat").
+
+Önce şu kararı ver:
+1. BİREYSEL porsiyon mu? (Bir kişinin önünde duran, tek başına yeneceği
+   bir kase/tabak.)
+2. PAYLAŞIMLI tabak/tencere mi? (Ortaya konmuş büyük servis tabağı,
+   tencere, börek tepsisi, pizza, meze platter'ı.)
+
+PAYLAŞIMLI ise: Sadece BİR kişinin alacağı tipik porsiyonu hesapla
+(yaklaşık 150-250 g). Tabaktaki toplam yemeği DEĞİL.
+BİREYSEL ise: Görseldeki gerçek miktarı tahmin et.
+
+Yiyecek tipi referans aralıkları (bir kişilik):
+  * Ana yemek (et, balık, tavuk): 150-250 g
+  * Pilav / makarna garnitür: 80-150 g
+  * Pilav / makarna ana yemek: 200-300 g
+  * Çorba: 250-350 ml
+  * Salata / meze: 80-150 g
+  * Sandviç / dürüm / börek: 150-250 g
+  * Tatlı / pasta: 80-150 g
+  * İçecek: 200-400 ml
+
+Sert kurallar:
+- 50 g'dan az veya 350 g'dan fazla TEK KİŞİLİK porsiyon DÖNDÜRME.
+- Default olarak 100 g sabiti KULLANMA. Fotoğrafa ve yemek tipine bak.
+- portion_grams: bir kişinin yediği toplam gramaj.
+- nutrition: o porsiyonun TOPLAM besin değerleri (100 g için değil).
+- İçindekileri (${ln}) düz metin olarak yaz.
+- Belirsizse yine en iyi tahmini yap, confidence düşük olur.
+- Bulamadığın besin değerlerini 0 döndür.
+- Sadece JSON döndür, açıklama veya markdown yazma.
+
+Şema:
+{
+  "food_name": string,
+  "portion_grams": number,
+  "ingredients_text": string,
+  "nutrition": {
+    "energy_kcal": number, "fat": number, "saturated_fat": number,
+    "trans_fat": number, "carbohydrates": number, "sugars": number,
+    "salt": number, "fiber": number, "protein": number
+  },
+  "confidence": number,
+  "description": string
+}`;
+}
+
+// Kept in sync with AnthropicAiService._recalcNutritionPrompt (Dart).
+function recalcNutritionPrompt(
+  ingredientsText: string,
+  portionNote?: string,
+): string {
+  const hasNote = !!portionNote && portionNote.trim().length > 0;
+  const noteSection = hasNote
+    ? `\nKullanıcı notu (porsiyon hakkında):\n${portionNote!.trim()}\n
+Bu nota öncelik ver. "Yarım porsiyon" -> tek kişilik porsiyonun yarısı.
+"300 g yedim" gibi açık gramaj varsa onu kullan.\n`
+    : `\nKullanıcı porsiyon notu vermedi. İçeriğe uygun makul bir tek kişilik
+porsiyon belirle ve onu hem portion_grams'ta dön hem değerleri ona göre
+hesapla.\n`;
+  return `Aşağıdaki içerik listesine göre tek kişilik bir öğünün tahmini besin
+değerlerini hesapla.
+${noteSection}
+İçerik:
+${ingredientsText}
+
+Genel kurallar:
+- portion_grams o porsiyonun toplam gramajıdır.
+- nutrition değerleri o portion_grams için TOPLAM değerdir, 100 g için değil.
+- Bulamadığın değerleri 0 döndür.
+- Sadece JSON döndür, açıklama veya markdown yazma.
+
+Şema:
+{
+  "portion_grams": number,
+  "nutrition": {
+    "energy_kcal": number, "fat": number, "saturated_fat": number,
+    "trans_fat": number, "carbohydrates": number, "sugars": number,
+    "salt": number, "fiber": number, "protein": number
+  }
+}`;
+}
+
+interface OpenRouterResult {
+  ok: boolean;
+  status: number;
+  text: string;
+  errBody: string;
+}
+
+async function callOpenRouter(
+  messages: unknown[],
+  maxTokens: number,
+): Promise<OpenRouterResult> {
+  const resp = await fetch(OPENROUTER_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://nutrilenshq.com",
+      "X-Title": "NutriLens",
+    },
+    body: JSON.stringify({
+      model: OPENROUTER_MEAL_MODEL,
+      max_tokens: maxTokens,
+      temperature: 0.2,
+      response_format: { type: "json_object" },
+      messages,
+    }),
+  });
+  const raw = await resp.text();
+  if (!resp.ok) {
+    return { ok: false, status: resp.status, text: "", errBody: raw.slice(0, 300) };
+  }
+  let content = "";
+  try {
+    content = JSON.parse(raw)?.choices?.[0]?.message?.content ?? "";
+  } catch (_) {
+    // leave content empty; caller treats empty as a failure
+  }
+  return { ok: true, status: resp.status, text: content, errBody: "" };
+}
+
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
@@ -48,10 +207,15 @@ interface RequestBody {
     | "ocr_ingredients_image"
     | "ocr_nutrition"
     | "ocr_nutrition_image"
-    | "food_recognition";
+    | "food_recognition"
+    | "meal_analysis"
+    | "recalc_nutrition";
   payload: {
     text?: string;
     image_base64?: string;
+    language_code?: string;
+    ingredients_text?: string;
+    portion_note?: string;
   };
 }
 
@@ -423,6 +587,93 @@ serve(async (req: Request) => {
           headers: { "Content-Type": "application/json" },
         }
       );
+    }
+
+    // ── OpenRouter-backed actions (cheap meal analysis + recalc) ──────
+    // Routed here for signed-in users; the key stays server-side. Branch
+    // before the Gemini key guard so these don't depend on GEMINI_API_KEY.
+    if (action === "meal_analysis" || action === "recalc_nutrition") {
+      if (!OPENROUTER_API_KEY) {
+        return new Response(
+          JSON.stringify({ error: "OpenRouter API key not configured" }),
+          { status: 500, headers: { "Content-Type": "application/json" } }
+        );
+      }
+
+      let messages: unknown[];
+      let maxTokens: number;
+      if (action === "meal_analysis") {
+        if (!payload.image_base64) {
+          return new Response(JSON.stringify({ error: "Missing image" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        messages = [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: mealAnalysisPrompt(payload.language_code) },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${payload.image_base64}`,
+                },
+              },
+            ],
+          },
+        ];
+        maxTokens = 1000;
+      } else {
+        if (!payload.ingredients_text) {
+          return new Response(
+            JSON.stringify({ error: "Missing ingredients_text" }),
+            { status: 400, headers: { "Content-Type": "application/json" } }
+          );
+        }
+        messages = [
+          {
+            role: "user",
+            content: recalcNutritionPrompt(
+              payload.ingredients_text,
+              payload.portion_note
+            ),
+          },
+        ];
+        maxTokens = 700;
+      }
+
+      const or = await callOpenRouter(messages, maxTokens);
+      if (!or.ok || !or.text) {
+        console.error(
+          `[openrouter ${action}] model=${OPENROUTER_MEAL_MODEL} ` +
+            `status=${or.status} body=${or.errBody}`
+        );
+        // 402 (out of credit) / 429 (rate limited) → tell the client it's a
+        // quota condition (429) so it shows the right message; else 502.
+        const clientStatus =
+          or.status === 402 || or.status === 429 ? 429 : 502;
+        return new Response(
+          JSON.stringify({
+            error: "AI service error",
+            openrouter_status: or.status,
+          }),
+          {
+            status: clientStatus,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
+        );
+      }
+      return new Response(JSON.stringify({ result: or.text, action }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
     }
 
     // Validate API key
