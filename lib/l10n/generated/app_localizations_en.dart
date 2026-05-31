@@ -1185,4 +1185,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get dietarySuitabilityNote =>
       'Estimated from detected additives and ingredients — not a certification.';
+
+  @override
+  String get aiQuotaExhausted =>
+      'AI analysis is temporarily unavailable due to high demand. Please try again later.';
 }

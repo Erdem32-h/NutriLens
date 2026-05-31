@@ -2335,6 +2335,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir.'**
   String get dietarySuitabilityNote;
+
+  /// No description provided for @aiQuotaExhausted.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI analizi yoğunluk nedeniyle geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.'**
+  String get aiQuotaExhausted;
 }
 
 class _AppLocalizationsDelegate

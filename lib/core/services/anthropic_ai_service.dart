@@ -10,11 +10,32 @@ class AnthropicServiceException implements Exception {
   final String message;
   final int? statusCode;
 
-  const AnthropicServiceException(this.message, {this.statusCode});
+  /// True when the failure is caused by the Anthropic account running out of
+  /// credit / hitting a quota or rate limit (HTTP 429, or a 400 billing
+  /// error). Lets the UI show a "quota exhausted" message instead of a
+  /// generic outage, and makes the real cause obvious in crash reports.
+  final bool isQuota;
+
+  const AnthropicServiceException(
+    this.message, {
+    this.statusCode,
+    this.isQuota = false,
+  });
 
   @override
   String toString() =>
-      'AnthropicServiceException(status=$statusCode): $message';
+      'AnthropicServiceException(status=$statusCode, quota=$isQuota): $message';
+}
+
+/// Classifies an Anthropic error as a billing/quota/rate-limit condition.
+bool _isQuotaError(int? status, String message) {
+  if (status == 429) return true;
+  final m = message.toLowerCase();
+  return m.contains('credit balance') ||
+      m.contains('too low') ||
+      m.contains('quota') ||
+      m.contains('billing') ||
+      m.contains('insufficient');
 }
 
 class MealAnalysisResult {
@@ -202,7 +223,7 @@ class AnthropicAiService {
           await Future<void>.delayed(_retryDelay);
           continue;
         }
-        throw AnthropicServiceException(message, statusCode: status);
+        throw AnthropicServiceException(message, statusCode: status, isQuota: _isQuotaError(status, message));
       } catch (e) {
         debugPrint('[AnthropicAI] $logLabel transport error: $e');
         if (attempt < _maxAttempts) {
@@ -286,7 +307,7 @@ class AnthropicAiService {
           await Future<void>.delayed(_retryDelay);
           continue;
         }
-        throw AnthropicServiceException(message, statusCode: status);
+        throw AnthropicServiceException(message, statusCode: status, isQuota: _isQuotaError(status, message));
       } catch (e) {
         debugPrint('[AnthropicAI] $logLabel transport error: $e');
         if (attempt < _maxAttempts) {

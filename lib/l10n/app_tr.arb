@@ -401,5 +401,6 @@
   "mealTypeSnack": "Ara Öğün",
   "mealBrandHomemade": "Ev yapımı",
   "additiveNotFound": "Bu katkı maddesi hakkında bilgi bulunamadı.",
-  "dietarySuitabilityNote": "Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir."
+  "dietarySuitabilityNote": "Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir.",
+  "aiQuotaExhausted": "AI analizi yoğunluk nedeniyle geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."
 }

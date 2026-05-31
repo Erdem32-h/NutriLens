@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/constants/score_constants.dart';
@@ -44,6 +45,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   bool _loading = true;
   String? _error;
   bool _serviceUnavailable = false;
+  bool _quotaExhausted = false;
   bool _saving = false;
   bool _recalcLoading = false;
 
@@ -94,6 +96,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       _loading = true;
       _error = null;
       _serviceUnavailable = false;
+      _quotaExhausted = false;
     });
 
     try {
@@ -114,11 +117,16 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         _ingredientsController.text = result.ingredientsText ?? '';
         _loading = false;
       });
-    } on AnthropicServiceException catch (e) {
+    } on AnthropicServiceException catch (e, st) {
       debugPrint('[FoodResult] Claude service unavailable: $e');
+      // Surface the real Anthropic error (status + message, e.g. "credit
+      // balance too low") to Sentry so the root cause is diagnosable without
+      // reproducing it by hand.
+      unawaited(Sentry.captureException(e, stackTrace: st));
       if (!mounted) return;
       setState(() {
         _serviceUnavailable = true;
+        _quotaExhausted = e.isQuota;
         _error = e.toString();
         _loading = false;
       });
@@ -337,7 +345,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     final icon = isServiceDown
         ? Icons.cloud_off_rounded
         : Icons.error_outline_rounded;
-    final message = isServiceDown
+    final message = _quotaExhausted
+        ? l10n.aiQuotaExhausted
+        : isServiceDown
         ? l10n.aiServiceUnavailableNoFallback
         : l10n.aiFailed;
 

@@ -1186,4 +1186,8 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get dietarySuitabilityNote =>
       'Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir.';
+
+  @override
+  String get aiQuotaExhausted =>
+      'AI analizi yoğunluk nedeniyle geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.';
 }

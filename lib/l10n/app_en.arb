@@ -401,5 +401,6 @@
   "mealTypeSnack": "Snack",
   "mealBrandHomemade": "Homemade",
   "additiveNotFound": "No information found for this additive.",
-  "dietarySuitabilityNote": "Estimated from detected additives and ingredients — not a certification."
+  "dietarySuitabilityNote": "Estimated from detected additives and ingredients — not a certification.",
+  "aiQuotaExhausted": "AI analysis is temporarily unavailable due to high demand. Please try again later."
 }
