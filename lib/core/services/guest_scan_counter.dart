@@ -46,6 +46,17 @@ class GuestScanCounter extends Notifier<int> {
     return next;
   }
 
+  /// Reconcile the local fallback counter with the server's authoritative
+  /// device-keyed count. Only ever raises the local count (the server is the
+  /// floor, never a way to gift scans back), so a cache/data clear that reset
+  /// the local counter to 0 gets corrected to the real server total.
+  Future<void> syncFromServer(int serverCount) async {
+    final clamped = serverCount.clamp(0, lifetimeLimit);
+    if (clamped <= state) return;
+    await _prefs.setInt(_kCountKey, clamped);
+    state = clamped;
+  }
+
   /// Wipes the counter. Called from the migration flow once a guest
   /// has registered — the new authenticated user starts with their
   /// server-side daily limit instead of inheriting the local cap.

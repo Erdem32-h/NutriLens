@@ -4,8 +4,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../constants/ad_constants.dart';
 import '../services/ad_service.dart';
+import '../services/device_id_service.dart';
+import '../services/guest_scan_limit_service.dart';
 import '../services/scan_limit_service.dart';
 import '../services/subscription_service.dart';
+import 'locale_provider.dart';
 
 // ── Subscription ──
 
@@ -61,6 +64,20 @@ final isPremiumProvider = Provider<bool>((ref) {
 
 final scanLimitServiceProvider = Provider<ScanLimitService>((ref) {
   return ScanLimitService(Supabase.instance.client);
+});
+
+final deviceIdServiceProvider = Provider<DeviceIdService>((ref) {
+  return DeviceIdService(ref.watch(sharedPreferencesProvider));
+});
+
+/// Server-authoritative guest scan budget (device-hash keyed). Survives an
+/// app cache/data clear, unlike the local [GuestScanCounter] which is now a
+/// fallback for offline use.
+final guestScanLimitServiceProvider = Provider<GuestScanLimitService>((ref) {
+  return GuestScanLimitService(
+    Supabase.instance.client,
+    ref.watch(deviceIdServiceProvider),
+  );
 });
 
 // ── Ads ──

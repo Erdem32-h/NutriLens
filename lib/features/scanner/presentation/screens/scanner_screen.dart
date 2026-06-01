@@ -90,6 +90,69 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     } else {
       _startScanning();
     }
+    // Reconcile the guest badge/counter with the server's device-keyed total
+    // so a cache/data clear that reset the local counter to 0 gets corrected.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _reconcileGuestBudget());
+  }
+
+  /// Pulls the authoritative guest scan count from the server (device-hash
+  /// keyed) and raises the local fallback counter to match. No-op for
+  /// non-guests or when offline.
+  Future<void> _reconcileGuestBudget() async {
+    if (!ref.read(isGuestProvider)) return;
+    final remaining = await ref
+        .read(guestScanLimitServiceProvider)
+        .peekRemaining();
+    if (remaining == null || !mounted) return;
+    await ref
+        .read(guestScanCounterProvider.notifier)
+        .syncFromServer(GuestScanCounter.lifetimeLimit - remaining);
+  }
+
+  /// Server-authoritative guest scan gate with an offline local fallback.
+  /// Returns true if the scan may proceed (and consumes one); on hard-block
+  /// it shows the register sheet (and navigates to /register if chosen).
+  Future<bool> _consumeGuestScan() async {
+    final server = await ref
+        .read(guestScanLimitServiceProvider)
+        .checkAndIncrement();
+    final counter = ref.read(guestScanCounterProvider.notifier);
+
+    bool allowed;
+    int remaining;
+    if (server != null) {
+      // Server already incremented; mirror its count into the local fallback.
+      await counter.syncFromServer(
+        GuestScanCounter.lifetimeLimit - server.remaining,
+      );
+      allowed = server.allowed;
+      remaining = server.remaining;
+    } else {
+      // Offline: fall back to the local counter.
+      allowed = counter.canScan;
+      remaining = allowed
+          ? GuestScanCounter.lifetimeLimit - (await counter.increment())
+          : 0;
+    }
+
+    if (!allowed) {
+      if (!mounted) return false;
+      final wantsRegister = await GuestRegisterSheet.showScanLimitReached(
+        context,
+      );
+      if (mounted && wantsRegister) context.go('/register');
+      return false;
+    }
+
+    if (remaining == 0 && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.guestLastFreeScan),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+    return true;
   }
 
   @override
@@ -242,36 +305,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     _isNavigating = true;
 
-    // Guest mode has its own lifetime cap (5 scans) backed by
-    // SharedPreferences — the server-side RPC isn't even reachable
-    // because there's no auth token. Hit the local counter first;
-    // only authenticated users go through Supabase.
+    // Guest mode has its own lifetime cap (5 scans), now enforced
+    // server-side by device hash (survives a cache/data clear) with a local
+    // counter fallback when offline. Authenticated users go through the
+    // per-user Supabase RPC instead.
     if (ref.read(isGuestProvider)) {
-      final counter = ref.read(guestScanCounterProvider.notifier);
-      if (!counter.canScan) {
-        if (mounted) {
-          final wantsRegister = await GuestRegisterSheet.showScanLimitReached(
-            context,
-          );
-          if (!mounted) {
-            return;
-          }
-          if (wantsRegister) {
-            context.go('/register');
-            return;
-          }
-        }
-        setState(() => _isNavigating = false);
+      if (!await _consumeGuestScan()) {
+        if (mounted) setState(() => _isNavigating = false);
         return;
-      }
-      final newCount = await counter.increment();
-      if (newCount == GuestScanCounter.lifetimeLimit && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.guestLastFreeScan),
-            duration: const Duration(seconds: 4),
-          ),
-        );
       }
     } else {
       // Check scan limit
@@ -337,34 +378,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
       if (!mounted) return;
 
-      // Guest mode: local lifetime counter, no server hop. Same logic
-      // as the barcode-scan path above.
+      // Guest mode: same server-authoritative gate as the barcode path.
       if (ref.read(isGuestProvider)) {
-        final counter = ref.read(guestScanCounterProvider.notifier);
-        if (!counter.canScan) {
-          if (mounted) {
-            final wantsRegister = await GuestRegisterSheet.showScanLimitReached(
-              context,
-            );
-            if (!mounted) return;
-            if (wantsRegister) {
-              context.go('/register');
-              return;
-            }
-          }
-          return;
-        }
-        final newCount = await counter.increment();
-        if (newCount == GuestScanCounter.lifetimeLimit && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.',
-              ),
-              duration: Duration(seconds: 4),
-            ),
-          );
-        }
+        if (!await _consumeGuestScan()) return;
       } else {
         // Check scan limit
         final scanLimitService = ref.read(scanLimitServiceProvider);
