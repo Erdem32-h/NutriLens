@@ -267,11 +267,13 @@ class GeminiAiService {
   Future<MealAnalysisResult> analyzeMeal(
     String base64Image, {
     String languageCode = 'tr',
+    required String deviceHash,
   }) async {
     final response = await _invoke('meal_analysis', {
       'image_base64': base64Image,
       'language_code': languageCode,
-    });
+      'device_hash': deviceHash,
+    }, requireAuth: false);
     final result = (response['result'] as String?)?.trim();
     if (result == null || result.isEmpty) {
       throw const GeminiServiceException('AI returned empty meal result');
@@ -288,12 +290,14 @@ class GeminiAiService {
   Future<RecalcResult?> recalculateMeal({
     required String ingredientsText,
     String? portionNote,
+    required String deviceHash,
   }) async {
     final response = await _invoke('recalc_nutrition', {
       'ingredients_text': ingredientsText,
+      'device_hash': deviceHash,
       if (portionNote != null && portionNote.trim().isNotEmpty)
         'portion_note': portionNote,
-    });
+    }, requireAuth: false);
     final result = (response['result'] as String?)?.trim();
     if (result == null || result.isEmpty) return null;
     return AnthropicAiService.parseRecalcResponseText(result);
@@ -313,12 +317,14 @@ class GeminiAiService {
   /// content responses.
   Future<Map<String, dynamic>> _invoke(
     String action,
-    Map<String, dynamic> payload,
-  ) async {
-    // Pre-flight: if there's no session at all, fail fast with a clear
-    // signal rather than letting the anon key hit the edge function and
-    // come back as an opaque 401.
-    if (_client.auth.currentSession == null) {
+    Map<String, dynamic> payload, {
+    bool requireAuth = true,
+  }) async {
+    // Pre-flight: authed actions (OCR/Gemini) need a session. The public
+    // OpenRouter actions (meal_analysis / recalc_nutrition) pass
+    // requireAuth:false so guests — who have no session — can call them with
+    // the anon key; the edge function rate-limits those by device hash.
+    if (requireAuth && _client.auth.currentSession == null) {
       throw const GeminiServiceException('Not signed in', statusCode: 401);
     }
 
@@ -326,8 +332,8 @@ class GeminiAiService {
       return await _invokeOnce(action, payload);
     } on GeminiServiceException catch (e) {
       // Single retry on auth failure: refresh the session and try once more.
-      // Anything else (rate limit, AI error, network) bubbles up unchanged.
-      if (e.statusCode == 401) {
+      // Only meaningful for authed actions — guests have no session to refresh.
+      if (requireAuth && e.statusCode == 401) {
         debugPrint('[GeminiAI] $action 401 — refreshing session and retrying');
         try {
           await _client.auth.refreshSession();

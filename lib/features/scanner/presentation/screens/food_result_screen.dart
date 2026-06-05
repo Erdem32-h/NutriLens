@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/session/app_session.dart';
@@ -106,23 +107,18 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       // active language so an English user gets "Rice with Meat" rather
       // than "Etli Pilav" from the start (locale-aware generation).
       final languageCode = ref.read(localeProvider).languageCode;
-      // Signed-in users go through the server-side OpenRouter proxy (cheap
-      // model, key never on the client, no runaway credit drain). Guests
-      // keep the direct-Anthropic path so the free 5-scan flow still works
-      // without an account.
-      final authed = ref.read(isAuthenticatedProvider);
-      final MealAnalysisResult result;
-      if (authed) {
-        result = await ref
-            .read(geminiAiServiceProvider)
-            .analyzeMeal(prepared.base64, languageCode: languageCode);
-      } else {
-        final r = await ref
-            .read(anthropicAiServiceProvider)
-            .analyzeMealFromBase64(prepared.base64, languageCode: languageCode);
-        if (r == null) throw Exception('AI returned empty meal result');
-        result = r;
-      }
+      // Everyone — guests included — now goes through the server-side
+      // OpenRouter proxy (cheap model, key never on the client). The device
+      // hash lets the edge function rate-limit anon (guest) callers without a
+      // user JWT. (Barcode OCR stays on direct Claude; that's untouched.)
+      final deviceHash = await ref.read(deviceIdServiceProvider).deviceHash();
+      final result = await ref
+          .read(geminiAiServiceProvider)
+          .analyzeMeal(
+            prepared.base64,
+            languageCode: languageCode,
+            deviceHash: deviceHash,
+          );
       if (!mounted) return;
       setState(() {
         _result = result;
@@ -137,19 +133,6 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         _serviceUnavailable = true;
         // Proxy maps OpenRouter out-of-credit/rate-limit to HTTP 429.
         _quotaExhausted = e.statusCode == 429;
-        _error = e.toString();
-        _loading = false;
-      });
-    } on AnthropicServiceException catch (e, st) {
-      debugPrint('[FoodResult] Claude service unavailable: $e');
-      // Surface the real Anthropic error (status + message, e.g. "credit
-      // balance too low") to Sentry so the root cause is diagnosable without
-      // reproducing it by hand.
-      unawaited(Sentry.captureException(e, stackTrace: st));
-      if (!mounted) return;
-      setState(() {
-        _serviceUnavailable = true;
-        _quotaExhausted = e.isQuota;
         _error = e.toString();
         _loading = false;
       });
@@ -174,17 +157,13 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
           ? (_result!.ingredientsText ?? '')
           : text;
       final note = portionNote.isEmpty ? null : portionNote;
-      // Same provider split as _analyzeFood: proxy for signed-in users,
-      // direct Anthropic for guests.
-      final recalc = ref.read(isAuthenticatedProvider)
-          ? await ref.read(geminiAiServiceProvider).recalculateMeal(
-              ingredientsText: ingredients,
-              portionNote: note,
-            )
-          : await ref.read(anthropicAiServiceProvider).recalculateMealNutrition(
-              ingredientsText: ingredients,
-              portionNote: note,
-            );
+      // Proxy for everyone (guests included), same as _analyzeFood.
+      final deviceHash = await ref.read(deviceIdServiceProvider).deviceHash();
+      final recalc = await ref.read(geminiAiServiceProvider).recalculateMeal(
+        ingredientsText: ingredients,
+        portionNote: note,
+        deviceHash: deviceHash,
+      );
       if (!mounted) return;
       if (recalc != null) {
         setState(() {
@@ -212,12 +191,6 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             SnackBar(content: Text(context.l10n.recalcFailedNutrition)),
           );
         }
-      }
-    } on AnthropicServiceException {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.recalcFailed)),
-        );
       }
     } on GeminiServiceException {
       if (mounted) {

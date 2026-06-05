@@ -216,7 +216,103 @@ interface RequestBody {
     language_code?: string;
     ingredients_text?: string;
     portion_note?: string;
+    // Hashed device id — required for the anon-allowed OpenRouter actions so
+    // they can be rate-limited per device without a user JWT.
+    device_hash?: string;
   };
+}
+
+/// Handles the anon-allowed OpenRouter actions (cheap meal analysis + recalc).
+/// Gated by a per-device-hash rate limit instead of user auth; the real cost
+/// ceiling is the OpenRouter spend cap. Returns the proxied result or an error.
+async function handleOpenRouterAction(
+  action: "meal_analysis" | "recalc_nutrition",
+  payload: RequestBody["payload"],
+): Promise<Response> {
+  const jsonHeaders = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+  if (!OPENROUTER_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: "OpenRouter API key not configured" }),
+      { status: 500, headers: jsonHeaders },
+    );
+  }
+
+  const deviceHash = payload.device_hash;
+  if (!deviceHash || deviceHash.length < 16) {
+    return new Response(JSON.stringify({ error: "Missing device_hash" }), {
+      status: 400,
+      headers: jsonHeaders,
+    });
+  }
+  if (!checkRateLimit(`dev:${deviceHash}`)) {
+    return new Response(
+      JSON.stringify({ error: "Rate limit exceeded. Try again later." }),
+      { status: 429, headers: jsonHeaders },
+    );
+  }
+
+  let messages: unknown[];
+  let maxTokens: number;
+  if (action === "meal_analysis") {
+    if (!payload.image_base64) {
+      return new Response(JSON.stringify({ error: "Missing image" }), {
+        status: 400,
+        headers: jsonHeaders,
+      });
+    }
+    messages = [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: mealAnalysisPrompt(payload.language_code) },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:image/jpeg;base64,${payload.image_base64}`,
+            },
+          },
+        ],
+      },
+    ];
+    maxTokens = 1000;
+  } else {
+    if (!payload.ingredients_text) {
+      return new Response(
+        JSON.stringify({ error: "Missing ingredients_text" }),
+        { status: 400, headers: jsonHeaders },
+      );
+    }
+    messages = [
+      {
+        role: "user",
+        content: recalcNutritionPrompt(
+          payload.ingredients_text,
+          payload.portion_note,
+        ),
+      },
+    ];
+    maxTokens = 700;
+  }
+
+  const or = await callOpenRouter(messages, maxTokens);
+  if (!or.ok || !or.text) {
+    console.error(
+      `[openrouter ${action}] model=${OPENROUTER_MEAL_MODEL} ` +
+        `status=${or.status} body=${or.errBody}`,
+    );
+    const clientStatus = or.status === 402 || or.status === 429 ? 429 : 502;
+    return new Response(
+      JSON.stringify({ error: "AI service error", openrouter_status: or.status }),
+      { status: clientStatus, headers: jsonHeaders },
+    );
+  }
+  return new Response(JSON.stringify({ result: or.text, action }), {
+    status: 200,
+    headers: jsonHeaders,
+  });
 }
 
 function checkRateLimit(userId: string): boolean {
@@ -519,6 +615,24 @@ serve(async (req: Request) => {
       });
     }
 
+    // Parse early so anon-allowed actions route before the user-auth checks.
+    const body: RequestBody = await req.json();
+    const { action, payload } = body;
+    if (!action || !payload) {
+      return new Response(
+        JSON.stringify({ error: "Missing action or payload" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Public (anon-allowed) cheap meal analysis + recalc. Guests have no user
+    // JWT, so these are gated by a per-device-hash rate limit (+ the OpenRouter
+    // spend cap) instead of user auth. The OCR/Gemini actions below still
+    // require a signed-in user.
+    if (action === "meal_analysis" || action === "recalc_nutrition") {
+      return await handleOpenRouterAction(action, payload);
+    }
+
     // Reject when the caller is sending the anon key instead of a user JWT.
     // We compare the raw bearer token against the project's anon key so we
     // can return a precise message ("you're not signed in") instead of the
@@ -575,106 +689,9 @@ serve(async (req: Request) => {
       );
     }
 
-    // Parse request
-    const body: RequestBody = await req.json();
-    const { action, payload } = body;
-
-    if (!action || !payload) {
-      return new Response(
-        JSON.stringify({ error: "Missing action or payload" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    // ── OpenRouter-backed actions (cheap meal analysis + recalc) ──────
-    // Routed here for signed-in users; the key stays server-side. Branch
-    // before the Gemini key guard so these don't depend on GEMINI_API_KEY.
-    if (action === "meal_analysis" || action === "recalc_nutrition") {
-      if (!OPENROUTER_API_KEY) {
-        return new Response(
-          JSON.stringify({ error: "OpenRouter API key not configured" }),
-          { status: 500, headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      let messages: unknown[];
-      let maxTokens: number;
-      if (action === "meal_analysis") {
-        if (!payload.image_base64) {
-          return new Response(JSON.stringify({ error: "Missing image" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          });
-        }
-        messages = [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: mealAnalysisPrompt(payload.language_code) },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${payload.image_base64}`,
-                },
-              },
-            ],
-          },
-        ];
-        maxTokens = 1000;
-      } else {
-        if (!payload.ingredients_text) {
-          return new Response(
-            JSON.stringify({ error: "Missing ingredients_text" }),
-            { status: 400, headers: { "Content-Type": "application/json" } }
-          );
-        }
-        messages = [
-          {
-            role: "user",
-            content: recalcNutritionPrompt(
-              payload.ingredients_text,
-              payload.portion_note
-            ),
-          },
-        ];
-        maxTokens = 700;
-      }
-
-      const or = await callOpenRouter(messages, maxTokens);
-      if (!or.ok || !or.text) {
-        console.error(
-          `[openrouter ${action}] model=${OPENROUTER_MEAL_MODEL} ` +
-            `status=${or.status} body=${or.errBody}`
-        );
-        // 402 (out of credit) / 429 (rate limited) → tell the client it's a
-        // quota condition (429) so it shows the right message; else 502.
-        const clientStatus =
-          or.status === 402 || or.status === 429 ? 429 : 502;
-        return new Response(
-          JSON.stringify({
-            error: "AI service error",
-            openrouter_status: or.status,
-          }),
-          {
-            status: clientStatus,
-            headers: {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*",
-            },
-          }
-        );
-      }
-      return new Response(JSON.stringify({ result: or.text, action }), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
-    }
+    // `action` + `payload` were parsed and the public OpenRouter actions
+    // already handled above (before user auth). Everything below requires a
+    // signed-in user and goes to Gemini.
 
     // Validate API key
     if (!GEMINI_API_KEY) {
