@@ -119,6 +119,19 @@ Alerjenler: Gluten, fındık, süt.
       expect(result.ingredientsText, isNull);
     });
 
+    test('folds percentage / over-scaled confidence into 0..1', () {
+      // gpt-4.1-nano returned confidence as 70 (a percent), which the UI then
+      // rendered as "%7000". The parser must fold any scale back to 0..1.
+      double conf(String c) => AnthropicAiService.parseMealAnalysisResponseText(
+        '{"food_name":"x","confidence":$c}',
+      )!.confidence;
+
+      expect(conf('0.7'), 0.7); // already 0..1
+      expect(conf('70'), closeTo(0.7, 1e-9)); // 0..100 percent
+      expect(conf('7500'), closeTo(0.75, 1e-9)); // double-percent
+      expect(conf('100'), 1.0); // clamps
+    });
+
     test(
       'normalizes oversized visible portions to the 350g personal ceiling',
       () {

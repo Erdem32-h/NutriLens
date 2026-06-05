@@ -98,6 +98,7 @@ Sert kurallar:
 - portion_grams: bir kişinin yediği toplam gramaj.
 - nutrition: o porsiyonun TOPLAM besin değerleri (100 g için değil).
 - İçindekileri (${ln}) düz metin olarak yaz.
+- confidence: 0.0 ile 1.0 ARASINDA ondalık sayı (örn. 0.75). Yüzde (75) DEĞİL.
 - Belirsizse yine en iyi tahmini yap, confidence düşük olur.
 - Bulamadığın besin değerlerini 0 döndür.
 - Sadece JSON döndür, açıklama veya markdown yazma.

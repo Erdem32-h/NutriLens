@@ -441,7 +441,7 @@ class AnthropicAiService {
           fiber: _scaledNumber(nutrition['fiber'], nutritionScale),
           proteins: _scaledNumber(nutrition['protein'], nutritionScale),
         ),
-        confidence: _number(json['confidence']),
+        confidence: _normalizeConfidence(json['confidence']),
         description: _safeString(json['description'], ''),
         rawJson: jsonStr,
       );
@@ -449,6 +449,18 @@ class AnthropicAiService {
       debugPrint('[AnthropicAI] meal JSON parse failed: $e');
       return null;
     }
+  }
+
+  /// Fold a model's confidence to the 0.0–1.0 range the UI expects.
+  /// Models are inconsistent: some return 0–1 (0.75), others a percentage
+  /// (75), and the occasional double-percent (7500). Without this the badge
+  /// showed values like "%7000". Each `/100` step undoes one percent scaling;
+  /// the result is clamped to [0, 1].
+  static double _normalizeConfidence(dynamic value) {
+    var c = _number(value);
+    if (c > 1.0) c = c / 100.0;
+    if (c > 1.0) c = c / 100.0;
+    return c.clamp(0.0, 1.0);
   }
 
   static String? _firstTextBlock(Map<String, dynamic>? response) {
@@ -728,6 +740,7 @@ Sert kurallar:
 - `portion_grams`: bir kişinin yediği toplam gramaj.
 - `nutrition`: o porsiyonun TOPLAM besin değerleri (100 g için değil).
 - İçindekileri ($languageName) düz metin olarak yaz.
+- `confidence`: 0.0 ile 1.0 ARASINDA ondalık sayı (örn. 0.75). Yüzde (75) DEĞİL.
 - Belirsizse yine en iyi tahmini yap, `confidence` düşük olur.
 - Bulamadığın besin değerlerini 0 döndür.
 - Sadece JSON döndür, açıklama veya markdown yazma.
