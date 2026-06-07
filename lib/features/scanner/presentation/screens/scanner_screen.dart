@@ -64,6 +64,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   String? _lastBarcode;
   bool _isNavigating = false;
 
+  /// Guards [_restartBarcodeScanner] against overlapping restarts (e.g. a
+  /// route-return and an app-resume firing back to back).
+  bool _restarting = false;
+
   /// 0 = Barcode mode, 1 = AI Analysis mode.
   /// Default = AI analysis: most users open the scanner to log a meal,
   /// barcode scanning is the secondary flow.
@@ -163,14 +167,22 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     final ai = _aiCamera;
     _aiCamera = null;
     super.dispose();
-    if (ai != null) await ai.dispose();
-    await _controller.dispose();
+    // try/catch: a HAL-cycle ([_restartBarcodeScanner]) may be mid-flight
+    // when the screen is torn down, so guard against disposing twice.
+    if (ai != null) {
+      try {
+        await ai.dispose();
+      } catch (_) {}
+    }
+    try {
+      await _controller.dispose();
+    } catch (_) {}
   }
 
   /// Boot the native camera for AI mode. Picks the back camera, lowest
   /// reasonable resolution that still works for meal analysis. Audio
   /// is disabled — we never record video here, just take stills.
-  Future<void> _initAiCamera() async {
+  Future<void> _initAiCamera({int attempt = 0}) async {
     if (_aiCamera != null) return; // already alive
     try {
       final cameras = await availableCameras();
@@ -195,9 +207,20 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       }
       setState(() {});
     } catch (e) {
-      debugPrint('[Scanner] AI camera init failed: $e');
+      debugPrint('[Scanner] AI camera init failed (attempt $attempt): $e');
       _aiCamera = null;
       _aiCameraInit = null;
+      // The camera may still be held by a client that's mid-release (e.g.
+      // we returned to the scanner the instant the previous controller was
+      // torn down). Back off briefly and retry so a transient "camera busy"
+      // doesn't leave a permanent black preview that only an app restart
+      // clears.
+      if (mounted && _scanMode == 1 && attempt < 2) {
+        await Future<void>.delayed(const Duration(milliseconds: 350));
+        if (mounted && _scanMode == 1 && _aiCamera == null) {
+          await _initAiCamera(attempt: attempt + 1);
+        }
+      }
     }
   }
 
@@ -224,14 +247,51 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
   /// Tear down the barcode subscription and stop the camera.
   ///
-  /// This is the hot path for battery savings: when the app is backgrounded
-  /// or the user switches to AI mode / navigates to a product detail, we
-  /// release the camera so it isn't streaming frames into a decoder whose
-  /// output we're discarding anyway.
+  /// Releases the camera while the scanner is covered (product detail) or
+  /// the app is backgrounded. Pair the *return* with [_restartBarcodeScanner]
+  /// rather than a bare [_startScanning]: re-acquiring the camera on the
+  /// same controller after a stop() is unreliable on many devices.
   void _stopScanning() {
     unawaited(_subscription?.cancel());
     _subscription = null;
     unawaited(_controller.stop());
+  }
+
+  /// Revive the barcode preview when returning to the scanner (or resuming
+  /// the app) by forcing a full camera HAL reset.
+  ///
+  /// Root cause (reproduced on Samsung One UI): mobile_scanner and the
+  /// `camera` plugin both bind to CameraX's singleton ProcessCameraProvider.
+  /// A mobile_scanner-only stop()→start() — even with a brand-new controller
+  /// — does NOT make CameraX rebind, so the preview comes back black. The
+  /// ONLY thing that revives it is the `camera` plugin opening and closing
+  /// the camera, which forces CameraX to unbind/rebind the session. That's
+  /// exactly why the user's manual workaround (toggle to AI mode and back)
+  /// works. This replicates that toggle in code: stop mobile_scanner → boot
+  /// + dispose the `camera` plugin (the HAL cycle) → start mobile_scanner.
+  Future<void> _restartBarcodeScanner() async {
+    if (_restarting || !mounted) return;
+    _restarting = true;
+    try {
+      await _subscription?.cancel();
+      _subscription = null;
+      await _controller.stop();
+
+      // Cycle the `camera` plugin to force CameraX to rebind — same effect
+      // as the AI↔barcode toggle. _initAiCamera/_disposeAiCamera are the
+      // exact calls that toggle makes, so behaviour is identical.
+      await _initAiCamera();
+      await _disposeAiCamera();
+      if (!mounted) return;
+
+      _subscription = _controller.barcodes.listen(_handleBarcode);
+      await _controller.start();
+      if (mounted) setState(() {});
+    } catch (e) {
+      debugPrint('[Scanner] barcode restart failed: $e');
+    } finally {
+      _restarting = false;
+    }
   }
 
   @override
@@ -245,7 +305,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       case AppLifecycleState.resumed:
         if (!_isNavigating) {
           if (_scanMode == 0) {
-            _startScanning();
+            // Background did a full stop(); rebuild a fresh controller
+            // rather than restart this one (same unreliable round-trip).
+            unawaited(_restartBarcodeScanner());
           } else {
             _initAiCamera();
           }
@@ -338,27 +400,17 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     HapticFeedback.mediumImpact();
 
     debugPrint('[Scanner] navigating to /product/$value');
-    // Release the camera while the product detail is on top — the scanner
-    // route is still mounted underneath but the preview + decoder would
-    // otherwise keep streaming frames we can never see.
+    // Release the camera while the product detail covers the scanner (the
+    // scanner route stays mounted underneath). On return we rebuild the
+    // controller from scratch instead of restarting this one — a
+    // same-instance stop()→start() leaves the preview frozen/black or throws
+    // on many devices ("won't scan a second time until app restart").
     _stopScanning();
     context.push('/product/$value').then((_) async {
       if (!mounted) return;
-      // The native camera handle takes a beat to release after stop(); on
-      // some Android devices a back-to-back stop()→start() leaves the
-      // preview surface in a black state. A short delay lets the
-      // underlying CameraX session fully tear down before we re-open it,
-      // and a forced setState afterwards repaints the preview widget.
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-      if (!mounted) return;
-      setState(() => _isNavigating = false);
+      _isNavigating = false;
       if (_scanMode == 0) {
-        _startScanning();
-        // Second-pass repaint once start() has returned. Some devices
-        // need this on the next frame for the preview surface to attach.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) setState(() {});
-        });
+        await _restartBarcodeScanner();
       }
     });
   }
@@ -752,7 +804,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   Widget _buildCameraError(BuildContext context, MobileScannerException error) {
     final l10n = context.l10n;
 
-    return Center(
+    // Only an actual permission denial should send the user to settings.
+    // Other errors (e.g. the camera failed to re-acquire after returning to
+    // the scanner) are transient — show a tappable retry that rebuilds the
+    // controller instead of the misleading "permission denied" message.
+    final isPermissionDenied =
+        error.errorCode == MobileScannerErrorCode.permissionDenied;
+
+    final view = Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -767,29 +826,41 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                 border: Border.all(color: context.colors.border),
               ),
               child: Icon(
-                Icons.no_photography_outlined,
+                isPermissionDenied
+                    ? Icons.no_photography_outlined
+                    : Icons.refresh_rounded,
                 size: 44,
                 color: context.colors.textMuted,
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              l10n.cameraAccessDenied,
+              isPermissionDenied ? l10n.cameraAccessDenied : l10n.tryAgain,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: context.colors.textPrimary,
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.enableCameraPermission,
-              style: TextStyle(fontSize: 14, color: context.colors.textMuted),
               textAlign: TextAlign.center,
             ),
+            if (isPermissionDenied) ...[
+              const SizedBox(height: 8),
+              Text(
+                l10n.enableCameraPermission,
+                style: TextStyle(fontSize: 14, color: context.colors.textMuted),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ],
         ),
       ),
+    );
+
+    if (isPermissionDenied) return view;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => unawaited(_restartBarcodeScanner()),
+      child: view,
     );
   }
 }
