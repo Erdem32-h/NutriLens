@@ -81,7 +81,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   Future<void>? _aiCameraInit;
   bool _capturing = false;
 
-
   @override
   void initState() {
     super.initState();
@@ -96,7 +95,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     }
     // Reconcile the guest badge/counter with the server's device-keyed total
     // so a cache/data clear that reset the local counter to 0 gets corrected.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _reconcileGuestBudget());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _reconcileGuestBudget(),
+    );
   }
 
   /// Pulls the authoritative guest scan count from the server (device-hash
@@ -516,10 +517,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               top: MediaQuery.of(context).padding.top + 12,
               right: 16,
               child: _GuestScanBadge(
-                remaining: ((GuestScanCounter.lifetimeLimit -
-                            ref.watch(guestScanCounterProvider))
-                        .clamp(0, GuestScanCounter.lifetimeLimit))
-                    .toInt(),
+                remaining:
+                    ((GuestScanCounter.lifetimeLimit -
+                                ref.watch(guestScanCounterProvider))
+                            .clamp(0, GuestScanCounter.lifetimeLimit))
+                        .toInt(),
               ),
             ),
 
@@ -676,40 +678,51 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                         ),
                       ),
 
-                      // Flash toggle
-                      ValueListenableBuilder<MobileScannerState>(
-                        valueListenable: _controller,
-                        builder: (context, state, child) {
-                          final isOn = state.torchState == TorchState.on;
-                          return GestureDetector(
-                            onTap: () => _controller.toggleTorch(),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isOn
-                                    ? colors.primary.withValues(alpha: 0.25)
-                                    : Colors.black.withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.circular(50),
-                                border: Border.all(
+                      // Flash toggle — barcode mode only. The torch belongs to
+                      // the mobile_scanner controller; in AI mode that
+                      // controller isn't running, so the button is hidden
+                      // instead of being a no-op that crashed with
+                      // controllerUninitialized (Sentry NUTRILENS-2).
+                      if (_scanMode == 0)
+                        ValueListenableBuilder<MobileScannerState>(
+                          valueListenable: _controller,
+                          builder: (context, state, child) {
+                            final isOn = state.torchState == TorchState.on;
+                            return GestureDetector(
+                              // Guard the brief windows where the controller
+                              // isn't initialized yet (initial boot, and the
+                              // HAL-cycle restart in _restartBarcodeScanner) —
+                              // toggleTorch() throws otherwise.
+                              onTap: state.isInitialized
+                                  ? () => _controller.toggleTorch()
+                                  : null,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
                                   color: isOn
-                                      ? colors.primary.withValues(alpha: 0.6)
-                                      : Colors.white.withValues(alpha: 0.15),
+                                      ? colors.primary.withValues(alpha: 0.25)
+                                      : Colors.black.withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(50),
+                                  border: Border.all(
+                                    color: isOn
+                                        ? colors.primary.withValues(alpha: 0.6)
+                                        : Colors.white.withValues(alpha: 0.15),
+                                  ),
+                                ),
+                                child: Icon(
+                                  isOn
+                                      ? Icons.flash_on_rounded
+                                      : Icons.flash_off_rounded,
+                                  color: isOn ? colors.primary : Colors.white,
+                                  size: 20,
                                 ),
                               ),
-                              child: Icon(
-                                isOn
-                                    ? Icons.flash_on_rounded
-                                    : Icons.flash_off_rounded,
-                                color: isOn ? colors.primary : Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                            );
+                          },
+                        ),
                     ],
                   ),
                 ),
