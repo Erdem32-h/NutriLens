@@ -27,7 +27,7 @@
 <body>
 
 <h1>Gizlilik Politikası</h1>
-<p class="meta">Son güncelleme: 14 Mayıs 2026 · <a href="#en">English version below</a></p>
+<p class="meta">Son güncelleme: 7 Haziran 2026 · <a href="#en">English version below</a></p>
 
 <nav class="toc">
   <strong>İçindekiler</strong>
@@ -93,6 +93,11 @@
     <td>Evet (abonelik takibi için)</td>
   </tr>
   <tr>
+    <td>Hash'li cihaz tanımlayıcısı (ANDROID_ID / IDFV'nin SHA-256 özeti)</td>
+    <td>İşletim sistemi — yalnızca geri döndürülemez özet (hash) sunucumuza gönderilir, ham değer cihazdan çıkmaz</td>
+    <td>Evet (misafir ücretsiz tarama limitini ve kötüye kullanımı önlemek için)</td>
+  </tr>
+  <tr>
     <td>Çökme kayıtları, performans verileri</td>
     <td>Otomatik (anonim)</td>
     <td>Evet</td>
@@ -105,6 +110,7 @@
   <li>Kişisel tarama geçmişi, favoriler ve filtre tercihlerinizi cihazlar arası senkronize etmek</li>
   <li>Fotoğraflarınızı AI ile analiz ederek HP Score, içerik listesi ve besin değerleri üretmek</li>
   <li>Premium abonelik haklarını yönetmek</li>
+  <li>Misafir (hesapsız) kullanımda ücretsiz tarama hakkını cihaz başına sınırlamak ve kötüye kullanımı önlemek — cihaz tanımlayıcısının geri döndürülemez hash'i ile; çapraz-uygulama takibi için kullanılmaz</li>
   <li>Reklam göstermek (yalnız ücretsiz kullanıcılarda)</li>
   <li>Hata tespiti, uygulama performansını iyileştirme</li>
 </ul>
@@ -187,7 +193,7 @@
 <hr class="lang-divider" id="en">
 
 <h1>Privacy Policy</h1>
-<p class="meta">Last updated: 14 May 2026 · <a href="#">Türkçe versiyonu yukarıda</a></p>
+<p class="meta">Last updated: 7 June 2026 · <a href="#">Türkçe versiyonu yukarıda</a></p>
 
 <p>NutriLens (“we”) respects user privacy. This policy describes what data we collect when you use the app, why we process it, and your rights.</p>
 
@@ -202,6 +208,7 @@
   <tr><td>Ingredient/nutrition label photos (transient)</td><td>Camera</td><td>No</td></tr>
   <tr><td>Subscription status, purchase history</td><td>App Store / Google Play</td><td>Premium only</td></tr>
   <tr><td>Anonymous device identifier</td><td>OS-provided</td><td>Yes (subscription tracking)</td></tr>
+  <tr><td>Hashed device identifier (SHA-256 of ANDROID_ID / IDFV)</td><td>OS-provided — only the irreversible hash is sent to our server; the raw value never leaves the device</td><td>Yes (to enforce the guest free-scan limit and prevent abuse)</td></tr>
   <tr><td>Crash logs, performance data</td><td>Automatic (anonymous)</td><td>Yes</td></tr>
 </table>
 
@@ -211,6 +218,7 @@
   <li>Cross-device sync of personal scan history, favorites, filter preferences</li>
   <li>Photo analysis (via AI) to produce HP Score, ingredient list, nutrition values</li>
   <li>Premium subscription entitlement management</li>
+  <li>Enforcing the guest (no-account) free-scan limit per device and preventing abuse — using an irreversible hash of the device identifier; not used for cross-app tracking</li>
   <li>Ad serving (free users only)</li>
   <li>Crash diagnostics, performance improvement</li>
 </ul>
