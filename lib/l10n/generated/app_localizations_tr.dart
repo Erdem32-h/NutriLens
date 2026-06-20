@@ -631,6 +631,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bazı bilgiler eksik. Lütfen zorunlu alanları tamamlayın.';
 
   @override
+  String get noHealthierAlternative =>
+      'Bu kategoride daha sağlıklı bir alternatif bulunamadı.';
+
+  @override
+  String get category => 'Kategori';
+
+  @override
   String get saveAndView => 'Kaydet ve Görüntüle';
 
   @override
@@ -870,9 +877,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get description => 'Açıklama';
-
-  @override
-  String get category => 'Kategori';
 
   @override
   String get turkishCodex => 'Türk Kodeksi';
@@ -1190,4 +1194,8 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get aiQuotaExhausted =>
       'AI analizi yoğunluk nedeniyle geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.';
+
+  @override
+  String get emailAlreadyRegistered =>
+      'Bu e-posta zaten kayıtlı — giriş yapmayı veya \'Şifremi unuttum\'u deneyin.';
 }

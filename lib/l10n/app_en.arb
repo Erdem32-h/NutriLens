@@ -211,6 +211,8 @@
   "fieldRequired": "This field is required",
   "newProductHint": "This product is not in our database yet. Fill in the details to add it!",
   "completeProductInfo": "Some information is missing. Please complete the required fields.",
+  "noHealthierAlternative": "No healthier alternative found in this category.",
+  "category": "Category",
   "saveAndView": "Save & View Product",
   "invalidBarcode": "This is not a product barcode. Please scan a product barcode.",
   "ingredientsPhoto": "Ingredients Photo",
@@ -402,5 +404,6 @@
   "mealBrandHomemade": "Homemade",
   "additiveNotFound": "No information found for this additive.",
   "dietarySuitabilityNote": "Estimated from detected additives and ingredients — not a certification.",
-  "aiQuotaExhausted": "AI analysis is temporarily unavailable due to high demand. Please try again later."
+  "aiQuotaExhausted": "AI analysis is temporarily unavailable due to high demand. Please try again later.",
+  "emailAlreadyRegistered": "This email is already registered — try signing in or use 'Forgot password'."
 }

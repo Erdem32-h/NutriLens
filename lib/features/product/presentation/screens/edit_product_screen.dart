@@ -7,11 +7,11 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/constants/product_categories.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
-import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart'
-    show NutritionOcrResult;
+    show GeminiServiceException, NutritionOcrResult;
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
 import '../../domain/entities/nutriments_entity.dart';
@@ -48,6 +48,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
   File? _selectedImage;
   bool _saving = false;
+  String? _selectedCategory;
   // Track WHICH OCR target is currently scanning so only that button shows
   // its spinner. Using a single bool flagged BOTH buttons as busy and made
   // the user think the nutrition scan had auto-fired off the ingredients
@@ -95,6 +96,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
   void _populateFromProduct(ProductEntity product) {
     if (_existingProduct != null) return;
     _existingProduct = product;
+    _selectedCategory = product.category;
     _nameController.text = product.productName ?? '';
     _brandController.text = product.brands ?? '';
     _ingredientsController.text = product.ingredientsText ?? '';
@@ -194,6 +196,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
     return Form(
       key: _formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -274,6 +277,37 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
               }
               return null;
             },
+          ),
+          const SizedBox(height: 16),
+
+          // Category (required)
+          DropdownButtonFormField<String>(
+            initialValue: _selectedCategory,
+            isExpanded: true,
+            decoration: InputDecoration(
+              labelText: '${l10n.category} *',
+              prefixIcon: const Icon(Icons.category_outlined, size: 20),
+              filled: true,
+              fillColor: context.colors.surfaceCard,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(
+                  color: context.colors.border.withValues(alpha: 0.3),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(
+                  color: context.colors.border.withValues(alpha: 0.3),
+                ),
+              ),
+            ),
+            items: [
+              for (final c in ProductCategories.all)
+                DropdownMenuItem(value: c.id, child: Text(c.label)),
+            ],
+            validator: (v) => v == null ? l10n.fieldRequired : null,
+            onChanged: (v) => setState(() => _selectedCategory = v),
           ),
           const SizedBox(height: 16),
 
@@ -580,15 +614,12 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
           String? ingredientsText;
           try {
-            _setOcrStage(_OcrStage.sendingToClaude);
+            _setOcrStage(_OcrStage.sendingToAi);
             ingredientsText = await ref
-                .read(anthropicAiServiceProvider)
-                .extractIngredientsFromBase64(
-                  prepared.base64,
-                  languageCode: languageCode,
-                );
-          } on AnthropicServiceException catch (e) {
-            debugPrint('[OCR] Claude ingredients service failure: $e');
+                .read(geminiAiServiceProvider)
+                .extractIngredientsFromBase64(prepared.base64);
+          } on GeminiServiceException catch (e) {
+            debugPrint('[OCR] Gemini ingredients service failure: $e');
             if (!mounted) return;
             _showAiUnavailableWarning();
             return;
@@ -607,9 +638,21 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             _ingredientsController.text = ingredientsText!;
           });
           debugPrint(
-            '[OCR] ingredients via Claude Opus 4.7, '
+            '[OCR] ingredients via Gemini Flash, '
             'language=$languageCode, len=${ingredientsText.length}',
           );
+          if (_selectedCategory == null &&
+              _nameController.text.trim().isNotEmpty) {
+            final guess = await ref
+                .read(geminiAiServiceProvider)
+                .classifyCategory(
+                  productName: _nameController.text.trim(),
+                  ingredientsText: ingredientsText,
+                );
+            if (mounted && ProductCategories.isValid(guess)) {
+              setState(() => _selectedCategory = guess);
+            }
+          }
           _showMessage(l10n.ocrSuccess);
 
         case _OcrTarget.nutrition:
@@ -624,9 +667,9 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           try {
             _setOcrStage(_OcrStage.preparingImage);
             final prepared = await prepareOcrImage(rawBytes);
-            _setOcrStage(_OcrStage.sendingToClaude);
+            _setOcrStage(_OcrStage.sendingToAi);
             final result = await ref
-                .read(anthropicAiServiceProvider)
+                .read(geminiAiServiceProvider)
                 .extractNutritionFromBase64(prepared.base64);
             nutritionResult =
                 result ??
@@ -641,8 +684,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
                   fiber: 0,
                   protein: 0,
                 );
-          } on AnthropicServiceException catch (e) {
-            debugPrint('[OCR] Claude nutrition service failure: $e');
+          } on GeminiServiceException catch (e) {
+            debugPrint('[OCR] Gemini nutrition service failure: $e');
             if (!mounted) return;
             _showAiUnavailableWarning();
             return;
@@ -668,7 +711,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             }
           });
           debugPrint(
-            '[OCR] nutrition via Claude Opus 4.7: '
+            '[OCR] nutrition via Gemini Flash: '
             'kcal=${nutritionResult.energyKcal}, fat=${nutritionResult.fat}, '
             'carbs=${nutritionResult.carbohydrates}, '
             'protein=${nutritionResult.protein}',
@@ -698,8 +741,8 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     return switch (stage) {
       _OcrStage.preparingImage =>
         isTr ? 'Fotoğraf hazırlanıyor...' : 'Preparing photo...',
-      _OcrStage.sendingToClaude =>
-        isTr ? 'Claude ile analiz ediliyor...' : 'Analyzing with Claude...',
+      _OcrStage.sendingToAi =>
+        isTr ? 'Yapay zeka ile analiz ediliyor...' : 'Analyzing with AI...',
       _OcrStage.fillingForm =>
         isTr ? 'Sonuçlar forma yazılıyor...' : 'Filling the form...',
       null => context.l10n.ocrProcessing,
@@ -1052,8 +1095,11 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
   Future<void> _save() async {
     final l10n = context.l10n;
 
-    // Validate required fields
+    // Validate required fields. Show a message + live inline errors so an
+    // empty required field can't silently no-op the save — that silent return
+    // is what looked like a "screen reset" to users.
     if (!_formKey.currentState!.validate()) {
+      _showMessage(l10n.completeProductInfo);
       return;
     }
 
@@ -1132,6 +1178,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         nutriments: nutriments,
         categoriesTags: _existingProduct?.categoriesTags ?? const [],
         countriesTags: _existingProduct?.countriesTags ?? const [],
+        category: _selectedCategory,
         hpScore: hpResult.hpScore,
         hpChemicalLoad: hpResult.chemicalLoad,
         hpRiskFactor: hpResult.riskFactor,
@@ -1293,4 +1340,4 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
 
 enum _OcrTarget { ingredients, nutrition }
 
-enum _OcrStage { preparingImage, sendingToClaude, fillingForm }
+enum _OcrStage { preparingImage, sendingToAi, fillingForm }

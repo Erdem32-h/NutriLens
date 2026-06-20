@@ -210,12 +210,14 @@ interface RequestBody {
     | "ocr_nutrition_image"
     | "food_recognition"
     | "meal_analysis"
-    | "recalc_nutrition";
+    | "recalc_nutrition"
+    | "classify_category";
   payload: {
     text?: string;
     image_base64?: string;
     language_code?: string;
     ingredients_text?: string;
+    product_name?: string;
     portion_note?: string;
     // Hashed device id — required for the anon-allowed OpenRouter actions so
     // they can be rate-limited per device without a user JWT.
@@ -479,6 +481,35 @@ DEĞER OKUMA KURALLARI:
           responseMimeType: "application/json",
         },
       };
+
+    case "classify_category": {
+      const name = (payload.product_name ?? "").toString().slice(0, 120);
+      const ingredients = (payload.ingredients_text ?? "")
+        .toString()
+        .slice(0, 600);
+      const ids = [
+        "sut", "yogurt", "peynir", "yag", "biskuvi", "cikolata", "sekerleme",
+        "cips", "kuruyemis", "gazli_icecek", "meyve_suyu", "su", "kahve_cay",
+        "ekmek", "gevrek", "makarna", "hazir_yemek", "sos", "recel_bal",
+        "et_sarkuteri", "dondurma", "diger",
+      ].join(", ");
+      return {
+        contents: [
+          {
+            parts: [
+              {
+                text:
+                  `Bir gıda ürününü tek bir kategoriye sınıflandır.\n` +
+                  `Ürün adı: ${name}\nİçindekiler: ${ingredients}\n\n` +
+                  `SADECE şu id'lerden BİRİNİ döndür (başka hiçbir şey yazma): ${ids}.\n` +
+                  `Emin değilsen 'diger' yaz.`,
+              },
+            ],
+          },
+        ],
+        generationConfig: { temperature: 0, maxOutputTokens: 12 },
+      };
+    }
 
     case "ocr_nutrition":
       return {

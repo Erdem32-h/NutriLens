@@ -441,7 +441,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   List<Widget> _buildAlternativeTab(ProductEntity product) {
     final hpScore = product.calculatedHpScore ?? 0.0;
     final altAsync = ref.watch(
-      alternativesProvider((barcode: product.barcode, hpScore: hpScore)),
+      alternativesProvider((
+        barcode: product.barcode,
+        hpScore: hpScore,
+        category: product.category,
+      )),
     );
 
     return [
@@ -455,7 +459,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         ),
         error: (e, s) => const SizedBox.shrink(),
         data: (alts) {
-          if (alts.isEmpty) return const SizedBox.shrink();
+          if (alts.isEmpty) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+              child: Text(
+                context.l10n.noHealthierAlternative,
+                style: TextStyle(fontSize: 13, color: context.colors.textMuted),
+              ),
+            );
+          }
 
           return Padding(
             padding: const EdgeInsets.fromLTRB(24, 0, 0, 0),

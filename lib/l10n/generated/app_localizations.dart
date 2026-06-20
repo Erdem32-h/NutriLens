@@ -1304,6 +1304,18 @@ abstract class AppLocalizations {
   /// **'Bazı bilgiler eksik. Lütfen zorunlu alanları tamamlayın.'**
   String get completeProductInfo;
 
+  /// No description provided for @noHealthierAlternative.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kategoride daha sağlıklı bir alternatif bulunamadı.'**
+  String get noHealthierAlternative;
+
+  /// No description provided for @category.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kategori'**
+  String get category;
+
   /// No description provided for @saveAndView.
   ///
   /// In tr, this message translates to:
@@ -1753,12 +1765,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Açıklama'**
   String get description;
-
-  /// No description provided for @category.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kategori'**
-  String get category;
 
   /// No description provided for @turkishCodex.
   ///
@@ -2341,6 +2347,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'AI analizi yoğunluk nedeniyle geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.'**
   String get aiQuotaExhausted;
+
+  /// No description provided for @emailAlreadyRegistered.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu e-posta zaten kayıtlı — giriş yapmayı veya \'Şifremi unuttum\'u deneyin.'**
+  String get emailAlreadyRegistered;
 }
 
 class _AppLocalizationsDelegate

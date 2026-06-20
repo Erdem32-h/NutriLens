@@ -16,6 +16,7 @@ class ProductEntity extends Equatable {
   final NutrimentsEntity nutriments;
   final List<String> categoriesTags;
   final List<String> countriesTags;
+  final String? category;
   final double? hpScore;
   final double? hpChemicalLoad;
   final double? hpRiskFactor;
@@ -35,6 +36,7 @@ class ProductEntity extends Equatable {
     this.nutriments = const NutrimentsEntity(),
     this.categoriesTags = const [],
     this.countriesTags = const [],
+    this.category,
     this.hpScore,
     this.hpChemicalLoad,
     this.hpRiskFactor,
@@ -55,6 +57,7 @@ class ProductEntity extends Equatable {
     NutrimentsEntity? nutriments,
     List<String>? categoriesTags,
     List<String>? countriesTags,
+    String? category,
     double? hpScore,
     double? hpChemicalLoad,
     double? hpRiskFactor,
@@ -74,6 +77,7 @@ class ProductEntity extends Equatable {
       nutriments: nutriments ?? this.nutriments,
       categoriesTags: categoriesTags ?? this.categoriesTags,
       countriesTags: countriesTags ?? this.countriesTags,
+      category: category ?? this.category,
       hpScore: hpScore ?? this.hpScore,
       hpChemicalLoad: hpChemicalLoad ?? this.hpChemicalLoad,
       hpRiskFactor: hpRiskFactor ?? this.hpRiskFactor,
@@ -120,6 +124,7 @@ class ProductEntity extends Equatable {
     nutriments,
     categoriesTags,
     countriesTags,
+    category,
     hpScore,
     hpChemicalLoad,
     hpRiskFactor,

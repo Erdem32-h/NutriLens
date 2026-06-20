@@ -219,16 +219,17 @@ final submitCommunityProductUseCaseProvider =
 
 // --- Alternatives ---
 
-/// Returns up to 5 locally cached products with a better HP score than
-/// the product identified by [barcode]. The record is a (barcode, hpScore) pair.
+/// Up to 5 same-category community products with a strictly better HP score
+/// than the current product. Returns [] when the category is unknown.
 final alternativesProvider =
     FutureProvider.family<
       List<ProductEntity>,
-      ({String barcode, double hpScore})
+      ({String barcode, double hpScore, String? category})
     >((ref, args) async {
-      final local = ref.watch(productLocalDataSourceProvider);
-      return local.getAlternatives(
-        barcode: args.barcode,
+      final source = ref.watch(communityProductSourceProvider);
+      return source.getAlternatives(
+        category: args.category,
+        selfBarcode: args.barcode,
         currentHpScore: args.hpScore,
       );
     });

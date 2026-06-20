@@ -211,6 +211,8 @@
   "fieldRequired": "Bu alan zorunludur",
   "newProductHint": "Bu ürün veritabanımızda yok. Bilgileri doldurarak ekleyebilirsiniz!",
   "completeProductInfo": "Bazı bilgiler eksik. Lütfen zorunlu alanları tamamlayın.",
+  "noHealthierAlternative": "Bu kategoride daha sağlıklı bir alternatif bulunamadı.",
+  "category": "Kategori",
   "saveAndView": "Kaydet ve Görüntüle",
   "invalidBarcode": "Bu bir ürün barkodu değil. Lütfen bir ürün barkodu tarayın.",
   "ingredientsPhoto": "İçindekiler Fotoğrafı",
@@ -402,5 +404,6 @@
   "mealBrandHomemade": "Ev yapımı",
   "additiveNotFound": "Bu katkı maddesi hakkında bilgi bulunamadı.",
   "dietarySuitabilityNote": "Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir.",
-  "aiQuotaExhausted": "AI analizi yoğunluk nedeniyle geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."
+  "aiQuotaExhausted": "AI analizi yoğunluk nedeniyle geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+  "emailAlreadyRegistered": "Bu e-posta zaten kayıtlı — giriş yapmayı veya 'Şifremi unuttum'u deneyin."
 }

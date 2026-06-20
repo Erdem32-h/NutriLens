@@ -5,6 +5,7 @@ import 'package:openfoodfacts/openfoodfacts.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../domain/entities/nutriments_entity.dart';
 import '../../domain/entities/product_entity.dart';
+import '../mappers/category_mapper.dart';
 import 'nutriments_dto.dart';
 
 abstract final class ProductDto {
@@ -23,6 +24,7 @@ abstract final class ProductDto {
       nutriments: NutrimentsDto.fromOffNutriments(product.nutriments),
       categoriesTags: product.categoriesTags ?? const [],
       countriesTags: product.countriesTags ?? const [],
+      category: CategoryMapper.fromOffTags(product.categoriesTags ?? const []),
     );
   }
 
@@ -36,6 +38,7 @@ abstract final class ProductDto {
       productName: row['product_name']?.toString(),
       brands: row['brand']?.toString(),
       imageUrl: row['image_url']?.toString(),
+      category: row['category']?.toString(),
       ingredientsText: row['ingredients_text']?.toString(),
       additivesTags: additivesTags,
       novaGroup: _safeInt(row['nova_group']),
@@ -154,6 +157,7 @@ abstract final class ProductDto {
       nutriments: NutrimentsDto.fromJsonString(nutriments),
       categoriesTags: _jsonToList(categoriesTags),
       countriesTags: _jsonToList(countriesTags),
+      category: CategoryMapper.fromOffTags(_jsonToList(categoriesTags)),
       hpScore: hpScore,
       hpChemicalLoad: hpChemicalLoad,
       hpRiskFactor: hpRiskFactor,

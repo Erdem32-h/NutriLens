@@ -303,6 +303,27 @@ class GeminiAiService {
     return AnthropicAiService.parseRecalcResponseText(result);
   }
 
+  /// Classify a product into one canonical category id via the proxy.
+  /// Returns a trimmed lowercase id, or `null` when the service failed or
+  /// returned nothing usable (caller falls back to the manual dropdown).
+  Future<String?> classifyCategory({
+    required String productName,
+    String? ingredientsText,
+  }) async {
+    try {
+      final response = await _invoke('classify_category', {
+        'product_name': productName,
+        if (ingredientsText != null && ingredientsText.trim().isNotEmpty)
+          'ingredients_text': ingredientsText,
+      });
+      final result = (response['result'] as String?)?.trim().toLowerCase();
+      if (result == null || result.isEmpty) return null;
+      return result;
+    } on GeminiServiceException {
+      return null;
+    }
+  }
+
   /// Invoke the gemini-proxy Edge Function.
   ///
   /// Auto-recovers from a stale/expired session by refreshing the JWT once

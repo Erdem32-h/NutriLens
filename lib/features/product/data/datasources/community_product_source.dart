@@ -73,9 +73,38 @@ class CommunityProductSource implements ProductSource {
       'hp_score_version': ScoreConstants.hpScoreAlgorithmVersion,
       'updated_at': DateTime.now().toUtc().toIso8601String(),
       'source': source,
+      'category': product.category,
       'ingredients_photo_url': ingredientsPhotoUrl,
       'added_by': userId,
     }, onConflict: 'barcode');
+  }
+
+  /// Same-category products with a strictly better HP score than
+  /// [currentHpScore], best first. Empty list when [category] is null or on
+  /// any error.
+  Future<List<ProductEntity>> getAlternatives({
+    required String? category,
+    required String selfBarcode,
+    required double currentHpScore,
+    int limit = 5,
+  }) async {
+    if (category == null) return const [];
+    try {
+      final rows = await _client
+          .from('community_products')
+          .select()
+          .eq('category', category)
+          .neq('barcode', selfBarcode)
+          .gt('hp_score', currentHpScore)
+          .order('hp_score', ascending: false)
+          .limit(limit);
+      return (rows as List)
+          .map((r) => ProductDto.fromCommunityRow(r as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      _logger.w('getAlternatives failed for $selfBarcode/$category: $e');
+      return const [];
+    }
   }
 
   /// Best-effort write of an API-resolved product into community_products
@@ -127,6 +156,7 @@ class CommunityProductSource implements ProductSource {
               'hp_nutri_factor': product.hpNutriFactor,
               'hp_score_version': ScoreConstants.hpScoreAlgorithmVersion,
               'source': source,
+              'category': product.category,
               'added_by': userId,
             },
             onConflict: 'barcode',

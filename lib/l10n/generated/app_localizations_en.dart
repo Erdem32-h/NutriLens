@@ -631,6 +631,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Some information is missing. Please complete the required fields.';
 
   @override
+  String get noHealthierAlternative =>
+      'No healthier alternative found in this category.';
+
+  @override
+  String get category => 'Category';
+
+  @override
   String get saveAndView => 'Save & View Product';
 
   @override
@@ -868,9 +875,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get description => 'Description';
-
-  @override
-  String get category => 'Category';
 
   @override
   String get turkishCodex => 'Turkish Codex';
@@ -1189,4 +1193,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aiQuotaExhausted =>
       'AI analysis is temporarily unavailable due to high demand. Please try again later.';
+
+  @override
+  String get emailAlreadyRegistered =>
+      'This email is already registered — try signing in or use \'Forgot password\'.';
 }
