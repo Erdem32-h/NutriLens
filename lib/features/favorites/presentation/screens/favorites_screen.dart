@@ -32,6 +32,42 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen>
     super.dispose();
   }
 
+  bool _selectMode = false;
+  final Set<String> _selected = {};
+
+  void _toggleSelectMode() {
+    setState(() {
+      _selectMode = !_selectMode;
+      if (!_selectMode) _selected.clear();
+    });
+  }
+
+  void _onToggleSelection(String barcode) {
+    setState(() {
+      if (_selected.contains(barcode)) {
+        _selected.remove(barcode);
+      } else if (_selected.length < 2) {
+        _selected.add(barcode);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.compareMaxTwo)),
+        );
+      }
+    });
+  }
+
+  void _goCompare() {
+    if (_selected.length != 2) return;
+    final list = _selected.toList();
+    final a = list[0];
+    final b = list[1];
+    setState(() {
+      _selectMode = false;
+      _selected.clear();
+    });
+    context.push('/compare', extra: {'a': a, 'b': b});
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -42,6 +78,15 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen>
       appBar: AppBar(
         title: Text(l10n.favorites),
         backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            tooltip: l10n.compare,
+            icon: Icon(
+              _selectMode ? Icons.close : Icons.compare_arrows_rounded,
+            ),
+            onPressed: _toggleSelectMode,
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: colors.primary,
@@ -53,9 +98,37 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [_FavoritesTab(), _BlacklistTab()],
+      body: Column(
+        children: [
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _FavoritesTab(
+                  selectMode: _selectMode,
+                  selected: _selected,
+                  onToggle: _onToggleSelection,
+                ),
+                _BlacklistTab(),
+              ],
+            ),
+          ),
+          if (_selectMode)
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    icon: const Icon(Icons.compare_arrows_rounded),
+                    label: Text('${l10n.compare} (${_selected.length}/2)'),
+                    onPressed: _selected.length == 2 ? _goCompare : null,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -64,6 +137,16 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen>
 // ── Favorites Tab ─────────────────────────────────────────────────────────────
 
 class _FavoritesTab extends ConsumerWidget {
+  final bool selectMode;
+  final Set<String> selected;
+  final void Function(String barcode) onToggle;
+
+  const _FavoritesTab({
+    required this.selectMode,
+    required this.selected,
+    required this.onToggle,
+  });
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
@@ -133,7 +216,12 @@ class _FavoritesTab extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: favorites.length,
       separatorBuilder: (ctx, i) => const SizedBox(height: 8),
-      itemBuilder: (ctx, index) => _FavoriteTile(item: favorites[index]),
+      itemBuilder: (ctx, index) => _FavoriteTile(
+        item: favorites[index],
+        selectMode: selectMode,
+        isSelected: selected.contains(favorites[index].barcode),
+        onToggleSelect: onToggle,
+      ),
     );
   }
 }
@@ -202,8 +290,16 @@ class _BlacklistTab extends ConsumerWidget {
 
 class _FavoriteTile extends ConsumerWidget {
   final ScanHistoryWithProduct item;
+  final bool selectMode;
+  final bool isSelected;
+  final void Function(String barcode) onToggleSelect;
 
-  const _FavoriteTile({required this.item});
+  const _FavoriteTile({
+    required this.item,
+    this.selectMode = false,
+    this.isSelected = false,
+    required this.onToggleSelect,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -215,19 +311,36 @@ class _FavoriteTile extends ConsumerWidget {
         : (item.brands ?? item.barcode);
 
     return GestureDetector(
-      onLongPress: () => _showRemoveDialog(context, ref),
-      onTap: () => context.push('/product/${item.barcode}'),
+      onLongPress: selectMode ? null : () => _showRemoveDialog(context, ref),
+      onTap: selectMode
+          ? () => onToggleSelect(item.barcode)
+          : () => context.push('/product/${item.barcode}'),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: context.colors.surfaceCard,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: context.colors.border.withValues(alpha: 0.5),
+            color: isSelected
+                ? context.colors.primary
+                : context.colors.border.withValues(alpha: 0.5),
+            width: isSelected ? 2 : 1,
           ),
         ),
         child: Row(
           children: [
+            if (selectMode) ...[
+              Icon(
+                isSelected
+                    ? Icons.check_circle
+                    : Icons.radio_button_unchecked,
+                color: isSelected
+                    ? context.colors.primary
+                    : context.colors.textMuted,
+                size: 22,
+              ),
+              const SizedBox(width: 10),
+            ],
             // Product image or placeholder
             Container(
               width: 52,
