@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:nutrilens/core/error/exceptions.dart';
 import 'package:nutrilens/core/error/failures.dart';
 import 'package:nutrilens/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:nutrilens/features/auth/data/repositories/auth_repository_impl.dart';
@@ -127,6 +128,33 @@ void main() {
         expect(failure.message, 'Email already exists');
       }, (_) => fail('Expected Left'));
     });
+
+    test(
+      'returns AlreadyRegisteredFailure on EmailAlreadyRegisteredException',
+      () async {
+        // Supabase email-enumeration protection: repeated signup of a
+        // confirmed email returns 200 with identities == [], which the
+        // data source converts into this exception.
+        when(
+          () => mockDataSource.signUpWithEmail(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+            displayName: any(named: 'displayName'),
+          ),
+        ).thenThrow(const EmailAlreadyRegisteredException());
+
+        final result = await repository.signUpWithEmail(
+          email: 'confirmed@example.com',
+          password: 'pass',
+        );
+
+        expect(result.isLeft(), isTrue);
+        result.fold(
+          (failure) => expect(failure, isA<AlreadyRegisteredFailure>()),
+          (_) => fail('Expected Left'),
+        );
+      },
+    );
   });
 
   group('signInWithGoogle', () {

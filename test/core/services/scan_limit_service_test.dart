@@ -136,7 +136,7 @@ void main() {
         },
       );
 
-      test('returns unlimited fallback when RPC throws', () async {
+      test('returns networkBlocked fallback when RPC throws', () async {
         final mockUser = MockUser();
         when(() => mockAuth.currentUser).thenReturn(mockUser);
         when(() => mockUser.id).thenReturn('user-123');
@@ -149,9 +149,10 @@ void main() {
 
         final result = await service.checkAndIncrement();
 
-        expect(result.allowed, isTrue);
-        expect(result.isPremium, isTrue);
-        expect(result.remaining, -1);
+        expect(result.allowed, isFalse);
+        expect(result.isPremium, isFalse);
+        expect(result.remaining, 0);
+        expect(result.reason, 'network_error');
       });
     });
 

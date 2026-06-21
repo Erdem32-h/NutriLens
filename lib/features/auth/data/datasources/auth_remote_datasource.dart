@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/error/exceptions.dart';
 import '../../domain/entities/user_entity.dart';
 
 abstract interface class AuthRemoteDataSource {
@@ -57,7 +58,16 @@ final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       password: password,
       data: displayName != null ? {'display_name': displayName} : null,
     );
-    return _mapUser(response.user!);
+    final user = response.user!;
+    // Email-enumeration protection: signing up with an already-confirmed
+    // email returns 200 + an obfuscated user whose identities list is
+    // EMPTY (no confirmation mail is sent — `user_repeated_signup` in
+    // auth logs). A genuinely new user always has exactly one identity.
+    final identities = user.identities;
+    if (identities != null && identities.isEmpty) {
+      throw const EmailAlreadyRegisteredException();
+    }
+    return _mapUser(user);
   }
 
   @override

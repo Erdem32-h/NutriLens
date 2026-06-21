@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 
+import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -86,6 +87,8 @@ final class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = await action();
       return Right(user);
+    } on EmailAlreadyRegisteredException catch (e) {
+      return Left(AlreadyRegisteredFailure(e.message));
     } on AuthException catch (e) {
       return Left(AuthFailure(e.message));
     } catch (e) {

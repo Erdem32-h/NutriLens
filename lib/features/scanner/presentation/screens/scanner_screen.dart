@@ -12,6 +12,7 @@ import '../../../../core/utils/barcode_validator.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/guest_scan_counter.dart';
+import '../../../../core/services/scan_limit_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../widgets/scanner_overlay.dart';
@@ -158,6 +159,28 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       );
     }
     return true;
+  }
+
+  /// Returns true when the scan may proceed after a limit check.
+  Future<bool> _handleAuthenticatedScanLimit(ScanCheckResult scanResult) async {
+    if (scanResult.allowed) return true;
+    if (!mounted) return false;
+
+    if (scanResult.reason == 'network_error') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Bağlantı kurulamadı. Tarama limitini doğrulamak için internete bağlan.',
+          ),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+      return false;
+    }
+
+    final granted = await ScanLimitSheet.show(context);
+    return granted;
   }
 
   @override
@@ -384,13 +407,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
         localPremium: ref.read(isPremiumProvider),
       );
       if (!scanResult.allowed) {
-        if (mounted) {
-          final granted = await ScanLimitSheet.show(context);
-          if (!granted) {
-            setState(() => _isNavigating = false);
-            return;
-          }
-        } else {
+        final granted = await _handleAuthenticatedScanLimit(scanResult);
+        if (!granted) {
+          if (mounted) setState(() => _isNavigating = false);
           return;
         }
       }
@@ -441,12 +460,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
           localPremium: ref.read(isPremiumProvider),
         );
         if (!scanResult.allowed) {
-          if (mounted) {
-            final granted = await ScanLimitSheet.show(context);
-            if (!granted) return;
-          } else {
-            return;
-          }
+          if (!await _handleAuthenticatedScanLimit(scanResult)) return;
         }
       }
 

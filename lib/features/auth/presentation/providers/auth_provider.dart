@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/error/failures.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../product/presentation/providers/product_provider.dart';
@@ -52,7 +53,11 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     }
   }
 
-  Future<void> signUpWithEmail({
+  /// Returns `null` on success, or the [Failure] so the caller can
+  /// branch on its type (e.g. [AlreadyRegisteredFailure] gets a
+  /// localized message + "go to login" action instead of a generic
+  /// error snackbar).
+  Future<Failure?> signUpWithEmail({
     required String email,
     required String password,
     String? displayName,
@@ -69,6 +74,7 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
       (failure) => AsyncError(failure.message, StackTrace.current),
       (user) => AsyncData(user),
     );
+    return result.fold((failure) => failure, (_) => null);
   }
 
   Future<void> signInWithGoogle() async {

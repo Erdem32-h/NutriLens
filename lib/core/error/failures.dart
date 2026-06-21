@@ -47,3 +47,13 @@ final class RateLimitFailure extends Failure {
 final class AuthFailure extends Failure {
   const AuthFailure(super.message);
 }
+
+/// Signup attempted with an email that already has a confirmed account.
+/// Message here is an English fallback — UI layers should map this type
+/// to a localized string instead of rendering [message] directly.
+final class AlreadyRegisteredFailure extends Failure {
+  const AlreadyRegisteredFailure([
+    String message =
+        "This email is already registered — try signing in or 'Forgot password'.",
+  ]) : super(message);
+}

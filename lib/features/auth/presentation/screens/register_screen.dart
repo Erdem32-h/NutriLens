@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/error/failures.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
@@ -45,7 +46,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     final email = _emailController.text.trim();
 
-    await ref
+    final failure = await ref
         .read(authNotifierProvider.notifier)
         .signUpWithEmail(
           email: email,
@@ -54,11 +55,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         );
 
     if (!mounted) return;
-    final authState = ref.read(authNotifierProvider);
-    if (authState.hasError) {
+    if (failure is AlreadyRegisteredFailure) {
+      final l10n = context.l10n;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authState.error.toString()),
+          content: Text(l10n.emailAlreadyRegistered),
+          backgroundColor: context.colors.error,
+          duration: const Duration(seconds: 6),
+          action: SnackBarAction(
+            label: l10n.signIn,
+            textColor: Colors.white,
+            onPressed: () => context.go('/login'),
+          ),
+        ),
+      );
+      return;
+    }
+    if (failure != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(failure.message),
           backgroundColor: context.colors.error,
         ),
       );

@@ -6,30 +6,14 @@ HP Score (0-100) üretir. Türkiye pazarı odaklı.
 
 **Stack:** Flutter, Riverpod, Drift, GoRouter, fpdart, Supabase, Clean Architecture
 
-**Supabase migration kuralı (2026-10-30'dan sonra zorunlu olacak):**
-Yeni `public` schema tabloları artık otomatik Data API'ye expose
-edilmiyor. Her yeni tablo migration'ı şu üçlüyü içermeli:
-```sql
-create table public.x (...);
-grant select, insert, update, delete on public.x to authenticated;
-grant select on public.x to anon;  -- sadece public-okunabilir tablolar için
-alter table public.x enable row level security;
-create policy "..." on public.x ...;
+**HP Score (v3):**
 ```
-Eksik `GRANT` → PostgREST `42501 permission denied` döner.
-
-**HP Score (v3, `hpScoreAlgorithmVersion = 3`):**
+HP Score = 100 − (Chemical Load × 0.45) − (Risk Factor × 0.40) + (Nutri Factor × 0.15) − ingredientQualityPenalty
 ```
-HP Score = 100 − (Chemical Load × 0.45) − (Risk Factor × 0.40)
-               + (Nutri Factor × 0.15) − ingredientQualityPenalty
-```
-- Chemical Load & Risk Factor → ceza (puan düşürür); Nutri Factor → bonus.
-- Gauge eşikleri: g1≥75, g2≥55, g3≥35, g4≥18, <18→g5.
-- Kritik ingredient blacklist (palm yağ, glikoz/mısır şurubu vb.) → anında 10/100 (gauge 5).
-- NOVA şu an yalnızca Nutri Factor içinde (etkisi ±6 puan, zayıf). NOVA-omurgalı rework ertelendi → bkz. Obsidian `02-decisions-log` 2026-05.
-Katsayılar → `lib/core/constants/score_constants.dart`
+Detay → `wiki/architecture/02-hp-score.md`
 
 **Barkod zinciri:** Kendi DB → Open Food Facts → 3. parti API → OCR → Topluluk DB
+Detay → `wiki/architecture/03-barkod-zinciri.md`
 
 ---
 
@@ -37,54 +21,85 @@ Katsayılar → `lib/core/constants/score_constants.dart`
 - Teknik seviye yüksek — temel şeyleri açıklama, stratejik seviyede konuş
 - Kısa ve eyleme dönük yanıtlar ver
 - Her önerinin sonunda somut bir sonraki adım belirt
-- Yeni bir özellik veya karar öncesi: prensip → analitik → sezgi sırasını takip et
+- Yeni özellik öncesi: varsayımları yüzeye çıkar, önce sor
 
 ---
 
-## Hafıza Sistemi
+## Kodlama Prensipleri (Karpathy Guidelines)
 
-Bu projenin kalıcı hafızası Obsidian vault'unda tutulur.
+1. **Varsayım gizleme** — Belirsizlik varsa önce sor, sonra yaz.
+   Birden fazla yorum varsa hepsini sun, sessizce seçme.
+
+2. **Minimum kod** — İstenen kadar, fazlası değil.
+   Tek kullanımlık kod için soyutlama yapma.
+   200 satır yazıp 50'ye düşürebiliyorsan, düşür.
+
+3. **Cerrahi değişiklik** — Sadece istenen yere dokun.
+   Komşu kodu "iyileştirme" adına değiştirme.
+
+4. **Doğrulanabilir hedef** — Her görev için başarı kriteri tanımla.
+
+---
+
+## Hafıza Sistemi (Obsidian Vault)
 
 **Vault yolu:**
 ```
-C:\Users\m_fat\OneDrive\Belgeler\Obsidian Vault\NutriLens\context\
+C:\Users\m_fat\OneDrive\Belgeler\Obsidian Vault\NutriLens\
+```
+
+### Vault Yapısı
+```
+wiki/
+  00-project-overview.md   ← Proje özeti
+  01-tech-stack.md         ← Stack özeti
+  02-decisions-log.md      ← Kararlar
+  03-current-sprint.md     ← Aktif görevler
+  04-problems-open.md      ← Açık sorunlar
+  05-ai-handoff.md         ← AI oturum özeti
+  architecture/
+    00-sistem-mimarisi.md
+    01-veritabani-semasi.md
+    02-hp-score.md         ← HP Score detayı (GÜNCEL KAYNAK)
+    03-barkod-zinciri.md
+  features/
+    barkod-tarama.md
+    gecmis-favoriler.md
+    katki-maddesi.md
+    ogünlerim.md
+    premium.md
+    sahte-urun.md
+  release/
+    store-release-checklist.md
+raw/                       ← Ham notlar (AI'a verilmez)
+schema/
+  _schema.md               ← Vault kuralları
 ```
 
 ### Oturum başında oku:
-- `03-current-sprint.md`  → Ne üzerinde çalışıyoruz
-- `04-problems-open.md`   → Açık sorunlar
-- `05-ai-handoff.md`      → Genel bağlam
+- `wiki/03-current-sprint.md`       → Aktif görevler
+- `wiki/04-problems-open.md`        → Açık sorunlar
+- `wiki/05-ai-handoff.md`           → Genel bağlam
 
 ### Oturum boyunca güncelle:
 
 | Durum | Dosya |
 |---|---|
-| Yeni teknik/ürün kararı alındı | `02-decisions-log.md` |
-| Sprint görevi tamamlandı | `03-current-sprint.md` → checkbox işaretle |
-| Yeni sorun keşfedildi | `04-problems-open.md` → ekle |
-| Sorun çözüldü | `04-problems-open.md`'den kaldır, `02-decisions-log.md`'ye çözüm notu ekle |
-| Sprint değişti | `03-current-sprint.md` → güncelle |
+| Teknik/ürün kararı | `wiki/02-decisions-log.md` |
+| Sprint görevi tamamlandı | `wiki/03-current-sprint.md` |
+| Yeni sorun | `wiki/04-problems-open.md` |
+| Sorun çözüldü | `wiki/04-problems-open.md`'den sil + `wiki/02-decisions-log.md`'ye ekle |
+| Mimari değişti | `wiki/architecture/` altındaki ilgili dosyayı güncelle |
+| Yeni özellik tasarlandı | `wiki/features/` altına yeni dosya ekle |
 
-### Güncelleme formatı (decisions-log):
-```
-## YYYY-MM | Karar başlığı
-**Karar:** Ne yapıldı
-**Gerekçesi:** Neden yapıldı
-```
-
-### Güncelleme formatı (problems-open):
-```
-### Sorun başlığı
-**Sorun:** Ne oluyor
-**Etki:** Ne etkileniyor
-**Sonraki adım:** Ne yapılacak
-```
+### ⚠️ Önemli
+`wiki/architecture/02-hp-score.md` HP Score için **tek ve güncel kaynak.**
+`wiki/01-tech-stack.md` içindeki HP Score özeti eskimiş olabilir —
+çelişki varsa `architecture/02-hp-score.md`'yi esas al.
 
 ---
 
 ## Master Bağlam
-Geliştirici hakkında genel bağlam için:
 ```
-C:\Users\m_fat\OneDrive\Belgeler\Obsidian Vault\Proje Prensipleri\02-ai-handoff.md
+C:\Users\m_fat\OneDrive\Belgeler\Obsidian Vault\Proje Prensipleri\wiki\02-ai-handoff.md
 ```
-

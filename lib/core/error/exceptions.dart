@@ -35,6 +35,21 @@ class NotFoundException implements Exception {
   String toString() => 'NotFoundException: $message';
 }
 
+/// Thrown when a signup targets an email that already has a confirmed
+/// account. Supabase's email-enumeration protection returns 200 with an
+/// obfuscated user (`identities == []`) instead of an error, so this has
+/// to be detected client-side and surfaced explicitly.
+class EmailAlreadyRegisteredException implements Exception {
+  final String message;
+
+  const EmailAlreadyRegisteredException([
+    this.message = 'This email is already registered',
+  ]);
+
+  @override
+  String toString() => 'EmailAlreadyRegisteredException: $message';
+}
+
 class RateLimitException implements Exception {
   final String message;
 

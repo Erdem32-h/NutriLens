@@ -5,11 +5,13 @@ class ScanCheckResult {
   final bool allowed;
   final int remaining;
   final bool isPremium;
+  final String? reason;
 
   const ScanCheckResult({
     required this.allowed,
     required this.remaining,
     required this.isPremium,
+    this.reason,
   });
 
   factory ScanCheckResult.fromJson(Map<String, dynamic> json) {
@@ -17,14 +19,23 @@ class ScanCheckResult {
       allowed: json['allowed'] as bool? ?? false,
       remaining: json['remaining'] as int? ?? 0,
       isPremium: json['is_premium'] as bool? ?? false,
+      reason: json['reason'] as String?,
     );
   }
 
-  /// Premium users or fallback when server unreachable
+  /// Premium users with a known local entitlement (RevenueCat cache).
   static const unlimited = ScanCheckResult(
     allowed: true,
     remaining: -1,
     isPremium: true,
+  );
+
+  /// Server unreachable — fail closed so scan limits cannot be bypassed offline.
+  static const networkBlocked = ScanCheckResult(
+    allowed: false,
+    remaining: 0,
+    isPremium: false,
+    reason: 'network_error',
   );
 }
 
@@ -73,8 +84,30 @@ class ScanLimitService {
       return ScanCheckResult.fromJson(response as Map<String, dynamic>);
     } catch (e) {
       debugPrint('[ScanLimit] RPC error: $e');
-      // Graceful fallback: allow scan on network error
-      return ScanCheckResult.unlimited;
+      return ScanCheckResult.networkBlocked;
+    }
+  }
+
+  /// Read-only remaining budget for scanner badges (does not consume a scan).
+  Future<ScanCheckResult?> peekRemaining() async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return null;
+
+    try {
+      final response = await _client.rpc(
+        'peek_scan',
+        params: {'p_user_id': userId},
+      );
+      final json = response as Map<String, dynamic>;
+      return ScanCheckResult(
+        allowed: (json['remaining'] as int? ?? 0) > 0 ||
+            (json['is_premium'] as bool? ?? false),
+        remaining: json['remaining'] as int? ?? 0,
+        isPremium: json['is_premium'] as bool? ?? false,
+      );
+    } catch (e) {
+      debugPrint('[ScanLimit] peek RPC error: $e');
+      return null;
     }
   }
 
