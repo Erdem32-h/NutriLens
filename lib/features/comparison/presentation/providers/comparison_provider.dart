@@ -9,8 +9,13 @@ import '../../../product/presentation/providers/product_provider.dart';
 final comparisonProvider = FutureProvider.family<
     ({ProductEntity a, ProductEntity b}),
     ({String barcodeA, String barcodeB})>((ref, args) async {
-  final a = await ref.watch(productByBarcodeProvider(args.barcodeA).future);
-  final b = await ref.watch(productByBarcodeProvider(args.barcodeB).future);
+  // One-shot snapshot: read (not watch) both lookups so this comparison
+  // doesn't churn-rebuild as each product provider transitions loading→data.
+  // Both futures are kicked off before awaiting so they resolve concurrently.
+  final aFuture = ref.read(productByBarcodeProvider(args.barcodeA).future);
+  final bFuture = ref.read(productByBarcodeProvider(args.barcodeB).future);
+  final a = await aFuture;
+  final b = await bFuture;
   if (a == null || b == null) {
     throw Exception('comparison: product not resolved');
   }
