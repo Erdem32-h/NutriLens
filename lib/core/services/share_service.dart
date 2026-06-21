@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -52,14 +53,26 @@ class ShareService {
       await WidgetsBinding.instance.endOfFrame;
       await WidgetsBinding.instance.endOfFrame;
 
-      final boundary =
-          boundaryKey.currentContext!.findRenderObject()
-              as RenderRepaintBoundary;
-      final image = await boundary.toImage(pixelRatio: pixelRatio);
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      image.dispose();
+      // The hosting screen may have been popped while the capture was in
+      // flight (user taps share, then navigates away). Guard the lookup so
+      // that becomes a catchable error instead of a null-deref crash.
+      final renderObject = boundaryKey.currentContext?.findRenderObject();
+      if (renderObject is! RenderRepaintBoundary) {
+        throw StateError(
+          'share: capture target disposed before paint ($fileName)',
+        );
+      }
+
+      final image = await renderObject.toImage(pixelRatio: pixelRatio);
+      ByteData? byteData;
+      // Ensure the native image handle is freed even if PNG encoding throws.
+      try {
+        byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      } finally {
+        image.dispose();
+      }
       if (byteData == null) {
-        throw StateError('share: capture produced no bytes');
+        throw StateError('share: capture produced no bytes ($fileName)');
       }
 
       final dir = await getTemporaryDirectory();
