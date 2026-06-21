@@ -7,12 +7,14 @@ import 'package:go_router/go_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/constants/app_links.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart';
+import '../../../../core/services/share_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
@@ -26,6 +28,8 @@ import '../../../product/presentation/providers/product_provider.dart';
 import '../../../product/presentation/widgets/bento_nutrition_grid.dart';
 import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
 import '../../../product/presentation/widgets/health_score_bar.dart';
+import '../../../share/domain/share_caption.dart';
+import '../../../share/presentation/widgets/meal_share_card.dart';
 
 class FoodResultScreen extends ConsumerStatefulWidget {
   final Uint8List imageBytes;
@@ -297,6 +301,50 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     }
   }
 
+  Future<void> _shareMeal() async {
+    final result = _result;
+    if (result == null) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
+    try {
+      final image = MemoryImage(widget.imageBytes);
+      await precacheImage(image, context);
+      if (!mounted) return;
+
+      final n = result.nutriments.scaled(_portionMultiplier);
+      final cals = (n.energyKcal ?? 0).round();
+      final card = MealShareCard(
+        image: image,
+        foodName: result.foodName,
+        calories: cals,
+        protein: (n.proteins ?? 0).round(),
+        carbs: (n.carbohydrates ?? 0).round(),
+        fat: (n.fat ?? 0).round(),
+        portionGrams: (result.portionGrams * _portionMultiplier).round(),
+        footer: l10n.shareCalculatedWith,
+      );
+      final caption = ShareCaption.forMeal(
+        foodName: result.foodName,
+        calories: cals,
+        calculatedLabel: l10n.shareCalculatedWith,
+        storeUrl: AppLinks.shareStoreUrl,
+      );
+
+      await ref.read(shareServiceProvider).captureAndShare(
+        context: context,
+        card: card,
+        logicalSize: const Size(360, 360),
+        pixelRatio: 3.0,
+        fileName: 'nutrilens_meal_${DateTime.now().millisecondsSinceEpoch}.png',
+        caption: caption,
+      );
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -307,6 +355,14 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       appBar: AppBar(
         title: Text(l10n.aiAnalysisResult),
         backgroundColor: Colors.transparent,
+        actions: [
+          if (!_loading && _error == null && _result != null)
+            IconButton(
+              tooltip: l10n.share,
+              icon: const Icon(Icons.ios_share_rounded),
+              onPressed: _shareMeal,
+            ),
+        ],
       ),
       body: _loading
           ? _buildLoading(l10n, colors)
