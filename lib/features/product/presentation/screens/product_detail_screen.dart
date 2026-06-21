@@ -9,6 +9,7 @@ import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../counterfeit/presentation/widgets/counterfeit_warning_banner.dart';
 import '../../../history/presentation/providers/history_provider.dart';
+import '../../../comparison/presentation/widgets/product_picker_sheet.dart';
 import '../../../profile/presentation/providers/health_filters_provider.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../../../core/constants/score_constants.dart';
@@ -45,6 +46,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       if (!mounted) return;
       context.pushReplacement('/product/${widget.barcode}/edit');
     });
+  }
+
+  /// Pick a second product (favorites + history) and open the side-by-side
+  /// comparison screen against the current product.
+  Future<void> _startCompare(ProductEntity product) async {
+    final picked = await ProductPickerSheet.show(
+      context,
+      excludeBarcode: product.barcode,
+    );
+    if (picked == null || !mounted) return;
+    context.push('/compare', extra: {'a': product.barcode, 'b': picked});
   }
 
   @override
@@ -449,6 +461,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
 
     return [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 4),
+        child: SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            icon: const Icon(Icons.compare_arrows_rounded, size: 18),
+            label: Text(context.l10n.compare),
+            onPressed: () => _startCompare(product),
+          ),
+        ),
+      ),
       // "Did you know?" tip card — always visible
       const AlternativePlaceholder(),
       // Actual alternatives from local cache
