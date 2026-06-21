@@ -11,8 +11,8 @@
 -- After this migration deploys, every existing row touched by an INSERT
 -- or UPDATE of (ingredients_text, additives_tags, nutriments, nova_group)
 -- will re-score automatically. To force a one-shot back-fill across the
--- whole table:
---   UPDATE public.community_products SET updated_at = now();
+-- whole table (must touch a trigger column, not updated_at):
+--   UPDATE public.community_products SET ingredients_text = ingredients_text;
 
 create or replace function public.recalculate_community_product_hp_score()
 returns trigger
@@ -179,4 +179,7 @@ $$;
 
 -- One-shot back-fill of all existing rows so previously-cached gauge-2
 -- chocolate/spread entries get re-scored under v3 immediately.
-update public.community_products set updated_at = now();
+-- NOTE: the trigger is BEFORE UPDATE OF (ingredients_text, additives_tags,
+-- nutriments, nova_group), so we must touch one of those columns. A
+-- `set updated_at = now()` would NOT fire the trigger and silently no-op.
+update public.community_products set ingredients_text = ingredients_text;
