@@ -1310,6 +1310,42 @@ abstract class AppLocalizations {
   /// **'Bu kategoride daha sağlıklı bir alternatif bulunamadı.'**
   String get noHealthierAlternative;
 
+  /// No description provided for @compare.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kıyasla'**
+  String get compare;
+
+  /// No description provided for @comparePickSecond.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karşılaştırılacak ikinci ürünü seç'**
+  String get comparePickSecond;
+
+  /// No description provided for @compareMaxTwo.
+  ///
+  /// In tr, this message translates to:
+  /// **'En fazla 2 ürün seçebilirsin'**
+  String get compareMaxTwo;
+
+  /// No description provided for @comparePickerEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kıyaslanacak ürün bulunamadı'**
+  String get comparePickerEmpty;
+
+  /// No description provided for @hpScoreLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'HP Puanı'**
+  String get hpScoreLabel;
+
+  /// No description provided for @nutriScoreLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nutri-Score'**
+  String get nutriScoreLabel;
+
   /// No description provided for @category.
   ///
   /// In tr, this message translates to:
@@ -1861,12 +1897,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kötü'**
   String get gaugeBad;
-
-  /// No description provided for @hpScoreLabel.
-  ///
-  /// In tr, this message translates to:
-  /// **'HP Puanı'**
-  String get hpScoreLabel;
 
   /// No description provided for @allergenWarningTitle.
   ///

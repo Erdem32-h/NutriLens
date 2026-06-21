@@ -635,6 +635,24 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bu kategoride daha sağlıklı bir alternatif bulunamadı.';
 
   @override
+  String get compare => 'Kıyasla';
+
+  @override
+  String get comparePickSecond => 'Karşılaştırılacak ikinci ürünü seç';
+
+  @override
+  String get compareMaxTwo => 'En fazla 2 ürün seçebilirsin';
+
+  @override
+  String get comparePickerEmpty => 'Kıyaslanacak ürün bulunamadı';
+
+  @override
+  String get hpScoreLabel => 'HP Puanı';
+
+  @override
+  String get nutriScoreLabel => 'Nutri-Score';
+
+  @override
   String get category => 'Kategori';
 
   @override
@@ -926,9 +944,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get gaugeBad => 'Kötü';
-
-  @override
-  String get hpScoreLabel => 'HP Puanı';
 
   @override
   String get allergenWarningTitle => 'UYARI: Alerjen İçeriyor';

@@ -635,6 +635,24 @@ class AppLocalizationsEn extends AppLocalizations {
       'No healthier alternative found in this category.';
 
   @override
+  String get compare => 'Compare';
+
+  @override
+  String get comparePickSecond => 'Pick a second product to compare';
+
+  @override
+  String get compareMaxTwo => 'You can select at most 2 products';
+
+  @override
+  String get comparePickerEmpty => 'No products to compare';
+
+  @override
+  String get hpScoreLabel => 'HP Score';
+
+  @override
+  String get nutriScoreLabel => 'Nutri-Score';
+
+  @override
   String get category => 'Category';
 
   @override
@@ -925,9 +943,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gaugeBad => 'Bad';
-
-  @override
-  String get hpScoreLabel => 'HP Score';
 
   @override
   String get allergenWarningTitle => 'WARNING: Contains Allergen';
