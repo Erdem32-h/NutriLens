@@ -647,9 +647,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get comparePickerEmpty => 'No products to compare';
 
   @override
-  String get hpScoreLabel => 'HP Score';
-
-  @override
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
@@ -943,6 +940,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gaugeBad => 'Bad';
+
+  @override
+  String get hpScoreLabel => 'HP Score';
 
   @override
   String get allergenWarningTitle => 'WARNING: Contains Allergen';

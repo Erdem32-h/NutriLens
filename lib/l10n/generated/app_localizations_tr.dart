@@ -647,9 +647,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get comparePickerEmpty => 'Kıyaslanacak ürün bulunamadı';
 
   @override
-  String get hpScoreLabel => 'HP Puanı';
-
-  @override
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
@@ -944,6 +941,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get gaugeBad => 'Kötü';
+
+  @override
+  String get hpScoreLabel => 'HP Puanı';
 
   @override
   String get allergenWarningTitle => 'UYARI: Alerjen İçeriyor';

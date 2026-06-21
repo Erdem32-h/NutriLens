@@ -1334,12 +1334,6 @@ abstract class AppLocalizations {
   /// **'Kıyaslanacak ürün bulunamadı'**
   String get comparePickerEmpty;
 
-  /// No description provided for @hpScoreLabel.
-  ///
-  /// In tr, this message translates to:
-  /// **'HP Puanı'**
-  String get hpScoreLabel;
-
   /// No description provided for @nutriScoreLabel.
   ///
   /// In tr, this message translates to:
@@ -1897,6 +1891,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kötü'**
   String get gaugeBad;
+
+  /// No description provided for @hpScoreLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'HP Puanı'**
+  String get hpScoreLabel;
 
   /// No description provided for @allergenWarningTitle.
   ///
