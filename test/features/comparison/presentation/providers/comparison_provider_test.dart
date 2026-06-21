@@ -26,7 +26,7 @@ void main() {
       barcodeB: 'milk-b',
     ));
     // Retain the provider so it isn't disposed mid-load.
-    container.listen(provider, (_, __) {});
+    container.listen(provider, (_, _) {});
 
     final result = await container.read(provider.future);
 
