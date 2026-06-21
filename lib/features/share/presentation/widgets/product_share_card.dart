@@ -162,12 +162,16 @@ class ProductShareCard extends StatelessWidget {
         color: ShareCardPalette.brand,
       ),
       const SizedBox(width: 8),
-      Text(
-        text,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-          color: ShareCardPalette.brand,
+      Expanded(
+        child: Text(
+          text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: ShareCardPalette.brand,
+          ),
         ),
       ),
     ],
