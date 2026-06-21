@@ -650,6 +650,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
+  String get compareLoadError => 'Ürünler yüklenemedi';
+
+  @override
   String get category => 'Kategori';
 
   @override

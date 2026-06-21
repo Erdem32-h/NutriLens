@@ -217,6 +217,7 @@
   "compareMaxTwo": "En fazla 2 ürün seçebilirsin",
   "comparePickerEmpty": "Kıyaslanacak ürün bulunamadı",
   "nutriScoreLabel": "Nutri-Score",
+  "compareLoadError": "Ürünler yüklenemedi",
   "category": "Kategori",
   "saveAndView": "Kaydet ve Görüntüle",
   "invalidBarcode": "Bu bir ürün barkodu değil. Lütfen bir ürün barkodu tarayın.",

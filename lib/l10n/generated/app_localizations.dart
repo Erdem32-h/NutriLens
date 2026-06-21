@@ -1340,6 +1340,12 @@ abstract class AppLocalizations {
   /// **'Nutri-Score'**
   String get nutriScoreLabel;
 
+  /// No description provided for @compareLoadError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ürünler yüklenemedi'**
+  String get compareLoadError;
+
   /// No description provided for @category.
   ///
   /// In tr, this message translates to:

@@ -650,6 +650,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
+  String get compareLoadError => 'Couldn\'t load products';
+
+  @override
   String get category => 'Category';
 
   @override

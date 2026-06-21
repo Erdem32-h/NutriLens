@@ -217,6 +217,7 @@
   "compareMaxTwo": "You can select at most 2 products",
   "comparePickerEmpty": "No products to compare",
   "nutriScoreLabel": "Nutri-Score",
+  "compareLoadError": "Couldn't load products",
   "category": "Category",
   "saveAndView": "Save & View Product",
   "invalidBarcode": "This is not a product barcode. Please scan a product barcode.",

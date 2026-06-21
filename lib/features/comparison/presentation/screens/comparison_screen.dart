@@ -35,15 +35,18 @@ class ComparisonScreen extends ConsumerWidget {
         loading: () => Center(
           child: CircularProgressIndicator(color: context.colors.primary),
         ),
-        error: (e, s) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              l10n.saveFailed,
-              style: TextStyle(color: context.colors.textMuted),
+        error: (e, s) {
+          debugPrint('[Comparison] load error: $e');
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                l10n.compareLoadError,
+                style: TextStyle(color: context.colors.textMuted),
+              ),
             ),
-          ),
-        ),
+          );
+        },
         data: (pair) {
           final rows = comparisonMetrics(pair.a, pair.b);
           return CustomScrollView(
