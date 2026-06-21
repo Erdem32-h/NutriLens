@@ -32,6 +32,7 @@ import '../../features/profile/presentation/screens/diet_filter_screen.dart';
 import '../../features/profile/presentation/screens/oil_filter_screen.dart';
 import '../../features/profile/presentation/screens/chemical_filter_screen.dart';
 import '../../features/product/presentation/screens/additive_detail_screen.dart';
+import '../../features/comparison/presentation/screens/comparison_screen.dart';
 import 'route_names.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -282,6 +283,23 @@ GoRouter createRouter(WidgetRef ref) {
         name: RouteNames.paywall,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: '/compare',
+        name: RouteNames.compare,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final a = extra?['a'] as String?;
+          final b = extra?['b'] as String?;
+          if (a == null || b == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.goNamed(RouteNames.meals);
+            });
+            return const SizedBox.shrink();
+          }
+          return ComparisonScreen(barcodeA: a, barcodeB: b);
+        },
       ),
     ],
   );

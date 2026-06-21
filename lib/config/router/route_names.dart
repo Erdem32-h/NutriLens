@@ -22,6 +22,9 @@ abstract final class RouteNames {
   static const String manualIngredients = 'manualIngredients';
   static const String editProduct = 'editProduct';
 
+  // Comparison
+  static const String compare = 'compare';
+
   // Profile sub-screens
   static const String allergenSelection = 'allergenSelection';
   static const String dietFilter = 'dietFilter';
