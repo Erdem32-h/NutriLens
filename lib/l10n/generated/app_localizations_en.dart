@@ -635,6 +635,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'No healthier alternative found in this category.';
 
   @override
+  String get share => 'Share';
+
+  @override
+  String get shareScannedWith => 'Scanned with NutriLens';
+
+  @override
+  String get shareCalculatedWith => 'Calculated with NutriLens';
+
+  @override
+  String get shareFailed => 'Sharing failed';
+
+  @override
   String get compare => 'Compare';
 
   @override

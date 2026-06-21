@@ -1310,6 +1310,30 @@ abstract class AppLocalizations {
   /// **'Bu kategoride daha sağlıklı bir alternatif bulunamadı.'**
   String get noHealthierAlternative;
 
+  /// No description provided for @share.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaş'**
+  String get share;
+
+  /// No description provided for @shareScannedWith.
+  ///
+  /// In tr, this message translates to:
+  /// **'NutriLens ile tarandı'**
+  String get shareScannedWith;
+
+  /// No description provided for @shareCalculatedWith.
+  ///
+  /// In tr, this message translates to:
+  /// **'NutriLens ile hesaplandı'**
+  String get shareCalculatedWith;
+
+  /// No description provided for @shareFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaşım başarısız'**
+  String get shareFailed;
+
   /// No description provided for @compare.
   ///
   /// In tr, this message translates to:

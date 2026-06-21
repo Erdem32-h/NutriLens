@@ -13,6 +13,10 @@ import '../../../comparison/presentation/widgets/product_picker_sheet.dart';
 import '../../../profile/presentation/providers/health_filters_provider.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../../../core/constants/score_constants.dart';
+import '../../../../core/constants/app_links.dart';
+import '../../../../core/services/share_service.dart';
+import '../../../share/domain/share_caption.dart';
+import '../../../share/presentation/widgets/product_share_card.dart';
 import '../providers/product_provider.dart';
 import '../widgets/alternative_placeholder.dart';
 import '../widgets/bento_nutrition_grid.dart';
@@ -59,6 +63,58 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     context.push('/compare', extra: {'a': product.barcode, 'b': picked});
   }
 
+  Future<void> _shareProduct(ProductEntity product) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
+    try {
+      ImageProvider? image;
+      if (product.imageUrl != null) {
+        image = NetworkImage(product.imageUrl!);
+        // Off-screen capture can't wait on a network fetch — preload first.
+        await precacheImage(image, context);
+      }
+      if (!mounted) return;
+
+      final hp = product.calculatedHpScore;
+      final n = product.nutriments;
+      final chips = <String>[
+        if (n.sugars != null) '${l10n.sugarLabel}: ${n.sugars!.round()}g',
+        '${l10n.additives}: ${product.additivesTags.length}',
+        if (product.novaGroup != null) 'NOVA ${product.novaGroup}',
+      ];
+      final name = product.productName ?? product.barcode;
+
+      final card = ProductShareCard(
+        image: image,
+        name: name,
+        brand: product.brands ?? '',
+        hpScore: hp?.round(),
+        chips: chips.take(3).toList(),
+        footer: l10n.shareScannedWith,
+      );
+      final caption = ShareCaption.forProduct(
+        name: name,
+        hpScoreText:
+            hp == null ? null : '${l10n.hpScoreLabel} ${hp.round()}/100',
+        scannedLabel: l10n.shareScannedWith,
+        storeUrl: AppLinks.shareStoreUrl,
+      );
+
+      await ref.read(shareServiceProvider).captureAndShare(
+        context: context,
+        card: card,
+        logicalSize: const Size(360, 360),
+        pixelRatio: 3.0,
+        fileName: 'nutrilens_${product.barcode}.png',
+        caption: caption,
+      );
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final productAsync = ref.watch(productByBarcodeProvider(widget.barcode));
@@ -75,6 +131,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         backgroundColor: Colors.transparent,
         actions: productLoaded
             ? [
+                IconButton(
+                  tooltip: l10n.share,
+                  icon: const Icon(Icons.ios_share_rounded),
+                  onPressed: () => _shareProduct(productAsync.value!),
+                ),
                 // Favorite toggle
                 isFavoriteAsync.when(
                   loading: () => const SizedBox(
