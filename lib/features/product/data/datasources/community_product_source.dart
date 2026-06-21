@@ -177,14 +177,17 @@ class CommunityProductSource implements ProductSource {
     required String action,
     Map<String, dynamic>? details,
   }) async {
-    await _client.from('product_reports').insert({
+    // One report per (user, product): upsert so a repeat vote or a flip
+    // (verify <-> report) updates the existing row instead of raising a
+    // unique_violation. The count RPCs below recompute from product_reports.
+    await _client.from('product_reports').upsert({
       'product_id': productId,
       'user_id': userId,
       'action': action,
       'details': details,
-    });
+    }, onConflict: 'user_id,product_id');
 
-    // Increment verify/report count
+    // Recompute verify/report counts from product_reports
     if (action == 'verify') {
       await _client.rpc(
         'increment_verified_count',
