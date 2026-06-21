@@ -34,6 +34,7 @@ class ProductPickerSheet extends ConsumerWidget {
     final colors = context.colors;
     final favoritesAsync = ref.watch(favoritesProvider);
     final historyAsync = ref.watch(scanHistoryProvider);
+    final isLoading = favoritesAsync.isLoading || historyAsync.isLoading;
 
     // Merge favorites + history, dedupe by barcode, drop the current product.
     final List<ScanHistoryWithProduct> items = [
@@ -84,7 +85,11 @@ class ProductPickerSheet extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Expanded(
-                child: picks.isEmpty
+                child: isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(color: colors.primary),
+                      )
+                    : picks.isEmpty
                     ? Center(
                         child: Text(
                           l10n.comparePickerEmpty,
