@@ -20,9 +20,17 @@ abstract final class AdConstants {
   );
   static const _prodRewardedIos = String.fromEnvironment('ADMOB_REWARDED_IOS');
 
+  /// Ads are enabled in debug (test ads, for development) and in release ONLY
+  /// when a real AdMob unit is configured for the platform via --dart-define.
+  /// Releases must NEVER serve Google's test ad units — that violates AdMob
+  /// policy (risking account suspension) and looks broken to users. So when
+  /// production IDs are absent, ads stay off entirely rather than falling back
+  /// to test units.
   static bool get isAdMobEnabled {
     if (kDebugMode) return true;
-    if (Platform.isAndroid) return true;
+    if (Platform.isAndroid) {
+      return _prodBannerAndroid.isNotEmpty || _prodRewardedAndroid.isNotEmpty;
+    }
     return _prodAppIos.isNotEmpty &&
         (_prodBannerIos.isNotEmpty || _prodRewardedIos.isNotEmpty);
   }
@@ -31,22 +39,16 @@ abstract final class AdConstants {
     if (kDebugMode) {
       return Platform.isAndroid ? _testBannerAndroid : _testBannerIos;
     }
-    return Platform.isAndroid
-        ? (_prodBannerAndroid.isNotEmpty
-              ? _prodBannerAndroid
-              : _testBannerAndroid)
-        : (_prodBannerIos.isNotEmpty ? _prodBannerIos : _testBannerIos);
+    // Release: real unit only — no test fallback. (When unconfigured this is
+    // empty, but [isAdMobEnabled] is false then, so it's never requested.)
+    return Platform.isAndroid ? _prodBannerAndroid : _prodBannerIos;
   }
 
   static String get rewardedAdUnitId {
     if (kDebugMode) {
       return Platform.isAndroid ? _testRewardedAndroid : _testRewardedIos;
     }
-    return Platform.isAndroid
-        ? (_prodRewardedAndroid.isNotEmpty
-              ? _prodRewardedAndroid
-              : _testRewardedAndroid)
-        : (_prodRewardedIos.isNotEmpty ? _prodRewardedIos : _testRewardedIos);
+    return Platform.isAndroid ? _prodRewardedAndroid : _prodRewardedIos;
   }
 
   static const int maxBonusScansPerDay = 3;
