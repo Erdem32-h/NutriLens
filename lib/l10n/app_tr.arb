@@ -216,6 +216,8 @@
   "shareScannedWith": "NutriLens ile tarandı",
   "shareCalculatedWith": "NutriLens ile hesaplandı",
   "shareFailed": "Paylaşım başarısız",
+  "shareCompared": "NutriLens ile karşılaştırıldı",
+  "shareHealthier": "Daha sağlıklı",
   "compare": "Kıyasla",
   "comparePickSecond": "Karşılaştırılacak ikinci ürünü seç",
   "compareMaxTwo": "En fazla 2 ürün seçebilirsin",

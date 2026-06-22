@@ -647,6 +647,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get shareFailed => 'Paylaşım başarısız';
 
   @override
+  String get shareCompared => 'NutriLens ile karşılaştırıldı';
+
+  @override
+  String get shareHealthier => 'Daha sağlıklı';
+
+  @override
   String get compare => 'Kıyasla';
 
   @override

@@ -216,6 +216,8 @@
   "shareScannedWith": "Scanned with NutriLens",
   "shareCalculatedWith": "Calculated with NutriLens",
   "shareFailed": "Sharing failed",
+  "shareCompared": "Compared with NutriLens",
+  "shareHealthier": "Healthier",
   "compare": "Compare",
   "comparePickSecond": "Pick a second product to compare",
   "compareMaxTwo": "You can select at most 2 products",

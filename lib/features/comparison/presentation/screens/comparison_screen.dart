@@ -5,6 +5,10 @@ import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../product/domain/entities/product_entity.dart';
+import '../../../../core/constants/app_links.dart';
+import '../../../../core/services/share_service.dart';
+import '../../../share/domain/share_caption.dart';
+import '../../../share/presentation/widgets/comparison_share_card.dart';
 import '../../domain/product_comparison.dart';
 import '../providers/comparison_provider.dart';
 
@@ -18,6 +22,78 @@ class ComparisonScreen extends ConsumerWidget {
     required this.barcodeB,
   });
 
+  BetterSide _hpWinner(int? a, int? b) {
+    if (a == null || b == null || a == b) return BetterSide.none;
+    return a > b ? BetterSide.a : BetterSide.b;
+  }
+
+  Future<void> _share(
+    BuildContext context,
+    WidgetRef ref,
+    ({ProductEntity a, ProductEntity b}) pair,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
+    try {
+      final imageA = pair.a.imageUrl != null
+          ? NetworkImage(pair.a.imageUrl!)
+          : null;
+      final imageB = pair.b.imageUrl != null
+          ? NetworkImage(pair.b.imageUrl!)
+          : null;
+      // Preload network images so the off-screen capture paints them.
+      if (imageA != null) await precacheImage(imageA, context);
+      if (context.mounted && imageB != null) {
+        await precacheImage(imageB, context);
+      }
+      if (!context.mounted) return;
+
+      final hpA = pair.a.calculatedHpScore?.round();
+      final hpB = pair.b.calculatedHpScore?.round();
+      final better = _hpWinner(hpA, hpB);
+      final nameA = pair.a.productName ?? pair.a.barcode;
+      final nameB = pair.b.productName ?? pair.b.barcode;
+      final winnerName = switch (better) {
+        BetterSide.a => nameA,
+        BetterSide.b => nameB,
+        BetterSide.none => null,
+      };
+
+      final card = ComparisonShareCard(
+        imageA: imageA,
+        imageB: imageB,
+        nameA: nameA,
+        nameB: nameB,
+        hpA: hpA,
+        hpB: hpB,
+        better: better,
+        healthierLabel: l10n.shareHealthier,
+        footer: l10n.shareCompared,
+      );
+      final caption = ShareCaption.forComparison(
+        nameA: nameA,
+        nameB: nameB,
+        healthierName: winnerName,
+        healthierLabel: l10n.shareHealthier,
+        comparedLabel: l10n.shareCompared,
+        storeUrl: AppLinks.shareStoreUrl,
+      );
+
+      await ref.read(shareServiceProvider).captureAndShare(
+        context: context,
+        card: card,
+        logicalSize: const Size(360, 360),
+        pixelRatio: 3.0,
+        fileName: 'nutrilens_compare_${pair.a.barcode}_${pair.b.barcode}.png',
+        caption: caption,
+      );
+    } catch (e) {
+      if (context.mounted) {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
@@ -30,6 +106,14 @@ class ComparisonScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.compare),
         backgroundColor: Colors.transparent,
+        actions: [
+          if (async.asData?.value != null)
+            IconButton(
+              tooltip: l10n.share,
+              icon: const Icon(Icons.ios_share_rounded),
+              onPressed: () => _share(context, ref, async.asData!.value),
+            ),
+        ],
       ),
       body: async.when(
         loading: () => Center(

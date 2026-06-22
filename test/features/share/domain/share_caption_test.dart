@@ -43,4 +43,33 @@ void main() {
       );
     });
   });
+
+  group('ShareCaption.forComparison', () {
+    test('includes the healthier winner when one is set', () {
+      final c = ShareCaption.forComparison(
+        nameA: 'Süt A',
+        nameB: 'Süt B',
+        healthierName: 'Süt A',
+        healthierLabel: 'Daha sağlıklı',
+        comparedLabel: 'NutriLens ile karşılaştırıldı',
+        storeUrl: store,
+      );
+      expect(
+        c,
+        'Süt A vs Süt B — Daha sağlıklı: Süt A · NutriLens ile karşılaştırıldı · $store',
+      );
+    });
+
+    test('omits the winner segment when there is no clear winner', () {
+      final c = ShareCaption.forComparison(
+        nameA: 'A',
+        nameB: 'B',
+        healthierName: null,
+        healthierLabel: 'Daha sağlıklı',
+        comparedLabel: 'cmp',
+        storeUrl: store,
+      );
+      expect(c, 'A vs B · cmp · $store');
+    });
+  });
 }

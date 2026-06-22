@@ -647,6 +647,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareFailed => 'Sharing failed';
 
   @override
+  String get shareCompared => 'Compared with NutriLens';
+
+  @override
+  String get shareHealthier => 'Healthier';
+
+  @override
   String get compare => 'Compare';
 
   @override

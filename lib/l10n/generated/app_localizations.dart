@@ -1334,6 +1334,18 @@ abstract class AppLocalizations {
   /// **'Paylaşım başarısız'**
   String get shareFailed;
 
+  /// No description provided for @shareCompared.
+  ///
+  /// In tr, this message translates to:
+  /// **'NutriLens ile karşılaştırıldı'**
+  String get shareCompared;
+
+  /// No description provided for @shareHealthier.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha sağlıklı'**
+  String get shareHealthier;
+
   /// No description provided for @compare.
   ///
   /// In tr, this message translates to:
