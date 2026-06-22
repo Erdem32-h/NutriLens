@@ -1234,4 +1234,64 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get emailAlreadyRegistered =>
       'Bu e-posta zaten kayıtlı — giriş yapmayı veya \'Şifremi unuttum\'u deneyin.';
+
+  @override
+  String get verificationEmailResent => 'Yeni doğrulama maili gönderildi';
+
+  @override
+  String emailSendFailed(Object error) {
+    return 'Mail gönderilemedi: $error';
+  }
+
+  @override
+  String get emailHint => 'ornek@email.com';
+
+  @override
+  String get orSeparator => 'ya da';
+
+  @override
+  String get alreadyHaveAccount => 'Zaten hesabın var mı?';
+
+  @override
+  String get verifyYourEmail => 'Email adresini doğrula';
+
+  @override
+  String get verificationLinkPrefix => 'Doğrulama bağlantısı ';
+
+  @override
+  String get verificationLinkSuffix =>
+      ' adresine gönderildi. Bağlantıya **telefonundan** dokun, hesabın aktif olsun.';
+
+  @override
+  String get checkSpamFolder =>
+      'Spam / Gereksiz klasörünü de kontrol et. Yeni gönderici domaini olduğu için bazı sağlayıcılar ilk maili oraya atabilir.';
+
+  @override
+  String get resendEmail => 'Maili tekrar gönder';
+
+  @override
+  String get scanLimitNetworkError =>
+      'Bağlantı kurulamadı. Tarama limitini doğrulamak için internete bağlan.';
+
+  @override
+  String get editIngredientsHint => 'İçerik ekle veya düzenle...';
+
+  @override
+  String get portionNoteLabel => 'Porsiyon notu (opsiyonel)';
+
+  @override
+  String get portionNoteHint =>
+      'Örn: \"yarım porsiyon\" · \"tabağın yarısı kaldı, full hesapla\" · \"300 g yedim\"';
+
+  @override
+  String get favoritesLoadError => 'Favoriler yüklenemedi';
+
+  @override
+  String get ocrPreparingImage => 'Fotoğraf hazırlanıyor...';
+
+  @override
+  String get ocrAnalyzingWithAi => 'Yapay zeka ile analiz ediliyor...';
+
+  @override
+  String get ocrFillingForm => 'Sonuçlar forma yazılıyor...';
 }

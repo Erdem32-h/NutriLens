@@ -737,15 +737,12 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
   }
 
   String _ocrStageText(BuildContext context, _OcrStage? stage) {
-    final isTr = Localizations.localeOf(context).languageCode == 'tr';
+    final l10n = context.l10n;
     return switch (stage) {
-      _OcrStage.preparingImage =>
-        isTr ? 'Fotoğraf hazırlanıyor...' : 'Preparing photo...',
-      _OcrStage.sendingToAi =>
-        isTr ? 'Yapay zeka ile analiz ediliyor...' : 'Analyzing with AI...',
-      _OcrStage.fillingForm =>
-        isTr ? 'Sonuçlar forma yazılıyor...' : 'Filling the form...',
-      null => context.l10n.ocrProcessing,
+      _OcrStage.preparingImage => l10n.ocrPreparingImage,
+      _OcrStage.sendingToAi => l10n.ocrAnalyzingWithAi,
+      _OcrStage.fillingForm => l10n.ocrFillingForm,
+      null => l10n.ocrProcessing,
     };
   }
 

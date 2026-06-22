@@ -634,7 +634,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                     color: colors.textSecondary,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'İçerik ekle veya düzenle...',
+                    hintText: l10n.editIngredientsHint,
                     contentPadding: const EdgeInsets.all(12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -643,7 +643,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Porsiyon notu (opsiyonel)',
+                  l10n.portionNoteLabel,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
@@ -662,8 +662,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                     color: colors.textSecondary,
                   ),
                   decoration: InputDecoration(
-                    hintText:
-                        'Örn: "yarım porsiyon" · "tabağın yarısı kaldı, full hesapla" · "300 g yedim"',
+                    hintText: l10n.portionNoteHint,
                     hintStyle: TextStyle(
                       color: colors.textMuted,
                       fontSize: 12.5,

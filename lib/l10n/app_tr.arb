@@ -416,5 +416,26 @@
   "additiveNotFound": "Bu katkı maddesi hakkında bilgi bulunamadı.",
   "dietarySuitabilityNote": "Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir.",
   "aiQuotaExhausted": "AI analizi yoğunluk nedeniyle geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
-  "emailAlreadyRegistered": "Bu e-posta zaten kayıtlı — giriş yapmayı veya 'Şifremi unuttum'u deneyin."
+  "emailAlreadyRegistered": "Bu e-posta zaten kayıtlı — giriş yapmayı veya 'Şifremi unuttum'u deneyin.",
+  "verificationEmailResent": "Yeni doğrulama maili gönderildi",
+  "emailSendFailed": "Mail gönderilemedi: {error}",
+  "@emailSendFailed": {
+    "placeholders": { "error": {} }
+  },
+  "emailHint": "ornek@email.com",
+  "orSeparator": "ya da",
+  "alreadyHaveAccount": "Zaten hesabın var mı?",
+  "verifyYourEmail": "Email adresini doğrula",
+  "verificationLinkPrefix": "Doğrulama bağlantısı ",
+  "verificationLinkSuffix": " adresine gönderildi. Bağlantıya **telefonundan** dokun, hesabın aktif olsun.",
+  "checkSpamFolder": "Spam / Gereksiz klasörünü de kontrol et. Yeni gönderici domaini olduğu için bazı sağlayıcılar ilk maili oraya atabilir.",
+  "resendEmail": "Maili tekrar gönder",
+  "scanLimitNetworkError": "Bağlantı kurulamadı. Tarama limitini doğrulamak için internete bağlan.",
+  "editIngredientsHint": "İçerik ekle veya düzenle...",
+  "portionNoteLabel": "Porsiyon notu (opsiyonel)",
+  "portionNoteHint": "Örn: \"yarım porsiyon\" · \"tabağın yarısı kaldı, full hesapla\" · \"300 g yedim\"",
+  "favoritesLoadError": "Favoriler yüklenemedi",
+  "ocrPreparingImage": "Fotoğraf hazırlanıyor...",
+  "ocrAnalyzingWithAi": "Yapay zeka ile analiz ediliyor...",
+  "ocrFillingForm": "Sonuçlar forma yazılıyor..."
 }

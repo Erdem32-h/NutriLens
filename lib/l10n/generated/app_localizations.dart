@@ -2425,6 +2425,114 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bu e-posta zaten kayıtlı — giriş yapmayı veya \'Şifremi unuttum\'u deneyin.'**
   String get emailAlreadyRegistered;
+
+  /// No description provided for @verificationEmailResent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni doğrulama maili gönderildi'**
+  String get verificationEmailResent;
+
+  /// No description provided for @emailSendFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mail gönderilemedi: {error}'**
+  String emailSendFailed(Object error);
+
+  /// No description provided for @emailHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'ornek@email.com'**
+  String get emailHint;
+
+  /// No description provided for @orSeparator.
+  ///
+  /// In tr, this message translates to:
+  /// **'ya da'**
+  String get orSeparator;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zaten hesabın var mı?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @verifyYourEmail.
+  ///
+  /// In tr, this message translates to:
+  /// **'Email adresini doğrula'**
+  String get verifyYourEmail;
+
+  /// No description provided for @verificationLinkPrefix.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğrulama bağlantısı '**
+  String get verificationLinkPrefix;
+
+  /// No description provided for @verificationLinkSuffix.
+  ///
+  /// In tr, this message translates to:
+  /// **' adresine gönderildi. Bağlantıya **telefonundan** dokun, hesabın aktif olsun.'**
+  String get verificationLinkSuffix;
+
+  /// No description provided for @checkSpamFolder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Spam / Gereksiz klasörünü de kontrol et. Yeni gönderici domaini olduğu için bazı sağlayıcılar ilk maili oraya atabilir.'**
+  String get checkSpamFolder;
+
+  /// No description provided for @resendEmail.
+  ///
+  /// In tr, this message translates to:
+  /// **'Maili tekrar gönder'**
+  String get resendEmail;
+
+  /// No description provided for @scanLimitNetworkError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı kurulamadı. Tarama limitini doğrulamak için internete bağlan.'**
+  String get scanLimitNetworkError;
+
+  /// No description provided for @editIngredientsHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik ekle veya düzenle...'**
+  String get editIngredientsHint;
+
+  /// No description provided for @portionNoteLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Porsiyon notu (opsiyonel)'**
+  String get portionNoteLabel;
+
+  /// No description provided for @portionNoteHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn: \"yarım porsiyon\" · \"tabağın yarısı kaldı, full hesapla\" · \"300 g yedim\"'**
+  String get portionNoteHint;
+
+  /// No description provided for @favoritesLoadError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Favoriler yüklenemedi'**
+  String get favoritesLoadError;
+
+  /// No description provided for @ocrPreparingImage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraf hazırlanıyor...'**
+  String get ocrPreparingImage;
+
+  /// No description provided for @ocrAnalyzingWithAi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay zeka ile analiz ediliyor...'**
+  String get ocrAnalyzingWithAi;
+
+  /// No description provided for @ocrFillingForm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuçlar forma yazılıyor...'**
+  String get ocrFillingForm;
 }
 
 class _AppLocalizationsDelegate

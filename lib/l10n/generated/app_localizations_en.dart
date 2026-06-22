@@ -1233,4 +1233,65 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emailAlreadyRegistered =>
       'This email is already registered — try signing in or use \'Forgot password\'.';
+
+  @override
+  String get verificationEmailResent =>
+      'A new verification email has been sent';
+
+  @override
+  String emailSendFailed(Object error) {
+    return 'Couldn\'t send email: $error';
+  }
+
+  @override
+  String get emailHint => 'example@email.com';
+
+  @override
+  String get orSeparator => 'or';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get verifyYourEmail => 'Verify your email';
+
+  @override
+  String get verificationLinkPrefix => 'A verification link was sent to ';
+
+  @override
+  String get verificationLinkSuffix =>
+      '. Tap the link **on your phone** to activate your account.';
+
+  @override
+  String get checkSpamFolder =>
+      'Also check your Spam / Junk folder. Because the sender domain is new, some providers may route the first email there.';
+
+  @override
+  String get resendEmail => 'Resend email';
+
+  @override
+  String get scanLimitNetworkError =>
+      'Couldn\'t connect. Go online to verify your scan limit.';
+
+  @override
+  String get editIngredientsHint => 'Add or edit ingredients...';
+
+  @override
+  String get portionNoteLabel => 'Portion note (optional)';
+
+  @override
+  String get portionNoteHint =>
+      'e.g. \"half portion\" · \"half the plate is left, calculate full\" · \"I ate 300 g\"';
+
+  @override
+  String get favoritesLoadError => 'Couldn\'t load favorites';
+
+  @override
+  String get ocrPreparingImage => 'Preparing photo...';
+
+  @override
+  String get ocrAnalyzingWithAi => 'Analyzing with AI...';
+
+  @override
+  String get ocrFillingForm => 'Filling the form...';
 }

@@ -158,7 +158,7 @@ class _FavoritesTab extends ConsumerWidget {
       ),
       error: (e, s) => Center(
         child: Text(
-          'Favoriler yuklenemedi',
+          l10n.favoritesLoadError,
           style: TextStyle(color: context.colors.textMuted),
         ),
       ),

@@ -109,15 +109,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Yeni doğrulama maili gönderildi'),
-          duration: Duration(seconds: 3),
+        SnackBar(
+          content: Text(context.l10n.verificationEmailResent),
+          duration: const Duration(seconds: 3),
         ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Mail gönderilemedi: $e')),
+        SnackBar(content: Text(context.l10n.emailSendFailed(e))),
       );
     } finally {
       if (mounted) setState(() => _resending = false);
@@ -228,9 +228,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         color: context.colors.textPrimary,
                         fontFamilyFallback: const ['Roboto', 'sans-serif'],
                       ),
-                      decoration: const InputDecoration(
-                        hintText: 'Ad Soyad',
-                        prefixIcon: Icon(Icons.person_outline_rounded),
+                      decoration: InputDecoration(
+                        hintText: l10n.fullName,
+                        prefixIcon: const Icon(Icons.person_outline_rounded),
                       ),
                       validator: (v) {
                         if (v == null || v.isEmpty) return l10n.enterName;
@@ -247,9 +247,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       style: TextStyle(color: context.colors.textPrimary),
-                      decoration: const InputDecoration(
-                        hintText: 'ornek@email.com',
-                        prefixIcon: Icon(Icons.email_outlined),
+                      decoration: InputDecoration(
+                        hintText: l10n.emailHint,
+                        prefixIcon: const Icon(Icons.email_outlined),
                       ),
                       validator: (v) {
                         if (v == null || v.isEmpty) return l10n.enterEmail;
@@ -367,7 +367,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
-                            'ya da',
+                            l10n.orSeparator,
                             style: TextStyle(
                               color: context.colors.textMuted,
                               fontSize: 13,
@@ -389,7 +389,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Zaten hesabın var mı?',
+                          l10n.alreadyHaveAccount,
                           style: TextStyle(
                             color: context.colors.textMuted,
                             fontSize: 14,
@@ -398,7 +398,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         TextButton(
                           onPressed: () => context.go('/login'),
                           child: Text(
-                            'Giriş yap',
+                            l10n.signIn,
                             style: TextStyle(
                               color: context.colors.primary,
                               fontSize: 14,
@@ -449,6 +449,7 @@ class _ConfirmationSentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -479,7 +480,7 @@ class _ConfirmationSentView extends StatelessWidget {
         ),
         const SizedBox(height: 28),
         Text(
-          'Email adresini doğrula',
+          l10n.verifyYourEmail,
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w800,
@@ -496,7 +497,7 @@ class _ConfirmationSentView extends StatelessWidget {
               height: 1.5,
             ),
             children: [
-              const TextSpan(text: 'Doğrulama bağlantısı '),
+              TextSpan(text: l10n.verificationLinkPrefix),
               TextSpan(
                 text: email,
                 style: TextStyle(
@@ -504,10 +505,7 @@ class _ConfirmationSentView extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const TextSpan(
-                text:
-                    ' adresine gönderildi. Bağlantıya **telefonundan** dokun, hesabın aktif olsun.',
-              ),
+              TextSpan(text: l10n.verificationLinkSuffix),
             ],
           ),
         ),
@@ -532,7 +530,7 @@ class _ConfirmationSentView extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Spam / Gereksiz klasörünü de kontrol et. Yeni gönderici domaini olduğu için bazı sağlayıcılar ilk maili oraya atabilir.',
+                  l10n.checkSpamFolder,
                   style: TextStyle(
                     fontSize: 13,
                     color: context.colors.textMuted,
@@ -564,9 +562,9 @@ class _ConfirmationSentView extends StatelessWidget {
                       color: context.colors.primary,
                     ),
                   )
-                : const Text(
-                    'Maili tekrar gönder',
-                    style: TextStyle(
+                : Text(
+                    l10n.resendEmail,
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Colors.black,
@@ -579,7 +577,7 @@ class _ConfirmationSentView extends StatelessWidget {
           child: TextButton(
             onPressed: () => context.go('/login'),
             child: Text(
-              'Girişe dön',
+              l10n.backToLogin,
               style: TextStyle(
                 color: context.colors.textMuted,
                 fontWeight: FontWeight.w600,

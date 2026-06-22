@@ -169,9 +169,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     if (scanResult.reason == 'network_error') {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-            'Bağlantı kurulamadı. Tarama limitini doğrulamak için internete bağlan.',
-          ),
+          content: Text(context.l10n.scanLimitNetworkError),
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 4),
         ),
