@@ -24,6 +24,23 @@ final subscriptionStatusProvider = StreamProvider<SubscriptionStatus>((ref) {
   })();
 });
 
+/// Keeps RevenueCat associated with the signed-in Supabase user whenever it
+/// changes — crucially on cold-start session restore, where previously only an
+/// interactive sign-in called `logIn`. A restored session otherwise left RC
+/// anonymous, so a premium entitlement wasn't seen until a manual re-login.
+/// `logIn` is idempotent and swallows its own errors; the resulting RevenueCat
+/// customer-info update flows back through [subscriptionStatusProvider]. Kept
+/// alive by [isPremiumProvider], so it runs from app start.
+final _revenueCatUserSyncProvider = Provider<void>((ref) {
+  final service = ref.watch(subscriptionServiceProvider);
+  final userId = ref.watch(currentUserProvider)?.id;
+  if (userId != null) {
+    // Fire-and-forget: the entitlement arrives asynchronously via the
+    // customer-info listener inside subscriptionStatusProvider.
+    service.logIn(userId);
+  }
+});
+
 /// Reads `user_profiles.subscription_tier` from Supabase. RevenueCat is the
 /// primary source of truth for paying customers, but server-side admin
 /// grants (manual upgrades, comp accounts, webhook backfills) must also
@@ -53,6 +70,9 @@ final supabasePremiumProvider = FutureProvider<bool>((ref) async {
 });
 
 final isPremiumProvider = Provider<bool>((ref) {
+  // Ensure RevenueCat is logged in as the current user (covers cold-start
+  // session restore, not just interactive sign-in).
+  ref.watch(_revenueCatUserSyncProvider);
   final rcStatus = ref.watch(subscriptionStatusProvider);
   final rcPremium = rcStatus.whenOrNull(data: (s) => s.isPremium) ?? false;
   final dbPremium =
