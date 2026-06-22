@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/score_constants.dart';
@@ -110,10 +111,16 @@ final scanHistoryLocalDataSourceProvider = Provider<ScanHistoryLocalDataSource>(
   },
 );
 
-// --- History List (Supabase-primary, local fallback) ---
+// --- History List (Supabase + local Drift, merged) ---
 
-/// Fetches scan history from Supabase first, falls back to local Drift cache.
-/// Enriches Supabase results with product info from local Drift cache.
+/// Fetches scan history for the current user.
+///
+/// Authenticated: merges the Supabase list (cross-device sync) with the
+/// local Drift cache so scans that haven't synced yet — offline scans, or a
+/// transient server error — still appear instead of being masked by the
+/// remote list. Remote rows win on conflict (the (user, barcode) unique
+/// key); local-only rows are appended. Rows are enriched with product info
+/// from the local product cache.
 ///
 /// Guest mode: skip Supabase entirely (the sentinel id is meaningless
 /// server-side), read straight from local Drift where guest scans live.
@@ -124,56 +131,70 @@ final scanHistoryProvider = FutureProvider<List<ScanHistoryWithProduct>>((
   if (userId == null) return [];
   final isGuest = ref.watch(isGuestProvider);
 
-  // Try Supabase first for cross-device sync (authenticated only)
-  if (!isGuest) {
-    try {
-      final response = await Supabase.instance.client
-          .from('scan_history')
-          .select()
-          .eq('user_id', userId)
-          .order('scanned_at', ascending: false)
-          .limit(50);
-
-      final rows = response as List<dynamic>;
-      if (rows.isNotEmpty) {
-        final productLocal = ref.watch(productLocalDataSourceProvider);
-        final results = await Future.wait(
-          rows.map((row) async {
-            final map = row as Map<String, dynamic>;
-            final barcode = map['barcode'] as String;
-            // Enrich with local product cache for display info
-            final product = await productLocal.getProduct(barcode);
-            return ScanHistoryWithProduct(
-              id: map['id'] as String,
-              barcode: barcode,
-              scannedAt: DateTime.parse(map['scanned_at'] as String),
-              hpScoreAtScan: map['hp_score_at_scan'] != null
-                  ? (map['hp_score_at_scan'] as num).toDouble()
-                  : null,
-              productName: product?.productName,
-              brands: product?.brands,
-              imageUrl: product?.imageUrl,
-              ingredientsText: product?.ingredientsText,
-              currentHpScore: product?.calculatedHpScore,
-              hpScoreVersion: product?.hpScoreVersion,
-            );
-          }),
-        );
-        // Background enrichment for rows missing local product data
-        // (common after a fresh install).
-        unawaited(_enrichMissingProducts(ref, results));
-        return results;
-      }
-    } catch (_) {
-      // Supabase failed — fall back to local
-    }
-  }
-
-  // Fallback: local Drift cache (already joins with food_products)
+  // Local Drift is always read: the source for guests, and the fallback /
+  // unsynced-scan source for authenticated users.
   final ds = ref.watch(scanHistoryLocalDataSourceProvider);
   final localResults = await ds.getHistory(userId: userId);
-  unawaited(_enrichMissingProducts(ref, localResults));
-  return localResults;
+
+  if (isGuest) {
+    unawaited(_enrichMissingProducts(ref, localResults));
+    return localResults;
+  }
+
+  // Authenticated: pull the remote list for cross-device sync, then merge.
+  List<ScanHistoryWithProduct> remoteResults;
+  try {
+    final response = await Supabase.instance.client
+        .from('scan_history')
+        .select()
+        .eq('user_id', userId)
+        .order('scanned_at', ascending: false)
+        .limit(50);
+
+    final productLocal = ref.watch(productLocalDataSourceProvider);
+    remoteResults = await Future.wait(
+      (response as List<dynamic>).map((row) async {
+        final map = row as Map<String, dynamic>;
+        final barcode = map['barcode'] as String;
+        // Enrich with local product cache for display info
+        final product = await productLocal.getProduct(barcode);
+        return ScanHistoryWithProduct(
+          id: map['id'] as String,
+          barcode: barcode,
+          scannedAt: DateTime.parse(map['scanned_at'] as String),
+          hpScoreAtScan: map['hp_score_at_scan'] != null
+              ? (map['hp_score_at_scan'] as num).toDouble()
+              : null,
+          productName: product?.productName,
+          brands: product?.brands,
+          imageUrl: product?.imageUrl,
+          ingredientsText: product?.ingredientsText,
+          currentHpScore: product?.calculatedHpScore,
+          hpScoreVersion: product?.hpScoreVersion,
+        );
+      }),
+    );
+  } catch (_) {
+    // Supabase unreachable — show the local cache alone.
+    unawaited(_enrichMissingProducts(ref, localResults));
+    return localResults;
+  }
+
+  // Merge by barcode. Remote rows win (synced source of truth + richer
+  // enrichment); local-only rows (not yet synced) are appended so they
+  // stay visible instead of being masked by a non-empty remote list.
+  final byBarcode = <String, ScanHistoryWithProduct>{
+    for (final item in remoteResults) item.barcode: item,
+  };
+  for (final item in localResults) {
+    byBarcode.putIfAbsent(item.barcode, () => item);
+  }
+  final results = byBarcode.values.toList()
+    ..sort((a, b) => b.scannedAt.compareTo(a.scannedAt));
+  final limited = results.take(50).toList();
+
+  unawaited(_enrichMissingProducts(ref, limited));
+  return limited;
 });
 
 // --- Add Scan ---
@@ -207,8 +228,13 @@ Future<void> addScanToHistory(
       'scanned_at': DateTime.now().toIso8601String(),
       'hp_score_at_scan': hpScore,
     }, onConflict: 'user_id,barcode');
-  } catch (_) {
-    // History save failure is non-critical
+  } catch (e, st) {
+    // Non-critical to the scan flow (the local Drift write above already
+    // succeeded), but never swallow silently — a silent catch here hid a
+    // numeric-overflow sync failure (score 100.0 vs a numeric(4,2) column)
+    // for a long time. Log + report so the next one is visible.
+    debugPrint('[addScanToHistory] history sync failed: $e');
+    unawaited(Sentry.captureException(e, stackTrace: st));
   }
 }
 
