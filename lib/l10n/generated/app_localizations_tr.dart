@@ -1231,6 +1231,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mealBrandHomemade => 'Ev yapımı';
 
   @override
+  String get mealBrandReadyMade => 'Hazır Gıda';
+
+  @override
   String get additiveNotFound => 'Bu katkı maddesi hakkında bilgi bulunamadı.';
 
   @override

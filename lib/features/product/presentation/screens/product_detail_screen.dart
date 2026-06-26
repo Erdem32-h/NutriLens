@@ -235,6 +235,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           return _buildShimmer(context);
         },
         data: (product) {
+          // If the provider is loading new data (refreshing/refresh after save),
+          // show shimmer and don't redirect yet.
+          if (productAsync.isLoading) {
+            debugPrint(
+              '[ProductDetail] barcode=${widget.barcode} → isLoading (refreshing)',
+            );
+            return _buildShimmer(context);
+          }
+
           // Product not found anywhere -> redirect to edit (creation mode)
           if (product == null) {
             debugPrint(

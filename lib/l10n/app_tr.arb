@@ -416,6 +416,7 @@
   "mealTypeDinner": "Akşam Yemeği",
   "mealTypeSnack": "Ara Öğün",
   "mealBrandHomemade": "Ev yapımı",
+  "mealBrandReadyMade": "Hazır Gıda",
   "additiveNotFound": "Bu katkı maddesi hakkında bilgi bulunamadı.",
   "dietarySuitabilityNote": "Tespit edilen katkı ve içeriklerden tahmin edilmiştir — sertifika değildir.",
   "aiQuotaExhausted": "AI analizi yoğunluk nedeniyle geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.",

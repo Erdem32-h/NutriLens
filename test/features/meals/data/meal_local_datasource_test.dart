@@ -72,4 +72,49 @@ void main() {
 
     expect(total, 1000);
   });
+
+  test('getUnsyncedMeals returns pending rows; markSynced clears them', () async {
+    await dataSource.saveMeal(
+      meal(id: 'a', capturedAt: DateTime(2026, 4, 26, 9), kcal: 300),
+    );
+    await dataSource.saveMeal(
+      meal(id: 'b', capturedAt: DateTime(2026, 4, 26, 10), kcal: 400),
+    );
+
+    expect(
+      (await dataSource.getUnsyncedMeals('user-1')).map((m) => m.id).toSet(),
+      {'a', 'b'},
+    );
+
+    await dataSource.markSynced('a');
+
+    final pending = await dataSource.getUnsyncedMeals('user-1');
+    expect(pending.map((m) => m.id), ['b']);
+    expect((await dataSource.getMealById('a'))!.syncStatus, 'synced');
+  });
+
+  test('getMealById returns the row or null', () async {
+    await dataSource.saveMeal(
+      meal(id: 'x', capturedAt: DateTime(2026, 4, 26, 9), kcal: 300),
+    );
+    expect((await dataSource.getMealById('x'))?.id, 'x');
+    expect(await dataSource.getMealById('missing'), isNull);
+  });
+
+  test('saveMeal preserves an explicit updatedAt (cloud-pull path)', () async {
+    final ts = DateTime(2026, 4, 20, 8, 30);
+    await dataSource.saveMeal(
+      MealEntryEntity(
+        id: 'c',
+        userId: 'user-1',
+        mealName: 'Öğle',
+        mealType: MealType.lunch,
+        capturedAt: DateTime(2026, 4, 20, 12),
+        calories: 200,
+        syncStatus: 'synced',
+        updatedAt: ts,
+      ),
+    );
+    expect((await dataSource.getMealById('c'))!.updatedAt, ts);
+  });
 }

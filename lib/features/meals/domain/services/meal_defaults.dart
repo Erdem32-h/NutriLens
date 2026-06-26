@@ -37,10 +37,27 @@ const Set<String> kDefaultMealNames = {
   'Breakfast', 'Lunch', 'Dinner', 'Snack',
 };
 
-/// App-generated default brand/source labels across locales.
-const Set<String> kDefaultMealBrands = {'Ev yapımı', 'Homemade'};
+/// App-generated "homemade" source labels across locales.
+const Set<String> kHomemadeBrands = {'Ev yapımı', 'Homemade'};
+
+/// App-generated "ready-made" source labels (packaged product, restaurant,
+/// or takeout/delivery) across locales.
+const Set<String> kReadyMadeBrands = {'Hazır Gıda', 'Ready-made'};
+
+/// All app-generated default brand/source labels — a stored value in this set
+/// is not user-authored, so the UI re-localizes it to the active language.
+const Set<String> kDefaultMealBrands = {
+  'Ev yapımı',
+  'Homemade',
+  'Hazır Gıda',
+  'Ready-made',
+};
 
 bool isDefaultMealName(String name) => kDefaultMealNames.contains(name.trim());
 
 bool isDefaultMealBrand(String brand) =>
     kDefaultMealBrands.contains(brand.trim());
+
+bool isHomemadeBrand(String brand) => kHomemadeBrands.contains(brand.trim());
+
+bool isReadyMadeBrand(String brand) => kReadyMadeBrands.contains(brand.trim());

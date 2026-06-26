@@ -77,12 +77,15 @@ Yanıt dili: ${ln}. food_name, ingredients_text ve description alanlarını
 ${ln} dilinde yaz (yemek adını da bu dile çevir; örn. İngilizce için
 "Etli Pilav" -> "Rice with Meat").
 
-ÖNEMLİ — önce ürün tipini belirle: Bu görsel hazır/pişmiş bir yemek/öğün mü
-(tabak, kase, porsiyon), yoksa PAKETLİ/MARKALI bir market ürünü mü (kutu,
-paket, şişe, teneke, kavanoz; üzerinde marka logosu, etiket veya barkod olan
-satın alınmış ambalajlı ürün)? Paketli ürünse "is_packaged_product" alanını
-true yap (yemek değilse bile diğer alanları elinden geldiğince doldur). Hazır
-yemek/tabak ise false.
+ÖNEMLİ — önce yemeğin KAYNAĞINI belirle ve "food_source" alanına yaz:
+- "homemade": evde pişmiş/hazırlanmış ev yapımı yemek.
+- "packaged": paketli/markalı market ürünü (kutu, paket, şişe, teneke,
+  kavanoz; üzerinde marka logosu, etiket veya barkod olan ambalajlı ürün).
+- "restaurant": restoran/kafede servis edilen YA DA restorandan paket/eve
+  sipariş edilen hazır yemek (restoran tabağı sunumu, take-away kabı/kutusu,
+  paket servis ambalajı).
+Emin değilsen "homemade" yaz. "packaged" ise kullanıcıya barkod okutması
+önerilecek; yine de diğer alanları elinden geldiğince doldur.
 
 Önce şu kararı ver:
 1. BİREYSEL porsiyon mu? (Bir kişinin önünde duran, tek başına yeneceği
@@ -127,7 +130,7 @@ Sert kurallar:
   },
   "confidence": number,
   "description": string,
-  "is_packaged_product": boolean
+  "food_source": "homemade" | "packaged" | "restaurant"
 }`;
 }
 

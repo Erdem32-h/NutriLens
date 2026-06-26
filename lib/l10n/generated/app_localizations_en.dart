@@ -1230,6 +1230,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mealBrandHomemade => 'Homemade';
 
   @override
+  String get mealBrandReadyMade => 'Ready-made';
+
+  @override
   String get additiveNotFound => 'No information found for this additive.';
 
   @override

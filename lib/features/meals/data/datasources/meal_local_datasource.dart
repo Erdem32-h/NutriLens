@@ -29,6 +29,18 @@ abstract interface class MealLocalDataSource {
     required String fromUserId,
     required String toUserId,
   });
+
+  /// Meals not yet mirrored to the cloud (syncStatus != 'synced'). Used by
+  /// the premium cloud-sync to find rows still pending upload.
+  Future<List<MealEntryEntity>> getUnsyncedMeals(String userId);
+
+  /// Single meal by id, or null. Used by the cloud-pull merge to compare
+  /// local vs cloud `updatedAt` (last-write-wins).
+  Future<MealEntryEntity?> getMealById(String id);
+
+  /// Flag a meal as cloud-synced without bumping `updatedAt` (so the
+  /// last-write-wins comparison on the next pull stays correct).
+  Future<void> markSynced(String id);
 }
 
 final class MealLocalDataSourceImpl implements MealLocalDataSource {
@@ -57,7 +69,10 @@ final class MealLocalDataSourceImpl implements MealLocalDataSource {
               confidence: Value(meal.confidence),
               aiRawJson: Value(meal.aiRawJson),
               syncStatus: Value(meal.syncStatus),
-              updatedAt: Value(DateTime.now()),
+              // Preserve an explicit timestamp (cloud-pull passes the row's
+              // own updatedAt so last-write-wins stays correct); fresh local
+              // saves leave it null and get "now".
+              updatedAt: Value(meal.updatedAt ?? DateTime.now()),
             ),
           );
     } catch (e) {
@@ -136,6 +151,43 @@ final class MealLocalDataSourceImpl implements MealLocalDataSource {
           .write(MealEntriesCompanion(userId: Value(toUserId)));
     } catch (e) {
       throw CacheException('Failed to reassign meals: $e');
+    }
+  }
+
+  @override
+  Future<List<MealEntryEntity>> getUnsyncedMeals(String userId) async {
+    try {
+      final query = _db.select(_db.mealEntries)
+        ..where(
+          (t) => t.userId.equals(userId) & t.syncStatus.equals('synced').not(),
+        );
+      final rows = await query.get();
+      return rows.map(_fromRow).toList();
+    } catch (e) {
+      throw CacheException('Failed to read unsynced meals: $e');
+    }
+  }
+
+  @override
+  Future<MealEntryEntity?> getMealById(String id) async {
+    try {
+      final row = await (_db.select(
+        _db.mealEntries,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      return row == null ? null : _fromRow(row);
+    } catch (e) {
+      throw CacheException('Failed to read meal: $e');
+    }
+  }
+
+  @override
+  Future<void> markSynced(String id) async {
+    try {
+      await (_db.update(_db.mealEntries)..where((t) => t.id.equals(id))).write(
+        const MealEntriesCompanion(syncStatus: Value('synced')),
+      );
+    } catch (e) {
+      throw CacheException('Failed to mark meal synced: $e');
     }
   }
 

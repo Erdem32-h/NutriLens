@@ -22,10 +22,13 @@ String displayMealName(AppLocalizations l10n, MealEntryEntity meal) {
   return meal.mealName;
 }
 
-/// Display brand/source: default "Homemade"/"Ev yapımı" is re-localized,
-/// custom sources are shown as-is.
+/// Display brand/source: app-generated defaults ("Ev yapımı"/"Homemade" and
+/// "Hazır Gıda"/"Ready-made") are re-localized to the active language; custom
+/// user-typed sources are shown as-is.
 String displayMealBrand(AppLocalizations l10n, String brand) {
-  if (brand.trim().isEmpty || isDefaultMealBrand(brand)) {
+  final trimmed = brand.trim();
+  if (isReadyMadeBrand(trimmed)) return l10n.mealBrandReadyMade;
+  if (trimmed.isEmpty || isHomemadeBrand(trimmed)) {
     return l10n.mealBrandHomemade;
   }
   return brand;

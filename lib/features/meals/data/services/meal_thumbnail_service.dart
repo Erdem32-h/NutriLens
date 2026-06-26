@@ -8,6 +8,15 @@ import 'package:path_provider/path_provider.dart';
 class MealThumbnailService {
   const MealThumbnailService();
 
+  Future<File> _fileFor(String mealId) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final mealDir = Directory(p.join(dir.path, 'meal_thumbnails'));
+    if (!await mealDir.exists()) {
+      await mealDir.create(recursive: true);
+    }
+    return File(p.join(mealDir.path, '$mealId.jpg'));
+  }
+
   Future<String?> saveThumbnail({
     required String mealId,
     required Uint8List imageBytes,
@@ -24,14 +33,23 @@ class MealThumbnailService {
         interpolation: img.Interpolation.average,
       );
 
-      final dir = await getApplicationDocumentsDirectory();
-      final mealDir = Directory(p.join(dir.path, 'meal_thumbnails'));
-      if (!await mealDir.exists()) {
-        await mealDir.create(recursive: true);
-      }
-
-      final file = File(p.join(mealDir.path, '$mealId.jpg'));
+      final file = await _fileFor(mealId);
       await file.writeAsBytes(img.encodeJpg(thumb, quality: 72), flush: true);
+      return file.path;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Write already-sized JPEG bytes (downloaded from cloud Storage) straight
+  /// to the meal's thumbnail file. Returns the path, or null on failure.
+  Future<String?> writeDownloaded({
+    required String mealId,
+    required Uint8List bytes,
+  }) async {
+    try {
+      final file = await _fileFor(mealId);
+      await file.writeAsBytes(bytes, flush: true);
       return file.path;
     } catch (_) {
       return null;

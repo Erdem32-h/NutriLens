@@ -33,9 +33,9 @@ abstract final class NutrimentsDto {
     );
   }
 
-  /// Converts a [NutrimentsEntity] to a JSON string for Drift storage.
-  static String toJsonString(NutrimentsEntity entity) {
-    return jsonEncode({
+  /// Converts a [NutrimentsEntity] to a plain map (e.g. for Supabase jsonb).
+  static Map<String, dynamic> toMap(NutrimentsEntity entity) {
+    return {
       'energy_kcal': entity.energyKcal,
       'fat': entity.fat,
       'saturated_fat': entity.saturatedFat,
@@ -45,16 +45,13 @@ abstract final class NutrimentsDto {
       'salt': entity.salt,
       'fiber': entity.fiber,
       'proteins': entity.proteins,
-    });
+    };
   }
 
-  /// Parses a JSON string from Drift into a [NutrimentsEntity].
-  static NutrimentsEntity fromJsonString(String jsonStr) {
-    if (jsonStr.isEmpty || jsonStr == '{}') {
-      return const NutrimentsEntity();
-    }
-
-    final map = jsonDecode(jsonStr) as Map<String, dynamic>;
+  /// Builds a [NutrimentsEntity] from a plain map (Supabase jsonb / decoded
+  /// JSON). Tolerates a null map.
+  static NutrimentsEntity fromMap(Map<String, dynamic>? map) {
+    if (map == null) return const NutrimentsEntity();
     return NutrimentsEntity(
       energyKcal: (map['energy_kcal'] as num?)?.toDouble(),
       fat: (map['fat'] as num?)?.toDouble(),
@@ -66,5 +63,17 @@ abstract final class NutrimentsDto {
       fiber: (map['fiber'] as num?)?.toDouble(),
       proteins: (map['proteins'] as num?)?.toDouble(),
     );
+  }
+
+  /// Converts a [NutrimentsEntity] to a JSON string for Drift storage.
+  static String toJsonString(NutrimentsEntity entity) =>
+      jsonEncode(toMap(entity));
+
+  /// Parses a JSON string from Drift into a [NutrimentsEntity].
+  static NutrimentsEntity fromJsonString(String jsonStr) {
+    if (jsonStr.isEmpty || jsonStr == '{}') {
+      return const NutrimentsEntity();
+    }
+    return fromMap(jsonDecode(jsonStr) as Map<String, dynamic>);
   }
 }

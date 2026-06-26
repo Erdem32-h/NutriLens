@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import 'package:intl/intl.dart';
 import '../../../../config/router/route_names.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/providers/monetization_provider.dart';
+import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/meal_entry_entity.dart';
 import '../meal_display.dart';
@@ -21,6 +24,8 @@ class MealsScreen extends ConsumerWidget {
     final colors = context.colors;
     final mealsAsync = ref.watch(mealsProvider);
     final summaryAsync = ref.watch(mealCalorieSummaryProvider);
+    // Premium-only one-shot: push pending local meals + pull cloud meals down.
+    ref.watch(mealCloudSyncProvider);
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -263,6 +268,17 @@ class _MealTile extends ConsumerWidget {
 
     if (confirmed != true) return;
     await ref.read(mealLocalDataSourceProvider).deleteMeal(meal.id);
+    // Premium: also remove the cloud copy (row + photo). Best-effort.
+    if (ref.read(isPremiumProvider)) {
+      final userId = ref.read(effectiveUserIdProvider);
+      if (userId != null) {
+        unawaited(
+          ref
+              .read(mealSyncServiceProvider)
+              .deleteMeal(id: meal.id, userId: userId),
+        );
+      }
+    }
     ref.invalidate(mealsProvider);
     ref.invalidate(mealCalorieSummaryProvider);
   }

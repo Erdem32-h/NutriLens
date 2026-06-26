@@ -38,6 +38,11 @@ bool _isQuotaError(int? status, String message) {
       m.contains('insufficient');
 }
 
+/// Where the analysed food came from. Drives the default meal "source"
+/// label (homemade → "Ev yapımı", packaged/restaurant → "Hazır Gıda") and
+/// the packaged → barcode redirect.
+enum MealFoodSource { homemade, packaged, restaurant }
+
 class MealAnalysisResult {
   final String foodName;
   final int portionGrams;
@@ -47,10 +52,12 @@ class MealAnalysisResult {
   final String description;
   final String rawJson;
 
-  /// True when the photo is a packaged/branded retail product (box, bag,
-  /// bottle) rather than a prepared dish. The meal estimator is wrong for
-  /// these — the UI steers the user to barcode scanning instead.
-  final bool isPackagedProduct;
+  /// Homemade vs packaged retail product vs restaurant/takeout.
+  final MealFoodSource foodSource;
+
+  /// Packaged retail product → the meal estimator is meaningless for it, so
+  /// the UI steers the user to barcode scanning instead.
+  bool get isPackagedProduct => foodSource == MealFoodSource.packaged;
 
   const MealAnalysisResult({
     required this.foodName,
@@ -60,7 +67,7 @@ class MealAnalysisResult {
     required this.confidence,
     required this.description,
     required this.rawJson,
-    this.isPackagedProduct = false,
+    this.foodSource = MealFoodSource.homemade,
   });
 }
 
@@ -450,7 +457,7 @@ class AnthropicAiService {
         confidence: _normalizeConfidence(json['confidence']),
         description: _safeString(json['description'], ''),
         rawJson: jsonStr,
-        isPackagedProduct: _safeBool(json['is_packaged_product']),
+        foodSource: _parseFoodSource(json),
       );
     } catch (e) {
       debugPrint('[AnthropicAI] meal JSON parse failed: $e');
@@ -468,6 +475,25 @@ class AnthropicAiService {
       return v == 'true' || v == '1' || v == 'yes';
     }
     return false;
+  }
+
+  /// Parse the model's `food_source`. Falls back to the older
+  /// `is_packaged_product` boolean for forward/backward compatibility, then
+  /// to homemade when nothing usable is present.
+  static MealFoodSource _parseFoodSource(Map<String, dynamic> json) {
+    switch (json['food_source']?.toString().trim().toLowerCase()) {
+      case 'packaged':
+        return MealFoodSource.packaged;
+      case 'restaurant':
+      case 'takeout':
+      case 'takeaway':
+      case 'delivery':
+        return MealFoodSource.restaurant;
+      case 'homemade':
+        return MealFoodSource.homemade;
+    }
+    if (_safeBool(json['is_packaged_product'])) return MealFoodSource.packaged;
+    return MealFoodSource.homemade;
   }
 
   /// Fold a model's confidence to the 0.0–1.0 range the UI expects.
@@ -725,12 +751,15 @@ Yanıt dili: $languageName. `food_name`, `ingredients_text` ve
 `description` alanlarını $languageName dilinde yaz (yemek adını da bu dile
 çevir; örn. İngilizce için "Etli Pilav" → "Rice with Meat").
 
-ÖNEMLİ — önce ürün tipini belirle: Bu görsel hazır/pişmiş bir yemek/öğün mü
-(tabak, kase, porsiyon), yoksa PAKETLİ/MARKALI bir market ürünü mü (kutu,
-paket, şişe, teneke, kavanoz; üzerinde marka logosu, etiket veya barkod olan
-satın alınmış ambalajlı ürün)? Paketli ürünse `is_packaged_product` alanını
-true yap (yemek değilse bile diğer alanları elinden geldiğince doldur). Hazır
-yemek/tabak ise false.
+ÖNEMLİ — önce yemeğin KAYNAĞINI belirle ve `food_source` alanına yaz:
+- "homemade": evde pişmiş/hazırlanmış ev yapımı yemek.
+- "packaged": paketli/markalı market ürünü (kutu, paket, şişe, teneke,
+  kavanoz; üzerinde marka logosu, etiket veya barkod olan ambalajlı ürün).
+- "restaurant": restoran/kafede servis edilen YA DA restorandan paket/eve
+  sipariş edilen hazır yemek (restoran tabağı sunumu, take-away kabı/kutusu,
+  paket servis ambalajı).
+Emin değilsen "homemade" yaz. "packaged" ise kullanıcıya barkod okutması
+önerilecek; yine de diğer alanları elinden geldiğince doldur.
 
 Önce şu kararı ver:
 1. BİREYSEL porsiyon mu? (Bir kişinin önünde duran, tek başına yeneceği
@@ -789,7 +818,7 @@ Sert kurallar:
   },
   "confidence": number,
   "description": string,
-  "is_packaged_product": boolean
+  "food_source": "homemade" | "packaged" | "restaurant"
 }
 ''';
 }

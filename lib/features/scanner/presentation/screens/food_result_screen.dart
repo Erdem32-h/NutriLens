@@ -130,6 +130,14 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         _ingredientsController.text = result.ingredientsText ?? '';
         _loading = false;
       });
+      // Non-homemade food (packaged product, restaurant, or takeout/delivery)
+      // → default the source label to "Hazır Gıda" instead of "Ev yapımı",
+      // unless the user already changed it.
+      final l10n = context.l10n;
+      if (result.foodSource != MealFoodSource.homemade &&
+          _brandController.text.trim() == l10n.mealBrandHomemade) {
+        _brandController.text = l10n.mealBrandReadyMade;
+      }
       // Packaged retail product photographed in the AI tab → the meal
       // estimate is meaningless for it (wrong name + harsh score). Steer the
       // user to barcode scanning, but let them analyze anyway if they insist.
@@ -240,7 +248,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             confidence: _result!.confidence,
             description: _result!.description,
             rawJson: _result!.rawJson,
-            isPackagedProduct: _result!.isPackagedProduct,
+            foodSource: _result!.foodSource,
           );
           // Fresh estimate → discard any portion adjustment the user
           // had applied to the previous values. The new portion_note
@@ -328,6 +336,11 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       );
 
       await ref.read(mealLocalDataSourceProvider).saveMeal(meal);
+      // Premium users get a cloud backup; free users stay local-only.
+      // Best-effort, fire-and-forget — the local save above is authoritative.
+      if (ref.read(isPremiumProvider)) {
+        unawaited(ref.read(mealSyncServiceProvider).pushMeal(meal));
+      }
       ref.invalidate(mealsProvider);
       ref.invalidate(mealCalorieSummaryProvider);
       // Home-screen widget reflects today's kcal — refresh on save so the

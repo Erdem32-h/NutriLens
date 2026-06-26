@@ -2420,6 +2420,12 @@ abstract class AppLocalizations {
   /// **'Ev yapımı'**
   String get mealBrandHomemade;
 
+  /// No description provided for @mealBrandReadyMade.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hazır Gıda'**
+  String get mealBrandReadyMade;
+
   /// No description provided for @additiveNotFound.
   ///
   /// In tr, this message translates to:
