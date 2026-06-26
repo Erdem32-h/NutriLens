@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/providers/monetization_provider.dart'
+    show deviceIdServiceProvider;
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
@@ -73,11 +75,13 @@ class _IngredientsCameraScreenState
       // trigger Android's "App not responding" dialog.
       final rawBytes = await File(image.path).readAsBytes();
       final prepared = await prepareOcrImage(rawBytes);
+      final deviceHash = await ref.read(deviceIdServiceProvider).deviceHash();
 
       final String? ingredientsText;
       try {
         ingredientsText = await geminiService.extractIngredientsFromBase64(
           prepared.base64,
+          deviceHash: deviceHash,
         );
       } on GeminiServiceException catch (e) {
         // Service-level failure (auth, network, rate limit). No fallback —

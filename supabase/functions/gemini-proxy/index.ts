@@ -33,15 +33,21 @@ function modelFor(action: string): string {
   }
 }
 
-// ── OpenRouter (cheap vision meal analysis) ───────────────────────────
-// Signed-in users' meal analysis is routed here instead of the client's
-// direct Anthropic call: the key lives server-side (no abuse / runaway
-// credit drain), the model is swappable via env, and gpt-4.1-nano matched
-// or beat Claude in our bake-off at ~37x lower cost.
+// ── OpenRouter (server-side vision: meal analysis + label OCR) ────────
+// Meal analysis AND ingredients/nutrition image OCR are routed here instead
+// of the client's direct provider call: the key lives server-side (no abuse /
+// runaway credit drain) and the model is swappable via env. gpt-4.1-nano was
+// the original cheap meal model, but it under-performed on portion/nutrition
+// estimation — gemini-2.5-flash is the stronger default (still cheap).
 const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const OPENROUTER_MEAL_MODEL =
-  Deno.env.get("OPENROUTER_MEAL_MODEL") ?? "openai/gpt-4.1-nano";
+  Deno.env.get("OPENROUTER_MEAL_MODEL") ?? "google/gemini-2.5-flash";
+// Label OCR (ingredients + nutrition) moved off the direct-Gemini key — that
+// path was returning 502s (quota / model availability). gemini-2.5-flash via
+// OpenRouter keeps the same strong Turkish-label OCR but on the funded key.
+const OPENROUTER_OCR_MODEL =
+  Deno.env.get("OPENROUTER_OCR_MODEL") ?? "google/gemini-2.5-flash";
 
 function languageName(code?: string): string {
   switch ((code ?? "tr").toLowerCase()) {
@@ -70,6 +76,13 @@ gramaj + besin değeri olarak döndürmek.
 Yanıt dili: ${ln}. food_name, ingredients_text ve description alanlarını
 ${ln} dilinde yaz (yemek adını da bu dile çevir; örn. İngilizce için
 "Etli Pilav" -> "Rice with Meat").
+
+ÖNEMLİ — önce ürün tipini belirle: Bu görsel hazır/pişmiş bir yemek/öğün mü
+(tabak, kase, porsiyon), yoksa PAKETLİ/MARKALI bir market ürünü mü (kutu,
+paket, şişe, teneke, kavanoz; üzerinde marka logosu, etiket veya barkod olan
+satın alınmış ambalajlı ürün)? Paketli ürünse "is_packaged_product" alanını
+true yap (yemek değilse bile diğer alanları elinden geldiğince doldur). Hazır
+yemek/tabak ise false.
 
 Önce şu kararı ver:
 1. BİREYSEL porsiyon mu? (Bir kişinin önünde duran, tek başına yeneceği
@@ -113,7 +126,8 @@ Sert kurallar:
     "salt": number, "fiber": number, "protein": number
   },
   "confidence": number,
-  "description": string
+  "description": string,
+  "is_packaged_product": boolean
 }`;
 }
 
@@ -163,7 +177,19 @@ interface OpenRouterResult {
 async function callOpenRouter(
   messages: unknown[],
   maxTokens: number,
+  opts: { model?: string; json?: boolean; temperature?: number } = {},
 ): Promise<OpenRouterResult> {
+  const body: Record<string, unknown> = {
+    model: opts.model ?? OPENROUTER_MEAL_MODEL,
+    max_tokens: maxTokens,
+    temperature: opts.temperature ?? 0.2,
+    messages,
+  };
+  // JSON mode for structured actions (meal/recalc/nutrition); plain text for
+  // ingredients OCR (which returns a free-form list or the not-found sentinel).
+  if (opts.json !== false) {
+    body.response_format = { type: "json_object" };
+  }
   const resp = await fetch(OPENROUTER_URL, {
     method: "POST",
     headers: {
@@ -172,13 +198,7 @@ async function callOpenRouter(
       "HTTP-Referer": "https://nutrilenshq.com",
       "X-Title": "NutriLens",
     },
-    body: JSON.stringify({
-      model: OPENROUTER_MEAL_MODEL,
-      max_tokens: maxTokens,
-      temperature: 0.2,
-      response_format: { type: "json_object" },
-      messages,
-    }),
+    body: JSON.stringify(body),
   });
   const raw = await resp.text();
   if (!resp.ok) {
@@ -224,11 +244,16 @@ interface RequestBody {
   };
 }
 
-/// Handles the anon-allowed OpenRouter actions (cheap meal analysis + recalc).
-/// Gated by a per-device-hash rate limit instead of user auth; the real cost
-/// ceiling is the OpenRouter spend cap. Returns the proxied result or an error.
+/// Handles the anon-allowed OpenRouter actions: meal analysis, recalc, and
+/// (since the direct-Gemini key started 502ing) ingredients + nutrition image
+/// OCR. Gated by a per-device-hash rate limit instead of user auth; the real
+/// cost ceiling is the OpenRouter spend cap. Returns the proxied result or an error.
 async function handleOpenRouterAction(
-  action: "meal_analysis" | "recalc_nutrition",
+  action:
+    | "meal_analysis"
+    | "recalc_nutrition"
+    | "ocr_ingredients_image"
+    | "ocr_nutrition_image",
   payload: RequestBody["payload"],
 ): Promise<Response> {
   const jsonHeaders = {
@@ -256,31 +281,36 @@ async function handleOpenRouterAction(
     );
   }
 
+  // Helper: a single user turn carrying prompt text + the JPEG image.
+  const imageMessage = (text: string) => [
+    {
+      role: "user",
+      content: [
+        { type: "text", text },
+        {
+          type: "image_url",
+          image_url: { url: `data:image/jpeg;base64,${payload.image_base64}` },
+        },
+      ],
+    },
+  ];
+  const missingImage = () =>
+    new Response(JSON.stringify({ error: "Missing image" }), {
+      status: 400,
+      headers: jsonHeaders,
+    });
+
   let messages: unknown[];
   let maxTokens: number;
+  let model = OPENROUTER_MEAL_MODEL;
+  let json = true;
+  let temperature = 0.2;
+
   if (action === "meal_analysis") {
-    if (!payload.image_base64) {
-      return new Response(JSON.stringify({ error: "Missing image" }), {
-        status: 400,
-        headers: jsonHeaders,
-      });
-    }
-    messages = [
-      {
-        role: "user",
-        content: [
-          { type: "text", text: mealAnalysisPrompt(payload.language_code) },
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:image/jpeg;base64,${payload.image_base64}`,
-            },
-          },
-        ],
-      },
-    ];
+    if (!payload.image_base64) return missingImage();
+    messages = imageMessage(mealAnalysisPrompt(payload.language_code));
     maxTokens = 1000;
-  } else {
+  } else if (action === "recalc_nutrition") {
     if (!payload.ingredients_text) {
       return new Response(
         JSON.stringify({ error: "Missing ingredients_text" }),
@@ -297,12 +327,35 @@ async function handleOpenRouterAction(
       },
     ];
     maxTokens = 700;
+  } else {
+    // ocr_ingredients_image | ocr_nutrition_image — reuse the exact Gemini
+    // prompt text (single source of truth in buildPrompt) but send it through
+    // OpenRouter so the label pipeline doesn't depend on the direct-Gemini key.
+    if (!payload.image_base64) return missingImage();
+    const built = buildPrompt(action, payload) as {
+      contents: { parts: { text?: string }[] }[];
+    };
+    const promptText = built.contents?.[0]?.parts?.[0]?.text ?? "";
+    messages = imageMessage(promptText);
+    model = OPENROUTER_OCR_MODEL;
+    temperature = 0;
+    if (action === "ocr_ingredients_image") {
+      json = false; // free-form list or the İÇİNDEKİLER_BULUNAMADI sentinel
+      maxTokens = 4096;
+    } else {
+      json = true; // strict nutrition JSON object
+      maxTokens = 1024;
+    }
   }
 
-  const or = await callOpenRouter(messages, maxTokens);
+  const or = await callOpenRouter(messages, maxTokens, {
+    model,
+    json,
+    temperature,
+  });
   if (!or.ok || !or.text) {
     console.error(
-      `[openrouter ${action}] model=${OPENROUTER_MEAL_MODEL} ` +
+      `[openrouter ${action}] model=${model} ` +
         `status=${or.status} body=${or.errBody}`,
     );
     const clientStatus = or.status === 402 || or.status === 429 ? 429 : 502;
@@ -656,11 +709,17 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Public (anon-allowed) cheap meal analysis + recalc. Guests have no user
-    // JWT, so these are gated by a per-device-hash rate limit (+ the OpenRouter
-    // spend cap) instead of user auth. The OCR/Gemini actions below still
+    // Public (anon-allowed) actions. Guests have no user JWT, so these are
+    // gated by a per-device-hash rate limit (+ the OpenRouter spend cap)
+    // instead of user auth. Image OCR joined this set after the direct-Gemini
+    // key started returning 502s. The remaining Gemini actions below still
     // require a signed-in user.
-    if (action === "meal_analysis" || action === "recalc_nutrition") {
+    if (
+      action === "meal_analysis" ||
+      action === "recalc_nutrition" ||
+      action === "ocr_ingredients_image" ||
+      action === "ocr_nutrition_image"
+    ) {
       return await handleOpenRouterAction(action, payload);
     }
 
@@ -784,22 +843,6 @@ Deno.serve(async (req: Request) => {
 
     const data = await response.json();
     const generatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    // Diagnostic: surface what Gemini actually sent back for the nutrition
-    // path so we can debug "all-null" symptoms without re-deploying. Cheap
-    // (one log line per call), bounded (text is at most a few hundred
-    // chars), and only fires for the action that's been flaky.
-    if (action === "ocr_nutrition_image") {
-      const finishReason = data?.candidates?.[0]?.finishReason;
-      const promptTokens = data?.usageMetadata?.promptTokenCount;
-      const respTokens = data?.usageMetadata?.candidatesTokenCount;
-      const thinkTokens = data?.usageMetadata?.thoughtsTokenCount;
-      console.log(
-        `[ocr_nutrition_image] model=${model} finish=${finishReason} ` +
-          `prompt_tok=${promptTokens} resp_tok=${respTokens} ` +
-          `think_tok=${thinkTokens} text=${JSON.stringify(generatedText)}`
-      );
-    }
 
     return new Response(JSON.stringify({ result: generatedText, action }), {
       status: 200,

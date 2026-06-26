@@ -47,6 +47,11 @@ class MealAnalysisResult {
   final String description;
   final String rawJson;
 
+  /// True when the photo is a packaged/branded retail product (box, bag,
+  /// bottle) rather than a prepared dish. The meal estimator is wrong for
+  /// these — the UI steers the user to barcode scanning instead.
+  final bool isPackagedProduct;
+
   const MealAnalysisResult({
     required this.foodName,
     required this.portionGrams,
@@ -55,6 +60,7 @@ class MealAnalysisResult {
     required this.confidence,
     required this.description,
     required this.rawJson,
+    this.isPackagedProduct = false,
   });
 }
 
@@ -444,11 +450,24 @@ class AnthropicAiService {
         confidence: _normalizeConfidence(json['confidence']),
         description: _safeString(json['description'], ''),
         rawJson: jsonStr,
+        isPackagedProduct: _safeBool(json['is_packaged_product']),
       );
     } catch (e) {
       debugPrint('[AnthropicAI] meal JSON parse failed: $e');
       return null;
     }
+  }
+
+  /// Tolerant boolean parse — models return real bools, "true"/"false"
+  /// strings, or 1/0 depending on provider/JSON mode.
+  static bool _safeBool(dynamic value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) {
+      final v = value.trim().toLowerCase();
+      return v == 'true' || v == '1' || v == 'yes';
+    }
+    return false;
   }
 
   /// Fold a model's confidence to the 0.0–1.0 range the UI expects.
@@ -706,6 +725,13 @@ Yanıt dili: $languageName. `food_name`, `ingredients_text` ve
 `description` alanlarını $languageName dilinde yaz (yemek adını da bu dile
 çevir; örn. İngilizce için "Etli Pilav" → "Rice with Meat").
 
+ÖNEMLİ — önce ürün tipini belirle: Bu görsel hazır/pişmiş bir yemek/öğün mü
+(tabak, kase, porsiyon), yoksa PAKETLİ/MARKALI bir market ürünü mü (kutu,
+paket, şişe, teneke, kavanoz; üzerinde marka logosu, etiket veya barkod olan
+satın alınmış ambalajlı ürün)? Paketli ürünse `is_packaged_product` alanını
+true yap (yemek değilse bile diğer alanları elinden geldiğince doldur). Hazır
+yemek/tabak ise false.
+
 Önce şu kararı ver:
 1. BİREYSEL porsiyon mu? (Bir kişinin önünde duran, tek başına yeneceği
    bir kase/tabak. Genelde çorba kasesi, salata tabağı, kahvaltı tabağı,
@@ -762,7 +788,8 @@ Sert kurallar:
     "protein": number
   },
   "confidence": number,
-  "description": string
+  "description": string,
+  "is_packaged_product": boolean
 }
 ''';
 }

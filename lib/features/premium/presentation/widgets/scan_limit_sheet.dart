@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -23,6 +24,7 @@ class ScanLimitSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final l10n = context.l10n;
     final adService = ref.read(adServiceProvider);
 
     return Padding(
@@ -47,7 +49,7 @@ class ScanLimitSheet extends ConsumerWidget {
 
           // Title
           Text(
-            'Günlük Tarama Hakkın Doldu',
+            l10n.scanLimitTitle,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -56,7 +58,7 @@ class ScanLimitSheet extends ConsumerWidget {
           const SizedBox(height: 8),
 
           Text(
-            'Premium üyelikle sınırsız tarama yapabilirsin.',
+            l10n.scanLimitSubtitle,
             style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
@@ -73,7 +75,7 @@ class ScanLimitSheet extends ConsumerWidget {
                 context.push('/paywall');
               },
               icon: const Icon(Icons.star),
-              label: const Text("Premium'a Geç"),
+              label: Text(l10n.scanLimitGoPremium),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
@@ -97,7 +99,7 @@ class ScanLimitSheet extends ConsumerWidget {
                   }
                 },
                 icon: const Icon(Icons.play_circle_outline),
-                label: const Text('Reklam İzle → +1 Tarama'),
+                label: Text(l10n.scanLimitWatchAd),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
@@ -108,7 +110,7 @@ class ScanLimitSheet extends ConsumerWidget {
           // Close
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Kapat'),
+            child: Text(l10n.scanLimitClose),
           ),
         ],
       ),

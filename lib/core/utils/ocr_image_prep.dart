@@ -36,12 +36,14 @@ class ImagePrepOptions {
 /// manufacturer address instead of the ingredients list). Baking the
 /// orientation into the pixels eliminates that ambiguity.
 ///
-/// 1600 px on the long edge keeps package OCR payloads small enough for quick
-/// upload while preserving readable label text for the direct AI pass.
+/// 2048 px on the long edge: dense Turkish ingredient/nutrition labels carry
+/// small text, so we give the vision model more pixels to read (bumped from
+/// 1600). Still small enough for a quick upload; encoding stays on the worker
+/// isolate so the larger frame doesn't risk ANR.
 Future<PreparedOcrImage> prepareOcrImage(Uint8List bytes) {
   return _prepareImage(
     bytes,
-    const ImagePrepOptions(maxEdge: 1600, jpegQuality: 85),
+    const ImagePrepOptions(maxEdge: 2048, jpegQuality: 90),
   );
 }
 

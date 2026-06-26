@@ -15,6 +15,7 @@ import '../../../../core/services/guest_scan_counter.dart';
 import '../../../../core/services/scan_limit_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../providers/scanner_mode_provider.dart';
 import '../widgets/scanner_overlay.dart';
 import '../../../auth/presentation/widgets/guest_register_sheet.dart';
 import '../../../premium/presentation/widgets/scan_limit_sheet.dart';
@@ -467,6 +468,16 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       // Returned from food-result — the AI camera survives across
       // the push/pop, so nothing to restart. If user backgrounded
       // the app while away didChangeAppLifecycleState reinitialises.
+      //
+      // Packaged-product detection: food-result may ask us to switch to
+      // barcode mode ("Bu paketli bir ürün, barkodunu okut"). Honour that
+      // one-shot request now that we're back on the scanner.
+      if (!mounted) return;
+      final pendingMode = ref.read(pendingScannerModeProvider);
+      if (pendingMode != null) {
+        ref.read(pendingScannerModeProvider.notifier).state = null;
+        if (pendingMode != _scanMode) await _setScanMode(pendingMode);
+      }
     } catch (e) {
       debugPrint('[Scanner] AI capture error: $e');
     } finally {

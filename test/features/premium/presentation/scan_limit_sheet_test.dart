@@ -7,6 +7,7 @@ import 'package:nutrilens/core/providers/monetization_provider.dart';
 import 'package:nutrilens/core/services/ad_service.dart';
 import 'package:nutrilens/core/services/scan_limit_service.dart';
 import 'package:nutrilens/core/theme/app_colors.dart';
+import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:nutrilens/features/premium/presentation/screens/paywall_screen.dart';
 import 'package:nutrilens/features/premium/presentation/widgets/scan_limit_sheet.dart';
 import 'package:nutrilens/core/services/subscription_service.dart';
@@ -109,6 +110,11 @@ Widget _buildSubject({
     ],
     child: MaterialApp.router(
       routerConfig: router,
+      // Force Turkish so the byte-identical TR assertions below hold; the
+      // production strings are now localized via AppLocalizations.
+      locale: const Locale('tr'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(extensions: const [AppColorsExtension.light]),
     ),
   );

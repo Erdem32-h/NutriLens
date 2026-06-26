@@ -8,15 +8,15 @@ import 'package:nutrilens/core/utils/ocr_image_prep.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('keeps OCR image payload at the default 1600px long edge', () async {
+  test('downscales OCR image payload to a 2048px long edge', () async {
     final source = _jpeg(width: 2400, height: 1600);
 
     final prepared = await prepareOcrImage(source);
     final decoded = img.decodeImage(base64Decode(prepared.base64));
 
     expect(decoded, isNotNull);
-    expect(decoded!.width, 1600);
-    expect(decoded.height, 1067);
+    expect(decoded!.width, 2048);
+    expect(decoded.height, 1365);
   });
 
   test(

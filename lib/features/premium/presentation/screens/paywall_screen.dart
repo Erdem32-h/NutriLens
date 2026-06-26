@@ -5,6 +5,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/legal_links.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/subscription_service.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -41,10 +42,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         _packages = packages;
         _loading = false;
         if (packages.isEmpty) {
-          _loadError =
-              'Abonelik paketleri yüklenemedi.\nİnternet bağlantınızı kontrol edin.';
+          _loadError = context.l10n.premiumPackagesLoadError;
         }
-        // Default to annual if available
+        // Default to annual if available — the higher-LTV, higher-margin plan.
         final annualIdx = packages.indexWhere(
           (p) => p.packageType == PackageType.annual,
         );
@@ -71,17 +71,17 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
       switch (result) {
         case SubscriptionPurchaseResult.success:
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Premium aktif! 🎉')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.premiumActivated)),
+          );
           Navigator.of(context).pop();
         case SubscriptionPurchaseResult.cancelled:
           // User cancelled — stay silent, they know what they did.
           break;
         case SubscriptionPurchaseResult.failed:
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Satın alma tamamlanamadı. Lütfen tekrar deneyin.'),
+            SnackBar(
+              content: Text(context.l10n.premiumPurchaseFailed),
               backgroundColor: Colors.red,
             ),
           );
@@ -90,34 +90,36 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       if (!mounted) return;
       setState(() => _purchasing = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_friendlyError(e)), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(_friendlyError(context, e)),
+          backgroundColor: Colors.red,
+        ),
       );
     } catch (e) {
       if (!mounted) return;
       setState(() => _purchasing = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.'),
+        SnackBar(
+          content: Text(context.l10n.premiumPurchaseUnexpectedError),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-  /// Maps RevenueCat/Play Billing errors to user-friendly Turkish messages.
-  String _friendlyError(PlatformException e) {
+  /// Maps RevenueCat/Play Billing errors to user-friendly localized messages.
+  String _friendlyError(BuildContext context, PlatformException e) {
+    final l10n = context.l10n;
     final code = PurchasesErrorHelper.getErrorCode(e);
     return switch (code) {
-      PurchasesErrorCode.networkError => 'İnternet bağlantınızı kontrol edin.',
-      PurchasesErrorCode.paymentPendingError =>
-        'Ödeme onay bekliyor. Birkaç dakika içinde aktifleşecek.',
+      PurchasesErrorCode.networkError => l10n.premiumErrorNetwork,
+      PurchasesErrorCode.paymentPendingError => l10n.premiumErrorPaymentPending,
       PurchasesErrorCode.productNotAvailableForPurchaseError =>
-        'Bu ürün şu anda satın alınamıyor.',
+        l10n.premiumErrorProductUnavailable,
       PurchasesErrorCode.productAlreadyPurchasedError =>
-        'Bu abonelik zaten aktif. "Geri Yükle" seçeneğini deneyin.',
-      PurchasesErrorCode.storeProblemError =>
-        'Play Store geçici bir sorun yaşıyor. Lütfen tekrar deneyin.',
-      _ => 'Satın alma tamamlanamadı. Lütfen tekrar deneyin.',
+        l10n.premiumErrorAlreadyPurchased,
+      PurchasesErrorCode.storeProblemError => l10n.premiumErrorStoreProblem,
+      _ => l10n.premiumPurchaseFailed,
     };
   }
 
@@ -128,7 +130,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success ? 'Abonelik geri yüklendi!' : 'Aktif abonelik bulunamadı.',
+            success
+                ? context.l10n.premiumRestored
+                : context.l10n.premiumNoActiveSubscription,
           ),
         ),
       );
@@ -136,15 +140,24 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     }
   }
 
+  Package? get _selectedPackage =>
+      (_selectedIndex >= 0 && _selectedIndex < _packages.length)
+      ? _packages[_selectedIndex]
+      : null;
+
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final selectedTrialDays = _selectedPackage == null
+        ? null
+        : _freeTrialDays(_selectedPackage!);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Premium'),
+        title: Text(l10n.premiumTitle),
         actions: [
-          TextButton(onPressed: _restore, child: const Text('Geri Yükle')),
+          TextButton(onPressed: _restore, child: Text(l10n.premiumRestore)),
         ],
       ),
       body: _loading
@@ -159,7 +172,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   Icon(Icons.star, size: 64, color: colors.warning),
                   const SizedBox(height: 16),
                   Text(
-                    'NutriLens Premium',
+                    l10n.premiumTitle,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -167,21 +180,21 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   const SizedBox(height: 24),
 
                   // Features
-                  const _FeatureTile(
+                  _FeatureTile(
                     icon: Icons.all_inclusive,
-                    text: 'Sınırsız tarama',
+                    text: l10n.premiumFeatureUnlimitedScans,
                   ),
-                  const _FeatureTile(
+                  _FeatureTile(
                     icon: Icons.block,
-                    text: 'Reklamsız deneyim',
+                    text: l10n.premiumFeatureNoAds,
                   ),
-                  const _FeatureTile(
+                  _FeatureTile(
                     icon: Icons.smart_toy,
-                    text: 'Sınırsız AI tarama',
+                    text: l10n.premiumFeatureUnlimitedAi,
                   ),
-                  const _FeatureTile(
+                  _FeatureTile(
                     icon: Icons.support_agent,
-                    text: 'Öncelikli destek',
+                    text: l10n.premiumFeaturePrioritySupport,
                   ),
                   const SizedBox(height: 32),
 
@@ -191,96 +204,17 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     onChanged: (v) => setState(() => _selectedIndex = v!),
                     child: Column(
                       children: _packages.asMap().entries.map((entry) {
-                        final i = entry.key;
-                        final pkg = entry.value;
-                        final isSelected = i == _selectedIndex;
-                        final isAnnual = pkg.packageType == PackageType.annual;
-
-                        return GestureDetector(
-                          onTap: () => setState(() => _selectedIndex = i),
-                          child: Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: isSelected
-                                    ? colors.primary
-                                    : colors.textSecondary.withValues(
-                                        alpha: 0.2,
-                                      ),
-                                width: isSelected ? 2 : 1,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Row(
-                              children: [
-                                Radio<int>(value: i),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            isAnnual ? 'Yıllık' : 'Aylık',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium
-                                                ?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                          ),
-                                          if (isAnnual) ...[
-                                            const SizedBox(width: 8),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 2,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: colors.success
-                                                    .withValues(alpha: 0.15),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              child: Text(
-                                                '%40 tasarruf',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .labelSmall
-                                                    ?.copyWith(
-                                                      color: colors.success,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                              ),
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        pkg.storeProduct.priceString,
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                        return _buildPackageCard(
+                          colors,
+                          entry.key,
+                          entry.value,
                         );
                       }).toList(),
                     ),
                   ),
                   const SizedBox(height: 24),
 
-                  // Purchase button
+                  // Purchase button — trial-aware CTA.
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
@@ -294,17 +228,28 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                               width: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text(
-                              'Devam Et',
-                              style: TextStyle(fontSize: 16),
+                          : Text(
+                              selectedTrialDays != null
+                                  ? l10n.premiumTrialCta(selectedTrialDays)
+                                  : l10n.premiumContinueCta,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
 
-                  // Legal
+                  // Trust strip — honest, no fabricated metrics.
+                  _buildTrustStrip(colors),
+                  const SizedBox(height: 12),
+
+                  // Legal / renewal note
                   Text(
-                    'Abonelik otomatik yenilenir. İstediğin zaman iptal edebilirsin.',
+                    selectedTrialDays != null
+                        ? l10n.premiumTrialAutoRenewNote
+                        : l10n.premiumAutoRenewNote,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: colors.textSecondary,
                     ),
@@ -318,6 +263,142 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     );
   }
 
+  Widget _buildPackageCard(AppColorsExtension colors, int i, Package pkg) {
+    final l10n = context.l10n;
+    final isSelected = i == _selectedIndex;
+    final isAnnual = pkg.packageType == PackageType.annual;
+    final savings = isAnnual ? _annualSavingsPercent(_packages) : null;
+    final trialDays = _freeTrialDays(pkg);
+    final perMonth =
+        pkg.storeProduct.pricePerMonthString ?? pkg.storeProduct.priceString;
+
+    return GestureDetector(
+      onTap: () => setState(() => _selectedIndex = i),
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected
+                ? colors.primary
+                : colors.textSecondary.withValues(alpha: 0.2),
+            width: isSelected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          color: isSelected
+              ? colors.primary.withValues(alpha: 0.04)
+              : Colors.transparent,
+        ),
+        child: Row(
+          children: [
+            Radio<int>(value: i),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        isAnnual
+                            ? l10n.premiumPlanAnnual
+                            : l10n.premiumPlanMonthly,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (isAnnual) ...[
+                        const SizedBox(width: 8),
+                        _Pill(
+                          text: l10n.premiumMostPopular,
+                          color: colors.primary,
+                        ),
+                      ],
+                      if (savings != null) ...[
+                        const SizedBox(width: 6),
+                        _Pill(
+                          text: l10n.premiumSaveBadge(savings),
+                          color: colors.success,
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  // Prominent per-month price for easy comparison.
+                  Text(
+                    l10n.premiumPerMonth(perMonth),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (isAnnual) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.premiumBilledAnnually(pkg.storeProduct.priceString),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colors.textSecondary,
+                      ),
+                    ),
+                  ],
+                  if (trialDays != null) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.card_giftcard_rounded,
+                          size: 14,
+                          color: colors.success,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          l10n.premiumTrialBadge(trialDays),
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(
+                                color: colors.success,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrustStrip(AppColorsExtension colors) {
+    final l10n = context.l10n;
+    final items = <(IconData, String)>[
+      (Icons.lock_open_rounded, l10n.premiumTrustCancelAnytime),
+      (Icons.verified_user_rounded, l10n.premiumTrustSecurePayment),
+      (Icons.bolt_rounded, l10n.premiumTrustInstantAccess),
+    ];
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: items.map((it) {
+        return Flexible(
+          child: Column(
+            children: [
+              Icon(it.$1, size: 18, color: colors.textSecondary),
+              const SizedBox(height: 4),
+              Text(
+                it.$2,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   Widget _buildErrorState(AppColorsExtension colors) {
     return Center(
       child: Padding(
@@ -328,7 +409,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             Icon(Icons.cloud_off_rounded, size: 64, color: colors.textMuted),
             const SizedBox(height: 16),
             Text(
-              _loadError ?? 'Paketler yüklenemedi.',
+              _loadError ?? context.l10n.premiumPackagesUnavailable,
               textAlign: TextAlign.center,
               style: TextStyle(color: colors.textSecondary, fontSize: 15),
             ),
@@ -342,7 +423,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.refresh_rounded),
-              label: const Text('Tekrar Dene'),
+              label: Text(context.l10n.tryAgain),
             ),
             const SizedBox(height: 16),
             _buildLegalLinks(),
@@ -353,6 +434,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   }
 
   Widget _buildLegalLinks() {
+    final l10n = context.l10n;
     return Wrap(
       alignment: WrapAlignment.center,
       spacing: 12,
@@ -360,11 +442,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       children: [
         TextButton(
           onPressed: () => _openLegalLink(LegalLinks.privacyPolicy),
-          child: const Text('Gizlilik Politikası'),
+          child: Text(l10n.premiumPrivacyPolicy),
         ),
         TextButton(
           onPressed: () => _openLegalLink(LegalLinks.termsOfUse),
-          child: const Text('Kullanım Koşulları'),
+          child: Text(l10n.premiumTermsOfUse),
         ),
       ],
     );
@@ -375,6 +457,88 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       await launchUrl(uri, mode: LaunchMode.platformDefault);
     }
+  }
+}
+
+/// Free-trial length (whole days) for a package, or null when there is no
+/// free trial. Covers both the cross-platform `introductoryPrice` (a zero
+/// price is a free trial) and the Google Play `defaultOption.freePhase`,
+/// so the paywall lights up automatically once a trial is configured in
+/// Play Console + RevenueCat — no app release required.
+int? _freeTrialDays(Package pkg) {
+  final product = pkg.storeProduct;
+
+  final intro = product.introductoryPrice;
+  if (intro != null && intro.price == 0) {
+    return _periodToDays(intro.periodUnit, intro.periodNumberOfUnits);
+  }
+
+  final freePeriod = product.defaultOption?.freePhase?.billingPeriod;
+  if (freePeriod != null) {
+    return _periodToDays(freePeriod.unit, freePeriod.value);
+  }
+
+  return null;
+}
+
+int _periodToDays(PeriodUnit unit, int value) {
+  switch (unit) {
+    case PeriodUnit.day:
+      return value;
+    case PeriodUnit.week:
+      return value * 7;
+    case PeriodUnit.month:
+      return value * 30;
+    case PeriodUnit.year:
+      return value * 365;
+    case PeriodUnit.unknown:
+      return value;
+  }
+}
+
+/// Real annual savings vs paying the monthly plan for a year, rounded to a
+/// whole percent. Null when either plan is missing or there's no saving —
+/// so we never show a fabricated discount.
+int? _annualSavingsPercent(List<Package> packages) {
+  final monthly = _firstOfType(packages, PackageType.monthly);
+  final annual = _firstOfType(packages, PackageType.annual);
+  if (monthly == null || annual == null) return null;
+
+  final monthlyForYear = monthly.storeProduct.price * 12;
+  if (monthlyForYear <= 0) return null;
+
+  final percent = ((1 - annual.storeProduct.price / monthlyForYear) * 100)
+      .round();
+  return percent > 0 ? percent : null;
+}
+
+Package? _firstOfType(List<Package> packages, PackageType type) {
+  final i = packages.indexWhere((p) => p.packageType == type);
+  return i >= 0 ? packages[i] : null;
+}
+
+class _Pill extends StatelessWidget {
+  final String text;
+  final Color color;
+
+  const _Pill({required this.text, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 }
 

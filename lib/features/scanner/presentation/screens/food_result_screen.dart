@@ -18,6 +18,7 @@ import '../../../../core/services/share_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
+import '../providers/scanner_mode_provider.dart';
 import '../../../meals/data/services/meal_thumbnail_service.dart';
 import '../../../meals/domain/entities/meal_entry_entity.dart';
 import '../../../meals/domain/services/meal_defaults.dart';
@@ -112,9 +113,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       // than "Etli Pilav" from the start (locale-aware generation).
       final languageCode = ref.read(localeProvider).languageCode;
       // Everyone — guests included — now goes through the server-side
-      // OpenRouter proxy (cheap model, key never on the client). The device
-      // hash lets the edge function rate-limit anon (guest) callers without a
-      // user JWT. (Barcode OCR stays on direct Claude; that's untouched.)
+      // OpenRouter proxy (key never on the client). The device hash lets the
+      // edge function rate-limit anon (guest) callers without a user JWT.
+      // Label OCR (ingredients/nutrition) now uses the same OpenRouter path.
       final deviceHash = await ref.read(deviceIdServiceProvider).deviceHash();
       final result = await ref
           .read(geminiAiServiceProvider)
@@ -129,6 +130,12 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         _ingredientsController.text = result.ingredientsText ?? '';
         _loading = false;
       });
+      // Packaged retail product photographed in the AI tab → the meal
+      // estimate is meaningless for it (wrong name + harsh score). Steer the
+      // user to barcode scanning, but let them analyze anyway if they insist.
+      if (result.isPackagedProduct) {
+        _showPackagedProductDialog();
+      }
     } on GeminiServiceException catch (e, st) {
       debugPrint('[FoodResult] proxy meal analysis failed: $e');
       unawaited(Sentry.captureException(e, stackTrace: st));
@@ -148,6 +155,57 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         _loading = false;
       });
     }
+  }
+
+  /// Packaged product detected by the meal model. Offer to switch to barcode
+  /// scanning (accurate score path) or analyze the photo as a meal anyway.
+  void _showPackagedProductDialog() {
+    final l10n = context.l10n;
+    final colors = context.colors;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colors.surfaceCard,
+        icon: Icon(
+          Icons.inventory_2_outlined,
+          color: colors.primary,
+          size: 36,
+        ),
+        title: Text(
+          l10n.aiPackagedTitle,
+          style: TextStyle(color: colors.textPrimary),
+        ),
+        content: Text(
+          l10n.aiPackagedBody,
+          style: TextStyle(color: colors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              l10n.aiAnalyzeAnyway,
+              style: TextStyle(color: colors.textMuted),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              // Ask the scanner to come back up in barcode mode, then leave
+              // this screen — the scanner consumes the request on resume.
+              ref.read(pendingScannerModeProvider.notifier).state = 0;
+              context.pop();
+            },
+            child: Text(
+              l10n.scanBarcodeTitle,
+              style: TextStyle(
+                color: colors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _recalculateNutrition() async {
@@ -182,6 +240,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             confidence: _result!.confidence,
             description: _result!.description,
             rawJson: _result!.rawJson,
+            isPackagedProduct: _result!.isPackagedProduct,
           );
           // Fresh estimate → discard any portion adjustment the user
           // had applied to the previous values. The new portion_note

@@ -8,6 +8,7 @@ import 'package:nutrilens/core/providers/monetization_provider.dart';
 import 'package:nutrilens/core/services/subscription_service.dart';
 import 'package:nutrilens/core/theme/app_colors.dart';
 import 'package:nutrilens/features/premium/presentation/screens/paywall_screen.dart';
+import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class MockSubscriptionService extends Mock implements SubscriptionService {}
@@ -18,13 +19,20 @@ class MockStoreProduct extends Mock implements StoreProduct {}
 
 MockPackage _mockPackage({
   PackageType type = PackageType.monthly,
-  String price = '₺49,99/ay',
+  String priceString = '₺49,99',
+  String pricePerMonth = '₺49,99',
+  double price = 49.99,
 }) {
   final package = MockPackage();
   final product = MockStoreProduct();
   when(() => package.packageType).thenReturn(type);
   when(() => package.storeProduct).thenReturn(product);
-  when(() => product.priceString).thenReturn(price);
+  when(() => product.priceString).thenReturn(priceString);
+  when(() => product.pricePerMonthString).thenReturn(pricePerMonth);
+  when(() => product.price).thenReturn(price);
+  // No free trial / intro offer by default.
+  when(() => product.introductoryPrice).thenReturn(null);
+  when(() => product.defaultOption).thenReturn(null);
   return package;
 }
 
@@ -32,6 +40,11 @@ Widget _buildSubject({required SubscriptionService service}) {
   return ProviderScope(
     overrides: [subscriptionServiceProvider.overrideWithValue(service)],
     child: MaterialApp(
+      // Force Turkish so the TR assertions below hold; production strings
+      // are localized via AppLocalizations.
+      locale: const Locale('tr'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(extensions: const [AppColorsExtension.light]),
       home: const PaywallScreen(),
     ),
@@ -83,7 +96,7 @@ void main() {
       expect(find.text('Tekrar Dene'), findsOneWidget);
     });
 
-    testWidgets('shows Devam Et button after offerings load', (tester) async {
+    testWidgets('shows the purchase CTA after offerings load', (tester) async {
       when(
         () => mockService.getOfferings(),
       ).thenAnswer((_) async => [_mockPackage()]);
@@ -91,7 +104,8 @@ void main() {
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
 
-      expect(find.text('Devam Et'), findsOneWidget);
+      // No free trial configured → continue CTA.
+      expect(find.text("Premium'a Geç"), findsOneWidget);
     });
 
     testWidgets('shows Geri Yükle button in app bar', (tester) async {
@@ -119,11 +133,16 @@ void main() {
       expect(find.text('Kullanım Koşulları'), findsOneWidget);
     });
 
-    testWidgets('renders package cards for each offering', (tester) async {
+    testWidgets('renders package cards with per-month price and real savings', (
+      tester,
+    ) async {
       final mockMonthly = _mockPackage();
+      // Annual at ₺359,99/yr vs ₺49,99/mo*12 = ₺599,88 → ~40% saving.
       final mockAnnual = _mockPackage(
         type: PackageType.annual,
-        price: '₺359,99/yıl',
+        priceString: '₺359,99',
+        pricePerMonth: '₺30,00',
+        price: 359.99,
       );
 
       when(
@@ -135,9 +154,10 @@ void main() {
 
       expect(find.text('Aylık'), findsOneWidget);
       expect(find.text('Yıllık'), findsOneWidget);
-      expect(find.text('₺49,99/ay'), findsOneWidget);
-      expect(find.text('₺359,99/yıl'), findsOneWidget);
-      expect(find.text('%40 tasarruf'), findsOneWidget);
+      expect(find.text('₺49,99/ay'), findsOneWidget); // monthly per-month
+      expect(find.text('₺30,00/ay'), findsOneWidget); // annual per-month
+      expect(find.textContaining('₺359,99'), findsOneWidget); // billed annually
+      expect(find.text('%40 tasarruf'), findsOneWidget); // computed, not hardcoded
     });
 
     testWidgets('shows success snackbar and pops on successful purchase', (
@@ -154,7 +174,7 @@ void main() {
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Devam Et'));
+      await tester.tap(find.text("Premium'a Geç"));
       // pump() processes microtasks (future completion) without running the
       // SnackBar's 4-second auto-dismiss timer. pumpAndSettle() would run
       // that timer and dismiss the SnackBar before we can assert it.
@@ -176,11 +196,11 @@ void main() {
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Devam Et'));
+      await tester.tap(find.text("Premium'a Geç"));
       await tester.pumpAndSettle();
 
       // Screen should still be visible (not popped)
-      expect(find.text('NutriLens Premium'), findsOneWidget);
+      expect(find.text('NutriLens Premium'), findsWidgets);
     });
 
     testWidgets('restore shows success snackbar when subscription found', (

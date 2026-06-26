@@ -1826,6 +1826,24 @@ abstract class AppLocalizations {
   /// **'AI Tahmin'**
   String get aiEstimate;
 
+  /// No description provided for @aiPackagedTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paketli Ürün Algılandı'**
+  String get aiPackagedTitle;
+
+  /// No description provided for @aiPackagedBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu bir paketli market ürünü gibi görünüyor. Doğru sağlık puanı için barkodunu okutmanı öneririz. Yine de yemek olarak analiz etmek istersen devam edebilirsin.'**
+  String get aiPackagedBody;
+
+  /// No description provided for @aiAnalyzeAnyway.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yine de analiz et'**
+  String get aiAnalyzeAnyway;
+
   /// No description provided for @carbohydrates.
   ///
   /// In tr, this message translates to:
@@ -2533,6 +2551,240 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Sonuçlar forma yazılıyor...'**
   String get ocrFillingForm;
+
+  /// No description provided for @premiumTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'NutriLens Premium'**
+  String get premiumTitle;
+
+  /// No description provided for @premiumRestore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri Yükle'**
+  String get premiumRestore;
+
+  /// No description provided for @premiumActivated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium aktif! 🎉'**
+  String get premiumActivated;
+
+  /// No description provided for @premiumFeatureUnlimitedScans.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınırsız tarama'**
+  String get premiumFeatureUnlimitedScans;
+
+  /// No description provided for @premiumFeatureNoAds.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reklamsız deneyim'**
+  String get premiumFeatureNoAds;
+
+  /// No description provided for @premiumFeatureUnlimitedAi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınırsız AI tarama'**
+  String get premiumFeatureUnlimitedAi;
+
+  /// No description provided for @premiumFeaturePrioritySupport.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öncelikli destek'**
+  String get premiumFeaturePrioritySupport;
+
+  /// No description provided for @premiumPlanAnnual.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıllık'**
+  String get premiumPlanAnnual;
+
+  /// No description provided for @premiumPlanMonthly.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aylık'**
+  String get premiumPlanMonthly;
+
+  /// No description provided for @premiumPerMonth.
+  ///
+  /// In tr, this message translates to:
+  /// **'{price}/ay'**
+  String premiumPerMonth(Object price);
+
+  /// No description provided for @premiumBilledAnnually.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıllık {price} olarak faturalandırılır'**
+  String premiumBilledAnnually(Object price);
+
+  /// No description provided for @premiumSaveBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'%{percent} tasarruf'**
+  String premiumSaveBadge(Object percent);
+
+  /// No description provided for @premiumMostPopular.
+  ///
+  /// In tr, this message translates to:
+  /// **'En popüler'**
+  String get premiumMostPopular;
+
+  /// No description provided for @premiumTrialBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} gün ücretsiz'**
+  String premiumTrialBadge(Object days);
+
+  /// No description provided for @premiumTrialCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} Gün Ücretsiz Dene'**
+  String premiumTrialCta(Object days);
+
+  /// No description provided for @premiumContinueCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium\'a Geç'**
+  String get premiumContinueCta;
+
+  /// No description provided for @premiumAutoRenewNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Abonelik otomatik yenilenir. İstediğin zaman iptal edebilirsin.'**
+  String get premiumAutoRenewNote;
+
+  /// No description provided for @premiumTrialAutoRenewNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Deneme bittiğinde ücretli aboneliğe geçer. Deneme süresince istediğin zaman iptal edebilirsin.'**
+  String get premiumTrialAutoRenewNote;
+
+  /// No description provided for @premiumTrustCancelAnytime.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstediğin an iptal'**
+  String get premiumTrustCancelAnytime;
+
+  /// No description provided for @premiumTrustSecurePayment.
+  ///
+  /// In tr, this message translates to:
+  /// **'Google Play güvencesi'**
+  String get premiumTrustSecurePayment;
+
+  /// No description provided for @premiumTrustInstantAccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Anında erişim'**
+  String get premiumTrustInstantAccess;
+
+  /// No description provided for @premiumPackagesLoadError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Abonelik paketleri yüklenemedi.\nİnternet bağlantınızı kontrol edin.'**
+  String get premiumPackagesLoadError;
+
+  /// No description provided for @premiumPackagesUnavailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paketler yüklenemedi.'**
+  String get premiumPackagesUnavailable;
+
+  /// No description provided for @premiumPurchaseFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alma tamamlanamadı. Lütfen tekrar deneyin.'**
+  String get premiumPurchaseFailed;
+
+  /// No description provided for @premiumPurchaseUnexpectedError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.'**
+  String get premiumPurchaseUnexpectedError;
+
+  /// No description provided for @premiumRestored.
+  ///
+  /// In tr, this message translates to:
+  /// **'Abonelik geri yüklendi!'**
+  String get premiumRestored;
+
+  /// No description provided for @premiumNoActiveSubscription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif abonelik bulunamadı.'**
+  String get premiumNoActiveSubscription;
+
+  /// No description provided for @premiumErrorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'İnternet bağlantınızı kontrol edin.'**
+  String get premiumErrorNetwork;
+
+  /// No description provided for @premiumErrorPaymentPending.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödeme onay bekliyor. Birkaç dakika içinde aktifleşecek.'**
+  String get premiumErrorPaymentPending;
+
+  /// No description provided for @premiumErrorProductUnavailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ürün şu anda satın alınamıyor.'**
+  String get premiumErrorProductUnavailable;
+
+  /// No description provided for @premiumErrorAlreadyPurchased.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu abonelik zaten aktif. \"Geri Yükle\" seçeneğini deneyin.'**
+  String get premiumErrorAlreadyPurchased;
+
+  /// No description provided for @premiumErrorStoreProblem.
+  ///
+  /// In tr, this message translates to:
+  /// **'Play Store geçici bir sorun yaşıyor. Lütfen tekrar deneyin.'**
+  String get premiumErrorStoreProblem;
+
+  /// No description provided for @premiumPrivacyPolicy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik Politikası'**
+  String get premiumPrivacyPolicy;
+
+  /// No description provided for @premiumTermsOfUse.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanım Koşulları'**
+  String get premiumTermsOfUse;
+
+  /// No description provided for @scanLimitTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük Tarama Hakkın Doldu'**
+  String get scanLimitTitle;
+
+  /// No description provided for @scanLimitSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium üyelikle sınırsız tarama yapabilirsin.'**
+  String get scanLimitSubtitle;
+
+  /// No description provided for @scanLimitGoPremium.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium\'a Geç'**
+  String get scanLimitGoPremium;
+
+  /// No description provided for @scanLimitWatchAd.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reklam İzle → +1 Tarama'**
+  String get scanLimitWatchAd;
+
+  /// No description provided for @scanLimitClose.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kapat'**
+  String get scanLimitClose;
 }
 
 class _AppLocalizationsDelegate

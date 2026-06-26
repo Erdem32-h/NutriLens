@@ -907,6 +907,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiEstimate => 'AI Estimate';
 
   @override
+  String get aiPackagedTitle => 'Packaged Product Detected';
+
+  @override
+  String get aiPackagedBody =>
+      'This looks like a packaged retail product. For an accurate health score, scan its barcode instead. You can still continue to analyze it as a meal.';
+
+  @override
+  String get aiAnalyzeAnyway => 'Analyze anyway';
+
+  @override
   String get carbohydrates => 'Carbohydrates';
 
   @override
@@ -1294,4 +1304,140 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ocrFillingForm => 'Filling the form...';
+
+  @override
+  String get premiumTitle => 'NutriLens Premium';
+
+  @override
+  String get premiumRestore => 'Restore';
+
+  @override
+  String get premiumActivated => 'Premium active! 🎉';
+
+  @override
+  String get premiumFeatureUnlimitedScans => 'Unlimited scans';
+
+  @override
+  String get premiumFeatureNoAds => 'Ad-free experience';
+
+  @override
+  String get premiumFeatureUnlimitedAi => 'Unlimited AI analysis';
+
+  @override
+  String get premiumFeaturePrioritySupport => 'Priority support';
+
+  @override
+  String get premiumPlanAnnual => 'Annual';
+
+  @override
+  String get premiumPlanMonthly => 'Monthly';
+
+  @override
+  String premiumPerMonth(Object price) {
+    return '$price/mo';
+  }
+
+  @override
+  String premiumBilledAnnually(Object price) {
+    return 'Billed $price per year';
+  }
+
+  @override
+  String premiumSaveBadge(Object percent) {
+    return 'Save $percent%';
+  }
+
+  @override
+  String get premiumMostPopular => 'Most popular';
+
+  @override
+  String premiumTrialBadge(Object days) {
+    return '$days-day free trial';
+  }
+
+  @override
+  String premiumTrialCta(Object days) {
+    return 'Start $days-day free trial';
+  }
+
+  @override
+  String get premiumContinueCta => 'Get Premium';
+
+  @override
+  String get premiumAutoRenewNote =>
+      'Subscription auto-renews. Cancel anytime.';
+
+  @override
+  String get premiumTrialAutoRenewNote =>
+      'Converts to a paid subscription when the trial ends. Cancel anytime during the trial.';
+
+  @override
+  String get premiumTrustCancelAnytime => 'Cancel anytime';
+
+  @override
+  String get premiumTrustSecurePayment => 'Secured by Google Play';
+
+  @override
+  String get premiumTrustInstantAccess => 'Instant access';
+
+  @override
+  String get premiumPackagesLoadError =>
+      'Couldn\'t load subscription packages.\nCheck your internet connection.';
+
+  @override
+  String get premiumPackagesUnavailable => 'Couldn\'t load packages.';
+
+  @override
+  String get premiumPurchaseFailed =>
+      'Purchase couldn\'t be completed. Please try again.';
+
+  @override
+  String get premiumPurchaseUnexpectedError =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String get premiumRestored => 'Subscription restored!';
+
+  @override
+  String get premiumNoActiveSubscription => 'No active subscription found.';
+
+  @override
+  String get premiumErrorNetwork => 'Check your internet connection.';
+
+  @override
+  String get premiumErrorPaymentPending =>
+      'Payment is pending approval. It\'ll activate within a few minutes.';
+
+  @override
+  String get premiumErrorProductUnavailable =>
+      'This product isn\'t available for purchase right now.';
+
+  @override
+  String get premiumErrorAlreadyPurchased =>
+      'This subscription is already active. Try \"Restore\".';
+
+  @override
+  String get premiumErrorStoreProblem =>
+      'The Play Store is having a temporary issue. Please try again.';
+
+  @override
+  String get premiumPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get premiumTermsOfUse => 'Terms of Use';
+
+  @override
+  String get scanLimitTitle => 'Daily Scan Limit Reached';
+
+  @override
+  String get scanLimitSubtitle => 'Go Premium for unlimited scans.';
+
+  @override
+  String get scanLimitGoPremium => 'Get Premium';
+
+  @override
+  String get scanLimitWatchAd => 'Watch Ad → +1 Scan';
+
+  @override
+  String get scanLimitClose => 'Close';
 }

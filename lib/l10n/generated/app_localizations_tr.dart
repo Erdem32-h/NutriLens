@@ -909,6 +909,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get aiEstimate => 'AI Tahmin';
 
   @override
+  String get aiPackagedTitle => 'Paketli Ürün Algılandı';
+
+  @override
+  String get aiPackagedBody =>
+      'Bu bir paketli market ürünü gibi görünüyor. Doğru sağlık puanı için barkodunu okutmanı öneririz. Yine de yemek olarak analiz etmek istersen devam edebilirsin.';
+
+  @override
+  String get aiAnalyzeAnyway => 'Yine de analiz et';
+
+  @override
   String get carbohydrates => 'Karbonhidrat';
 
   @override
@@ -1294,4 +1304,141 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get ocrFillingForm => 'Sonuçlar forma yazılıyor...';
+
+  @override
+  String get premiumTitle => 'NutriLens Premium';
+
+  @override
+  String get premiumRestore => 'Geri Yükle';
+
+  @override
+  String get premiumActivated => 'Premium aktif! 🎉';
+
+  @override
+  String get premiumFeatureUnlimitedScans => 'Sınırsız tarama';
+
+  @override
+  String get premiumFeatureNoAds => 'Reklamsız deneyim';
+
+  @override
+  String get premiumFeatureUnlimitedAi => 'Sınırsız AI tarama';
+
+  @override
+  String get premiumFeaturePrioritySupport => 'Öncelikli destek';
+
+  @override
+  String get premiumPlanAnnual => 'Yıllık';
+
+  @override
+  String get premiumPlanMonthly => 'Aylık';
+
+  @override
+  String premiumPerMonth(Object price) {
+    return '$price/ay';
+  }
+
+  @override
+  String premiumBilledAnnually(Object price) {
+    return 'Yıllık $price olarak faturalandırılır';
+  }
+
+  @override
+  String premiumSaveBadge(Object percent) {
+    return '%$percent tasarruf';
+  }
+
+  @override
+  String get premiumMostPopular => 'En popüler';
+
+  @override
+  String premiumTrialBadge(Object days) {
+    return '$days gün ücretsiz';
+  }
+
+  @override
+  String premiumTrialCta(Object days) {
+    return '$days Gün Ücretsiz Dene';
+  }
+
+  @override
+  String get premiumContinueCta => 'Premium\'a Geç';
+
+  @override
+  String get premiumAutoRenewNote =>
+      'Abonelik otomatik yenilenir. İstediğin zaman iptal edebilirsin.';
+
+  @override
+  String get premiumTrialAutoRenewNote =>
+      'Deneme bittiğinde ücretli aboneliğe geçer. Deneme süresince istediğin zaman iptal edebilirsin.';
+
+  @override
+  String get premiumTrustCancelAnytime => 'İstediğin an iptal';
+
+  @override
+  String get premiumTrustSecurePayment => 'Google Play güvencesi';
+
+  @override
+  String get premiumTrustInstantAccess => 'Anında erişim';
+
+  @override
+  String get premiumPackagesLoadError =>
+      'Abonelik paketleri yüklenemedi.\nİnternet bağlantınızı kontrol edin.';
+
+  @override
+  String get premiumPackagesUnavailable => 'Paketler yüklenemedi.';
+
+  @override
+  String get premiumPurchaseFailed =>
+      'Satın alma tamamlanamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get premiumPurchaseUnexpectedError =>
+      'Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.';
+
+  @override
+  String get premiumRestored => 'Abonelik geri yüklendi!';
+
+  @override
+  String get premiumNoActiveSubscription => 'Aktif abonelik bulunamadı.';
+
+  @override
+  String get premiumErrorNetwork => 'İnternet bağlantınızı kontrol edin.';
+
+  @override
+  String get premiumErrorPaymentPending =>
+      'Ödeme onay bekliyor. Birkaç dakika içinde aktifleşecek.';
+
+  @override
+  String get premiumErrorProductUnavailable =>
+      'Bu ürün şu anda satın alınamıyor.';
+
+  @override
+  String get premiumErrorAlreadyPurchased =>
+      'Bu abonelik zaten aktif. \"Geri Yükle\" seçeneğini deneyin.';
+
+  @override
+  String get premiumErrorStoreProblem =>
+      'Play Store geçici bir sorun yaşıyor. Lütfen tekrar deneyin.';
+
+  @override
+  String get premiumPrivacyPolicy => 'Gizlilik Politikası';
+
+  @override
+  String get premiumTermsOfUse => 'Kullanım Koşulları';
+
+  @override
+  String get scanLimitTitle => 'Günlük Tarama Hakkın Doldu';
+
+  @override
+  String get scanLimitSubtitle =>
+      'Premium üyelikle sınırsız tarama yapabilirsin.';
+
+  @override
+  String get scanLimitGoPremium => 'Premium\'a Geç';
+
+  @override
+  String get scanLimitWatchAd => 'Reklam İzle → +1 Tarama';
+
+  @override
+  String get scanLimitClose => 'Kapat';
 }

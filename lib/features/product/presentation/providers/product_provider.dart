@@ -18,6 +18,7 @@ import '../../data/datasources/off_product_source.dart';
 import '../../data/datasources/product_local_datasource.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/datasources/product_source.dart';
+import '../../data/datasources/usda_fdc_source.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -74,6 +75,13 @@ final barcodeLookupSourceProvider = Provider<BarcodeLookupSource>((ref) {
   return BarcodeLookupSource(ref.watch(dioProvider));
 });
 
+final usdaFdcSourceProvider = Provider<UsdaFdcSource>((ref) {
+  return UsdaFdcSource(
+    ref.watch(dioProvider),
+    dotenv.env['USDA_FDC_API_KEY'] ?? '',
+  );
+});
+
 // --- Resolver ---
 
 final productResolverProvider = Provider<ProductResolver>((ref) {
@@ -81,6 +89,7 @@ final productResolverProvider = Provider<ProductResolver>((ref) {
     ref.watch(communityProductSourceProvider),
     ref.watch(offProductSourceProvider),
     ref.watch(barcodeLookupSourceProvider),
+    ref.watch(usdaFdcSourceProvider),
   ]);
 });
 

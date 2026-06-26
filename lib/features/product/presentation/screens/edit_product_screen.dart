@@ -10,6 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/product_categories.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/providers/monetization_provider.dart'
+    show deviceIdServiceProvider;
 import '../../../../core/services/gemini_ai_service.dart'
     show GeminiServiceException, NutritionOcrResult;
 import '../../../../core/theme/app_colors.dart';
@@ -159,7 +161,9 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
                     ),
                   )
                 : Text(
-                    l10n.saveChanges,
+                    // Same label + same handler as the bottom CTA: both save
+                    // then open the product detail (score) page via _save.
+                    l10n.saveAndView,
                     style: TextStyle(
                       color: context.colors.primary,
                       fontWeight: FontWeight.w600,
@@ -602,11 +606,12 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     });
 
     try {
+      final deviceHash = await ref.read(deviceIdServiceProvider).deviceHash();
       switch (target) {
         case _OcrTarget.ingredients:
-          // Claude vision is the OCR path for ingredients.
-          // Send the label photo directly to Claude vision using the app's
-          // selected language, including allergen warnings in the returned text.
+          // Ingredients OCR goes through the gemini-proxy edge function
+          // (OpenRouter → gemini-2.5-flash), including allergen warnings in
+          // the returned text. Anon-allowed + device-hash rate-limited.
           final rawBytes = await File(xFile.path).readAsBytes();
           _setOcrStage(_OcrStage.preparingImage);
           final prepared = await prepareOcrImage(rawBytes);
@@ -617,7 +622,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             _setOcrStage(_OcrStage.sendingToAi);
             ingredientsText = await ref
                 .read(geminiAiServiceProvider)
-                .extractIngredientsFromBase64(prepared.base64);
+                .extractIngredientsFromBase64(
+                  prepared.base64,
+                  deviceHash: deviceHash,
+                );
           } on GeminiServiceException catch (e) {
             debugPrint('[OCR] Gemini ingredients service failure: $e');
             if (!mounted) return;
@@ -659,10 +667,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           final rawBytes = await File(xFile.path).readAsBytes();
 
           // Nutrition tables often have both "100 g" and "portion" columns,
-          // so send the photo directly to Claude vision and let the prompt
-          // select the 100 g / 100 ml values. No Supabase proxy and no ML Kit
-          // fallback here: if Anthropic is not configured/reachable, show a
-          // service warning instead of the misleading "no text found" copy.
+          // so the prompt picks the 100 g / 100 ml values. Goes through the
+          // gemini-proxy edge function (OpenRouter → gemini-2.5-flash); no ML
+          // Kit fallback — if the service is unreachable, show a service
+          // warning instead of the misleading "no text found" copy.
           late final NutritionOcrResult nutritionResult;
           try {
             _setOcrStage(_OcrStage.preparingImage);
@@ -670,7 +678,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             _setOcrStage(_OcrStage.sendingToAi);
             final result = await ref
                 .read(geminiAiServiceProvider)
-                .extractNutritionFromBase64(prepared.base64);
+                .extractNutritionFromBase64(
+                  prepared.base64,
+                  deviceHash: deviceHash,
+                );
             nutritionResult =
                 result ??
                 const NutritionOcrResult(

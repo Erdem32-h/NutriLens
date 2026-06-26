@@ -10,5 +10,9 @@ abstract final class ApiConstants {
   static const String upcItemDbBaseUrl =
       'https://api.upcitemdb.com/prod/trial/lookup';
 
+  // USDA FoodData Central (free, data.gov key) — branded food search.
+  static const String usdaFdcSearchUrl =
+      'https://api.nal.usda.gov/fdc/v1/foods/search';
+
   static const Duration requestTimeout = Duration(seconds: 15);
 }

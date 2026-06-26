@@ -34,6 +34,7 @@ workflows:
           echo "ADMOB_REWARDED_IOS=$ADMOB_REWARDED_IOS" >> .env
           echo "PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL" >> .env
           echo "TERMS_OF_USE_URL=$TERMS_OF_USE_URL" >> .env
+          echo "USDA_FDC_API_KEY=$USDA_FDC_API_KEY" >> .env
       - name: Disable Swift Package Manager
         # google_mobile_ads is CocoaPods-only and depends on
         # webview_flutter_wkwebview, which Flutter's auto-SPM integration
@@ -223,6 +224,7 @@ workflows:
           echo "ADMOB_REWARDED_ANDROID=$ADMOB_REWARDED_ANDROID" >> .env
           echo "PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL" >> .env
           echo "TERMS_OF_USE_URL=$TERMS_OF_USE_URL" >> .env
+          echo "USDA_FDC_API_KEY=$USDA_FDC_API_KEY" >> .env
       - name: Flutter pub get
         script: flutter pub get
       - name: Code generation

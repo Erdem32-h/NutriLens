@@ -159,19 +159,26 @@ class GeminiAiService {
   /// Returns `null` when Gemini ran but couldn't find an ingredients list.
   /// Throws [GeminiServiceException] when the service itself failed (auth,
   /// network, rate limit) — caller should warn the user before falling back.
-  Future<String?> extractIngredientsFromImage(Uint8List imageBytes) async {
+  Future<String?> extractIngredientsFromImage(
+    Uint8List imageBytes, {
+    required String deviceHash,
+  }) async {
     final base64Image = base64Encode(imageBytes);
-    return extractIngredientsFromBase64(base64Image);
+    return extractIngredientsFromBase64(base64Image, deviceHash: deviceHash);
   }
 
   /// Same as [extractIngredientsFromImage] but for callers that already
   /// have a base64-encoded payload (e.g. produced on a worker isolate by
   /// `prepareOcrImage`). Skipping a redundant `base64Encode` on the UI
   /// thread shaves the second hot spot that was contributing to ANR.
-  Future<String?> extractIngredientsFromBase64(String base64Image) async {
+  Future<String?> extractIngredientsFromBase64(
+    String base64Image, {
+    required String deviceHash,
+  }) async {
     final response = await _invoke('ocr_ingredients_image', {
       'image_base64': base64Image,
-    });
+      'device_hash': deviceHash,
+    }, requireAuth: false);
     final result = (response['result'] as String?)?.trim();
     if (result == null || result.isEmpty) return null;
     if (result.contains(_ingredientsNotFoundSentinel)) return null;
@@ -209,19 +216,25 @@ class GeminiAiService {
   /// Throws [GeminiServiceException] when the service itself failed (auth,
   /// network, rate limit) — caller should show a "service down" dialog.
   Future<NutritionOcrResult?> extractNutritionFromImage(
-    Uint8List imageBytes,
-  ) async {
-    return extractNutritionFromBase64(base64Encode(imageBytes));
+    Uint8List imageBytes, {
+    required String deviceHash,
+  }) async {
+    return extractNutritionFromBase64(
+      base64Encode(imageBytes),
+      deviceHash: deviceHash,
+    );
   }
 
   /// Same as [extractNutritionFromImage] but for pre-encoded payloads —
   /// see [extractIngredientsFromBase64] for rationale.
   Future<NutritionOcrResult?> extractNutritionFromBase64(
-    String base64Image,
-  ) async {
+    String base64Image, {
+    required String deviceHash,
+  }) async {
     final response = await _invoke('ocr_nutrition_image', {
       'image_base64': base64Image,
-    });
+      'device_hash': deviceHash,
+    }, requireAuth: false);
     final result = (response['result'] as String?)?.trim();
     if (result == null || result.isEmpty) return null;
 

@@ -298,6 +298,9 @@
   "tryAgain": "Tekrar Dene",
   "aiLowConfidence": "Düşük güven — sonuçlar tahminidir",
   "aiEstimate": "AI Tahmin",
+  "aiPackagedTitle": "Paketli Ürün Algılandı",
+  "aiPackagedBody": "Bu bir paketli market ürünü gibi görünüyor. Doğru sağlık puanı için barkodunu okutmanı öneririz. Yine de yemek olarak analiz etmek istersen devam edebilirsin.",
+  "aiAnalyzeAnyway": "Yine de analiz et",
   "carbohydrates": "Karbonhidrat",
   "description": "Açıklama",
   "turkishCodex": "Türk Kodeksi",
@@ -437,5 +440,60 @@
   "favoritesLoadError": "Favoriler yüklenemedi",
   "ocrPreparingImage": "Fotoğraf hazırlanıyor...",
   "ocrAnalyzingWithAi": "Yapay zeka ile analiz ediliyor...",
-  "ocrFillingForm": "Sonuçlar forma yazılıyor..."
+  "ocrFillingForm": "Sonuçlar forma yazılıyor...",
+
+  "premiumTitle": "NutriLens Premium",
+  "premiumRestore": "Geri Yükle",
+  "premiumActivated": "Premium aktif! 🎉",
+  "premiumFeatureUnlimitedScans": "Sınırsız tarama",
+  "premiumFeatureNoAds": "Reklamsız deneyim",
+  "premiumFeatureUnlimitedAi": "Sınırsız AI tarama",
+  "premiumFeaturePrioritySupport": "Öncelikli destek",
+  "premiumPlanAnnual": "Yıllık",
+  "premiumPlanMonthly": "Aylık",
+  "premiumPerMonth": "{price}/ay",
+  "@premiumPerMonth": {
+    "placeholders": { "price": {} }
+  },
+  "premiumBilledAnnually": "Yıllık {price} olarak faturalandırılır",
+  "@premiumBilledAnnually": {
+    "placeholders": { "price": {} }
+  },
+  "premiumSaveBadge": "%{percent} tasarruf",
+  "@premiumSaveBadge": {
+    "placeholders": { "percent": {} }
+  },
+  "premiumMostPopular": "En popüler",
+  "premiumTrialBadge": "{days} gün ücretsiz",
+  "@premiumTrialBadge": {
+    "placeholders": { "days": {} }
+  },
+  "premiumTrialCta": "{days} Gün Ücretsiz Dene",
+  "@premiumTrialCta": {
+    "placeholders": { "days": {} }
+  },
+  "premiumContinueCta": "Premium'a Geç",
+  "premiumAutoRenewNote": "Abonelik otomatik yenilenir. İstediğin zaman iptal edebilirsin.",
+  "premiumTrialAutoRenewNote": "Deneme bittiğinde ücretli aboneliğe geçer. Deneme süresince istediğin zaman iptal edebilirsin.",
+  "premiumTrustCancelAnytime": "İstediğin an iptal",
+  "premiumTrustSecurePayment": "Google Play güvencesi",
+  "premiumTrustInstantAccess": "Anında erişim",
+  "premiumPackagesLoadError": "Abonelik paketleri yüklenemedi.\nİnternet bağlantınızı kontrol edin.",
+  "premiumPackagesUnavailable": "Paketler yüklenemedi.",
+  "premiumPurchaseFailed": "Satın alma tamamlanamadı. Lütfen tekrar deneyin.",
+  "premiumPurchaseUnexpectedError": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
+  "premiumRestored": "Abonelik geri yüklendi!",
+  "premiumNoActiveSubscription": "Aktif abonelik bulunamadı.",
+  "premiumErrorNetwork": "İnternet bağlantınızı kontrol edin.",
+  "premiumErrorPaymentPending": "Ödeme onay bekliyor. Birkaç dakika içinde aktifleşecek.",
+  "premiumErrorProductUnavailable": "Bu ürün şu anda satın alınamıyor.",
+  "premiumErrorAlreadyPurchased": "Bu abonelik zaten aktif. \"Geri Yükle\" seçeneğini deneyin.",
+  "premiumErrorStoreProblem": "Play Store geçici bir sorun yaşıyor. Lütfen tekrar deneyin.",
+  "premiumPrivacyPolicy": "Gizlilik Politikası",
+  "premiumTermsOfUse": "Kullanım Koşulları",
+  "scanLimitTitle": "Günlük Tarama Hakkın Doldu",
+  "scanLimitSubtitle": "Premium üyelikle sınırsız tarama yapabilirsin.",
+  "scanLimitGoPremium": "Premium'a Geç",
+  "scanLimitWatchAd": "Reklam İzle → +1 Tarama",
+  "scanLimitClose": "Kapat"
 }
