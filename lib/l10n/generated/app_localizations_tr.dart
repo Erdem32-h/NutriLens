@@ -551,7 +551,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get saveChanges => 'Değişiklikleri Kaydet';
 
   @override
-  String get cancel => 'İptal';
+  String get cancel => 'Kapat';
 
   @override
   String get saving => 'Kaydediliyor...';
@@ -1444,4 +1444,16 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get scanLimitClose => 'Kapat';
+
+  @override
+  String get enterBarcodeManually => 'Barkodu El ile Girin';
+
+  @override
+  String get barcodeInputHint => '8 veya 13 haneli barkod girin';
+
+  @override
+  String get barcodeInputLabel => 'Barkod';
+
+  @override
+  String get search => 'Ara';
 }

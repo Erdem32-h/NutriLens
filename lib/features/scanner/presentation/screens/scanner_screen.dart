@@ -349,42 +349,26 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     }
   }
 
-  Future<void> _handleBarcode(BarcodeCapture capture) async {
-    if (_isNavigating || _scanMode != 0) return;
-
-    final barcodes = capture.barcodes;
-    if (barcodes.isEmpty) return;
-
-    final barcode = barcodes.first;
-    final value = barcode.rawValue;
-    if (value == null || value.isEmpty) return;
-
-    final now = DateTime.now();
-    if (_lastBarcode == value && _lastScanTime != null) {
-      final elapsed = now.difference(_lastScanTime!).inMilliseconds;
-      if (elapsed < AppConstants.scanDebounceMs) return;
-    }
-
-    _lastBarcode = value;
-    _lastScanTime = now;
-
-    debugPrint('[Scanner] scanned: "$value" (format: ${barcode.format})');
+  Future<void> _processBarcode(String value) async {
+    if (_isNavigating) return;
 
     // Reject URLs and non-barcode values that would break routing.
     // Logic lives in `BarcodeValidator` so it can be unit-tested.
     if (!BarcodeValidator.isValidBarcode(value)) {
       debugPrint('[Scanner] rejected — not a valid barcode');
       HapticFeedback.heavyImpact();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.invalidBarcode),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.invalidBarcode),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            duration: const Duration(seconds: 3),
           ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+        );
+      }
       return;
     }
 
@@ -432,6 +416,103 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
         await _restartBarcodeScanner();
       }
     });
+  }
+
+  Future<void> _handleBarcode(BarcodeCapture capture) async {
+    if (_isNavigating || _scanMode != 0) return;
+
+    final barcodes = capture.barcodes;
+    if (barcodes.isEmpty) return;
+
+    final barcode = barcodes.first;
+    final value = barcode.rawValue;
+    if (value == null || value.isEmpty) return;
+
+    final now = DateTime.now();
+    if (_lastBarcode == value && _lastScanTime != null) {
+      final elapsed = now.difference(_lastScanTime!).inMilliseconds;
+      if (elapsed < AppConstants.scanDebounceMs) return;
+    }
+
+    _lastBarcode = value;
+    _lastScanTime = now;
+
+    debugPrint('[Scanner] scanned: "$value" (format: ${barcode.format})');
+
+    await _processBarcode(value);
+  }
+
+  Future<void> _showManualBarcodeDialog() async {
+    final textController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        final colors = Theme.of(context).extension<AppColorsExtension>()!;
+        final l10n = context.l10n;
+
+        return AlertDialog(
+          backgroundColor: colors.surfaceCard,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: colors.border),
+          ),
+          title: Text(
+            l10n.enterBarcodeManually,
+            style: TextStyle(color: colors.textPrimary),
+          ),
+          content: Form(
+            key: formKey,
+            child: TextFormField(
+              controller: textController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(13),
+              ],
+              style: TextStyle(color: colors.textPrimary),
+              decoration: InputDecoration(
+                hintText: l10n.barcodeInputHint,
+                labelText: l10n.barcodeInputLabel,
+              ),
+              validator: (v) {
+                if (v == null || v.isEmpty) {
+                  return l10n.enterBarcodeManually;
+                }
+                if (!BarcodeValidator.isValidBarcode(v)) {
+                  return l10n.invalidBarcode;
+                }
+                return null;
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                l10n.cancel,
+                style: TextStyle(color: colors.textMuted),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  final barcode = textController.text.trim();
+                  Navigator.of(context).pop();
+                  _processBarcode(barcode);
+                }
+              },
+              child: Text(
+                l10n.search,
+                style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    textController.dispose();
   }
 
   Future<void> _captureForAi() async {
@@ -701,50 +782,73 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                         ),
                       ),
 
-                      // Flash toggle — barcode mode only. The torch belongs to
-                      // the mobile_scanner controller; in AI mode that
-                      // controller isn't running, so the button is hidden
-                      // instead of being a no-op that crashed with
-                      // controllerUninitialized (Sentry NUTRILENS-2).
+                      // Flash & Manual entry buttons — barcode mode only.
                       if (_scanMode == 0)
-                        ValueListenableBuilder<MobileScannerState>(
-                          valueListenable: _controller,
-                          builder: (context, state, child) {
-                            final isOn = state.torchState == TorchState.on;
-                            return GestureDetector(
-                              // Guard the brief windows where the controller
-                              // isn't initialized yet (initial boot, and the
-                              // HAL-cycle restart in _restartBarcodeScanner) —
-                              // toggleTorch() throws otherwise.
-                              onTap: state.isInitialized
-                                  ? () => _controller.toggleTorch()
-                                  : null,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              onTap: _showManualBarcodeDialog,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 14,
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: isOn
-                                      ? colors.primary.withValues(alpha: 0.25)
-                                      : Colors.black.withValues(alpha: 0.5),
+                                  color: Colors.black.withValues(alpha: 0.5),
                                   borderRadius: BorderRadius.circular(50),
                                   border: Border.all(
-                                    color: isOn
-                                        ? colors.primary.withValues(alpha: 0.6)
-                                        : Colors.white.withValues(alpha: 0.15),
+                                    color: Colors.white.withValues(alpha: 0.15),
                                   ),
                                 ),
-                                child: Icon(
-                                  isOn
-                                      ? Icons.flash_on_rounded
-                                      : Icons.flash_off_rounded,
-                                  color: isOn ? colors.primary : Colors.white,
+                                child: const Icon(
+                                  Icons.keyboard_rounded,
+                                  color: Colors.white,
                                   size: 20,
                                 ),
                               ),
-                            );
-                          },
+                            ),
+                            const SizedBox(width: 8),
+                            ValueListenableBuilder<MobileScannerState>(
+                              valueListenable: _controller,
+                              builder: (context, state, child) {
+                                final isOn = state.torchState == TorchState.on;
+                                return GestureDetector(
+                                  // Guard the brief windows where the controller
+                                  // isn't initialized yet (initial boot, and the
+                                  // HAL-cycle restart in _restartBarcodeScanner) —
+                                  // toggleTorch() throws otherwise.
+                                  onTap: state.isInitialized
+                                      ? () => _controller.toggleTorch()
+                                      : null,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isOn
+                                          ? colors.primary.withValues(alpha: 0.25)
+                                          : Colors.black.withValues(alpha: 0.5),
+                                      borderRadius: BorderRadius.circular(50),
+                                      border: Border.all(
+                                        color: isOn
+                                            ? colors.primary.withValues(alpha: 0.6)
+                                            : Colors.white.withValues(alpha: 0.15),
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      isOn
+                                          ? Icons.flash_on_rounded
+                                          : Icons.flash_off_rounded,
+                                      color: isOn ? colors.primary : Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                     ],
                   ),

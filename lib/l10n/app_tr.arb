@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "tr",
   "appTitle": "NutriLens",
   "scanner": "Tarayıcı",
@@ -496,5 +496,10 @@
   "scanLimitSubtitle": "Premium üyelikle sınırsız tarama yapabilirsin.",
   "scanLimitGoPremium": "Premium'a Geç",
   "scanLimitWatchAd": "Reklam İzle → +1 Tarama",
-  "scanLimitClose": "Kapat"
+  "scanLimitClose": "Kapat",
+  "enterBarcodeManually": "Barkodu El ile Girin",
+  "barcodeInputHint": "8 veya 13 haneli barkod girin",
+  "barcodeInputLabel": "Barkod",
+  "search": "Ara",
+  "cancel": "Kapat"
 }

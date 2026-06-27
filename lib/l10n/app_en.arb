@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "en",
   "appTitle": "NutriLens",
   "scanner": "Scanner",
@@ -482,5 +482,10 @@
   "scanLimitSubtitle": "Go Premium for unlimited scans.",
   "scanLimitGoPremium": "Get Premium",
   "scanLimitWatchAd": "Watch Ad → +1 Scan",
-  "scanLimitClose": "Close"
+  "scanLimitClose": "Close",
+  "enterBarcodeManually": "Enter Barcode Manually",
+  "barcodeInputHint": "Enter 8 or 13 digit barcode",
+  "barcodeInputLabel": "Barcode",
+  "search": "Search",
+  "cancel": "Cancel"
 }

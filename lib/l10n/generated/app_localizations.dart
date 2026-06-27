@@ -1163,7 +1163,7 @@ abstract class AppLocalizations {
   /// No description provided for @cancel.
   ///
   /// In tr, this message translates to:
-  /// **'İptal'**
+  /// **'Kapat'**
   String get cancel;
 
   /// No description provided for @saving.
@@ -2791,6 +2791,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kapat'**
   String get scanLimitClose;
+
+  /// No description provided for @enterBarcodeManually.
+  ///
+  /// In tr, this message translates to:
+  /// **'Barkodu El ile Girin'**
+  String get enterBarcodeManually;
+
+  /// No description provided for @barcodeInputHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'8 veya 13 haneli barkod girin'**
+  String get barcodeInputHint;
+
+  /// No description provided for @barcodeInputLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Barkod'**
+  String get barcodeInputLabel;
+
+  /// No description provided for @search.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ara'**
+  String get search;
 }
 
 class _AppLocalizationsDelegate

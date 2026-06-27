@@ -1443,4 +1443,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanLimitClose => 'Close';
+
+  @override
+  String get enterBarcodeManually => 'Enter Barcode Manually';
+
+  @override
+  String get barcodeInputHint => 'Enter 8 or 13 digit barcode';
+
+  @override
+  String get barcodeInputLabel => 'Barcode';
+
+  @override
+  String get search => 'Search';
 }
