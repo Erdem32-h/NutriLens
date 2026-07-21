@@ -317,10 +317,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get systemMode => 'Padrão do Sistema';
 
   @override
-  String get turkish => 'Türkçe';
+  String get turkish => 'Turco';
 
   @override
-  String get english => 'English';
+  String get english => 'Inglês';
 
   @override
   String get tabHealth => 'HEALTH';
@@ -569,10 +569,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get dataManagement => 'Gerenciamento de Dados';
 
   @override
-  String get deleteAllData => 'Delete all data';
+  String get deleteAllData => 'Excluir todos os dados';
 
   @override
-  String get userData => 'User data';
+  String get userData => 'Dados do usuário';
 
   @override
   String get deleteAllDataTitle => 'Delete all data?';
@@ -596,7 +596,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get deleteAccount => 'Excluir Conta';
 
   @override
-  String get permanent => 'Permanent';
+  String get permanent => 'Permanente';
 
   @override
   String get deleteAccountTitle => 'Delete account permanently?';
@@ -850,10 +850,10 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get tabBarcode => 'Barcode';
+  String get tabBarcode => 'Código de Barras';
 
   @override
-  String get tabAiAnalysis => 'AI Analysis';
+  String get tabAiAnalysis => 'Análise IA';
 
   @override
   String get aiAnalysisHint => 'Frame the food in the viewfinder';
@@ -988,14 +988,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get guestUser => 'Usuário Convidado';
 
   @override
-  String get guestDataLocal => 'Your data stays on this device only';
+  String get guestDataLocal => 'Seus dados estão apenas neste dispositivo';
 
   @override
-  String get createAccountBackupTitle => 'Create an account, back up your data';
+  String get createAccountBackupTitle =>
+      'Crie uma conta, faça backup dos seus dados';
 
   @override
   String get createAccountBackupSubtitle =>
-      'Scan history and meals on every device';
+      'Histórico de escaneamento e refeições em todos os dispositivos';
 
   @override
   String get guestLastFreeScan =>
@@ -1015,79 +1016,79 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get guestFeatureLockedMessage =>
-      'This feature lives in the cloud. Create an account and sign in to enable it.';
+      'Este recurso é salvo na nuvem. Crie uma conta para ativá-lo.';
 
   @override
-  String get createAccountCta => 'Create account';
+  String get createAccountCta => 'Criar conta';
 
   @override
-  String get notNow => 'Not now';
+  String get notNow => 'Agora não';
 
   @override
-  String get featureFavorites => 'Favorites';
+  String get featureFavorites => 'Favoritos';
 
   @override
-  String get featureBlacklist => 'Blocklist';
+  String get featureBlacklist => 'Lista negra';
 
   @override
   String get featurePremium => 'Recurso Premium';
 
   @override
-  String get featureAddProduct => 'Adding a product';
+  String get featureAddProduct => 'Adicionar produto';
 
   @override
-  String get migrationTitle => 'You have guest data';
+  String get migrationTitle => 'Você tem dados de convidado';
 
   @override
   String migrationMessage(String dataLine) {
-    return 'This device has $dataLine. Move it to your new account?';
+    return 'Este dispositivo possui $dataLine. Deseja movê-los para sua nova conta?';
   }
 
   @override
-  String get migrationYes => 'Yes, upload to my account';
+  String get migrationYes => 'Sim, enviar para minha conta';
 
   @override
-  String get migrationNo => 'Start fresh';
+  String get migrationNo => 'Começar do zero';
 
   @override
   String scanCountUnit(int count) {
-    return '$count scans';
+    return '$count escaneamentos';
   }
 
   @override
   String mealCountUnit(int count) {
-    return '$count meals';
+    return '$count refeições';
   }
 
   @override
-  String get forgotPassword => 'Forgot password';
+  String get forgotPassword => 'Esqueceu a senha?';
 
   @override
-  String get forgotPasswordTitle => 'Forgot your password?';
+  String get forgotPasswordTitle => 'Esqueceu sua senha?';
 
   @override
   String get forgotPasswordSubtitle =>
-      'Enter the email tied to your account; we\'ll send a reset link.';
+      'Digite o e-mail associado à sua conta para enviarmos um link de redefinição.';
 
   @override
   String get sendResetLink => 'Enviar Link de Redefinição';
 
   @override
-  String get resetLinkSentTitle => 'Link sent';
+  String get resetLinkSentTitle => 'Link enviado';
 
   @override
   String get resetLinkSentMessage =>
-      'Check your inbox. Tap the link to set a new password.';
+      'Verifique sua caixa de entrada. Toque no link para definir uma nova senha.';
 
   @override
-  String get backToLogin => 'Back to login';
+  String get backToLogin => 'Voltar ao login';
 
   @override
-  String get resetPasswordTitle => 'Set a new password';
+  String get resetPasswordTitle => 'Definir nova senha';
 
   @override
   String get resetPasswordSubtitle =>
-      'Pick a strong password to protect your account.';
+      'Escolha uma senha forte para proteger sua conta.';
 
   @override
   String get newPassword => 'Nova Senha';
@@ -1096,229 +1097,229 @@ class AppLocalizationsPt extends AppLocalizations {
   String get updatePassword => 'Atualizar Senha';
 
   @override
-  String get passwordsDontMatch => 'Passwords don\'t match';
+  String get passwordsDontMatch => 'As senhas não coincidem';
 
   @override
   String get passwordUpdated => 'Senha atualizada com sucesso';
 
   @override
-  String get enterPasswordAgain => 'Enter password again';
+  String get enterPasswordAgain => 'Digite a senha novamente';
 
   @override
   String guestScanCounter(int remaining) {
-    return '$remaining/5 free scans';
+    return '$remaining/5 escaneamentos gratuitos';
   }
 
   @override
   String get appVersion => 'Versão do Aplicativo';
 
   @override
-  String get testCrashReporting => 'Test crash reporting';
+  String get testCrashReporting => 'Testar relatório de falhas';
 
   @override
-  String get myMeals => 'My Meals';
+  String get myMeals => 'Minhas Refeições';
 
   @override
-  String get mealsLoadError => 'Meals could not be loaded.';
+  String get mealsLoadError => 'Não foi possível carregar as refeições.';
 
   @override
-  String get summaryToday => 'Today';
+  String get summaryToday => 'Hoje';
 
   @override
-  String get summaryWeek => 'Week';
+  String get summaryWeek => 'Semana';
 
   @override
-  String get summaryMonth => 'Month';
+  String get summaryMonth => 'Mês';
 
   @override
-  String get scoreLabel => 'Score';
+  String get scoreLabel => 'Pontuação';
 
   @override
-  String get deleteMealTitle => 'Delete meal';
+  String get deleteMealTitle => 'Excluir refeição';
 
   @override
   String deleteMealConfirm(String name) {
-    return 'Delete \"$name\"?';
+    return 'Excluir \"$name\"?';
   }
 
   @override
-  String get noMealsYet => 'No meals yet';
+  String get noMealsYet => 'Nenhuma refeição ainda';
 
   @override
   String get noMealsHint =>
-      'Use AI Analysis on the scan screen to photograph your food and save it here.';
+      'Use a Análise de IA na tela de escaneamento para fotografar sua refeição e salvá-la aqui.';
 
   @override
-  String get ingredientsTitle => 'Ingredients';
+  String get ingredientsTitle => 'Ingredientes';
 
   @override
-  String get confidenceSuffix => 'confidence';
+  String get confidenceSuffix => 'confiança';
 
   @override
   String get aiConfidenceHint =>
-      'How sure the AI is about the detected food, portion size and calorie estimate.';
+      'Grau de certeza da IA sobre o alimento, porção e estimativa de calorias.';
 
   @override
-  String get risk1 => 'Risk-free';
+  String get risk1 => 'Sem risco';
 
   @override
-  String get risk2 => 'Low risk';
+  String get risk2 => 'Risco baixo';
 
   @override
-  String get risk3 => 'Moderate risk';
+  String get risk3 => 'Risco moderado';
 
   @override
-  String get risk4 => 'Risky';
+  String get risk4 => 'Risco alto';
 
   @override
-  String get risk5 => 'Very risky';
+  String get risk5 => 'Risco muito alto';
 
   @override
-  String get mealSavedToast => 'Meal saved';
+  String get mealSavedToast => 'Refeição salva';
 
   @override
-  String get mealNameLabel => 'Meal name';
+  String get mealNameLabel => 'Nome da refeição';
 
   @override
-  String get mealSourceLabel => 'Source';
+  String get mealSourceLabel => 'Origem';
 
   @override
-  String get estimatedContent => 'Estimated content';
+  String get estimatedContent => 'Conteúdo estimado';
 
   @override
-  String get recalculate => 'Recalculate';
+  String get recalculate => 'Recalcular';
 
   @override
   String get recalcHint =>
-      'Edit the content and/or add a portion note; both are factored in.';
+      'Edite o conteúdo e/ou adicione uma nota de porção; ambos serão considerados.';
 
   @override
-  String get saveToMeals => 'Save to meals';
+  String get saveToMeals => 'Salvar nas refeições';
 
   @override
-  String get portionQuestion => 'How much did you eat?';
+  String get portionQuestion => 'Quanto você comeu?';
 
   @override
-  String get portionLittle => 'Little';
+  String get portionLittle => 'Pouco';
 
   @override
   String get portionNormal => 'Normal';
 
   @override
-  String get portionLots => 'Lots';
+  String get portionLots => 'Bastante';
 
   @override
-  String get portionTwoServings => 'Two servings';
+  String get portionTwoServings => 'Duas porções';
 
   @override
   String get recalcFailedNutrition =>
-      'Couldn\'t calculate nutrition values, try again.';
+      'Não foi possível calcular os valores nutricionais, tente novamente.';
 
   @override
-  String get recalcFailed => 'Recalculation failed.';
+  String get recalcFailed => 'Falha ao recalcular.';
 
   @override
-  String get mealTypeBreakfast => 'Breakfast';
+  String get mealTypeBreakfast => 'Café da Manhã';
 
   @override
-  String get mealTypeLunch => 'Lunch';
+  String get mealTypeLunch => 'Almoço';
 
   @override
-  String get mealTypeDinner => 'Dinner';
+  String get mealTypeDinner => 'Jantar';
 
   @override
-  String get mealTypeSnack => 'Snack';
+  String get mealTypeSnack => 'Lanche';
 
   @override
-  String get mealBrandHomemade => 'Homemade';
+  String get mealBrandHomemade => 'Caseiro';
 
   @override
-  String get mealBrandReadyMade => 'Ready-made';
+  String get mealBrandReadyMade => 'Industrializado';
 
   @override
-  String get additiveNotFound => 'No information found for this additive.';
+  String get additiveNotFound =>
+      'Nenhuma informação encontrada para este aditivo.';
 
   @override
   String get dietarySuitabilityNote =>
-      'Estimated from detected additives and ingredients — not a certification.';
+      'Estimado a partir dos ingredientes e aditivos detectados — não é uma certificação.';
 
   @override
   String get aiQuotaExhausted =>
-      'AI analysis is temporarily unavailable due to high demand. Please try again later.';
+      'A análise por IA está temporariamente indisponível devido à alta demanda. Tente novamente mais tarde.';
 
   @override
   String get emailAlreadyRegistered =>
-      'This email is already registered — try signing in or use \'Forgot password\'.';
+      'Este e-mail já está cadastrado — tente entrar ou use \'Esqueceu a senha\'.';
 
   @override
-  String get verificationEmailResent =>
-      'A new verification email has been sent';
+  String get verificationEmailResent => 'Novo e-mail de verificação enviado';
 
   @override
   String emailSendFailed(Object error) {
-    return 'Couldn\'t send email: $error';
+    return 'Não foi possível enviar o e-mail: $error';
   }
 
   @override
-  String get emailHint => 'example@email.com';
+  String get emailHint => 'exemplo@email.com';
 
   @override
-  String get orSeparator => 'or';
+  String get orSeparator => 'ou';
 
   @override
-  String get alreadyHaveAccount => 'Already have an account?';
+  String get alreadyHaveAccount => 'Já tem uma conta?';
 
   @override
-  String get verifyYourEmail => 'Verify your email';
+  String get verifyYourEmail => 'Verifique seu e-mail';
 
   @override
-  String get verificationLinkPrefix => 'A verification link was sent to ';
+  String get verificationLinkPrefix =>
+      'Um link de verificação foi enviado para ';
 
   @override
   String get verificationLinkSuffix =>
-      '. Tap the link **on your phone** to activate your account.';
+      '. Toque no link no seu celular para ativar sua conta.';
 
   @override
   String get checkSpamFolder =>
-      'Also check your Spam / Junk folder. Because the sender domain is new, some providers may route the first email there.';
+      'Verifique também sua caixa de Spam/Lixo Eletrônico.';
 
   @override
-  String get resendEmail => 'Resend email';
+  String get resendEmail => 'Reenviar e-mail';
 
   @override
   String get scanLimitNetworkError =>
-      'Couldn\'t connect. Go online to verify your scan limit.';
+      'Não foi possível conectar. Fique online para verificar seu limite de escaneamento.';
 
   @override
-  String get editIngredientsHint => 'Add or edit ingredients...';
+  String get editIngredientsHint => 'Adicione ou edite os ingredientes...';
 
   @override
-  String get portionNoteLabel => 'Portion note (optional)';
+  String get portionNoteLabel => 'Nota de porção (opcional)';
 
   @override
-  String get portionNoteHint =>
-      'e.g. \"half portion\" · \"half the plate is left, calculate full\" · \"I ate 300 g\"';
+  String get portionNoteHint => 'ex: \"meia porção\" • \"comi 300g\"';
 
   @override
-  String get favoritesLoadError => 'Couldn\'t load favorites';
+  String get favoritesLoadError => 'Não foi possível carregar os favoritos';
 
   @override
-  String get ocrPreparingImage => 'Preparing photo...';
+  String get ocrPreparingImage => 'Preparando foto...';
 
   @override
-  String get ocrAnalyzingWithAi => 'Analyzing with AI...';
+  String get ocrAnalyzingWithAi => 'Analisando com IA...';
 
   @override
-  String get ocrFillingForm => 'Filling the form...';
+  String get ocrFillingForm => 'Preenchendo formulário...';
 
   @override
   String get premiumTitle => 'NutriLens Premium';
 
   @override
-  String get premiumRestore => 'Restore';
+  String get premiumRestore => 'Restaurar';
 
   @override
-  String get premiumActivated => 'Premium active! 🎉';
+  String get premiumActivated => 'Premium ativado! 🎉';
 
   @override
   String get premiumFeatureUnlimitedScans => 'Unlimited scans';
@@ -1350,87 +1351,84 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String premiumSaveBadge(Object percent) {
-    return 'Save $percent%';
+    return 'Economize $percent%';
   }
 
   @override
-  String get premiumMostPopular => 'Most popular';
+  String get premiumMostPopular => 'Mais Popular';
 
   @override
   String premiumTrialBadge(Object days) {
-    return '$days-day free trial';
+    return '$days dias grátis';
   }
 
   @override
   String premiumTrialCta(Object days) {
-    return 'Start $days-day free trial';
+    return 'Testar $days dias grátis';
   }
 
   @override
-  String get premiumContinueCta => 'Get Premium';
+  String get premiumContinueCta => 'Obter Premium';
 
   @override
   String get premiumAutoRenewNote =>
-      'Subscription auto-renews. Cancel anytime.';
+      'A assinatura renova automaticamente. Cancele quando quiser.';
 
   @override
   String get premiumTrialAutoRenewNote =>
-      'Converts to a paid subscription when the trial ends. Cancel anytime during the trial.';
+      'Converte em assinatura paga após o teste. Cancele a qualquer momento.';
 
   @override
-  String get premiumTrustCancelAnytime => 'Cancel anytime';
+  String get premiumTrustCancelAnytime => 'Cancele a qualquer momento';
 
   @override
-  String get premiumTrustSecurePayment => 'Secured by Google Play';
+  String get premiumTrustSecurePayment => 'Pagamento seguro';
 
   @override
-  String get premiumTrustInstantAccess => 'Instant access';
+  String get premiumTrustInstantAccess => 'Acesso instantâneo';
 
   @override
   String get premiumPackagesLoadError =>
-      'Couldn\'t load subscription packages.\nCheck your internet connection.';
+      'Não foi possível carregar os pacotes de assinatura.';
 
   @override
-  String get premiumPackagesUnavailable => 'Couldn\'t load packages.';
+  String get premiumPackagesUnavailable => 'Pacotes indisponíveis.';
 
   @override
-  String get premiumPurchaseFailed =>
-      'Purchase couldn\'t be completed. Please try again.';
+  String get premiumPurchaseFailed => 'Falha na compra. Tente novamente.';
 
   @override
-  String get premiumPurchaseUnexpectedError =>
-      'Something went wrong. Please try again.';
+  String get premiumPurchaseUnexpectedError => 'Ocorreu um erro inesperado.';
 
   @override
-  String get premiumRestored => 'Subscription restored!';
+  String get premiumRestored => 'Assinatura restaurada!';
 
   @override
-  String get premiumNoActiveSubscription => 'No active subscription found.';
+  String get premiumNoActiveSubscription =>
+      'Nenhuma assinatura ativa encontrada.';
 
   @override
-  String get premiumErrorNetwork => 'Check your internet connection.';
+  String get premiumErrorNetwork => 'Verifique sua conexão com a internet.';
 
   @override
-  String get premiumErrorPaymentPending =>
-      'Payment is pending approval. It\'ll activate within a few minutes.';
+  String get premiumErrorPaymentPending => 'Pagamento pendente.';
 
   @override
   String get premiumErrorProductUnavailable =>
-      'This product isn\'t available for purchase right now.';
+      'Este produto não está disponível no momento.';
 
   @override
-  String get premiumErrorAlreadyPurchased =>
-      'This subscription is already active. Try \"Restore\".';
+  String get premiumErrorAlreadyPurchased => 'Esta assinatura já está ativa.';
 
   @override
   String get premiumErrorStoreProblem =>
-      'The Play Store is having a temporary issue. Please try again.';
+      'A loja está com um problema temporário.';
 
   @override
-  String get premiumPrivacyPolicy => 'Privacy Policy';
+  String get premiumPrivacyPolicy => 'Política de Privacidade';
 
   @override
-  String get premiumTermsOfUse => 'Terms of Use';
+  String get premiumTermsOfUse => 'Termos de Uso';
 
   @override
   String get scanLimitTitle => 'Daily Scan Limit Reached';
@@ -1707,10 +1705,10 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get scanFood => 'Scan food';
+  String get scanFood => 'Escanear refeição';
 
   @override
-  String get noHistoryScanCta => 'Scan barcode';
+  String get noHistoryScanCta => 'Escanear código';
 
   @override
   String get historyLoadError => 'History could not be loaded.';

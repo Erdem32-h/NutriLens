@@ -146,9 +146,7 @@ class ProfileScreen extends ConsumerWidget {
           _SettingsTile(
             icon: Icons.language_rounded,
             title: l10n.language,
-            value: currentLocale.languageCode == 'tr'
-                ? l10n.turkish
-                : l10n.english,
+            value: _getLanguageDisplayName(currentLocale.languageCode),
             onTap: () => _showLanguageDialog(context, ref, currentLocale),
           ),
 
@@ -436,6 +434,25 @@ class ProfileScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _getLanguageDisplayName(String code) {
+    switch (code) {
+      case 'tr':
+        return 'Türkçe';
+      case 'en':
+        return 'English';
+      case 'pt':
+        return 'Português';
+      case 'es':
+        return 'Español';
+      case 'ar':
+        return 'العربية';
+      case 'zh':
+        return '中文';
+      default:
+        return 'English';
+    }
   }
 
   void _showLanguageDialog(
@@ -769,28 +786,37 @@ class _SettingsTile extends StatelessWidget {
             ),
             const SizedBox(width: 14),
             Expanded(
+              flex: 2,
               child: Text(
                 title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: context.colors.textPrimary,
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: context.colors.surfaceCard2,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: context.colors.border),
-              ),
-              child: Text(
-                value,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: context.colors.textSecondary,
+            const SizedBox(width: 8),
+            Flexible(
+              flex: 3,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceCard2,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: context.colors.border),
+                ),
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: context.colors.textSecondary,
+                  ),
                 ),
               ),
             ),

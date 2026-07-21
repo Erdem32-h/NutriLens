@@ -229,7 +229,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cameraAccessDenied => '相机权限已被拒绝';
 
   @override
-  String get enableCameraPermission => '请在设置中开启相机权限以扫描条形码。';
+  String get enableCameraPermission => '请在设置中开启相机权限以扫描条形码和拍摄食物。';
 
   @override
   String get productDetail => '产品详情';
@@ -307,10 +307,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get systemMode => '跟随系统';
 
   @override
-  String get turkish => 'Türkçe';
+  String get turkish => '土耳其语';
 
   @override
-  String get english => 'English';
+  String get english => '英语';
 
   @override
   String get tabHealth => 'HEALTH';
@@ -559,10 +559,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dataManagement => '数据管理';
 
   @override
-  String get deleteAllData => 'Delete all data';
+  String get deleteAllData => '删除所有数据';
 
   @override
-  String get userData => 'User data';
+  String get userData => '用户数据';
 
   @override
   String get deleteAllDataTitle => 'Delete all data?';
@@ -586,7 +586,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteAccount => '注销账号';
 
   @override
-  String get permanent => 'Permanent';
+  String get permanent => '永久';
 
   @override
   String get deleteAccountTitle => 'Delete account permanently?';
@@ -840,10 +840,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get tabBarcode => 'Barcode';
+  String get tabBarcode => '条形码';
 
   @override
-  String get tabAiAnalysis => 'AI Analysis';
+  String get tabAiAnalysis => 'AI 智能解析';
 
   @override
   String get aiAnalysisHint => 'Frame the food in the viewfinder';
@@ -978,14 +978,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get guestUser => '游客用户';
 
   @override
-  String get guestDataLocal => 'Your data stays on this device only';
+  String get guestDataLocal => '您的数据仅保存在此设备上';
 
   @override
-  String get createAccountBackupTitle => 'Create an account, back up your data';
+  String get createAccountBackupTitle => '创建账号，云端云备份数据';
 
   @override
-  String get createAccountBackupSubtitle =>
-      'Scan history and meals on every device';
+  String get createAccountBackupSubtitle => '在所有设备间同步扫描历史和饮食打卡';
 
   @override
   String get guestLastFreeScan =>
@@ -1004,80 +1003,76 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get guestFeatureLockedMessage =>
-      'This feature lives in the cloud. Create an account and sign in to enable it.';
+  String get guestFeatureLockedMessage => '此功能保存在云端。创建账号并登录即可启用。';
 
   @override
-  String get createAccountCta => 'Create account';
+  String get createAccountCta => '创建账号';
 
   @override
-  String get notNow => 'Not now';
+  String get notNow => '暂不';
 
   @override
-  String get featureFavorites => 'Favorites';
+  String get featureFavorites => '收藏夹';
 
   @override
-  String get featureBlacklist => 'Blocklist';
+  String get featureBlacklist => '黑名单';
 
   @override
   String get featurePremium => 'Premium 特权';
 
   @override
-  String get featureAddProduct => 'Adding a product';
+  String get featureAddProduct => '添加产品';
 
   @override
-  String get migrationTitle => 'You have guest data';
+  String get migrationTitle => '发现游客数据';
 
   @override
   String migrationMessage(String dataLine) {
-    return 'This device has $dataLine. Move it to your new account?';
+    return '此设备上有 $dataLine。是否将其迁移至您的新账号？';
   }
 
   @override
-  String get migrationYes => 'Yes, upload to my account';
+  String get migrationYes => '是的，迁移至我的账号';
 
   @override
-  String get migrationNo => 'Start fresh';
+  String get migrationNo => '重新开始';
 
   @override
   String scanCountUnit(int count) {
-    return '$count scans';
+    return '$count 次扫描';
   }
 
   @override
   String mealCountUnit(int count) {
-    return '$count meals';
+    return '$count 次打卡';
   }
 
   @override
-  String get forgotPassword => 'Forgot password';
+  String get forgotPassword => '忘记密码？';
 
   @override
-  String get forgotPasswordTitle => 'Forgot your password?';
+  String get forgotPasswordTitle => '忘记密码？';
 
   @override
-  String get forgotPasswordSubtitle =>
-      'Enter the email tied to your account; we\'ll send a reset link.';
+  String get forgotPasswordSubtitle => '请输入绑定的电子邮箱，我们将向您发送重置链接。';
 
   @override
   String get sendResetLink => '发送重置链接';
 
   @override
-  String get resetLinkSentTitle => 'Link sent';
+  String get resetLinkSentTitle => '重置链接已发送';
 
   @override
-  String get resetLinkSentMessage =>
-      'Check your inbox. Tap the link to set a new password.';
+  String get resetLinkSentMessage => '请检查您的收件箱。点击链接即可设置新密码。';
 
   @override
-  String get backToLogin => 'Back to login';
+  String get backToLogin => '返回登录';
 
   @override
-  String get resetPasswordTitle => 'Set a new password';
+  String get resetPasswordTitle => '设置新密码';
 
   @override
-  String get resetPasswordSubtitle =>
-      'Pick a strong password to protect your account.';
+  String get resetPasswordSubtitle => '请设置一个强密码以保护您的账号安全。';
 
   @override
   String get newPassword => '新密码';
@@ -1086,229 +1081,217 @@ class AppLocalizationsZh extends AppLocalizations {
   String get updatePassword => '更新密码';
 
   @override
-  String get passwordsDontMatch => 'Passwords don\'t match';
+  String get passwordsDontMatch => '两次输入的密码不一致';
 
   @override
   String get passwordUpdated => '密码已成功更新';
 
   @override
-  String get enterPasswordAgain => 'Enter password again';
+  String get enterPasswordAgain => '请再次输入密码';
 
   @override
   String guestScanCounter(int remaining) {
-    return '$remaining/5 free scans';
+    return '剩余 $remaining/5 次免费扫描';
   }
 
   @override
   String get appVersion => '应用版本';
 
   @override
-  String get testCrashReporting => 'Test crash reporting';
+  String get testCrashReporting => '测试崩溃上报';
 
   @override
-  String get myMeals => 'My Meals';
+  String get myMeals => '我的饮食';
 
   @override
-  String get mealsLoadError => 'Meals could not be loaded.';
+  String get mealsLoadError => '无法加载饮食记录。';
 
   @override
-  String get summaryToday => 'Today';
+  String get summaryToday => '今天';
 
   @override
-  String get summaryWeek => 'Week';
+  String get summaryWeek => '本周';
 
   @override
-  String get summaryMonth => 'Month';
+  String get summaryMonth => '本月';
 
   @override
-  String get scoreLabel => 'Score';
+  String get scoreLabel => '评分';
 
   @override
-  String get deleteMealTitle => 'Delete meal';
+  String get deleteMealTitle => '删除打卡';
 
   @override
   String deleteMealConfirm(String name) {
-    return 'Delete \"$name\"?';
+    return '确定删除 \"$name\" 吗？';
   }
 
   @override
-  String get noMealsYet => 'No meals yet';
+  String get noMealsYet => '暂无饮食记录';
 
   @override
-  String get noMealsHint =>
-      'Use AI Analysis on the scan screen to photograph your food and save it here.';
+  String get noMealsHint => '在扫描页面使用 AI 分析拍摄食物，即可保存记录到这里。';
 
   @override
-  String get ingredientsTitle => 'Ingredients';
+  String get ingredientsTitle => '成分表';
 
   @override
-  String get confidenceSuffix => 'confidence';
+  String get confidenceSuffix => '可信度';
 
   @override
-  String get aiConfidenceHint =>
-      'How sure the AI is about the detected food, portion size and calorie estimate.';
+  String get aiConfidenceHint => 'AI 对识别出的食物、分量及热量估算的准确度把握。';
 
   @override
-  String get risk1 => 'Risk-free';
+  String get risk1 => '无风险';
 
   @override
-  String get risk2 => 'Low risk';
+  String get risk2 => '低风险';
 
   @override
-  String get risk3 => 'Moderate risk';
+  String get risk3 => '中度风险';
 
   @override
-  String get risk4 => 'Risky';
+  String get risk4 => '高风险';
 
   @override
-  String get risk5 => 'Very risky';
+  String get risk5 => '极高风险';
 
   @override
-  String get mealSavedToast => 'Meal saved';
+  String get mealSavedToast => '打卡记录已保存';
 
   @override
-  String get mealNameLabel => 'Meal name';
+  String get mealNameLabel => '食物名称';
 
   @override
-  String get mealSourceLabel => 'Source';
+  String get mealSourceLabel => '来源';
 
   @override
-  String get estimatedContent => 'Estimated content';
+  String get estimatedContent => '预估成分';
 
   @override
-  String get recalculate => 'Recalculate';
+  String get recalculate => '重新计算';
 
   @override
-  String get recalcHint =>
-      'Edit the content and/or add a portion note; both are factored in.';
+  String get recalcHint => '编辑成分或添加分量备注，两者都将计入计算。';
 
   @override
-  String get saveToMeals => 'Save to meals';
+  String get saveToMeals => '保存到饮食日志';
 
   @override
-  String get portionQuestion => 'How much did you eat?';
+  String get portionQuestion => '您吃了多少？';
 
   @override
-  String get portionLittle => 'Little';
+  String get portionLittle => '少量';
 
   @override
   String get portionNormal => 'Normal';
 
   @override
-  String get portionLots => 'Lots';
+  String get portionLots => '较多';
 
   @override
-  String get portionTwoServings => 'Two servings';
+  String get portionTwoServings => '两人份';
 
   @override
-  String get recalcFailedNutrition =>
-      'Couldn\'t calculate nutrition values, try again.';
+  String get recalcFailedNutrition => '无法计算营养成分，请重试。';
 
   @override
-  String get recalcFailed => 'Recalculation failed.';
+  String get recalcFailed => '重新计算失败。';
 
   @override
-  String get mealTypeBreakfast => 'Breakfast';
+  String get mealTypeBreakfast => '早餐';
 
   @override
-  String get mealTypeLunch => 'Lunch';
+  String get mealTypeLunch => '午餐';
 
   @override
-  String get mealTypeDinner => 'Dinner';
+  String get mealTypeDinner => '晚餐';
 
   @override
-  String get mealTypeSnack => 'Snack';
+  String get mealTypeSnack => '零食 / 加餐';
 
   @override
-  String get mealBrandHomemade => 'Homemade';
+  String get mealBrandHomemade => '自制';
 
   @override
-  String get mealBrandReadyMade => 'Ready-made';
+  String get mealBrandReadyMade => '外购 / 成品';
 
   @override
-  String get additiveNotFound => 'No information found for this additive.';
+  String get additiveNotFound => '未找到关于该添加剂的信息。';
 
   @override
-  String get dietarySuitabilityNote =>
-      'Estimated from detected additives and ingredients — not a certification.';
+  String get dietarySuitabilityNote => '基于检测到的成分和添加剂预估 — 非官方认证标志。';
 
   @override
-  String get aiQuotaExhausted =>
-      'AI analysis is temporarily unavailable due to high demand. Please try again later.';
+  String get aiQuotaExhausted => '当前请求量较大，AI 分析服务暂不可用。请稍后再试。';
 
   @override
-  String get emailAlreadyRegistered =>
-      'This email is already registered — try signing in or use \'Forgot password\'.';
+  String get emailAlreadyRegistered => '该邮箱已被注册 — 请直接登录或使用“忘记密码”。';
 
   @override
-  String get verificationEmailResent =>
-      'A new verification email has been sent';
+  String get verificationEmailResent => '新的验证邮件已发送';
 
   @override
   String emailSendFailed(Object error) {
-    return 'Couldn\'t send email: $error';
+    return '无法发送邮件：$error';
   }
 
   @override
   String get emailHint => 'example@email.com';
 
   @override
-  String get orSeparator => 'or';
+  String get orSeparator => '或';
 
   @override
-  String get alreadyHaveAccount => 'Already have an account?';
+  String get alreadyHaveAccount => '已有账号？';
 
   @override
-  String get verifyYourEmail => 'Verify your email';
+  String get verifyYourEmail => '验证您的电子邮箱';
 
   @override
-  String get verificationLinkPrefix => 'A verification link was sent to ';
+  String get verificationLinkPrefix => '验证链接已发送至 ';
 
   @override
-  String get verificationLinkSuffix =>
-      '. Tap the link **on your phone** to activate your account.';
+  String get verificationLinkSuffix => '。请在手机上点击链接以激活您的账号。';
 
   @override
-  String get checkSpamFolder =>
-      'Also check your Spam / Junk folder. Because the sender domain is new, some providers may route the first email there.';
+  String get checkSpamFolder => '请检查垃圾邮件箱。如果是新发件人，可能被误判。';
 
   @override
-  String get resendEmail => 'Resend email';
+  String get resendEmail => '重新发送邮件';
 
   @override
-  String get scanLimitNetworkError =>
-      'Couldn\'t connect. Go online to verify your scan limit.';
+  String get scanLimitNetworkError => '无法连接网络。请联网后核验您的扫描次数。';
 
   @override
-  String get editIngredientsHint => 'Add or edit ingredients...';
+  String get editIngredientsHint => '添加或编辑成分...';
 
   @override
-  String get portionNoteLabel => 'Portion note (optional)';
+  String get portionNoteLabel => '分量备注（可选）';
 
   @override
-  String get portionNoteHint =>
-      'e.g. \"half portion\" · \"half the plate is left, calculate full\" · \"I ate 300 g\"';
+  String get portionNoteHint => '例如：“吃了半份”、“只吃了 300g”';
 
   @override
-  String get favoritesLoadError => 'Couldn\'t load favorites';
+  String get favoritesLoadError => '无法加载收藏列表';
 
   @override
-  String get ocrPreparingImage => 'Preparing photo...';
+  String get ocrPreparingImage => '正在处理图片...';
 
   @override
-  String get ocrAnalyzingWithAi => 'Analyzing with AI...';
+  String get ocrAnalyzingWithAi => 'AI 正在识别分析...';
 
   @override
-  String get ocrFillingForm => 'Filling the form...';
+  String get ocrFillingForm => '正在自动填写表格...';
 
   @override
   String get premiumTitle => 'NutriLens Premium';
 
   @override
-  String get premiumRestore => 'Restore';
+  String get premiumRestore => '恢复购买';
 
   @override
-  String get premiumActivated => 'Premium active! 🎉';
+  String get premiumActivated => 'Premium 会员已激活！🎉';
 
   @override
   String get premiumFeatureUnlimitedScans => 'Unlimited scans';
@@ -1340,87 +1323,78 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String premiumSaveBadge(Object percent) {
-    return 'Save $percent%';
+    return '立省 $percent%';
   }
 
   @override
-  String get premiumMostPopular => 'Most popular';
+  String get premiumMostPopular => '最受欢迎';
 
   @override
   String premiumTrialBadge(Object days) {
-    return '$days-day free trial';
+    return '免费试用 $days 天';
   }
 
   @override
   String premiumTrialCta(Object days) {
-    return 'Start $days-day free trial';
+    return '免费试用 $days 天';
   }
 
   @override
-  String get premiumContinueCta => 'Get Premium';
+  String get premiumContinueCta => '获取 Premium 特权';
 
   @override
-  String get premiumAutoRenewNote =>
-      'Subscription auto-renews. Cancel anytime.';
+  String get premiumAutoRenewNote => '订阅将自动续订。您可随时取消。';
 
   @override
-  String get premiumTrialAutoRenewNote =>
-      'Converts to a paid subscription when the trial ends. Cancel anytime during the trial.';
+  String get premiumTrialAutoRenewNote => '试用结束后转为付费订阅。试用期内可随时取消。';
 
   @override
-  String get premiumTrustCancelAnytime => 'Cancel anytime';
+  String get premiumTrustCancelAnytime => '随时可取消';
 
   @override
-  String get premiumTrustSecurePayment => 'Secured by Google Play';
+  String get premiumTrustSecurePayment => '安全支付 Guarantee';
 
   @override
-  String get premiumTrustInstantAccess => 'Instant access';
+  String get premiumTrustInstantAccess => '即刻解锁特权';
 
   @override
-  String get premiumPackagesLoadError =>
-      'Couldn\'t load subscription packages.\nCheck your internet connection.';
+  String get premiumPackagesLoadError => '无法加载订阅套餐。';
 
   @override
-  String get premiumPackagesUnavailable => 'Couldn\'t load packages.';
+  String get premiumPackagesUnavailable => '暂无可用套餐。';
 
   @override
-  String get premiumPurchaseFailed =>
-      'Purchase couldn\'t be completed. Please try again.';
+  String get premiumPurchaseFailed => '购买失败，请重试。';
 
   @override
-  String get premiumPurchaseUnexpectedError =>
-      'Something went wrong. Please try again.';
+  String get premiumPurchaseUnexpectedError => '发生未知错误。';
 
   @override
-  String get premiumRestored => 'Subscription restored!';
+  String get premiumRestored => '订阅已成功恢复！';
 
   @override
-  String get premiumNoActiveSubscription => 'No active subscription found.';
+  String get premiumNoActiveSubscription => '未找到有效的订阅。';
 
   @override
-  String get premiumErrorNetwork => 'Check your internet connection.';
+  String get premiumErrorNetwork => '请检查您的网络连接。';
 
   @override
-  String get premiumErrorPaymentPending =>
-      'Payment is pending approval. It\'ll activate within a few minutes.';
+  String get premiumErrorPaymentPending => '支付处理中。';
 
   @override
-  String get premiumErrorProductUnavailable =>
-      'This product isn\'t available for purchase right now.';
+  String get premiumErrorProductUnavailable => '该套餐暂不可购买。';
 
   @override
-  String get premiumErrorAlreadyPurchased =>
-      'This subscription is already active. Try \"Restore\".';
+  String get premiumErrorAlreadyPurchased => '您已拥有此订阅。';
 
   @override
-  String get premiumErrorStoreProblem =>
-      'The Play Store is having a temporary issue. Please try again.';
+  String get premiumErrorStoreProblem => '应用商店服务暂时异常。';
 
   @override
-  String get premiumPrivacyPolicy => 'Privacy Policy';
+  String get premiumPrivacyPolicy => '隐私政策';
 
   @override
-  String get premiumTermsOfUse => 'Terms of Use';
+  String get premiumTermsOfUse => '使用条款';
 
   @override
   String get scanLimitTitle => 'Daily Scan Limit Reached';
@@ -1696,10 +1670,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get scanFood => 'Scan food';
+  String get scanFood => '拍摄食物打卡';
 
   @override
-  String get noHistoryScanCta => 'Scan barcode';
+  String get noHistoryScanCta => '扫描条形码';
 
   @override
   String get historyLoadError => 'History could not be loaded.';
