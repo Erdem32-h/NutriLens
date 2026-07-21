@@ -1573,4 +1573,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String genericErrorWith(Object error) {
     return 'Hata: $error';
   }
+
+  @override
+  String get welcomeBack => 'Hoş geldin';
 }

@@ -132,7 +132,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     // Heading
                     Text(
-                      'Hoş geldin',
+                      l10n.welcomeBack,
                       style: TextStyle(
                         fontSize: 34,
                         fontWeight: FontWeight.w800,
@@ -211,9 +211,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       style: TextStyle(color: context.colors.textPrimary),
-                      decoration: const InputDecoration(
-                        hintText: 'ornek@email.com',
-                        prefixIcon: Icon(Icons.email_outlined),
+                      decoration: InputDecoration(
+                        hintText: l10n.emailHint,
+                        prefixIcon: const Icon(Icons.email_outlined),
                       ),
                       validator: (v) {
                         if (v == null || v.isEmpty) return l10n.enterEmail;
@@ -292,7 +292,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Hesabın yok mu?',
+                          l10n.noAccount,
                           style: TextStyle(
                             color: context.colors.textMuted,
                             fontSize: 14,
@@ -301,7 +301,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         TextButton(
                           onPressed: () => context.go('/register'),
                           child: Text(
-                            'Kayıt ol',
+                            l10n.signUp,
                             style: TextStyle(
                               color: context.colors.primary,
                               fontSize: 14,

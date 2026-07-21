@@ -584,5 +584,6 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "welcomeBack": "Hoş geldin"
 }

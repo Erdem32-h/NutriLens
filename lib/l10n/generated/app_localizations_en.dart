@@ -1570,4 +1570,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String genericErrorWith(Object error) {
     return 'Error: $error';
   }
+
+  @override
+  String get welcomeBack => 'Welcome back';
 }

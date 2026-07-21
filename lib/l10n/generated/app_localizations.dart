@@ -3031,6 +3031,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hata: {error}'**
   String genericErrorWith(Object error);
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hoş geldin'**
+  String get welcomeBack;
 }
 
 class _AppLocalizationsDelegate

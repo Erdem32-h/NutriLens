@@ -559,5 +559,6 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "welcomeBack": "Welcome back"
 }
