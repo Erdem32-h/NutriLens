@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../../../../core/analytics/analytics_event.dart';
+import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/barcode_validator.dart';
 import '../../../../core/extensions/l10n_extension.dart';
@@ -83,6 +85,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   CameraController? _aiCamera;
   Future<void>? _aiCameraInit;
   bool _capturing = false;
+  bool _cameraOutcomeTracked = false;
 
   @override
   void initState() {
@@ -105,6 +108,18 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     // also what triggers the OS camera-permission prompt, which is why the
     // app no longer lands here straight from onboarding — the prompt should
     // follow a deliberate "scan" tap, not greet a first-time visitor.
+    ref
+        .read(analyticsServiceProvider)
+        .track(
+          FunnelEvents.scannerOpened,
+          props: {
+            'mode': _scanMode == 1 ? 'food' : 'barcode',
+            // False means the user arrived via the nav bar rather than a
+            // scan CTA on a specific screen — the CTAs were added to fix
+            // activation, so their share is the thing to watch.
+            'requested_mode': requestedMode != null,
+          },
+        );
     if (_scanMode == 1) {
       _initAiCamera();
     } else {
@@ -243,9 +258,18 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
         _aiCamera = null;
         return;
       }
+      // Only report for a real food-mode visit. _restartBarcodeScanner also
+      // calls this as a CameraX rebind trick while _scanMode is 0, and that
+      // is plumbing, not a step the user took.
+      if (_scanMode == 1) _trackCameraOutcome(ready: true);
       setState(() {});
     } catch (e) {
       debugPrint('[Scanner] AI camera init failed (attempt $attempt): $e');
+      // Report only once the retries are spent, so a transient "camera busy"
+      // that recovers on attempt 2 isn't counted as a failed visit.
+      if (_scanMode == 1 && attempt >= 2) {
+        _trackCameraOutcome(ready: false, error: e);
+      }
       _aiCamera = null;
       _aiCameraInit = null;
       // The camera may still be held by a client that's mid-release (e.g.
@@ -280,7 +304,48 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   /// `controller.start()` is a no-op when already running.
   void _startScanning() {
     _subscription ??= _controller.barcodes.listen(_handleBarcode);
-    unawaited(_controller.start());
+    unawaited(
+      _controller
+          .start()
+          .then((_) => _trackCameraOutcome(ready: true))
+          .catchError(
+            (Object error) => _trackCameraOutcome(ready: false, error: error),
+          ),
+    );
+  }
+
+  /// Records whether the camera actually came up, once per visit to this
+  /// screen.
+  ///
+  /// This is the step the old data could never see: a denied permission, a
+  /// camera held by another app, and a user who simply backed out all look
+  /// like "opened the scanner, never scanned" from `scan_history` alone.
+  /// [_startScanning] runs again on every resume, so the flag keeps a single
+  /// visit from reporting the same outcome repeatedly.
+  void _trackCameraOutcome({required bool ready, Object? error}) {
+    if (_cameraOutcomeTracked || !mounted) return;
+    _cameraOutcomeTracked = true;
+    final mode = _scanMode == 1 ? 'food' : 'barcode';
+    final analytics = ref.read(analyticsServiceProvider);
+    if (ready) {
+      analytics.track(FunnelEvents.scanCameraReady, props: {'mode': mode});
+      return;
+    }
+    analytics.track(
+      FunnelEvents.scanCameraFailed,
+      props: {'mode': mode, 'reason': _cameraFailureReason(error)},
+    );
+  }
+
+  static String _cameraFailureReason(Object? error) {
+    if (error is MobileScannerException) {
+      return switch (error.errorCode) {
+        MobileScannerErrorCode.permissionDenied => 'permission_denied',
+        MobileScannerErrorCode.unsupported => 'unsupported',
+        _ => 'error',
+      };
+    }
+    return 'error';
   }
 
   /// Tear down the barcode subscription and stop the camera.
@@ -389,12 +454,25 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     _isNavigating = true;
 
+    final analytics = ref.read(analyticsServiceProvider);
+    // No barcode value in the props: joined to a device hash it would turn
+    // an anonymous funnel table into a per-device consumption profile, and
+    // the funnel only needs to know that a scan resolved.
+    analytics.track(
+      FunnelEvents.scanBarcodeDetected,
+      props: {'mode': 'barcode', 'guest': ref.read(isGuestProvider)},
+    );
+
     // Guest mode has its own lifetime cap (5 scans), now enforced
     // server-side by device hash (survives a cache/data clear) with a local
     // counter fallback when offline. Authenticated users go through the
     // per-user Supabase RPC instead.
     if (ref.read(isGuestProvider)) {
       if (!await _consumeGuestScan()) {
+        analytics.track(
+          FunnelEvents.scanLookupFailed,
+          props: {'reason': 'guest_limit'},
+        );
         if (mounted) setState(() => _isNavigating = false);
         return;
       }
@@ -407,6 +485,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       if (!scanResult.allowed) {
         final granted = await _handleAuthenticatedScanLimit(scanResult);
         if (!granted) {
+          analytics.track(
+            FunnelEvents.scanLookupFailed,
+            props: {'reason': 'scan_limit'},
+          );
           if (mounted) setState(() => _isNavigating = false);
           return;
         }

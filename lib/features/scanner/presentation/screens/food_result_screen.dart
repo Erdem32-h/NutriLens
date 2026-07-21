@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/analytics/analytics_event.dart';
+import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/constants/app_links.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
@@ -336,6 +338,12 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       );
 
       await ref.read(mealLocalDataSourceProvider).saveMeal(meal);
+      // Tracked after the local write, which is the authoritative one — the
+      // premium cloud push below is best-effort and must not decide whether
+      // this counts as activation.
+      ref
+          .read(analyticsServiceProvider)
+          .track(FunnelEvents.mealAdded, props: {'source': 'food_scan'});
       // Premium users get a cloud backup; free users stay local-only.
       // Best-effort, fire-and-forget — the local save above is authoritative.
       if (ref.read(isPremiumProvider)) {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/analytics/analytics_event.dart';
+import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -30,6 +32,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     );
     _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
     _animController.forward();
+    ref.read(analyticsServiceProvider).track(FunnelEvents.onboardingShown);
   }
 
   /// Finish the intro by dropping the visitor into the product as a
@@ -43,7 +46,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   /// the very first interaction in the app was a system prompt. Both the
   /// meal diary and the product history now carry a scan button, so the
   /// prompt follows a deliberate tap.
-  Future<void> _startAsGuest() async {
+  ///
+  /// [via] separates the two ways this is reached — the header "skip" link
+  /// and the final CTA. They mean different things: skipping at page 0 is a
+  /// visitor who never saw the value pitch, and if that turns out to be the
+  /// dominant path the pitch is what needs work, not the funnel below it.
+  Future<void> _startAsGuest({required String via}) async {
+    final analytics = ref.read(analyticsServiceProvider);
+    analytics.track(
+      FunnelEvents.onboardingCompleted,
+      props: {'via': via, 'page': _currentPage},
+    );
+    analytics.track(FunnelEvents.guestStarted, props: {'from': 'onboarding'});
     final session = ref.read(appSessionControllerProvider);
     await session.completeOnboarding();
     await session.enterGuestMode();
@@ -52,6 +66,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
 
   /// Returning user who reinstalled or already registered elsewhere.
   Future<void> _goToLogin() async {
+    ref
+        .read(analyticsServiceProvider)
+        .track(
+          FunnelEvents.onboardingSkipped,
+          props: {'to': 'login', 'page': _currentPage},
+        );
     await ref.read(appSessionControllerProvider).completeOnboarding();
     if (mounted) context.go('/login');
   }
@@ -156,7 +176,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                         ],
                       ),
                       TextButton(
-                        onPressed: _startAsGuest,
+                        onPressed: () => _startAsGuest(via: 'skip'),
                         child: Text(
                           l10n.skip,
                           style: TextStyle(
@@ -179,6 +199,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       setState(() => _currentPage = index);
                       _animController.reset();
                       _animController.forward();
+                      ref
+                          .read(analyticsServiceProvider)
+                          .track(
+                            FunnelEvents.onboardingPageViewed,
+                            props: {'page': index},
+                          );
                     },
                     itemBuilder: (context, index) {
                       final page = pages[index];
@@ -279,7 +305,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                             ? l10n.startFree
                             : l10n.continueText,
                         onPressed: _currentPage == pages.length - 1
-                            ? _startAsGuest
+                            ? () => _startAsGuest(via: 'cta')
                             : _nextPage,
                       ),
 

@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/analytics/analytics_event.dart';
+import '../../../../core/analytics/analytics_provider.dart';
+import '../../../../core/analytics/failure_reason.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -35,6 +38,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _resending = false;
 
   @override
+  void initState() {
+    super.initState();
+    ref
+        .read(analyticsServiceProvider)
+        .track(FunnelEvents.authScreenShown, props: {'screen': 'register'});
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -46,6 +57,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
     final email = _emailController.text.trim();
+    final analytics = ref.read(analyticsServiceProvider);
+    analytics.track(FunnelEvents.registerStarted);
 
     final failure = await ref
         .read(authNotifierProvider.notifier)
@@ -56,6 +69,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         );
 
     if (!mounted) return;
+    if (failure != null) {
+      analytics.track(
+        FunnelEvents.registerFailed,
+        props: {'reason': authFailureReason(failure)},
+      );
+    }
     if (failure is AlreadyRegisteredFailure) {
       final l10n = context.l10n;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -93,6 +112,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // showing the banner in that case.
     final hasSession =
         Supabase.instance.client.auth.currentSession != null;
+    // `awaiting_confirmation` is the whole reason this event carries a prop.
+    // A registration that lands here without a session has created a row in
+    // auth.users — so it counts as an account in every server-side tally —
+    // while the person is still outside the app and may never come back.
+    // Without this flag those two very different outcomes are indistinguishable.
+    analytics.track(
+      FunnelEvents.registerSucceeded,
+      props: {'awaiting_confirmation': !hasSession},
+    );
     if (!hasSession) {
       setState(() => _pendingConfirmationEmail = email);
     }

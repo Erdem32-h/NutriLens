@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/analytics/analytics_event.dart';
+import '../../../../core/analytics/analytics_provider.dart';
+import '../../../../core/analytics/failure_reason.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -25,6 +28,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    ref
+        .read(analyticsServiceProvider)
+        .track(FunnelEvents.authScreenShown, props: {'screen': 'login'});
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -33,6 +44,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
+    final analytics = ref.read(analyticsServiceProvider);
+    // Fires only after client-side validation passes, so the gap between
+    // auth_screen_shown and login_started measures people who could not get
+    // a valid form filled in at all.
+    analytics.track(FunnelEvents.loginStarted);
     await ref
         .read(authNotifierProvider.notifier)
         .signInWithEmail(
@@ -42,9 +58,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (mounted) {
       final authState = ref.read(authNotifierProvider);
       if (authState.hasError) {
+        analytics.track(
+          FunnelEvents.loginFailed,
+          props: {'reason': authFailureReason(authState.error)},
+        );
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(authState.error.toString())));
+      } else {
+        analytics.track(FunnelEvents.loginSucceeded);
       }
       // Success navigation is handled by the authStateProvider
       // listener in build() → runPostAuthFlow (covers migration).
@@ -174,6 +196,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: isLoading
                           ? null
                           : () async {
+                              ref
+                                  .read(analyticsServiceProvider)
+                                  .track(
+                                    FunnelEvents.guestStarted,
+                                    props: {'from': 'login'},
+                                  );
                               await ref
                                   .read(appSessionControllerProvider)
                                   .enterGuestMode();

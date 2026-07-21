@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/analytics/analytics_event.dart';
+import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -330,8 +332,12 @@ final isFavoriteProvider = FutureProvider.family<bool, String>((
 /// Add a barcode to favorites.
 /// Mutual exclusion: automatically removes from blacklist if present.
 Future<bool> addToFavorites(WidgetRef ref, {required String barcode}) async {
+  final analytics = ref.read(analyticsServiceProvider);
   final userId = ref.read(currentUserProvider)?.id;
-  if (userId == null) return false;
+  if (userId == null) {
+    analytics.track(FunnelEvents.favoriteBlocked, props: {'reason': 'guest'});
+    return false;
+  }
 
   try {
     // Remove from blacklist first (mutual exclusion)
@@ -350,8 +356,10 @@ Future<bool> addToFavorites(WidgetRef ref, {required String barcode}) async {
     ref.invalidate(isFavoriteProvider(barcode));
     ref.invalidate(blacklistProvider);
     ref.invalidate(isBlacklistedProvider(barcode));
+    analytics.track(FunnelEvents.favoriteAdded);
     return true;
   } catch (_) {
+    analytics.track(FunnelEvents.favoriteBlocked, props: {'reason': 'error'});
     return false;
   }
 }

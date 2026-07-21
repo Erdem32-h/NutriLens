@@ -17,9 +17,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'bootstrap.dart';
 import 'config/router/app_router.dart';
 import 'config/supabase/supabase_config.dart';
+import 'core/analytics/analytics_event.dart';
+import 'core/analytics/analytics_provider.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/providers/monetization_provider.dart';
 import 'core/providers/theme_provider.dart';
+import 'core/session/app_session.dart';
 import 'core/theme/app_theme.dart';
 import 'features/product/presentation/providers/product_provider.dart';
 
@@ -291,11 +294,32 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   late final GoRouter _router;
   StreamSubscription<Uri?>? _widgetClicked;
   StreamSubscription<AuthState>? _authSub;
+  AppLifecycleListener? _lifecycle;
 
   @override
   void initState() {
     super.initState();
     _router = createRouter(ref);
+
+    // Top of the activation funnel. Every later step is read as a fraction
+    // of this, so it has to fire before anything can redirect or fail.
+    final analytics = ref.read(analyticsServiceProvider);
+    analytics.track(
+      FunnelEvents.appOpened,
+      props: {
+        'first_launch': !ref.read(hasSeenOnboardingProvider),
+        'session_state': ref.read(appSessionProvider).name,
+      },
+    );
+
+    // Backgrounding is the most common way a session ends, and it's the last
+    // moment we can ship the queue while the process is still alive. Without
+    // this, a user who never reopens the app only shows up after the next
+    // launch replays the persisted queue — and users who churn never do.
+    _lifecycle = AppLifecycleListener(
+      onPause: () => unawaited(analytics.flush()),
+      onDetach: () => unawaited(analytics.flush()),
+    );
 
     // Home-screen widget tap → deep-link `nutrilens://widget/scan`.
     // Two entry paths cover cold-launch vs in-foreground:
@@ -342,6 +366,7 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
 
   @override
   void dispose() {
+    _lifecycle?.dispose();
     _widgetClicked?.cancel();
     _authSub?.cancel();
     _router.dispose();

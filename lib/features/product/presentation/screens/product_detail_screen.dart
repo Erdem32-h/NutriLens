@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../core/analytics/analytics_event.dart';
+import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/content_analysis_service.dart';
 import '../../../../core/session/guest_gate.dart';
@@ -44,9 +46,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   bool _hasRedirected = false;
   bool _historyAdded = false;
 
-  void _redirectToEdit() {
+  /// [reason] separates the three ways a scan fails to become a product
+  /// page: the lookup chain threw, it found nothing, or it found a record too
+  /// thin to render. All three dump the user into a data-entry form instead
+  /// of the result they scanned for, and all three are invisible in
+  /// `scan_history` — which only ever gets a row on the success path.
+  void _redirectToEdit({required String reason}) {
     if (_hasRedirected) return;
     _hasRedirected = true;
+    ref
+        .read(analyticsServiceProvider)
+        .track(FunnelEvents.scanLookupFailed, props: {'reason': reason});
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.pushReplacement('/product/${widget.barcode}/edit');
@@ -112,6 +122,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             fileName: 'nutrilens_${product.barcode}.png',
             caption: caption,
           );
+      ref.read(analyticsServiceProvider).track(FunnelEvents.productShared);
     } catch (e) {
       if (mounted) {
         messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));
@@ -235,7 +246,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           );
           debugPrint('[ProductDetail] stack: $stack');
           // On error, redirect to edit screen so user can enter data manually
-          _redirectToEdit();
+          _redirectToEdit(reason: 'lookup_error');
           return _buildShimmer(context);
         },
         data: (product) {
@@ -253,7 +264,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             debugPrint(
               '[ProductDetail] barcode=${widget.barcode} → null, redirect to edit',
             );
-            _redirectToEdit();
+            _redirectToEdit(reason: 'not_found');
             return _buildShimmer(context);
           }
 
@@ -270,7 +281,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             debugPrint(
               '[ProductDetail] → missing essential data, redirect to edit',
             );
-            _redirectToEdit();
+            _redirectToEdit(reason: 'incomplete_data');
             return _buildShimmer(context);
           }
 
@@ -284,6 +295,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 barcode: product.barcode,
                 hpScore: product.calculatedHpScore,
               );
+              // Shares the _historyAdded guard so it fires exactly once per
+              // visit, and sits alongside the history write so the funnel's
+              // definition of "viewed" matches what the history table records.
+              ref
+                  .read(analyticsServiceProvider)
+                  .track(
+                    FunnelEvents.productViewed,
+                    props: {
+                      'has_score': product.calculatedHpScore != null,
+                      'has_image': product.imageUrl != null,
+                    },
+                  );
             });
           }
 
