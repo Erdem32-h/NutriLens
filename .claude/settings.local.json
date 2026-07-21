@@ -30,7 +30,28 @@
       "Bash(dart analyze:*)",
       "Bash(supabase functions *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "mcp__supabase-pat__list_projects",
+      "mcp__supabase-pat__execute_sql",
+      "Bash(flutter gen-l10n *)",
+      "Bash(flutter analyze *)",
+      "Bash(flutter test *)",
+      "Bash(echo \"--- exit $? ---\")",
+      "Bash(ls \"C:\\\\Users\\\\m_fat\\\\OneDrive\\\\Belgeler\\\\Obsidian Vault\\\\NutriLens\\\\wiki\\\\\" 2>&1 | head -20)",
+      "mcp__6532ec28-9fdf-4d23-8b0c-967286f46733__find_organizations",
+      "mcp__6532ec28-9fdf-4d23-8b0c-967286f46733__find_projects",
+      "mcp__6532ec28-9fdf-4d23-8b0c-967286f46733__search_issues",
+      "mcp__6532ec28-9fdf-4d23-8b0c-967286f46733__search_events",
+      "Bash(grep -v '^$')",
+      "PowerShell($ErrorActionPreference='Stop'; $null = [System.Management.Automation.Language.Parser]::ParseFile\\(\"$PWD\\\\scripts\\\\build_android_release.ps1\", [ref]$null, [ref]$errs\\); if \\($errs\\) { $errs | ForEach-Object { $_.Message } } else { \"syntax OK\" })",
+      "PowerShell($errs = $null; $toks = $null; $null = [System.Management.Automation.Language.Parser]::ParseFile\\(\"$PWD\\\\scripts\\\\build_android_release.ps1\", [ref]$toks, [ref]$errs\\); if \\($errs\\) { $errs | ForEach-Object { $_.Message } } else { \"syntax OK\" })",
+      "mcp__6532ec28-9fdf-4d23-8b0c-967286f46733__analyze_issue_with_seer",
+      "mcp__6532ec28-9fdf-4d23-8b0c-967286f46733__get_sentry_resource",
+      "Bash(cd \"C:\\\\Users\\\\m_fat\\\\OneDrive\\\\Desktop\\\\Github\\\\NutriLens\" && echo \"=== attribution setting ===\" && grep -i \"attribution\\\\|coAuthor\\\\|includeCoAuthoredBy\" ~/.claude/settings.json 2>/dev/null || echo \"\\(no explicit key found\\)\"; echo \"=== settings.local diff ===\"; git diff --stat .claude/settings.local.json; echo \"=== branch ===\"; git branch --show-current)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Bash(git commit *)",
+      "Bash(sort -t: -k2 -rn)"
     ]
   }
 }
