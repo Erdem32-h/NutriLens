@@ -43,7 +43,7 @@ class NovaCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'NOVA Grubu',
+                  context.l10n.novaGroup,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,

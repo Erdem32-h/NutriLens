@@ -194,7 +194,7 @@ class ProfileScreen extends ConsumerWidget {
           // - guest                  → tapping fires the register
           //   sheet (premium needs a RevenueCat identity, but the
           //   tile is still surfaced so guests see the upgrade path)
-          const _SectionLabel('Abonelik'),
+          _SectionLabel(l10n.subscription),
           const SizedBox(height: 10),
           Consumer(
             builder: (context, ref, _) {
@@ -202,14 +202,14 @@ class ProfileScreen extends ConsumerWidget {
               if (isPremium) {
                 return _SettingsTile(
                   icon: Icons.star,
-                  title: 'Premium Aktif',
-                  value: 'Aktif',
+                  title: l10n.premiumActive,
+                  value: l10n.activeStatus,
                   onTap: () {},
                 );
               }
               return _SettingsTile(
                 icon: Icons.star_outline,
-                title: "Premium'a Geç",
+                title: l10n.premiumContinueCta,
                 value: context.l10n.premiumBenefits,
                 onTap: () async {
                   if (!await ref.requireAuthOr(
@@ -550,6 +550,7 @@ class _VersionFooterState extends State<_VersionFooter> {
 
   Future<void> _fireSentryTest() async {
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     try {
       await Sentry.captureException(
         StateError('NutriLens manual Sentry verification ping'),
@@ -557,14 +558,16 @@ class _VersionFooterState extends State<_VersionFooter> {
       );
       if (!mounted) return;
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Sentry test event sent ✓'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(l10n.sentryTestEventSent),
+          duration: const Duration(seconds: 2),
         ),
       );
     } catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text('Sentry test failed: $e')));
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.sentryTestFailed(e.toString()))),
+      );
     }
   }
 
