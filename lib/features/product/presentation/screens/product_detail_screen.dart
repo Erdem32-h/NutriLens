@@ -27,6 +27,7 @@ import '../widgets/health_score_bar.dart';
 import '../widgets/pill_tab_bar.dart';
 import '../widgets/dietary_suitability_section.dart';
 import '../widgets/score_breakdown_card.dart';
+import '../../../../core/widgets/app_tap_card.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String barcode;
@@ -94,20 +95,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       );
       final caption = ShareCaption.forProduct(
         name: name,
-        hpScoreText:
-            hp == null ? null : '${l10n.hpScoreLabel} ${hp.round()}/100',
+        hpScoreText: hp == null
+            ? null
+            : '${l10n.hpScoreLabel} ${hp.round()}/100',
         scannedLabel: l10n.shareScannedWith,
         storeUrl: AppLinks.shareStoreUrl,
       );
 
-      await ref.read(shareServiceProvider).captureAndShare(
-        context: context,
-        card: card,
-        logicalSize: const Size(360, 360),
-        pixelRatio: 3.0,
-        fileName: 'nutrilens_${product.barcode}.png',
-        caption: caption,
-      );
+      await ref
+          .read(shareServiceProvider)
+          .captureAndShare(
+            context: context,
+            card: card,
+            logicalSize: const Size(360, 360),
+            pixelRatio: 3.0,
+            fileName: 'nutrilens_${product.barcode}.png',
+            caption: caption,
+          );
     } catch (e) {
       if (mounted) {
         messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));
@@ -659,62 +663,66 @@ class _AlternativeCard extends StatelessWidget {
     final gauge = ScoreConstants.hpToGauge(product.calculatedHpScore);
     final gaugeColor = colors.gaugeColor(gauge);
 
-    return GestureDetector(
+    return AppTapCard(
       onTap: () => context.push('/product/${product.barcode}'),
-      child: Container(
+      semanticLabel: product.productName,
+      borderRadius: BorderRadius.circular(20),
+      decoration: BoxDecoration(
+        color: colors.surfaceCard,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: SizedBox(
         width: 130,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: colors.surfaceCard,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: product.imageUrl != null
-                  ? Image.network(
-                      product.imageUrl!,
-                      height: 72,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (ctx, e, s) => _placeholder(colors),
-                    )
-                  : _placeholder(colors),
-            ),
-            const SizedBox(height: 8),
-            // HP gauge badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: gaugeColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(6),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Product image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: product.imageUrl != null
+                    ? Image.network(
+                        product.imageUrl!,
+                        height: 72,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (ctx, e, s) => _placeholder(colors),
+                      )
+                    : _placeholder(colors),
               ),
-              child: Text(
-                '$gauge',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: gaugeColor,
+              const SizedBox(height: 8),
+              // HP gauge badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: gaugeColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '$gauge',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: gaugeColor,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 4),
-            // Product name
-            Text(
-              product.productName ?? product.barcode,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
-                height: 1.3,
+              const SizedBox(height: 4),
+              // Product name
+              Text(
+                product.productName ?? product.barcode,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: colors.textPrimary,
+                  height: 1.3,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

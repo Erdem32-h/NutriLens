@@ -9,6 +9,7 @@ import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/datasources/scan_history_local_datasource.dart';
 import '../providers/history_provider.dart';
+import '../../../../core/widgets/app_tap_card.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
@@ -113,18 +114,17 @@ class _HistoryTile extends ConsumerWidget {
         ? context.l10n.aiEstimate
         : (item.brands ?? item.barcode);
 
-    return GestureDetector(
+    return AppTapCard(
       onLongPress: () => _showContextMenu(context, ref),
       onTap: () => context.push('/product/${item.barcode}'),
-      child: Container(
+      semanticLabel: item.productName,
+      decoration: BoxDecoration(
+        color: context.colors.surfaceCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.colors.border.withValues(alpha: 0.5)),
+      ),
+      child: Padding(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: context.colors.surfaceCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: context.colors.border.withValues(alpha: 0.5),
-          ),
-        ),
         child: Row(
           children: [
             // Product image or placeholder

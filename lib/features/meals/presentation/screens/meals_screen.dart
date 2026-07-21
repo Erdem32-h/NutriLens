@@ -13,6 +13,7 @@ import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_tap_card.dart';
 import '../../domain/entities/meal_entry_entity.dart';
 import '../meal_display.dart';
 import '../providers/meal_provider.dart';
@@ -167,16 +168,18 @@ class _MealTile extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: GestureDetector(
+      child: AppTapCard(
         onTap: () => context.pushNamed(RouteNames.mealDetail, extra: meal),
         onLongPress: () => _confirmDelete(context, ref),
-        child: Container(
+        semanticLabel: displayMealName(l10n, meal),
+        borderRadius: BorderRadius.circular(14),
+        decoration: BoxDecoration(
+          color: colors.surfaceCard,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colors.border),
+        ),
+        child: Padding(
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: colors.surfaceCard,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: colors.border),
-          ),
           child: Row(
             children: [
               ClipRRect(

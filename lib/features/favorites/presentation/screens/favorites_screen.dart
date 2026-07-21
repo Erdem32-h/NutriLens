@@ -8,6 +8,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../history/data/datasources/scan_history_local_datasource.dart';
 import '../../../history/presentation/providers/history_provider.dart';
+import '../../../../core/widgets/app_tap_card.dart';
 
 class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
@@ -49,9 +50,9 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen>
       } else if (_selected.length < 2) {
         _selected.add(barcode);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.compareMaxTwo)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.compareMaxTwo)));
       }
     });
   }
@@ -310,30 +311,29 @@ class _FavoriteTile extends ConsumerWidget {
         ? context.l10n.aiEstimate
         : (item.brands ?? item.barcode);
 
-    return GestureDetector(
+    return AppTapCard(
       onLongPress: selectMode ? null : () => _showRemoveDialog(context, ref),
       onTap: selectMode
           ? () => onToggleSelect(item.barcode)
           : () => context.push('/product/${item.barcode}'),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: context.colors.surfaceCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected
-                ? context.colors.primary
-                : context.colors.border.withValues(alpha: 0.5),
-            width: isSelected ? 2 : 1,
-          ),
+      semanticLabel: item.productName,
+      decoration: BoxDecoration(
+        color: context.colors.surfaceCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isSelected
+              ? context.colors.primary
+              : context.colors.border.withValues(alpha: 0.5),
+          width: isSelected ? 2 : 1,
         ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
         child: Row(
           children: [
             if (selectMode) ...[
               Icon(
-                isSelected
-                    ? Icons.check_circle
-                    : Icons.radio_button_unchecked,
+                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
                 color: isSelected
                     ? context.colors.primary
                     : context.colors.textMuted,
@@ -526,16 +526,17 @@ class _BlacklistTile extends ConsumerWidget {
     final dateFormat = DateFormat('dd MMM yyyy', 'tr');
     final displayName = item.productName ?? item.barcode;
 
-    return GestureDetector(
+    return AppTapCard(
       onLongPress: () => _showRemoveDialog(context, ref),
       onTap: () => context.push('/product/${item.barcode}'),
-      child: Container(
+      semanticLabel: item.productName,
+      decoration: BoxDecoration(
+        color: context.colors.surfaceCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+      ),
+      child: Padding(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: context.colors.surfaceCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-        ),
         child: Row(
           children: [
             // Product image or placeholder

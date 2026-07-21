@@ -17,6 +17,7 @@ import '../../../history/presentation/providers/history_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
 import '../providers/health_filters_provider.dart';
 import '../providers/user_data_deletion_provider.dart';
+import '../../../../core/widgets/app_tap_card.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -101,9 +102,7 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        isGuest
-                            ? l10n.guestDataLocal
-                            : (user?.email ?? ''),
+                        isGuest ? l10n.guestDataLocal : (user?.email ?? ''),
                         style: TextStyle(
                           fontSize: 13,
                           color: context.colors.textMuted,
@@ -117,10 +116,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
 
-          if (isGuest) ...[
-            const SizedBox(height: 16),
-            _GuestRegisterBanner(),
-          ],
+          if (isGuest) ...[const SizedBox(height: 16), _GuestRegisterBanner()],
 
           const SizedBox(height: 28),
 
@@ -568,9 +564,7 @@ class _VersionFooterState extends State<_VersionFooter> {
       );
     } catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(content: Text('Sentry test failed: $e')),
-      );
+      messenger.showSnackBar(SnackBar(content: Text('Sentry test failed: $e')));
     }
   }
 
@@ -703,15 +697,16 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return AppTapCard(
       onTap: onTap,
-      child: Container(
+      semanticLabel: title,
+      decoration: BoxDecoration(
+        color: context.colors.surfaceCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.colors.border),
+      ),
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: context.colors.surfaceCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: context.colors.border),
-        ),
         child: Row(
           children: [
             Container(
