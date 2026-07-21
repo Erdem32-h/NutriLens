@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/nova_badge.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 
 class NovaCard extends StatelessWidget {
   final int? novaGroup;
 
   const NovaCard({super.key, required this.novaGroup});
 
-  String _novaDescription(int group) {
+  String _novaDescription(BuildContext context, int group) {
+    final l10n = context.l10n;
     return switch (group) {
-      1 => 'İşlenmemiş veya minimal işlenmiş gıda',
-      2 => 'İşlenmiş mutfak malzemeleri',
-      3 => 'İşlenmiş gıda',
-      4 => 'Çok işlenmiş gıda ürünleri',
-      _ => 'Bilinmiyor',
+      1 => l10n.nova1Label,
+      2 => l10n.nova2Label,
+      3 => l10n.nova3Label,
+      4 => l10n.nova4Label,
+      _ => l10n.novaUnknownLabel,
     };
   }
 
@@ -51,7 +53,7 @@ class NovaCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _novaDescription(novaGroup!),
+                  _novaDescription(context, novaGroup!),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

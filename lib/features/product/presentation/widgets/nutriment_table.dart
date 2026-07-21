@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/nutriments_entity.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 
 class NutrimentTable extends StatelessWidget {
   final NutrimentsEntity nutriments;
@@ -23,7 +24,7 @@ class NutrimentTable extends StatelessWidget {
           border: Border.all(color: context.colors.border),
         ),
         child: Text(
-          'Besin değeri bilgisi mevcut değil',
+          context.l10n.noNutrientData,
           style: TextStyle(fontSize: 14, color: context.colors.textMuted),
         ),
       );
@@ -42,7 +43,7 @@ class NutrimentTable extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
             child: Text(
-              'Besin Değerleri (100g)',
+              context.l10n.nutritionFacts100g,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -132,26 +133,37 @@ class NutrimentTable extends StatelessWidget {
   }
 
   List<_NutrimentRow> _buildRows(BuildContext context) {
+    final l10n = context.l10n;
     return [
-      _NutrimentRow('Enerji', nutriments.energyKcal, 'kcal', null),
-      _NutrimentRow('Yağ', nutriments.fat, 'g', _fatLevel(context)),
+      _NutrimentRow(l10n.energyLabel, nutriments.energyKcal, 'kcal', null),
+      _NutrimentRow(l10n.fatLabel, nutriments.fat, 'g', _fatLevel(context)),
       _NutrimentRow(
-        'Doymuş Yağ',
+        l10n.saturatedFatLabel,
         nutriments.saturatedFat,
         'g',
         _satFatLevel(context),
       ),
       _NutrimentRow(
-        'Trans Yağ',
+        l10n.transFatLabel,
         nutriments.transFat,
         'g',
         _transFatLevel(context),
       ),
-      _NutrimentRow('Karbonhidrat', nutriments.carbohydrates, 'g', null),
-      _NutrimentRow('Şeker', nutriments.sugars, 'g', _sugarLevel(context)),
-      _NutrimentRow('Lif', nutriments.fiber, 'g', null),
-      _NutrimentRow('Protein', nutriments.proteins, 'g', null),
-      _NutrimentRow('Tuz', nutriments.salt, 'g', _saltLevel(context)),
+      _NutrimentRow(
+        l10n.carbohydrateShort,
+        nutriments.carbohydrates,
+        'g',
+        null,
+      ),
+      _NutrimentRow(
+        l10n.sugarLabel,
+        nutriments.sugars,
+        'g',
+        _sugarLevel(context),
+      ),
+      _NutrimentRow(l10n.fiberLabel, nutriments.fiber, 'g', null),
+      _NutrimentRow(l10n.proteinLabel, nutriments.proteins, 'g', null),
+      _NutrimentRow(l10n.saltLabel, nutriments.salt, 'g', _saltLevel(context)),
     ];
   }
 

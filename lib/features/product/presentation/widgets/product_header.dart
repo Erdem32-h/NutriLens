@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/product_entity.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 
 class ProductHeader extends StatelessWidget {
   final ProductEntity product;
@@ -64,7 +65,7 @@ class ProductHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  product.productName ?? 'Bilinmeyen Ürün',
+                  product.productName ?? context.l10n.unknownProduct,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

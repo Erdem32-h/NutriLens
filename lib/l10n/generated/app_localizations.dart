@@ -3037,6 +3037,228 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hoş geldin'**
   String get welcomeBack;
+
+  /// No description provided for @nutritionFacts100g.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besin Değerleri (100g)'**
+  String get nutritionFacts100g;
+
+  /// No description provided for @energyLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Enerji'**
+  String get energyLabel;
+
+  /// No description provided for @carbohydrateShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karbonhidrat'**
+  String get carbohydrateShort;
+
+  /// No description provided for @noIngredientInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik bilgisi mevcut değil'**
+  String get noIngredientInfo;
+
+  /// No description provided for @collapse.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daralt'**
+  String get collapse;
+
+  /// No description provided for @expand.
+  ///
+  /// In tr, this message translates to:
+  /// **'Genişlet'**
+  String get expand;
+
+  /// No description provided for @riskLow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düşük Risk'**
+  String get riskLow;
+
+  /// No description provided for @riskAcceptable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kabul Edilebilir'**
+  String get riskAcceptable;
+
+  /// No description provided for @riskModerate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orta Risk'**
+  String get riskModerate;
+
+  /// No description provided for @riskHigh.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yüksek Risk'**
+  String get riskHigh;
+
+  /// No description provided for @riskDangerous.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tehlikeli'**
+  String get riskDangerous;
+
+  /// No description provided for @unknownProduct.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bilinmeyen Ürün'**
+  String get unknownProduct;
+
+  /// No description provided for @communityContribution.
+  ///
+  /// In tr, this message translates to:
+  /// **'Topluluk Katkısı'**
+  String get communityContribution;
+
+  /// No description provided for @partialAnalysisNoNutrition.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besin değerleri bilinmediği için kısmi analiz'**
+  String get partialAnalysisNoNutrition;
+
+  /// No description provided for @premiumBenefits.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınırsız tarama, reklamsız'**
+  String get premiumBenefits;
+
+  /// No description provided for @catMilk.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süt'**
+  String get catMilk;
+
+  /// No description provided for @catYogurt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yoğurt'**
+  String get catYogurt;
+
+  /// No description provided for @catCheese.
+  ///
+  /// In tr, this message translates to:
+  /// **'Peynir'**
+  String get catCheese;
+
+  /// No description provided for @catButterMargarine.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tereyağı / Margarin'**
+  String get catButterMargarine;
+
+  /// No description provided for @catBiscuitCracker.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bisküvi / Kraker'**
+  String get catBiscuitCracker;
+
+  /// No description provided for @catChocolate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çikolata'**
+  String get catChocolate;
+
+  /// No description provided for @catCandy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şekerleme'**
+  String get catCandy;
+
+  /// No description provided for @catChipsSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cips / Atıştırmalık'**
+  String get catChipsSnack;
+
+  /// No description provided for @catNuts.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kuruyemiş'**
+  String get catNuts;
+
+  /// No description provided for @catSoda.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gazlı içecek'**
+  String get catSoda;
+
+  /// No description provided for @catJuice.
+  ///
+  /// In tr, this message translates to:
+  /// **'Meyve suyu'**
+  String get catJuice;
+
+  /// No description provided for @catWater.
+  ///
+  /// In tr, this message translates to:
+  /// **'Su / Maden suyu'**
+  String get catWater;
+
+  /// No description provided for @catCoffeeTea.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kahve / Çay'**
+  String get catCoffeeTea;
+
+  /// No description provided for @catBread.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ekmek / Unlu mamul'**
+  String get catBread;
+
+  /// No description provided for @catCereal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kahvaltılık gevrek'**
+  String get catCereal;
+
+  /// No description provided for @catReadyMeal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hazır yemek / Konserve'**
+  String get catReadyMeal;
+
+  /// No description provided for @catSauce.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sos'**
+  String get catSauce;
+
+  /// No description provided for @catJamHoney.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reçel / Bal'**
+  String get catJamHoney;
+
+  /// No description provided for @catMeatDeli.
+  ///
+  /// In tr, this message translates to:
+  /// **'Et / Şarküteri'**
+  String get catMeatDeli;
+
+  /// No description provided for @catOther.
+  ///
+  /// In tr, this message translates to:
+  /// **'Diğer'**
+  String get catOther;
+
+  /// No description provided for @catPastaLegumes.
+  ///
+  /// In tr, this message translates to:
+  /// **'Makarna / Bakliyat'**
+  String get catPastaLegumes;
+
+  /// No description provided for @catIceCream.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dondurma'**
+  String get catIceCream;
 }
 
 class _AppLocalizationsDelegate

@@ -1573,4 +1573,116 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeBack => 'Welcome back';
+
+  @override
+  String get nutritionFacts100g => 'Nutrition Facts (100g)';
+
+  @override
+  String get energyLabel => 'Energy';
+
+  @override
+  String get carbohydrateShort => 'Carbohydrate';
+
+  @override
+  String get noIngredientInfo => 'No ingredient information available';
+
+  @override
+  String get collapse => 'Collapse';
+
+  @override
+  String get expand => 'Expand';
+
+  @override
+  String get riskLow => 'Low Risk';
+
+  @override
+  String get riskAcceptable => 'Acceptable';
+
+  @override
+  String get riskModerate => 'Moderate Risk';
+
+  @override
+  String get riskHigh => 'High Risk';
+
+  @override
+  String get riskDangerous => 'Hazardous';
+
+  @override
+  String get unknownProduct => 'Unknown Product';
+
+  @override
+  String get communityContribution => 'Community Contribution';
+
+  @override
+  String get partialAnalysisNoNutrition =>
+      'Partial analysis — nutrition values unknown';
+
+  @override
+  String get premiumBenefits => 'Unlimited scans, no ads';
+
+  @override
+  String get catMilk => 'Milk';
+
+  @override
+  String get catYogurt => 'Yogurt';
+
+  @override
+  String get catCheese => 'Cheese';
+
+  @override
+  String get catButterMargarine => 'Butter / Margarine';
+
+  @override
+  String get catBiscuitCracker => 'Biscuits / Crackers';
+
+  @override
+  String get catChocolate => 'Chocolate';
+
+  @override
+  String get catCandy => 'Confectionery';
+
+  @override
+  String get catChipsSnack => 'Crisps / Snacks';
+
+  @override
+  String get catNuts => 'Nuts & Dried Fruit';
+
+  @override
+  String get catSoda => 'Fizzy drinks';
+
+  @override
+  String get catJuice => 'Fruit juice';
+
+  @override
+  String get catWater => 'Water / Mineral water';
+
+  @override
+  String get catCoffeeTea => 'Coffee / Tea';
+
+  @override
+  String get catBread => 'Bread / Bakery';
+
+  @override
+  String get catCereal => 'Breakfast cereal';
+
+  @override
+  String get catReadyMeal => 'Ready meals / Tinned';
+
+  @override
+  String get catSauce => 'Sauce';
+
+  @override
+  String get catJamHoney => 'Jam / Honey';
+
+  @override
+  String get catMeatDeli => 'Meat / Deli';
+
+  @override
+  String get catOther => 'Other';
+
+  @override
+  String get catPastaLegumes => 'Pasta / Legumes';
+
+  @override
+  String get catIceCream => 'Ice cream';
 }

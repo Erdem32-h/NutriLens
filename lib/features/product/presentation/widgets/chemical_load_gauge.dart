@@ -105,7 +105,7 @@ class ChemicalLoadGauge extends StatelessWidget {
           if (isPartial) ...[
             const SizedBox(height: 8),
             Text(
-              'Besin değerleri bilinmediği için kısmi analiz',
+              context.l10n.partialAnalysisNoNutrition,
               style: TextStyle(
                 fontSize: 12,
                 color: context.colors.textMuted,

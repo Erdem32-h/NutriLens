@@ -1,39 +1,14 @@
-/// Canonical product categories — a single string id is used both in the
-/// `community_products.category` column and in same-category alternative
-/// matching. `label` is the Turkish UI label for the edit-form dropdown.
-class ProductCategory {
-  final String id;
-  final String label;
-  const ProductCategory(this.id, this.label);
-}
-
+/// Canonical product category ids.
+///
+/// The id is the stable value: it is written to `community_products.category`
+/// and used for same-category alternative matching, so it must never change.
+/// Display labels used to live here as Turkish strings, which meant the
+/// edit-form dropdown showed Turkish to English users; they now come from
+/// `categoryLabel` in
+/// `features/product/presentation/category_display.dart`, mirroring how
+/// `meal_display.dart` localizes meal names.
 abstract final class ProductCategories {
-  static const all = <ProductCategory>[
-    ProductCategory('sut', 'Süt'),
-    ProductCategory('yogurt', 'Yoğurt'),
-    ProductCategory('peynir', 'Peynir'),
-    ProductCategory('yag', 'Tereyağı / Margarin'),
-    ProductCategory('biskuvi', 'Bisküvi / Kraker'),
-    ProductCategory('cikolata', 'Çikolata'),
-    ProductCategory('sekerleme', 'Şekerleme'),
-    ProductCategory('cips', 'Cips / Atıştırmalık'),
-    ProductCategory('kuruyemis', 'Kuruyemiş'),
-    ProductCategory('gazli_icecek', 'Gazlı içecek'),
-    ProductCategory('meyve_suyu', 'Meyve suyu'),
-    ProductCategory('su', 'Su / Maden suyu'),
-    ProductCategory('kahve_cay', 'Kahve / Çay'),
-    ProductCategory('ekmek', 'Ekmek / Unlu mamul'),
-    ProductCategory('gevrek', 'Kahvaltılık gevrek'),
-    ProductCategory('makarna', 'Makarna / Bakliyat'),
-    ProductCategory('hazir_yemek', 'Hazır yemek / Konserve'),
-    ProductCategory('sos', 'Sos'),
-    ProductCategory('recel_bal', 'Reçel / Bal'),
-    ProductCategory('et_sarkuteri', 'Et / Şarküteri'),
-    ProductCategory('dondurma', 'Dondurma'),
-    ProductCategory('diger', 'Diğer'),
-  ];
-
-  static const validIds = {
+  static const all = <String>[
     'sut',
     'yogurt',
     'peynir',
@@ -56,15 +31,9 @@ abstract final class ProductCategories {
     'et_sarkuteri',
     'dondurma',
     'diger',
-  };
+  ];
+
+  static final validIds = all.toSet();
 
   static bool isValid(String? id) => id != null && validIds.contains(id);
-
-  static String? labelFor(String? id) {
-    if (id == null) return null;
-    for (final c in all) {
-      if (c.id == id) return c.label;
-    }
-    return null;
-  }
 }

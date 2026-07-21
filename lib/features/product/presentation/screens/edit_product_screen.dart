@@ -20,6 +20,7 @@ import '../../domain/entities/nutriments_entity.dart';
 import '../../domain/entities/product_entity.dart';
 import '../providers/ocr_provider.dart';
 import '../providers/product_provider.dart';
+import '../category_display.dart';
 
 class EditProductScreen extends ConsumerStatefulWidget {
   final String barcode;
@@ -308,7 +309,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
             ),
             items: [
               for (final c in ProductCategories.all)
-                DropdownMenuItem(value: c.id, child: Text(c.label)),
+                DropdownMenuItem(value: c, child: Text(categoryLabel(l10n, c))),
             ],
             validator: (v) => v == null ? l10n.fieldRequired : null,
             onChanged: (v) => setState(() => _selectedCategory = v),

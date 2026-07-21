@@ -210,7 +210,7 @@ class ProfileScreen extends ConsumerWidget {
               return _SettingsTile(
                 icon: Icons.star_outline,
                 title: "Premium'a Geç",
-                value: 'Sınırsız tarama, reklamsız',
+                value: context.l10n.premiumBenefits,
                 onTap: () async {
                   if (!await ref.requireAuthOr(
                     context,

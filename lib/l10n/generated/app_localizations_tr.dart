@@ -1576,4 +1576,116 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get welcomeBack => 'Hoş geldin';
+
+  @override
+  String get nutritionFacts100g => 'Besin Değerleri (100g)';
+
+  @override
+  String get energyLabel => 'Enerji';
+
+  @override
+  String get carbohydrateShort => 'Karbonhidrat';
+
+  @override
+  String get noIngredientInfo => 'İçerik bilgisi mevcut değil';
+
+  @override
+  String get collapse => 'Daralt';
+
+  @override
+  String get expand => 'Genişlet';
+
+  @override
+  String get riskLow => 'Düşük Risk';
+
+  @override
+  String get riskAcceptable => 'Kabul Edilebilir';
+
+  @override
+  String get riskModerate => 'Orta Risk';
+
+  @override
+  String get riskHigh => 'Yüksek Risk';
+
+  @override
+  String get riskDangerous => 'Tehlikeli';
+
+  @override
+  String get unknownProduct => 'Bilinmeyen Ürün';
+
+  @override
+  String get communityContribution => 'Topluluk Katkısı';
+
+  @override
+  String get partialAnalysisNoNutrition =>
+      'Besin değerleri bilinmediği için kısmi analiz';
+
+  @override
+  String get premiumBenefits => 'Sınırsız tarama, reklamsız';
+
+  @override
+  String get catMilk => 'Süt';
+
+  @override
+  String get catYogurt => 'Yoğurt';
+
+  @override
+  String get catCheese => 'Peynir';
+
+  @override
+  String get catButterMargarine => 'Tereyağı / Margarin';
+
+  @override
+  String get catBiscuitCracker => 'Bisküvi / Kraker';
+
+  @override
+  String get catChocolate => 'Çikolata';
+
+  @override
+  String get catCandy => 'Şekerleme';
+
+  @override
+  String get catChipsSnack => 'Cips / Atıştırmalık';
+
+  @override
+  String get catNuts => 'Kuruyemiş';
+
+  @override
+  String get catSoda => 'Gazlı içecek';
+
+  @override
+  String get catJuice => 'Meyve suyu';
+
+  @override
+  String get catWater => 'Su / Maden suyu';
+
+  @override
+  String get catCoffeeTea => 'Kahve / Çay';
+
+  @override
+  String get catBread => 'Ekmek / Unlu mamul';
+
+  @override
+  String get catCereal => 'Kahvaltılık gevrek';
+
+  @override
+  String get catReadyMeal => 'Hazır yemek / Konserve';
+
+  @override
+  String get catSauce => 'Sos';
+
+  @override
+  String get catJamHoney => 'Reçel / Bal';
+
+  @override
+  String get catMeatDeli => 'Et / Şarküteri';
+
+  @override
+  String get catOther => 'Diğer';
+
+  @override
+  String get catPastaLegumes => 'Makarna / Bakliyat';
+
+  @override
+  String get catIceCream => 'Dondurma';
 }

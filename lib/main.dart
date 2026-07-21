@@ -249,9 +249,15 @@ class _BootFailureApp extends StatelessWidget {
                   color: Colors.amberAccent,
                 ),
                 const SizedBox(height: 16),
+                // Deliberately bilingual rather than localized: this screen
+                // is the fallback for a bootstrap that never reached runApp,
+                // so AppLocalizations was never loaded and l10n lookups are
+                // unavailable here by definition.
                 const Text(
                   'NutriLens başlatılırken bir sorun oluştu.\n'
-                  'Lütfen uygulamayı kapatıp tekrar açın.',
+                  'Lütfen uygulamayı kapatıp tekrar açın.\n\n'
+                  'NutriLens failed to start.\n'
+                  'Please close the app and open it again.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),

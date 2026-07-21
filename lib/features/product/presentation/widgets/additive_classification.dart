@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/product_entity.dart';
 import '../providers/product_provider.dart';
 import 'additive_chip.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 
 class AdditiveClassification extends ConsumerWidget {
   final ProductEntity product;
@@ -73,7 +74,7 @@ class AdditiveClassification extends ConsumerWidget {
           border: Border.all(color: context.colors.border),
         ),
         child: Text(
-          'Bu üründe katkı maddesi bulunmuyor',
+          context.l10n.noAdditives,
           style: TextStyle(fontSize: 14, color: context.colors.textMuted),
         ),
       );
@@ -96,7 +97,7 @@ class AdditiveClassification extends ConsumerWidget {
     int level,
     List<String> additives,
   ) {
-    final label = _getRiskLabel(level);
+    final label = _getRiskLabel(context, level);
     final color = context.colors.riskColor(level);
 
     return Container(
@@ -150,13 +151,14 @@ class AdditiveClassification extends ConsumerWidget {
     );
   }
 
-  String _getRiskLabel(int level) {
+  String _getRiskLabel(BuildContext context, int level) {
+    final l10n = context.l10n;
     return switch (level) {
-      1 => 'Düşük Risk',
-      2 => 'Kabul Edilebilir',
-      3 => 'Orta Risk',
-      4 => 'Yüksek Risk',
-      _ => 'Tehlikeli',
+      1 => l10n.riskLow,
+      2 => l10n.riskAcceptable,
+      3 => l10n.riskModerate,
+      4 => l10n.riskHigh,
+      _ => l10n.riskDangerous,
     };
   }
 }

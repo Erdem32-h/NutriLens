@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 
 class CommunityBadge extends StatelessWidget {
   const CommunityBadge({super.key});
@@ -24,7 +25,7 @@ class CommunityBadge extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            'Topluluk Katkısı',
+            context.l10n.communityContribution,
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,

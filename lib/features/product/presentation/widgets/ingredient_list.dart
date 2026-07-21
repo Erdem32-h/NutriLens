@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/extensions/l10n_extension.dart';
 
 class IngredientList extends StatefulWidget {
   final String? ingredientsText;
@@ -26,7 +27,7 @@ class _IngredientListState extends State<IngredientList> {
           border: Border.all(color: context.colors.border),
         ),
         child: Text(
-          'İçerik bilgisi mevcut değil',
+          context.l10n.noIngredientInfo,
           style: TextStyle(fontSize: 14, color: context.colors.textMuted),
         ),
       );
@@ -47,7 +48,7 @@ class _IngredientListState extends State<IngredientList> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'İçindekiler',
+                context.l10n.ingredientsTextLabel,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -58,7 +59,7 @@ class _IngredientListState extends State<IngredientList> {
                 GestureDetector(
                   onTap: () => setState(() => _expanded = !_expanded),
                   child: Text(
-                    _expanded ? 'Daralt' : 'Genişlet',
+                    _expanded ? context.l10n.collapse : context.l10n.expand,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
