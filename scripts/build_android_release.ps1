@@ -54,6 +54,14 @@ if (-not $supabaseUrl)   { $missing += 'SUPABASE_URL' }
 if (-not $supabaseAnon)  { $missing += 'SUPABASE_ANON_KEY' }
 if (-not $admobBanner)   { $missing += 'ADMOB_BANNER_ANDROID (else TEST ads ship)' }
 if (-not $admobRewarded) { $missing += 'ADMOB_REWARDED_ANDROID (else TEST ads ship)' }
+# SENTRY_DSN belongs in the same tier. It was a Write-Warning before, and
+# the warning scrolled past every time: .env never had the key, so every
+# Android build shipped blind. Sentry received zero Android events over
+# 90 days while iOS (built on Codemagic, where the env group supplies the
+# DSN) reported normally. Set ALLOW_NO_SENTRY=1 to build without it.
+if (-not $sentryDsn -and -not $env:ALLOW_NO_SENTRY) {
+  $missing += 'SENTRY_DSN (else the release ships with NO crash reporting; set ALLOW_NO_SENTRY=1 to override)'
+}
 if ($missing.Count -gt 0) {
   throw "Missing required .env values: $($missing -join ', ')"
 }
