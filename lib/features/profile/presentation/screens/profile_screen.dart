@@ -474,6 +474,46 @@ class ProfileScreen extends ConsumerWidget {
               Navigator.pop(context);
             },
           ),
+          _buildDialogOption(
+            context: context,
+            title: 'Português',
+            icon: Icons.language_rounded,
+            isSelected: currentLocale.languageCode == 'pt',
+            onTap: () {
+              ref.read(localeProvider.notifier).setLocale(const Locale('pt'));
+              Navigator.pop(context);
+            },
+          ),
+          _buildDialogOption(
+            context: context,
+            title: 'Español',
+            icon: Icons.language_rounded,
+            isSelected: currentLocale.languageCode == 'es',
+            onTap: () {
+              ref.read(localeProvider.notifier).setLocale(const Locale('es'));
+              Navigator.pop(context);
+            },
+          ),
+          _buildDialogOption(
+            context: context,
+            title: 'العربية',
+            icon: Icons.language_rounded,
+            isSelected: currentLocale.languageCode == 'ar',
+            onTap: () {
+              ref.read(localeProvider.notifier).setLocale(const Locale('ar'));
+              Navigator.pop(context);
+            },
+          ),
+          _buildDialogOption(
+            context: context,
+            title: '中文',
+            icon: Icons.language_rounded,
+            isSelected: currentLocale.languageCode == 'zh',
+            onTap: () {
+              ref.read(localeProvider.notifier).setLocale(const Locale('zh'));
+              Navigator.pop(context);
+            },
+          ),
         ],
       ),
     );

@@ -27,14 +27,15 @@ class LocaleNotifier extends Notifier<Locale> {
     return Locale(_deviceDefaultLanguageCode());
   }
 
+  static const _supportedLanguages = {'tr', 'en', 'pt', 'es', 'ar', 'zh'};
+
   /// Resolves the OS locale to one of the app's supported languages.
-  /// Turkish → 'tr'; any other device language → 'en'.
   static String _deviceDefaultLanguageCode() {
     final deviceLocales = ui.PlatformDispatcher.instance.locales;
     final primary = deviceLocales.isNotEmpty
         ? deviceLocales.first.languageCode
         : ui.PlatformDispatcher.instance.locale.languageCode;
-    return primary == 'tr' ? 'tr' : 'en';
+    return _supportedLanguages.contains(primary) ? primary : 'en';
   }
 
   Future<void> setLocale(Locale locale) async {
