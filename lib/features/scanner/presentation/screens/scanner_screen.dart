@@ -15,6 +15,7 @@ import '../../../../core/services/guest_scan_counter.dart';
 import '../../../../core/services/scan_limit_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_button.dart';
 import '../providers/scanner_mode_provider.dart';
 import '../widgets/scanner_overlay.dart';
 import '../../../auth/presentation/widgets/guest_register_sheet.dart';
@@ -995,35 +996,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               // the user to go change a system setting and offers
               // nothing to tap. Typing the barcode needs no camera at
               // all, so the whole app stays usable either way.
-              GestureDetector(
-                onTap: () => unawaited(_showManualBarcodeDialog()),
-                child: Container(
-                  height: 52,
-                  padding: const EdgeInsets.symmetric(horizontal: 28),
-                  decoration: BoxDecoration(
-                    gradient: context.colors.primaryGradient,
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.keyboard_alt_outlined,
-                        color: Colors.black,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        l10n.enterBarcodeManually,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              AppButton(
+                label: l10n.enterBarcodeManually,
+                icon: Icons.keyboard_alt_outlined,
+                expand: false,
+                onPressed: () => unawaited(_showManualBarcodeDialog()),
               ),
             ],
           ],

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_button.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -266,39 +267,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       const SizedBox(height: 32),
 
                       // CTA button
-                      GestureDetector(
-                        onTap: _currentPage == pages.length - 1
+                      AppButton(
+                        label: _currentPage == pages.length - 1
+                            ? l10n.startFree
+                            : l10n.continueText,
+                        onPressed: _currentPage == pages.length - 1
                             ? _startAsGuest
                             : _nextPage,
-                        child: Container(
-                          width: double.infinity,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            gradient: context.colors.primaryGradient,
-                            borderRadius: BorderRadius.circular(50),
-                            boxShadow: [
-                              BoxShadow(
-                                color: context.colors.primary.withValues(
-                                  alpha: 0.35,
-                                ),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            _currentPage == pages.length - 1
-                                ? l10n.startFree
-                                : l10n.continueText,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
                       ),
 
                       // Escape hatch for people who already have an

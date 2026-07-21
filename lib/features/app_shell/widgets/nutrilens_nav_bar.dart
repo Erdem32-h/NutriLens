@@ -131,28 +131,34 @@ class _SideTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final color = selected ? colors.primary : colors.textMuted;
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 4, bottom: 6),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(selected ? selectedIcon : icon, size: 22, color: color),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: color,
-                fontFamilyFallback: const ['Roboto', 'sans-serif'],
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 6),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(selected ? selectedIcon : icon, size: 22, color: color),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: color,
+                  fontFamilyFallback: const ['Roboto', 'sans-serif'],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -178,6 +184,7 @@ class _ScannerButtonState extends State<_ScannerButton>
     with TickerProviderStateMixin {
   late final AnimationController _scanController;
   late final AnimationController _pulseController;
+  bool _pressed = false;
 
   @override
   void initState() {
@@ -185,11 +192,51 @@ class _ScannerButtonState extends State<_ScannerButton>
     _scanController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1400),
-    )..repeat(reverse: true);
+    );
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2200),
-    )..repeat();
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncAnimations();
+  }
+
+  @override
+  void didUpdateWidget(_ScannerButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.active != widget.active) _syncAnimations();
+  }
+
+  /// Both controllers used to `repeat()` unconditionally from initState and
+  /// never stop. The nav bar lives in the app shell, so that meant two
+  /// controllers repainting this button forever on every screen — including
+  /// while the user sits on an unrelated tab — for an effect that is only
+  /// meaningful on the scanner tab. Run them only while the scanner is
+  /// selected, and not at all under reduced-motion.
+  void _syncAnimations() {
+    final reduceMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    final shouldRun = widget.active && !reduceMotion;
+
+    if (shouldRun) {
+      if (!_scanController.isAnimating) _scanController.repeat(reverse: true);
+      if (!_pulseController.isAnimating) _pulseController.repeat();
+    } else {
+      _scanController.stop();
+      _pulseController.stop();
+      // Park the scan line mid-travel so the idle button still reads as a
+      // viewfinder rather than a line stuck against one edge.
+      _scanController.value = 0.5;
+      _pulseController.value = 0;
+    }
+  }
+
+  void _setPressed(bool value) {
+    if (_pressed == value) return;
+    setState(() => _pressed = value);
   }
 
   @override
@@ -202,86 +249,109 @@ class _ScannerButtonState extends State<_ScannerButton>
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return GestureDetector(
-      onTap: widget.onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 72,
-            height: 72,
-            child: AnimatedBuilder(
-              animation: Listenable.merge([_scanController, _pulseController]),
-              builder: (context, _) {
-                final pulse = math.sin(_pulseController.value * math.pi * 2);
-                final glow = (0.18 + 0.12 * (pulse + 1) / 2).clamp(0.18, 0.30);
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Outer pulse ring (always running, subtler when inactive)
-                    Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: colors.primary.withValues(
-                          alpha: widget.active ? glow : 0.12,
-                        ),
-                      ),
-                    ),
-                    // Scanner button core
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: colors.primaryGradient,
-                        boxShadow: [
-                          BoxShadow(
-                            color: colors.primary.withValues(alpha: 0.40),
-                            blurRadius: 18,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Viewfinder corners + scanning line — gives the
-                    // "tarama yapıyor" feel without blocking the icon.
-                    SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: ClipOval(
-                        child: CustomPaint(
-                          painter: _ViewfinderPainter(
-                            scan: _scanController.value,
-                            color: Colors.white.withValues(alpha: 0.85),
-                            active: widget.active,
+    final reduceMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    return Semantics(
+      button: true,
+      selected: widget.active,
+      label: widget.label,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        onTapDown: (_) => _setPressed(true),
+        onTapUp: (_) => _setPressed(false),
+        onTapCancel: () => _setPressed(false),
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedScale(
+          scale: _pressed && !reduceMotion ? 0.92 : 1,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 72,
+                height: 72,
+                child: AnimatedBuilder(
+                  animation: Listenable.merge([
+                    _scanController,
+                    _pulseController,
+                  ]),
+                  builder: (context, _) {
+                    final pulse = math.sin(
+                      _pulseController.value * math.pi * 2,
+                    );
+                    final glow = (0.18 + 0.12 * (pulse + 1) / 2).clamp(
+                      0.18,
+                      0.30,
+                    );
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Outer pulse ring (always running, subtler when inactive)
+                        Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: colors.primary.withValues(
+                              alpha: widget.active ? glow : 0.12,
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.qr_code_scanner_rounded,
-                      size: 30,
-                      color: Colors.white,
-                    ),
-                  ],
-                );
-              },
-            ),
+                        // Scanner button core
+                        Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: colors.primaryGradient,
+                            boxShadow: [
+                              BoxShadow(
+                                color: colors.primary.withValues(alpha: 0.40),
+                                blurRadius: 18,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Viewfinder corners + scanning line — gives the
+                        // "tarama yapıyor" feel without blocking the icon.
+                        SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: ClipOval(
+                            child: CustomPaint(
+                              painter: _ViewfinderPainter(
+                                scan: _scanController.value,
+                                color: Colors.white.withValues(alpha: 0.85),
+                                active: widget.active,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.qr_code_scanner_rounded,
+                          size: 30,
+                          color: Colors.white,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: widget.active ? FontWeight.w800 : FontWeight.w600,
+                  color: widget.active ? colors.primary : colors.textSecondary,
+                  fontFamilyFallback: const ['Roboto', 'sans-serif'],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            widget.label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: widget.active ? FontWeight.w800 : FontWeight.w600,
-              color: widget.active ? colors.primary : colors.textSecondary,
-              fontFamilyFallback: const ['Roboto', 'sans-serif'],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

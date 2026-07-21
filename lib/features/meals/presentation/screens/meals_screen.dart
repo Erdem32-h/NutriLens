@@ -12,6 +12,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_button.dart';
 import '../../domain/entities/meal_entry_entity.dart';
 import '../meal_display.dart';
 import '../providers/meal_provider.dart';
@@ -347,42 +348,11 @@ class _EmptyMeals extends StatelessWidget {
           // user it is the first thing they see — previously an icon
           // and two lines of text with nothing to tap. Send them to
           // the one action the whole app is built around.
-          GestureDetector(
-            onTap: () => context.goNamed(RouteNames.scanner),
-            child: Container(
-              height: 52,
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              decoration: BoxDecoration(
-                gradient: colors.primaryGradient,
-                borderRadius: BorderRadius.circular(50),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.primary.withValues(alpha: 0.3),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.qr_code_scanner_rounded,
-                    color: Colors.black,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    l10n.scanBarcode,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          AppButton(
+            label: l10n.scanBarcode,
+            icon: Icons.qr_code_scanner_rounded,
+            expand: false,
+            onPressed: () => context.goNamed(RouteNames.scanner),
           ),
         ],
       ),

@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_button.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/post_auth_flow.dart';
 import '../widgets/social_login_buttons.dart';
@@ -312,50 +313,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const SizedBox(height: 32),
 
                     // Register button
-                    GestureDetector(
-                      onTap: isLoading ? null : _handleRegister,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: double.infinity,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          gradient: isLoading
-                              ? null
-                              : context.colors.primaryGradient,
-                          color: isLoading ? context.colors.surfaceCard2 : null,
-                          borderRadius: BorderRadius.circular(50),
-                          boxShadow: isLoading
-                              ? []
-                              : [
-                                  BoxShadow(
-                                    color: context.colors.primary.withValues(
-                                      alpha: 0.3,
-                                    ),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                        ),
-                        alignment: Alignment.center,
-                        child: isLoading
-                            ? SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: context.colors.primary,
-                                ),
-                              )
-                            : Text(
-                                l10n.signUp,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black,
-                                  letterSpacing: 0.3,
-                                ),
-                              ),
-                      ),
+                    AppButton(
+                      label: l10n.signUp,
+                      isLoading: isLoading,
+                      onPressed: _handleRegister,
                     ),
 
                     const SizedBox(height: 32),
@@ -542,35 +503,10 @@ class _ConfirmationSentView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 28),
-        GestureDetector(
-          onTap: isResending ? null : onResend,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            height: 52,
-            decoration: BoxDecoration(
-              gradient: isResending ? null : context.colors.primaryGradient,
-              color: isResending ? context.colors.surfaceCard2 : null,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            alignment: Alignment.center,
-            child: isResending
-                ? SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: context.colors.primary,
-                    ),
-                  )
-                : Text(
-                    l10n.resendEmail,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
-                  ),
-          ),
+        AppButton(
+          label: l10n.resendEmail,
+          isLoading: isResending,
+          onPressed: onResend,
         ),
         const SizedBox(height: 12),
         Center(

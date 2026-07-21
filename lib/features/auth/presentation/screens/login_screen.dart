@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_button.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/post_auth_flow.dart';
 import '../widgets/social_login_buttons.dart';
@@ -166,8 +167,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // Guest mode entry — App Review 5.1.1(v) requires
                     // that core functionality is reachable without a
                     // signup wall.
-                    GestureDetector(
-                      onTap: isLoading
+                    AppButton(
+                      label: l10n.continueAsGuest,
+                      variant: AppButtonVariant.secondary,
+                      icon: Icons.explore_outlined,
+                      onPressed: isLoading
                           ? null
                           : () async {
                               await ref
@@ -176,34 +180,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               if (!context.mounted) return;
                               context.go('/scanner');
                             },
-                      child: Container(
-                        width: double.infinity,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color: context.colors.surfaceCard,
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color: context.colors.border),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.explore_outlined,
-                              size: 22,
-                              color: context.colors.textPrimary,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              l10n.continueAsGuest,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: context.colors.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
 
                     const SizedBox(height: 28),
@@ -303,50 +279,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 16),
 
                     // Login button
-                    GestureDetector(
-                      onTap: isLoading ? null : _handleLogin,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: double.infinity,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          gradient: isLoading
-                              ? null
-                              : context.colors.primaryGradient,
-                          color: isLoading ? context.colors.surfaceCard2 : null,
-                          borderRadius: BorderRadius.circular(50),
-                          boxShadow: isLoading
-                              ? []
-                              : [
-                                  BoxShadow(
-                                    color: context.colors.primary.withValues(
-                                      alpha: 0.3,
-                                    ),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                        ),
-                        alignment: Alignment.center,
-                        child: isLoading
-                            ? SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: context.colors.primary,
-                                ),
-                              )
-                            : Text(
-                                l10n.signIn,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black,
-                                  letterSpacing: 0.3,
-                                ),
-                              ),
-                      ),
+                    AppButton(
+                      label: l10n.signIn,
+                      isLoading: isLoading,
+                      onPressed: _handleLogin,
                     ),
 
                     const SizedBox(height: 28),
