@@ -630,23 +630,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
           else
             const SizedBox.shrink(),
 
-          // Guest budget badge — visible only while browsing as a
-          // guest. Shows the remaining lifetime scan quota so users
-          // understand the limit before they hit the hard block.
-          // Hidden after registration (isGuest=false).
-          if (ref.watch(isGuestProvider))
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 12,
-              right: 16,
-              child: _GuestScanBadge(
-                remaining:
-                    ((GuestScanCounter.lifetimeLimit -
-                                ref.watch(guestScanCounterProvider))
-                            .clamp(0, GuestScanCounter.lifetimeLimit))
-                        .toInt(),
-              ),
-            ),
-
           // Barcode mode: overlay + hint
           if (_scanMode == 0) ...[
             const ScannerOverlay(),
@@ -808,9 +791,12 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                             GestureDetector(
                               onTap: _showManualBarcodeDialog,
                               child: Container(
+                                // 14 vertical (not 8) so the pill clears
+                                // the 48dp minimum touch target with a
+                                // 20dp icon; at 8 it was only 36dp tall.
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 14,
-                                  vertical: 8,
+                                  vertical: 14,
                                 ),
                                 decoration: BoxDecoration(
                                   color: Colors.black.withValues(alpha: 0.5),
@@ -842,7 +828,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 14,
-                                      vertical: 8,
+                                      vertical: 14,
                                     ),
                                     decoration: BoxDecoration(
                                       color: isOn
@@ -883,6 +869,34 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                 // Mode tab bar
                 const SizedBox(height: 8),
                 _buildModeTabBar(l10n, colors),
+
+                // Guest budget badge — remaining lifetime scan quota, so
+                // the limit is visible before it's hit. Hidden once
+                // registered (isGuest=false).
+                //
+                // Laid out here rather than absolutely positioned in the
+                // root Stack: it used to be Positioned(top, right) and
+                // collided with the flash/manual-entry buttons, which
+                // occupy the same corner in barcode mode. The three pills
+                // together are wider than a 360dp screen, so they cannot
+                // share a row — giving the badge its own line is what
+                // actually removes the overlap rather than relocating it.
+                if (ref.watch(isGuestProvider)) ...[
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: _GuestScanBadge(
+                        remaining:
+                            ((GuestScanCounter.lifetimeLimit -
+                                        ref.watch(guestScanCounterProvider))
+                                    .clamp(0, GuestScanCounter.lifetimeLimit))
+                                .toInt(),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
