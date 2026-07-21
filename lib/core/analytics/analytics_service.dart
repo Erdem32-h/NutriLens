@@ -52,7 +52,11 @@ class AnalyticsService {
        _batchSize = batchSize,
        _sessionId = sessionId ?? const Uuid().v4() {
     _restore();
-    if (_enabled) {
+    // A non-positive interval means "no background flushing" — the queue then
+    // only ships on batch-size and on app lifecycle events. Widget tests rely
+    // on this: flutter_test asserts no timer outlives the widget tree, and it
+    // checks before tearDown callbacks get a chance to dispose the service.
+    if (_enabled && flushInterval > Duration.zero) {
       _timer = Timer.periodic(flushInterval, (_) => unawaited(flush()));
     }
   }

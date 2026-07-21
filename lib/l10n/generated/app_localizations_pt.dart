@@ -566,6 +566,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get saveFailed => 'Save failed';
 
   @override
+  String get privacy => 'Privacidade';
+
+  @override
+  String get analyticsSharing => 'Compartilhar dados de uso';
+
+  @override
+  String get analyticsSharingDescription =>
+      'Ajuda-nos a ver onde o aplicativo atrapalha você. Seus dados pessoais e os produtos que você escaneia nunca são enviados.';
+
+  @override
   String get dataManagement => 'Gerenciamento de Dados';
 
   @override

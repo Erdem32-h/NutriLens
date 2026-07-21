@@ -556,6 +556,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get saveFailed => 'Save failed';
 
   @override
+  String get privacy => '隐私';
+
+  @override
+  String get analyticsSharing => '共享使用数据';
+
+  @override
+  String get analyticsSharingDescription =>
+      '帮助我们了解应用在哪些环节让你受阻。不会发送你的个人信息或扫描过的商品。';
+
+  @override
   String get dataManagement => '数据管理';
 
   @override

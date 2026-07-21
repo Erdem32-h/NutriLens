@@ -17,6 +17,7 @@ import '../../../history/presentation/providers/history_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
 import '../providers/health_filters_provider.dart';
 import '../providers/user_data_deletion_provider.dart';
+import '../widgets/analytics_opt_out_tile.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -221,6 +222,16 @@ class ProfileScreen extends ConsumerWidget {
               );
             },
           ),
+
+          const SizedBox(height: 28),
+
+          // Privacy — shown to everyone, guests included. Funnel events are
+          // keyed by a hashed device id and are recorded whether or not the
+          // visitor ever signs up, so gating this behind an account would
+          // hide the switch from most of the people it applies to.
+          _SectionLabel(l10n.privacy),
+          const SizedBox(height: 10),
+          const AnalyticsOptOutTile(),
 
           // Data management — only meaningful for authenticated users.
           // Guests have no Supabase rows to delete and no account to

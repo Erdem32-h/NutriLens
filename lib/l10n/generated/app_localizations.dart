@@ -1192,6 +1192,24 @@ abstract class AppLocalizations {
   /// **'Kaydetme başarısız'**
   String get saveFailed;
 
+  /// No description provided for @privacy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik'**
+  String get privacy;
+
+  /// No description provided for @analyticsSharing.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanım verilerini paylaş'**
+  String get analyticsSharing;
+
+  /// No description provided for @analyticsSharingDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulamanın nerede zorlaştığını görmemize yardım eder. Kişisel bilgilerin ve taradığın ürünler gönderilmez.'**
+  String get analyticsSharingDescription;
+
   /// No description provided for @dataManagement.
   ///
   /// In tr, this message translates to:

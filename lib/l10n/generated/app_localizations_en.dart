@@ -563,6 +563,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveFailed => 'Save failed';
 
   @override
+  String get privacy => 'Privacy';
+
+  @override
+  String get analyticsSharing => 'Share usage data';
+
+  @override
+  String get analyticsSharingDescription =>
+      'Helps us see where the app gets in your way. Your personal details and the products you scan are never sent.';
+
+  @override
   String get dataManagement => 'Data Management';
 
   @override

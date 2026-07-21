@@ -563,6 +563,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get saveFailed => 'Kaydetme başarısız';
 
   @override
+  String get privacy => 'Gizlilik';
+
+  @override
+  String get analyticsSharing => 'Kullanım verilerini paylaş';
+
+  @override
+  String get analyticsSharingDescription =>
+      'Uygulamanın nerede zorlaştığını görmemize yardım eder. Kişisel bilgilerin ve taradığın ürünler gönderilmez.';
+
+  @override
   String get dataManagement => 'Veri Yönetimi';
 
   @override
