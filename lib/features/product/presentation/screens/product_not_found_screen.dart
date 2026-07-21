@@ -101,8 +101,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
 
             // Subtitle
             Text(
-              'Bu ürün henüz veritabanımızda yok.\n'
-              'Bilgileri girerek topluluk veritabanına ekleyebilirsiniz!',
+              l10n.addProductIntro,
               style: TextStyle(fontSize: 14, color: context.colors.textMuted),
               textAlign: TextAlign.center,
             ),
@@ -158,7 +157,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Ürün Fotoğrafı (opsiyonel)',
+                            l10n.productPhotoOptional,
                             style: TextStyle(
                               fontSize: 13,
                               color: context.colors.textMuted,
@@ -174,8 +173,8 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
             TextField(
               controller: _productNameController,
               decoration: InputDecoration(
-                labelText: 'Ürün Adı',
-                hintText: 'örn: Ülker Çikolatalı Gofret',
+                labelText: l10n.productName,
+                hintText: l10n.productNameHint,
                 labelStyle: TextStyle(color: context.colors.textMuted),
                 hintStyle: TextStyle(
                   color: context.colors.textMuted.withValues(alpha: 0.5),
@@ -201,8 +200,8 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
             TextField(
               controller: _brandController,
               decoration: InputDecoration(
-                labelText: 'Marka',
-                hintText: 'örn: Ülker',
+                labelText: l10n.brandName,
+                hintText: l10n.brandHint,
                 labelStyle: TextStyle(color: context.colors.textMuted),
                 hintStyle: TextStyle(
                   color: context.colors.textMuted.withValues(alpha: 0.5),
@@ -226,7 +225,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
 
             // CTA: Take Ingredients Photo
             AppButton(
-              label: 'Bilgileri Fotoğrafla Tamamla',
+              label: l10n.completeWithPhoto,
               icon: Icons.camera_alt_rounded,
               onPressed: _goToOcr,
             ),
@@ -234,7 +233,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
 
             // CTA: Manual Entry
             AppButton(
-              label: 'Manuel Gir',
+              label: l10n.manualEntry,
               variant: AppButtonVariant.secondary,
               icon: Icons.edit_note_rounded,
               onPressed: _goToManual,

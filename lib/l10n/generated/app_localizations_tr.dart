@@ -1462,4 +1462,115 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get alreadyHaveAccountSignIn => 'Zaten hesabım var';
+
+  @override
+  String get addProductIntro =>
+      'Bu ürün henüz veritabanımızda yok.\nBilgileri girerek topluluk veritabanına ekleyebilirsiniz!';
+
+  @override
+  String get productPhotoOptional => 'Ürün Fotoğrafı (opsiyonel)';
+
+  @override
+  String get productNameHint => 'örn: Ülker Çikolatalı Gofret';
+
+  @override
+  String get brandHint => 'örn: Ülker';
+
+  @override
+  String get completeWithPhoto => 'Bilgileri Fotoğrafla Tamamla';
+
+  @override
+  String get invalidECodeFormat => 'Geçersiz E kodu formatı (örn: E471)';
+
+  @override
+  String get productAddedToDb => 'Bu ürünü veritabanımıza eklediniz!';
+
+  @override
+  String get manualEntryTitle => 'Manuel Giriş';
+
+  @override
+  String get ingredientsTextOptional => 'İçindekiler Metni (opsiyonel)';
+
+  @override
+  String get ingredientsPasteHint =>
+      'İçindekiler listesini buraya yapıştırın...';
+
+  @override
+  String get additivesECodes => 'Katkı Maddeleri (E Kodları)';
+
+  @override
+  String get tapToRemove => 'Kaldırmak için dokunun';
+
+  @override
+  String get saveAction => 'Kaydet';
+
+  @override
+  String get verifyIngredientsTitle => 'İçerik Doğrulama';
+
+  @override
+  String get ocrIngredientsHint => 'OCR ile okunan içindekiler metni...';
+
+  @override
+  String get hideRawOcr => 'Ham OCR metnini gizle';
+
+  @override
+  String get showRawOcr => 'Ham OCR metnini göster';
+
+  @override
+  String get detectedAdditives => 'Tespit Edilen Katkı Maddeleri';
+
+  @override
+  String get unknownECodes => 'Veritabanında Bulunamayan E Kodları';
+
+  @override
+  String ocrConfidence(String percent) {
+    return 'OCR Güvenilirlik: %$percent';
+  }
+
+  @override
+  String get retakePhoto => 'Tekrar Çek';
+
+  @override
+  String get confirmAndSave => 'Onayla ve Kaydet';
+
+  @override
+  String get ingredientsSectionNotFound => 'İçindekiler Bölümü Bulunamadı';
+
+  @override
+  String get ingredientsSectionNotFoundBody =>
+      'Fotoğrafta \"İçindekiler:\" yazan bölüm okunamadı. Lütfen:\n\n• Paketi düz tutun (yazılar yatay olsun)\n• İçindekiler yazan kısmı ortalayın\n• Işık yansımasından kaçının\n• Yazı net ve okunabilir mesafede olsun';
+
+  @override
+  String get textUnreadable => 'Metin Okunamadı';
+
+  @override
+  String get textUnreadableBody =>
+      'İçindekiler listesi okunamadı. Lütfen daha yakın ve net bir fotoğraf çekin.';
+
+  @override
+  String get ingredientsPhotoTitle => 'İçindekiler Fotoğrafı';
+
+  @override
+  String get analyzingIngredients => 'İçindekiler analiz ediliyor...';
+
+  @override
+  String get photographIngredientsList =>
+      'İçindekiler listesinin fotoğrafını çekin';
+
+  @override
+  String get tipHoldFlat => 'Paketi düz tutun, yazılar yatay olsun';
+
+  @override
+  String get tipCenterIngredients => '\"İçindekiler\" yazan bölümü ortalayın';
+
+  @override
+  String get tipAvoidGlare => 'Parlama/yansımadan kaçının';
+
+  @override
+  String get tipZoomIn => 'Yazılar net okunabilsin — yakınlaşın';
+
+  @override
+  String genericErrorWith(Object error) {
+    return 'Hata: $error';
+  }
 }

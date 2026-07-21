@@ -57,7 +57,7 @@
   "startHealthyJourney": "Sağlıklı beslenme yolculuğunuza başlayın",
   "fullName": "Ad Soyad",
   "enterName": "Adınızı girin",
-  "confirmPassword": "Şifre Tekrar",
+  "confirmPassword": "Şifre tekrar",
   "passwordsDoNotMatch": "Şifreler uyuşmuyor",
   "or": "veya",
   "continueWithGoogle": "Google ile devam et",
@@ -177,7 +177,7 @@
   "chooseFromGallery": "Galeriden Seç",
   "productPhoto": "Ürün Fotoğrafı",
   "saveChanges": "Değişiklikleri Kaydet",
-  "cancel": "İptal",
+  "cancel": "Kapat",
   "saving": "Kaydediliyor...",
   "savedSuccessfully": "Başarıyla kaydedildi",
   "saveFailed": "Kaydetme başarısız",
@@ -331,7 +331,11 @@
   "guestScanLimitMessage": "Hesap açtığında tarama hakkın yenilenir, geçmişin ve öğünlerin her cihazda görünür.",
   "guestFeatureLockedTitle": "{feature} için hesap gerekli",
   "@guestFeatureLockedTitle": {
-    "placeholders": { "feature": { "type": "String" } }
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      }
+    }
   },
   "guestFeatureLockedMessage": "Bu özellik bulutta saklanır. Hesap açıp giriş yapınca aktif olur.",
   "createAccountCta": "Hesap aç",
@@ -343,17 +347,29 @@
   "migrationTitle": "Misafir verilerin var",
   "migrationMessage": "Bu cihazda {dataLine} bulunuyor. Bunları yeni hesabına yükleyelim mi?",
   "@migrationMessage": {
-    "placeholders": { "dataLine": { "type": "String" } }
+    "placeholders": {
+      "dataLine": {
+        "type": "String"
+      }
+    }
   },
   "migrationYes": "Evet, hesabıma yükle",
   "migrationNo": "Sıfırdan başla",
   "scanCountUnit": "{count} tarama",
   "@scanCountUnit": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "mealCountUnit": "{count} öğün",
   "@mealCountUnit": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "forgotPassword": "Şifremi unuttum",
   "forgotPasswordTitle": "Şifreni mi unuttun?",
@@ -365,14 +381,17 @@
   "resetPasswordTitle": "Yeni şifre belirle",
   "resetPasswordSubtitle": "Hesabını korumak için güçlü bir şifre seç.",
   "newPassword": "Yeni şifre",
-  "confirmPassword": "Şifre tekrar",
   "updatePassword": "Şifreyi güncelle",
   "passwordsDontMatch": "Şifreler eşleşmiyor",
   "passwordUpdated": "Şifren güncellendi",
   "enterPasswordAgain": "Şifre tekrar girin",
   "guestScanCounter": "{remaining}/5 ücretsiz tarama",
   "@guestScanCounter": {
-    "placeholders": { "remaining": { "type": "int" } }
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
   },
   "appVersion": "Sürüm",
   "testCrashReporting": "Crash raporlamayı test et",
@@ -385,7 +404,11 @@
   "deleteMealTitle": "Öğünü sil",
   "deleteMealConfirm": "\"{name}\" silinsin mi?",
   "@deleteMealConfirm": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "noMealsYet": "Henüz öğün yok",
   "noMealsHint": "Tarama ekranındaki AI Analizi ile yemeğini fotoğraflayıp buraya kaydedebilirsin.",
@@ -424,7 +447,9 @@
   "verificationEmailResent": "Yeni doğrulama maili gönderildi",
   "emailSendFailed": "Mail gönderilemedi: {error}",
   "@emailSendFailed": {
-    "placeholders": { "error": {} }
+    "placeholders": {
+      "error": {}
+    }
   },
   "emailHint": "ornek@email.com",
   "orSeparator": "ya da",
@@ -442,7 +467,6 @@
   "ocrPreparingImage": "Fotoğraf hazırlanıyor...",
   "ocrAnalyzingWithAi": "Yapay zeka ile analiz ediliyor...",
   "ocrFillingForm": "Sonuçlar forma yazılıyor...",
-
   "premiumTitle": "NutriLens Premium",
   "premiumRestore": "Geri Yükle",
   "premiumActivated": "Premium aktif! 🎉",
@@ -454,24 +478,34 @@
   "premiumPlanMonthly": "Aylık",
   "premiumPerMonth": "{price}/ay",
   "@premiumPerMonth": {
-    "placeholders": { "price": {} }
+    "placeholders": {
+      "price": {}
+    }
   },
   "premiumBilledAnnually": "Yıllık {price} olarak faturalandırılır",
   "@premiumBilledAnnually": {
-    "placeholders": { "price": {} }
+    "placeholders": {
+      "price": {}
+    }
   },
   "premiumSaveBadge": "%{percent} tasarruf",
   "@premiumSaveBadge": {
-    "placeholders": { "percent": {} }
+    "placeholders": {
+      "percent": {}
+    }
   },
   "premiumMostPopular": "En popüler",
   "premiumTrialBadge": "{days} gün ücretsiz",
   "@premiumTrialBadge": {
-    "placeholders": { "days": {} }
+    "placeholders": {
+      "days": {}
+    }
   },
   "premiumTrialCta": "{days} Gün Ücretsiz Dene",
   "@premiumTrialCta": {
-    "placeholders": { "days": {} }
+    "placeholders": {
+      "days": {}
+    }
   },
   "premiumContinueCta": "Premium'a Geç",
   "premiumAutoRenewNote": "Abonelik otomatik yenilenir. İstediğin zaman iptal edebilirsin.",
@@ -501,7 +535,54 @@
   "barcodeInputHint": "8 veya 13 haneli barkod girin",
   "barcodeInputLabel": "Barkod",
   "search": "Ara",
-  "cancel": "Kapat",
   "startFree": "Ücretsiz başla",
-  "alreadyHaveAccountSignIn": "Zaten hesabım var"
+  "alreadyHaveAccountSignIn": "Zaten hesabım var",
+  "addProductIntro": "Bu ürün henüz veritabanımızda yok.\nBilgileri girerek topluluk veritabanına ekleyebilirsiniz!",
+  "productPhotoOptional": "Ürün Fotoğrafı (opsiyonel)",
+  "productNameHint": "örn: Ülker Çikolatalı Gofret",
+  "brandHint": "örn: Ülker",
+  "completeWithPhoto": "Bilgileri Fotoğrafla Tamamla",
+  "invalidECodeFormat": "Geçersiz E kodu formatı (örn: E471)",
+  "productAddedToDb": "Bu ürünü veritabanımıza eklediniz!",
+  "manualEntryTitle": "Manuel Giriş",
+  "ingredientsTextOptional": "İçindekiler Metni (opsiyonel)",
+  "ingredientsPasteHint": "İçindekiler listesini buraya yapıştırın...",
+  "additivesECodes": "Katkı Maddeleri (E Kodları)",
+  "tapToRemove": "Kaldırmak için dokunun",
+  "saveAction": "Kaydet",
+  "verifyIngredientsTitle": "İçerik Doğrulama",
+  "ocrIngredientsHint": "OCR ile okunan içindekiler metni...",
+  "hideRawOcr": "Ham OCR metnini gizle",
+  "showRawOcr": "Ham OCR metnini göster",
+  "detectedAdditives": "Tespit Edilen Katkı Maddeleri",
+  "unknownECodes": "Veritabanında Bulunamayan E Kodları",
+  "ocrConfidence": "OCR Güvenilirlik: %{percent}",
+  "@ocrConfidence": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "retakePhoto": "Tekrar Çek",
+  "confirmAndSave": "Onayla ve Kaydet",
+  "ingredientsSectionNotFound": "İçindekiler Bölümü Bulunamadı",
+  "ingredientsSectionNotFoundBody": "Fotoğrafta \"İçindekiler:\" yazan bölüm okunamadı. Lütfen:\n\n• Paketi düz tutun (yazılar yatay olsun)\n• İçindekiler yazan kısmı ortalayın\n• Işık yansımasından kaçının\n• Yazı net ve okunabilir mesafede olsun",
+  "textUnreadable": "Metin Okunamadı",
+  "textUnreadableBody": "İçindekiler listesi okunamadı. Lütfen daha yakın ve net bir fotoğraf çekin.",
+  "ingredientsPhotoTitle": "İçindekiler Fotoğrafı",
+  "analyzingIngredients": "İçindekiler analiz ediliyor...",
+  "photographIngredientsList": "İçindekiler listesinin fotoğrafını çekin",
+  "tipHoldFlat": "Paketi düz tutun, yazılar yatay olsun",
+  "tipCenterIngredients": "\"İçindekiler\" yazan bölümü ortalayın",
+  "tipAvoidGlare": "Parlama/yansımadan kaçının",
+  "tipZoomIn": "Yazılar net okunabilsin — yakınlaşın",
+  "genericErrorWith": "Hata: {error}",
+  "@genericErrorWith": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  }
 }

@@ -186,15 +186,11 @@ class _IngredientsCameraScreenState
       builder: (ctx) => AlertDialog(
         backgroundColor: context.colors.surfaceCard,
         title: Text(
-          'İçindekiler Bölümü Bulunamadı',
+          context.l10n.ingredientsSectionNotFound,
           style: TextStyle(color: context.colors.textPrimary),
         ),
         content: Text(
-          'Fotoğrafta "İçindekiler:" yazan bölüm okunamadı. Lütfen:\n\n'
-          '• Paketi düz tutun (yazılar yatay olsun)\n'
-          '• İçindekiler yazan kısmı ortalayın\n'
-          '• Işık yansımasından kaçının\n'
-          '• Yazı net ve okunabilir mesafede olsun',
+          context.l10n.ingredientsSectionNotFoundBody,
           style: TextStyle(color: context.colors.textSecondary),
         ),
         actions: [
@@ -207,7 +203,7 @@ class _IngredientsCameraScreenState
               );
             },
             child: Text(
-              'Manuel Gir',
+              context.l10n.manualEntry,
               style: TextStyle(color: context.colors.textMuted),
             ),
           ),
@@ -217,7 +213,7 @@ class _IngredientsCameraScreenState
               _takePicture();
             },
             child: Text(
-              'Tekrar Çek',
+              context.l10n.retakePhoto,
               style: TextStyle(color: context.colors.primary),
             ),
           ),
@@ -232,11 +228,11 @@ class _IngredientsCameraScreenState
       builder: (ctx) => AlertDialog(
         backgroundColor: context.colors.surfaceCard,
         title: Text(
-          'Metin Okunamadı',
+          context.l10n.textUnreadable,
           style: TextStyle(color: context.colors.textPrimary),
         ),
         content: Text(
-          'İçindekiler listesi okunamadı. Lütfen daha yakın ve net bir fotoğraf çekin.',
+          context.l10n.textUnreadableBody,
           style: TextStyle(color: context.colors.textSecondary),
         ),
         actions: [
@@ -249,7 +245,7 @@ class _IngredientsCameraScreenState
               );
             },
             child: Text(
-              'Manuel Gir',
+              context.l10n.manualEntry,
               style: TextStyle(color: context.colors.textMuted),
             ),
           ),
@@ -259,7 +255,7 @@ class _IngredientsCameraScreenState
               _takePicture();
             },
             child: Text(
-              'Tekrar Çek',
+              context.l10n.retakePhoto,
               style: TextStyle(color: context.colors.primary),
             ),
           ),
@@ -273,7 +269,7 @@ class _IngredientsCameraScreenState
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(
-        title: const Text('İçindekiler Fotoğrafı'),
+        title: Text(context.l10n.ingredientsPhotoTitle),
         backgroundColor: Colors.transparent,
       ),
       body: Center(
@@ -284,7 +280,7 @@ class _IngredientsCameraScreenState
                   CircularProgressIndicator(color: context.colors.primary),
                   const SizedBox(height: 16),
                   Text(
-                    'İçindekiler analiz ediliyor...',
+                    context.l10n.analyzingIngredients,
                     style: TextStyle(
                       fontSize: 16,
                       color: context.colors.textSecondary,
@@ -304,7 +300,7 @@ class _IngredientsCameraScreenState
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'İçindekiler listesinin fotoğrafını çekin',
+                      context.l10n.photographIngredientsList,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -324,29 +320,29 @@ class _IngredientsCameraScreenState
                         children: [
                           _TipRow(
                             icon: Icons.screen_rotation_outlined,
-                            text: 'Paketi düz tutun, yazılar yatay olsun',
+                            text: context.l10n.tipHoldFlat,
                           ),
                           const SizedBox(height: 10),
                           _TipRow(
                             icon: Icons.center_focus_strong_outlined,
-                            text: '"İçindekiler" yazan bölümü ortalayın',
+                            text: context.l10n.tipCenterIngredients,
                           ),
                           const SizedBox(height: 10),
                           _TipRow(
                             icon: Icons.wb_sunny_outlined,
-                            text: 'Parlama/yansımadan kaçının',
+                            text: context.l10n.tipAvoidGlare,
                           ),
                           const SizedBox(height: 10),
                           _TipRow(
                             icon: Icons.zoom_in,
-                            text: 'Yazılar net okunabilsin — yakınlaşın',
+                            text: context.l10n.tipZoomIn,
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 24),
                     AppButton(
-                      label: 'Fotoğraf Çek',
+                      label: context.l10n.takePhoto,
                       icon: Icons.camera_alt_rounded,
                       expand: false,
                       onPressed: _takePicture,

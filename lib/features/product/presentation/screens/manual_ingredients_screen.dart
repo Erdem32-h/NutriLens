@@ -73,7 +73,7 @@ class _ManualIngredientsScreenState
     ).hasMatch(normalized)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Geçersiz E kodu formatı (örn: E471)'),
+          content: Text(context.l10n.invalidECodeFormat),
           backgroundColor: context.colors.warning,
         ),
       );
@@ -151,7 +151,7 @@ class _ManualIngredientsScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Bu ürünü veritabanımıza eklediniz!'),
+          content: Text(context.l10n.productAddedToDb),
           backgroundColor: context.colors.success,
         ),
       );
@@ -159,7 +159,7 @@ class _ManualIngredientsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Hata: $e'),
+            content: Text(context.l10n.genericErrorWith(e)),
             backgroundColor: context.colors.error,
           ),
         );
@@ -174,7 +174,7 @@ class _ManualIngredientsScreenState
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(
-        title: const Text('Manuel Giriş'),
+        title: Text(context.l10n.manualEntryTitle),
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
@@ -186,7 +186,7 @@ class _ManualIngredientsScreenState
             TextField(
               controller: _productNameController,
               decoration: InputDecoration(
-                labelText: 'Ürün Adı',
+                labelText: context.l10n.productName,
                 labelStyle: TextStyle(color: context.colors.textMuted),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -205,7 +205,7 @@ class _ManualIngredientsScreenState
             TextField(
               controller: _brandController,
               decoration: InputDecoration(
-                labelText: 'Marka',
+                labelText: context.l10n.brandName,
                 labelStyle: TextStyle(color: context.colors.textMuted),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -222,7 +222,7 @@ class _ManualIngredientsScreenState
 
             // Ingredients text
             Text(
-              'İçindekiler Metni (opsiyonel)',
+              context.l10n.ingredientsTextOptional,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -234,7 +234,7 @@ class _ManualIngredientsScreenState
               controller: _ingredientsController,
               maxLines: 4,
               decoration: InputDecoration(
-                hintText: 'İçindekiler listesini buraya yapıştırın...',
+                hintText: context.l10n.ingredientsPasteHint,
                 hintStyle: TextStyle(color: context.colors.textMuted),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -251,7 +251,7 @@ class _ManualIngredientsScreenState
 
             // E-code input
             Text(
-              'Katkı Maddeleri (E Kodları)',
+              context.l10n.additivesECodes,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -311,7 +311,7 @@ class _ManualIngredientsScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                'Kaldırmak için dokunun',
+                context.l10n.tapToRemove,
                 style: TextStyle(fontSize: 11, color: context.colors.textMuted),
               ),
               const SizedBox(height: 16),
@@ -329,7 +329,7 @@ class _ManualIngredientsScreenState
             // Save button
             const SizedBox(height: 8),
             AppButton(
-              label: 'Kaydet',
+              label: context.l10n.saveAction,
               icon: Icons.check_rounded,
               isLoading: _isSaving,
               onPressed: _saveProduct,

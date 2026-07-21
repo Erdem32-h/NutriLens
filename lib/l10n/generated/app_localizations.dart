@@ -2827,6 +2827,210 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Zaten hesabım var'**
   String get alreadyHaveAccountSignIn;
+
+  /// No description provided for @addProductIntro.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ürün henüz veritabanımızda yok.\nBilgileri girerek topluluk veritabanına ekleyebilirsiniz!'**
+  String get addProductIntro;
+
+  /// No description provided for @productPhotoOptional.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ürün Fotoğrafı (opsiyonel)'**
+  String get productPhotoOptional;
+
+  /// No description provided for @productNameHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'örn: Ülker Çikolatalı Gofret'**
+  String get productNameHint;
+
+  /// No description provided for @brandHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'örn: Ülker'**
+  String get brandHint;
+
+  /// No description provided for @completeWithPhoto.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bilgileri Fotoğrafla Tamamla'**
+  String get completeWithPhoto;
+
+  /// No description provided for @invalidECodeFormat.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçersiz E kodu formatı (örn: E471)'**
+  String get invalidECodeFormat;
+
+  /// No description provided for @productAddedToDb.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ürünü veritabanımıza eklediniz!'**
+  String get productAddedToDb;
+
+  /// No description provided for @manualEntryTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Manuel Giriş'**
+  String get manualEntryTitle;
+
+  /// No description provided for @ingredientsTextOptional.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler Metni (opsiyonel)'**
+  String get ingredientsTextOptional;
+
+  /// No description provided for @ingredientsPasteHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler listesini buraya yapıştırın...'**
+  String get ingredientsPasteHint;
+
+  /// No description provided for @additivesECodes.
+  ///
+  /// In tr, this message translates to:
+  /// **'Katkı Maddeleri (E Kodları)'**
+  String get additivesECodes;
+
+  /// No description provided for @tapToRemove.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaldırmak için dokunun'**
+  String get tapToRemove;
+
+  /// No description provided for @saveAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get saveAction;
+
+  /// No description provided for @verifyIngredientsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik Doğrulama'**
+  String get verifyIngredientsTitle;
+
+  /// No description provided for @ocrIngredientsHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'OCR ile okunan içindekiler metni...'**
+  String get ocrIngredientsHint;
+
+  /// No description provided for @hideRawOcr.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ham OCR metnini gizle'**
+  String get hideRawOcr;
+
+  /// No description provided for @showRawOcr.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ham OCR metnini göster'**
+  String get showRawOcr;
+
+  /// No description provided for @detectedAdditives.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tespit Edilen Katkı Maddeleri'**
+  String get detectedAdditives;
+
+  /// No description provided for @unknownECodes.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veritabanında Bulunamayan E Kodları'**
+  String get unknownECodes;
+
+  /// No description provided for @ocrConfidence.
+  ///
+  /// In tr, this message translates to:
+  /// **'OCR Güvenilirlik: %{percent}'**
+  String ocrConfidence(String percent);
+
+  /// No description provided for @retakePhoto.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar Çek'**
+  String get retakePhoto;
+
+  /// No description provided for @confirmAndSave.
+  ///
+  /// In tr, this message translates to:
+  /// **'Onayla ve Kaydet'**
+  String get confirmAndSave;
+
+  /// No description provided for @ingredientsSectionNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler Bölümü Bulunamadı'**
+  String get ingredientsSectionNotFound;
+
+  /// No description provided for @ingredientsSectionNotFoundBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğrafta \"İçindekiler:\" yazan bölüm okunamadı. Lütfen:\n\n• Paketi düz tutun (yazılar yatay olsun)\n• İçindekiler yazan kısmı ortalayın\n• Işık yansımasından kaçının\n• Yazı net ve okunabilir mesafede olsun'**
+  String get ingredientsSectionNotFoundBody;
+
+  /// No description provided for @textUnreadable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Metin Okunamadı'**
+  String get textUnreadable;
+
+  /// No description provided for @textUnreadableBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler listesi okunamadı. Lütfen daha yakın ve net bir fotoğraf çekin.'**
+  String get textUnreadableBody;
+
+  /// No description provided for @ingredientsPhotoTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler Fotoğrafı'**
+  String get ingredientsPhotoTitle;
+
+  /// No description provided for @analyzingIngredients.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler analiz ediliyor...'**
+  String get analyzingIngredients;
+
+  /// No description provided for @photographIngredientsList.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçindekiler listesinin fotoğrafını çekin'**
+  String get photographIngredientsList;
+
+  /// No description provided for @tipHoldFlat.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paketi düz tutun, yazılar yatay olsun'**
+  String get tipHoldFlat;
+
+  /// No description provided for @tipCenterIngredients.
+  ///
+  /// In tr, this message translates to:
+  /// **'\"İçindekiler\" yazan bölümü ortalayın'**
+  String get tipCenterIngredients;
+
+  /// No description provided for @tipAvoidGlare.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parlama/yansımadan kaçının'**
+  String get tipAvoidGlare;
+
+  /// No description provided for @tipZoomIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yazılar net okunabilsin — yakınlaşın'**
+  String get tipZoomIn;
+
+  /// No description provided for @genericErrorWith.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hata: {error}'**
+  String genericErrorWith(Object error);
 }
 
 class _AppLocalizationsDelegate

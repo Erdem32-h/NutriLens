@@ -130,7 +130,7 @@ class _IngredientsVerificationScreenState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Bu ürünü veritabanımıza eklediniz!'),
+          content: Text(context.l10n.productAddedToDb),
           backgroundColor: context.colors.success,
         ),
       );
@@ -138,7 +138,7 @@ class _IngredientsVerificationScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Hata: $e'),
+            content: Text(context.l10n.genericErrorWith(e)),
             backgroundColor: context.colors.error,
           ),
         );
@@ -153,7 +153,7 @@ class _IngredientsVerificationScreenState
     return Scaffold(
       backgroundColor: context.colors.background,
       appBar: AppBar(
-        title: const Text('İçerik Doğrulama'),
+        title: Text(context.l10n.verifyIngredientsTitle),
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
@@ -165,7 +165,7 @@ class _IngredientsVerificationScreenState
             TextField(
               controller: _productNameController,
               decoration: InputDecoration(
-                labelText: 'Ürün Adı',
+                labelText: context.l10n.productName,
                 labelStyle: TextStyle(color: context.colors.textMuted),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -182,7 +182,7 @@ class _IngredientsVerificationScreenState
             TextField(
               controller: _brandController,
               decoration: InputDecoration(
-                labelText: 'Marka',
+                labelText: context.l10n.brandName,
                 labelStyle: TextStyle(color: context.colors.textMuted),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -199,7 +199,7 @@ class _IngredientsVerificationScreenState
 
             // Ingredients text (editable)
             Text(
-              'İçindekiler Metni',
+              context.l10n.ingredientsTextLabel,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -211,7 +211,7 @@ class _IngredientsVerificationScreenState
               controller: _ingredientsController,
               maxLines: 5,
               decoration: InputDecoration(
-                hintText: 'OCR ile okunan içindekiler metni...',
+                hintText: context.l10n.ocrIngredientsHint,
                 hintStyle: TextStyle(color: context.colors.textMuted),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -240,8 +240,8 @@ class _IngredientsVerificationScreenState
                     ),
                     Text(
                       _showRawOcr
-                          ? 'Ham OCR metnini gizle'
-                          : 'Ham OCR metnini göster',
+                          ? context.l10n.hideRawOcr
+                          : context.l10n.showRawOcr,
                       style: TextStyle(
                         fontSize: 12,
                         color: context.colors.textMuted,
@@ -280,7 +280,7 @@ class _IngredientsVerificationScreenState
             // Detected additives
             if (_detectedAdditives.isNotEmpty) ...[
               Text(
-                'Tespit Edilen Katkı Maddeleri',
+                context.l10n.detectedAdditives,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -306,7 +306,7 @@ class _IngredientsVerificationScreenState
             // Unmatched additives
             if (_unmatchedAdditives.isNotEmpty) ...[
               Text(
-                'Veritabanında Bulunamayan E Kodları',
+                context.l10n.unknownECodes,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -341,7 +341,9 @@ class _IngredientsVerificationScreenState
             // Confidence indicator
             if (_confidence != null)
               Text(
-                'OCR Güvenilirlik: ${(_confidence! * 100).toStringAsFixed(0)}%',
+                context.l10n.ocrConfidence(
+                  (_confidence! * 100).toStringAsFixed(0),
+                ),
                 style: TextStyle(fontSize: 12, color: context.colors.textMuted),
               ),
 
@@ -353,7 +355,7 @@ class _IngredientsVerificationScreenState
                 // Retake photo
                 Expanded(
                   child: AppButton(
-                    label: 'Tekrar Çek',
+                    label: context.l10n.retakePhoto,
                     variant: AppButtonVariant.secondary,
                     icon: Icons.camera_alt_rounded,
                     onPressed: () =>
@@ -364,7 +366,7 @@ class _IngredientsVerificationScreenState
                 // Save
                 Expanded(
                   child: AppButton(
-                    label: 'Onayla ve Kaydet',
+                    label: context.l10n.confirmAndSave,
                     icon: Icons.check_rounded,
                     isLoading: _isSaving,
                     onPressed: _saveProduct,

@@ -1461,4 +1461,113 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alreadyHaveAccountSignIn => 'I already have an account';
+
+  @override
+  String get addProductIntro =>
+      'This product isn\'t in our database yet.\nAdd its details to contribute it to the community database!';
+
+  @override
+  String get productPhotoOptional => 'Product Photo (optional)';
+
+  @override
+  String get productNameHint => 'e.g. Cadbury Dairy Milk';
+
+  @override
+  String get brandHint => 'e.g. Cadbury';
+
+  @override
+  String get completeWithPhoto => 'Complete Details with a Photo';
+
+  @override
+  String get invalidECodeFormat => 'Invalid E number format (e.g. E471)';
+
+  @override
+  String get productAddedToDb => 'You\'ve added this product to our database!';
+
+  @override
+  String get manualEntryTitle => 'Manual Entry';
+
+  @override
+  String get ingredientsTextOptional => 'Ingredients Text (optional)';
+
+  @override
+  String get ingredientsPasteHint => 'Paste the ingredients list here...';
+
+  @override
+  String get additivesECodes => 'Additives (E Numbers)';
+
+  @override
+  String get tapToRemove => 'Tap to remove';
+
+  @override
+  String get saveAction => 'Save';
+
+  @override
+  String get verifyIngredientsTitle => 'Verify Ingredients';
+
+  @override
+  String get ocrIngredientsHint => 'Ingredients text read by OCR...';
+
+  @override
+  String get hideRawOcr => 'Hide raw OCR text';
+
+  @override
+  String get showRawOcr => 'Show raw OCR text';
+
+  @override
+  String get detectedAdditives => 'Detected Additives';
+
+  @override
+  String get unknownECodes => 'E Numbers Not Found in Database';
+
+  @override
+  String ocrConfidence(String percent) {
+    return 'OCR confidence: $percent%';
+  }
+
+  @override
+  String get retakePhoto => 'Retake';
+
+  @override
+  String get confirmAndSave => 'Confirm and Save';
+
+  @override
+  String get ingredientsSectionNotFound => 'Ingredients Section Not Found';
+
+  @override
+  String get ingredientsSectionNotFoundBody =>
+      'The \"Ingredients:\" section couldn\'t be read in the photo. Please:\n\n• Hold the package flat (text horizontal)\n• Centre the ingredients section\n• Avoid glare and reflections\n• Keep the text sharp and close enough to read';
+
+  @override
+  String get textUnreadable => 'Text Unreadable';
+
+  @override
+  String get textUnreadableBody =>
+      'The ingredients list couldn\'t be read. Please take a closer, sharper photo.';
+
+  @override
+  String get ingredientsPhotoTitle => 'Ingredients Photo';
+
+  @override
+  String get analyzingIngredients => 'Analysing ingredients...';
+
+  @override
+  String get photographIngredientsList => 'Photograph the ingredients list';
+
+  @override
+  String get tipHoldFlat => 'Hold the package flat, text horizontal';
+
+  @override
+  String get tipCenterIngredients => 'Centre the \"Ingredients\" section';
+
+  @override
+  String get tipAvoidGlare => 'Avoid glare and reflections';
+
+  @override
+  String get tipZoomIn => 'Move closer so the text is sharp';
+
+  @override
+  String genericErrorWith(Object error) {
+    return 'Error: $error';
+  }
 }
