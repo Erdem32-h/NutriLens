@@ -1685,4 +1685,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get catIceCream => 'Ice cream';
+
+  @override
+  String get subscription => 'Subscription';
+
+  @override
+  String get premiumActive => 'Premium Active';
+
+  @override
+  String get activeStatus => 'Active';
+
+  @override
+  String get sentryTestEventSent => 'Sentry test event sent ✓';
+
+  @override
+  String sentryTestFailed(String error) {
+    return 'Sentry test failed: $error';
+  }
+
+  @override
+  String get scanFood => 'Scan food';
+
+  @override
+  String get noHistoryScanCta => 'Scan barcode';
+
+  @override
+  String get historyLoadError => 'History could not be loaded.';
 }

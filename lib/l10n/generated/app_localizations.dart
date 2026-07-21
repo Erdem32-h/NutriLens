@@ -3259,6 +3259,54 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Dondurma'**
   String get catIceCream;
+
+  /// No description provided for @subscription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Abonelik'**
+  String get subscription;
+
+  /// No description provided for @premiumActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium Aktif'**
+  String get premiumActive;
+
+  /// No description provided for @activeStatus.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif'**
+  String get activeStatus;
+
+  /// No description provided for @sentryTestEventSent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sentry test olayı gönderildi ✓'**
+  String get sentryTestEventSent;
+
+  /// No description provided for @sentryTestFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sentry testi başarısız: {error}'**
+  String sentryTestFailed(String error);
+
+  /// No description provided for @scanFood.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yemek Tara'**
+  String get scanFood;
+
+  /// No description provided for @noHistoryScanCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Barkod Tara'**
+  String get noHistoryScanCta;
+
+  /// No description provided for @historyLoadError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçmiş yüklenemedi.'**
+  String get historyLoadError;
 }
 
 class _AppLocalizationsDelegate

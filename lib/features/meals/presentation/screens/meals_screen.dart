@@ -17,6 +17,7 @@ import '../../../../core/widgets/app_tap_card.dart';
 import '../../domain/entities/meal_entry_entity.dart';
 import '../meal_display.dart';
 import '../providers/meal_provider.dart';
+import '../../../scanner/presentation/providers/scanner_mode_provider.dart';
 
 class MealsScreen extends ConsumerWidget {
   const MealsScreen({super.key});
@@ -314,11 +315,11 @@ class _Pill extends StatelessWidget {
   }
 }
 
-class _EmptyMeals extends StatelessWidget {
+class _EmptyMeals extends ConsumerWidget {
   const _EmptyMeals();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final l10n = context.l10n;
     return Padding(
@@ -351,11 +352,17 @@ class _EmptyMeals extends StatelessWidget {
           // user it is the first thing they see — previously an icon
           // and two lines of text with nothing to tap. Send them to
           // the one action the whole app is built around.
+          // Meals are logged by photographing food, not by scanning a
+          // barcode — so this opens the scanner already in AI Analysis
+          // mode rather than dropping the user on the barcode reader.
           AppButton(
-            label: l10n.scanBarcode,
-            icon: Icons.qr_code_scanner_rounded,
+            label: l10n.scanFood,
+            icon: Icons.center_focus_strong_rounded,
             expand: false,
-            onPressed: () => context.goNamed(RouteNames.scanner),
+            onPressed: () {
+              ref.read(pendingScannerModeProvider.notifier).state = 1;
+              context.goNamed(RouteNames.scanner);
+            },
           ),
         ],
       ),

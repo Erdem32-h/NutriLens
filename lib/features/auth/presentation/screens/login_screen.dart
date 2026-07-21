@@ -178,7 +178,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   .read(appSessionControllerProvider)
                                   .enterGuestMode();
                               if (!context.mounted) return;
-                              context.go('/scanner');
+                              // /meals, not /scanner — see _startAsGuest in
+                              // onboarding_screen.dart for why the camera
+                              // permission prompt must follow a scan tap.
+                              context.go('/meals');
                             },
                     ),
 

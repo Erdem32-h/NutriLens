@@ -88,9 +88,23 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Default mode is AI (_scanMode = 1) so initialise the native
-    // camera right away. Barcode mode users will trigger the swap to
-    // mobile_scanner when they tap the toggle.
+    // Open in whichever mode the caller asked for, so the screen the user
+    // came from decides what the camera is pointed at: the meal diary wants
+    // AI analysis, the product history wants the barcode reader. Landing in
+    // the wrong mode costs a tap and a full camera hand-off.
+    final requestedMode = ref.read(pendingScannerModeProvider);
+    if (requestedMode != null) {
+      _scanMode = requestedMode;
+      // Clear immediately — this is a one-shot request, and leaving it set
+      // would pin every later visit to the same mode.
+      Future.microtask(
+        () => ref.read(pendingScannerModeProvider.notifier).state = null,
+      );
+    }
+    // Initialise the camera package that matches the resolved mode. This is
+    // also what triggers the OS camera-permission prompt, which is why the
+    // app no longer lands here straight from onboarding — the prompt should
+    // follow a deliberate "scan" tap, not greet a first-time visitor.
     if (_scanMode == 1) {
       _initAiCamera();
     } else {
@@ -506,7 +520,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
               },
               child: Text(
                 l10n.search,
-                style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: colors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -829,20 +846,28 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                                     ),
                                     decoration: BoxDecoration(
                                       color: isOn
-                                          ? colors.primary.withValues(alpha: 0.25)
+                                          ? colors.primary.withValues(
+                                              alpha: 0.25,
+                                            )
                                           : Colors.black.withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(50),
                                       border: Border.all(
                                         color: isOn
-                                            ? colors.primary.withValues(alpha: 0.6)
-                                            : Colors.white.withValues(alpha: 0.15),
+                                            ? colors.primary.withValues(
+                                                alpha: 0.6,
+                                              )
+                                            : Colors.white.withValues(
+                                                alpha: 0.15,
+                                              ),
                                       ),
                                     ),
                                     child: Icon(
                                       isOn
                                           ? Icons.flash_on_rounded
                                           : Icons.flash_off_rounded,
-                                      color: isOn ? colors.primary : Colors.white,
+                                      color: isOn
+                                          ? colors.primary
+                                          : Colors.white,
                                       size: 20,
                                     ),
                                   ),

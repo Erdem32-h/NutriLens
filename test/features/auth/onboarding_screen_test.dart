@@ -39,8 +39,8 @@ Future<ProviderContainer> _pumpOnboarding(WidgetTester tester) async {
     routes: [
       GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
       GoRoute(
-        path: '/scanner',
-        builder: (_, _) => const Scaffold(body: Text('scanner')),
+        path: '/meals',
+        builder: (_, _) => const Scaffold(body: Text('meals')),
       ),
       GoRoute(
         path: '/login',
@@ -110,7 +110,10 @@ void main() {
 
     expect(container.read(hasSeenOnboardingProvider), isTrue);
     expect(container.read(appSessionProvider), AppSessionState.guest);
-    expect(find.text('scanner'), findsOneWidget);
+    // /meals, not /scanner: the scanner opens a camera from initState, so
+    // routing there would greet a first-time visitor with an OS permission
+    // dialog before they had asked for the camera.
+    expect(find.text('meals'), findsOneWidget);
   });
 
   testWidgets('"I already have an account" goes to login, not guest mode', (

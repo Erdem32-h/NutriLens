@@ -36,11 +36,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   /// guest, not onto the login form. They get [GuestScanCounter
   /// .lifetimeLimit] free scans before an account is required, which
   /// is the moment the ask actually means something to them.
+  ///
+  /// Lands on /meals rather than /scanner on purpose. The scanner opens a
+  /// camera in initState, so routing there directly put an OS permission
+  /// dialog in front of someone who had not asked for the camera yet —
+  /// the very first interaction in the app was a system prompt. Both the
+  /// meal diary and the product history now carry a scan button, so the
+  /// prompt follows a deliberate tap.
   Future<void> _startAsGuest() async {
     final session = ref.read(appSessionControllerProvider);
     await session.completeOnboarding();
     await session.enterGuestMode();
-    if (mounted) context.go('/scanner');
+    if (mounted) context.go('/meals');
   }
 
   /// Returning user who reinstalled or already registered elsewhere.

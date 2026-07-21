@@ -597,5 +597,20 @@
   "catMeatDeli": "Meat / Deli",
   "catOther": "Other",
   "catPastaLegumes": "Pasta / Legumes",
-  "catIceCream": "Ice cream"
+  "catIceCream": "Ice cream",
+  "subscription": "Subscription",
+  "premiumActive": "Premium Active",
+  "activeStatus": "Active",
+  "sentryTestEventSent": "Sentry test event sent ✓",
+  "sentryTestFailed": "Sentry test failed: {error}",
+  "@sentryTestFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "scanFood": "Scan food",
+  "noHistoryScanCta": "Scan barcode",
+  "historyLoadError": "History could not be loaded."
 }

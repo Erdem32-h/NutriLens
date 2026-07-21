@@ -10,6 +10,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../data/datasources/scan_history_local_datasource.dart';
 import '../providers/history_provider.dart';
 import '../../../../core/widgets/app_tap_card.dart';
+import '../../../../config/router/route_names.dart';
+import '../../../../core/widgets/app_button.dart';
+import '../../../scanner/presentation/providers/scanner_mode_provider.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
@@ -31,13 +34,13 @@ class HistoryScreen extends ConsumerWidget {
         ),
         error: (error, _) => Center(
           child: Text(
-            'Gecmis yuklenemedi',
+            l10n.historyLoadError,
             style: TextStyle(color: context.colors.textMuted),
           ),
         ),
         data: (history) {
           if (history.isEmpty) {
-            return _buildEmpty(context, l10n);
+            return _buildEmpty(context, ref, l10n);
           }
           return _buildList(context, history);
         },
@@ -45,7 +48,7 @@ class HistoryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmpty(BuildContext context, dynamic l10n) {
+  Widget _buildEmpty(BuildContext context, WidgetRef ref, dynamic l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -78,6 +81,19 @@ class HistoryScreen extends ConsumerWidget {
             l10n.productsWillAppearHere,
             style: TextStyle(fontSize: 14, color: context.colors.textMuted),
             textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 28),
+          // This screen had no route to the camera at all: it told the user
+          // products would show up here and left them to work out how.
+          // Opens the scanner in barcode mode — that is what fills this list.
+          AppButton(
+            label: l10n.noHistoryScanCta,
+            icon: Icons.qr_code_scanner_rounded,
+            expand: false,
+            onPressed: () {
+              ref.read(pendingScannerModeProvider.notifier).state = 0;
+              context.goNamed(RouteNames.scanner);
+            },
           ),
         ],
       ),

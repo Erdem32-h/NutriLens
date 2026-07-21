@@ -622,5 +622,20 @@
   "catMeatDeli": "Et / Şarküteri",
   "catOther": "Diğer",
   "catPastaLegumes": "Makarna / Bakliyat",
-  "catIceCream": "Dondurma"
+  "catIceCream": "Dondurma",
+  "subscription": "Abonelik",
+  "premiumActive": "Premium Aktif",
+  "activeStatus": "Aktif",
+  "sentryTestEventSent": "Sentry test olayı gönderildi ✓",
+  "sentryTestFailed": "Sentry testi başarısız: {error}",
+  "@sentryTestFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "scanFood": "Yemek Tara",
+  "noHistoryScanCta": "Barkod Tara",
+  "historyLoadError": "Geçmiş yüklenemedi."
 }

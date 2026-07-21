@@ -1688,4 +1688,30 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get catIceCream => 'Dondurma';
+
+  @override
+  String get subscription => 'Abonelik';
+
+  @override
+  String get premiumActive => 'Premium Aktif';
+
+  @override
+  String get activeStatus => 'Aktif';
+
+  @override
+  String get sentryTestEventSent => 'Sentry test olayı gönderildi ✓';
+
+  @override
+  String sentryTestFailed(String error) {
+    return 'Sentry testi başarısız: $error';
+  }
+
+  @override
+  String get scanFood => 'Yemek Tara';
+
+  @override
+  String get noHistoryScanCta => 'Barkod Tara';
+
+  @override
+  String get historyLoadError => 'Geçmiş yüklenemedi.';
 }
