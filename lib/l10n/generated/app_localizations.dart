@@ -2815,6 +2815,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Ara'**
   String get search;
+
+  /// No description provided for @startFree.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ücretsiz başla'**
+  String get startFree;
+
+  /// No description provided for @alreadyHaveAccountSignIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zaten hesabım var'**
+  String get alreadyHaveAccountSignIn;
 }
 
 class _AppLocalizationsDelegate

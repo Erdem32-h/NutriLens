@@ -501,5 +501,7 @@
   "barcodeInputHint": "8 veya 13 haneli barkod girin",
   "barcodeInputLabel": "Barkod",
   "search": "Ara",
-  "cancel": "Kapat"
+  "cancel": "Kapat",
+  "startFree": "Ücretsiz başla",
+  "alreadyHaveAccountSignIn": "Zaten hesabım var"
 }

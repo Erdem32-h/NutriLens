@@ -150,7 +150,83 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 32),
+
+                    // Social + guest first. Google/Apple account for the
+                    // overwhelming majority of completed signups, and the
+                    // guest CTA used to sit below the email form, the
+                    // password field, the social buttons and a divider —
+                    // roughly 760px down, i.e. off-screen on a typical
+                    // phone. A visitor who never scrolls saw only a
+                    // signup wall and left.
+                    const SocialLoginButtons(),
+
+                    const SizedBox(height: 12),
+
+                    // Guest mode entry — App Review 5.1.1(v) requires
+                    // that core functionality is reachable without a
+                    // signup wall.
+                    GestureDetector(
+                      onTap: isLoading
+                          ? null
+                          : () async {
+                              await ref
+                                  .read(appSessionControllerProvider)
+                                  .enterGuestMode();
+                              if (!context.mounted) return;
+                              context.go('/scanner');
+                            },
+                      child: Container(
+                        width: double.infinity,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: context.colors.surfaceCard,
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: context.colors.border),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.explore_outlined,
+                              size: 22,
+                              color: context.colors.textPrimary,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              l10n.continueAsGuest,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: context.colors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Divider
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: context.colors.border)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            l10n.orSeparator,
+                            style: TextStyle(
+                              color: context.colors.textMuted,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        Expanded(child: Divider(color: context.colors.border)),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
 
                     // Email
                     _buildLabel(l10n.email),
@@ -273,64 +349,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 32),
-
-                    // Divider
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: context.colors.border)),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'ya da',
-                            style: TextStyle(
-                              color: context.colors.textMuted,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                        Expanded(child: Divider(color: context.colors.border)),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    const SocialLoginButtons(),
-
-                    const SizedBox(height: 24),
-
-                    // Guest mode entry — App Review 5.1.1(v) requires
-                    // that core functionality is reachable without a
-                    // signup wall. We show this CTA below the social
-                    // buttons so registered flows still feel primary.
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                await ref
-                                    .read(appSessionControllerProvider)
-                                    .enterGuestMode();
-                                if (!context.mounted) return;
-                                context.go('/meals');
-                              },
-                        icon: Icon(
-                          Icons.explore_outlined,
-                          color: context.colors.textSecondary,
-                          size: 18,
-                        ),
-                        label: Text(
-                          l10n.continueAsGuest,
-                          style: TextStyle(
-                            color: context.colors.textSecondary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 28),
 
                     // Register link
                     Row(

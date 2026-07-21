@@ -990,6 +990,41 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                 style: TextStyle(fontSize: 14, color: context.colors.textMuted),
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 24),
+              // Without this the denial screen is a dead end: it asks
+              // the user to go change a system setting and offers
+              // nothing to tap. Typing the barcode needs no camera at
+              // all, so the whole app stays usable either way.
+              GestureDetector(
+                onTap: () => unawaited(_showManualBarcodeDialog()),
+                child: Container(
+                  height: 52,
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  decoration: BoxDecoration(
+                    gradient: context.colors.primaryGradient,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.keyboard_alt_outlined,
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        l10n.enterBarcodeManually,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ],
         ),

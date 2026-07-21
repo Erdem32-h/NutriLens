@@ -487,5 +487,7 @@
   "barcodeInputHint": "Enter 8 or 13 digit barcode",
   "barcodeInputLabel": "Barcode",
   "search": "Search",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "startFree": "Start free",
+  "alreadyHaveAccountSignIn": "I already have an account"
 }

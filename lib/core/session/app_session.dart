@@ -28,16 +28,47 @@ const String kGuestUserId = 'guest-local';
 
 const String _kGuestFlagKey = 'app.guest_mode_v1';
 
+/// Set once the user has walked through (or skipped) the intro pages.
+/// Written by the onboarding screen; read by the router to decide
+/// whether a logged-out launch shows the intro or the login form.
+const String kOnboardingSeenKey = 'onboarding_complete';
+
+/// Reads SharedPreferences without throwing when the plugin failed to
+/// initialise at boot. `sharedPreferencesProvider` deliberately throws
+/// when un-overridden (see locale_provider), and main() only overrides
+/// it when `SharedPreferences.getInstance()` succeeded. Session lookups
+/// run inside the GoRouter redirect, where an exception surfaces as a
+/// router failure rather than a caught error — so degrade to "no saved
+/// preferences" instead of taking the whole navigation down.
+SharedPreferences? _prefsOrNull(Ref ref) {
+  try {
+    return ref.watch(sharedPreferencesProvider);
+  } catch (_) {
+    return null;
+  }
+}
+
 /// Resolves the current session state from auth + persistent guest flag.
 final appSessionProvider = Provider<AppSessionState>((ref) {
   final user = ref.watch(currentUserProvider);
   if (user != null) return AppSessionState.authenticated;
 
-  final prefs = ref.watch(sharedPreferencesProvider);
-  if (prefs.getBool(_kGuestFlagKey) ?? false) {
+  final prefs = _prefsOrNull(ref);
+  if (prefs?.getBool(_kGuestFlagKey) ?? false) {
     return AppSessionState.guest;
   }
   return AppSessionState.loggedOut;
+});
+
+/// False until the user has seen the intro pages at least once. Drives
+/// the first-launch destination: a brand-new install gets the value
+/// pitch instead of an email/password form it has no reason to fill in
+/// yet. Defaults to `true` when preferences are unavailable so a broken
+/// prefs plugin can never trap a returning user in the intro loop.
+final hasSeenOnboardingProvider = Provider<bool>((ref) {
+  final prefs = _prefsOrNull(ref);
+  if (prefs == null) return true;
+  return prefs.getBool(kOnboardingSeenKey) ?? false;
 });
 
 /// Effective user id to scope local Drift queries (history, meals,
@@ -88,6 +119,13 @@ class AppSessionController {
   Future<void> exitGuestMode() async {
     await _prefs.remove(_kGuestFlagKey);
     _ref.invalidate(appSessionProvider);
+  }
+
+  /// Record that the intro pages have been shown, so later launches go
+  /// straight to the app instead of replaying them.
+  Future<void> completeOnboarding() async {
+    await _prefs.setBool(kOnboardingSeenKey, true);
+    _ref.invalidate(hasSeenOnboardingProvider);
   }
 }
 

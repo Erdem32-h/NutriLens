@@ -1455,4 +1455,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get search => 'Search';
+
+  @override
+  String get startFree => 'Start free';
+
+  @override
+  String get alreadyHaveAccountSignIn => 'I already have an account';
 }

@@ -57,6 +57,12 @@ final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       email: email,
       password: password,
       data: displayName != null ? {'display_name': displayName} : null,
+      // Without this the confirmation link falls back to the project's
+      // Site URL, so the user confirms in a browser and has to find
+      // their way back to the app by hand. The resend path already
+      // passes this; the first (and for most users, only) email did
+      // not, which is the one that matters.
+      emailRedirectTo: 'nutrilens://auth/callback',
     );
     final user = response.user!;
     // Email-enumeration protection: signing up with an already-confirmed

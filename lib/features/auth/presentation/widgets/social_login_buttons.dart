@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,6 +13,11 @@ class SocialLoginButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    // Sign in with Apple has no native Android implementation here — the
+    // OAuth call opens a browser flow that Android users can't complete,
+    // so the button was a dead end that cost us the tap. Apple only
+    // requires the option on its own platform.
+    final showApple = Platform.isIOS || Platform.isMacOS;
 
     return Column(
       children: [
@@ -20,13 +27,15 @@ class SocialLoginButtons extends ConsumerWidget {
           icon: Icons.g_mobiledata,
           label: l10n.continueWithGoogle,
         ),
-        const SizedBox(height: 12),
-        _SocialButton(
-          onPressed: () =>
-              ref.read(authNotifierProvider.notifier).signInWithApple(),
-          icon: Icons.apple,
-          label: l10n.continueWithApple,
-        ),
+        if (showApple) ...[
+          const SizedBox(height: 12),
+          _SocialButton(
+            onPressed: () =>
+                ref.read(authNotifierProvider.notifier).signInWithApple(),
+            icon: Icons.apple,
+            label: l10n.continueWithApple,
+          ),
+        ],
       ],
     );
   }

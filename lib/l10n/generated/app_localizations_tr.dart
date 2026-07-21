@@ -1456,4 +1456,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get search => 'Ara';
+
+  @override
+  String get startFree => 'Ücretsiz başla';
+
+  @override
+  String get alreadyHaveAccountSignIn => 'Zaten hesabım var';
 }

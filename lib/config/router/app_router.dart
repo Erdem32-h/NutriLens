@@ -66,13 +66,20 @@ GoRouter createRouter(WidgetRef ref) {
       final isResetRoute = state.matchedLocation == '/reset-password';
       if (isResetRoute) return null;
 
+      // Routes a signed-out visitor may reach on their own. /onboarding
+      // is included: it is the first-launch destination and must not
+      // bounce back to /login before the user has seen it. Anything on
+      // this list is also reachable *from* onboarding — tapping "I
+      // already have an account" must not be undone by a redirect.
+      final isPublicRoute =
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register' ||
+          state.matchedLocation == '/forgot-password' ||
+          state.matchedLocation == '/onboarding';
+
       // Supabase başlatılmamışsa login'e yönlendir
       if (!SupabaseConfig.isInitialized) {
-        final isAuthRoute =
-            state.matchedLocation == '/login' ||
-            state.matchedLocation == '/register' ||
-            state.matchedLocation == '/forgot-password';
-        if (!isAuthRoute) return '/login';
+        if (!isPublicRoute) return '/login';
         return null;
       }
 
@@ -83,20 +90,21 @@ GoRouter createRouter(WidgetRef ref) {
       // gated screens (premium purchase, community submit) check
       // `isGuestProvider` themselves and show a register prompt.
       final isGuest = ref.read(isGuestProvider);
-      final isAuthRoute =
-          state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register' ||
-          state.matchedLocation == '/forgot-password';
 
-      if (!isLoggedIn && !isGuest && !isAuthRoute) {
-        return '/login';
+      if (!isLoggedIn && !isGuest && !isPublicRoute) {
+        // First launch shows what the app does before asking for an
+        // account. Landing a brand-new install straight on an
+        // email/password form is the single largest drop-off point —
+        // the visitor has seen nothing yet that would justify signing
+        // up. Every later launch goes to /login as before.
+        return ref.read(hasSeenOnboardingProvider) ? '/login' : '/onboarding';
       }
-      // Only fully-authenticated users get bounced off the auth
-      // routes. Guests must be allowed to walk into /register so
-      // they can upgrade their session — the previous version of
-      // this branch trapped guests on /meals when they tapped the
-      // "Hesap aç" CTA.
-      if (isLoggedIn && isAuthRoute) {
+      // Only fully-authenticated users get bounced off the signed-out
+      // routes. Guests must be allowed to walk into /register so they
+      // can upgrade their session — the previous version of this
+      // branch trapped guests on /meals when they tapped the "Hesap
+      // aç" CTA.
+      if (isLoggedIn && isPublicRoute) {
         return '/meals';
       }
       return null;

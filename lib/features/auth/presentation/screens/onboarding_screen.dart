@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../config/router/route_names.dart';
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen>
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     with SingleTickerProviderStateMixin {
   final _pageController = PageController();
   int _currentPage = 0;
@@ -31,10 +31,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     _animController.forward();
   }
 
-  Future<void> _completeOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('onboarding_complete', true);
-    if (mounted) context.goNamed(RouteNames.login);
+  /// Finish the intro by dropping the visitor into the product as a
+  /// guest, not onto the login form. They get [GuestScanCounter
+  /// .lifetimeLimit] free scans before an account is required, which
+  /// is the moment the ask actually means something to them.
+  Future<void> _startAsGuest() async {
+    final session = ref.read(appSessionControllerProvider);
+    await session.completeOnboarding();
+    await session.enterGuestMode();
+    if (mounted) context.go('/scanner');
+  }
+
+  /// Returning user who reinstalled or already registered elsewhere.
+  Future<void> _goToLogin() async {
+    await ref.read(appSessionControllerProvider).completeOnboarding();
+    if (mounted) context.go('/login');
   }
 
   void _nextPage() {
@@ -137,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         ],
                       ),
                       TextButton(
-                        onPressed: _completeOnboarding,
+                        onPressed: _startAsGuest,
                         child: Text(
                           l10n.skip,
                           style: TextStyle(
@@ -257,7 +268,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       // CTA button
                       GestureDetector(
                         onTap: _currentPage == pages.length - 1
-                            ? _completeOnboarding
+                            ? _startAsGuest
                             : _nextPage,
                         child: Container(
                           width: double.infinity,
@@ -278,7 +289,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           alignment: Alignment.center,
                           child: Text(
                             _currentPage == pages.length - 1
-                                ? l10n.start
+                                ? l10n.startFree
                                 : l10n.continueText,
                             style: const TextStyle(
                               fontSize: 16,
@@ -286,6 +297,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               color: Colors.black,
                               letterSpacing: 0.3,
                             ),
+                          ),
+                        ),
+                      ),
+
+                      // Escape hatch for people who already have an
+                      // account (reinstall, second device). Kept quiet
+                      // so it never competes with the primary CTA.
+                      TextButton(
+                        onPressed: _goToLogin,
+                        child: Text(
+                          l10n.alreadyHaveAccountSignIn,
+                          style: TextStyle(
+                            color: context.colors.textMuted,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
