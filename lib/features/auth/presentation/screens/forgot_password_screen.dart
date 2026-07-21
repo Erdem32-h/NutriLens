@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
+import '../../../../core/widgets/app_button.dart';
 
 /// User types their email; we ask Supabase to send a reset link. The
 /// link in the email opens `nutrilens://auth/reset` which the router
@@ -43,7 +44,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       _sent = error == null;
     });
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
@@ -59,7 +62,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             Icons.arrow_back_ios_new_rounded,
             color: context.colors.textPrimary,
           ),
-          onPressed: () => context.canPop() ? context.pop() : context.go('/login'),
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go('/login'),
         ),
       ),
       body: SafeArea(
@@ -129,36 +133,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           },
         ),
         const SizedBox(height: 28),
-        GestureDetector(
-          onTap: _isLoading ? null : _submit,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: double.infinity,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: _isLoading ? null : context.colors.primaryGradient,
-              color: _isLoading ? context.colors.surfaceCard2 : null,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            alignment: Alignment.center,
-            child: _isLoading
-                ? SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: context.colors.primary,
-                    ),
-                  )
-                : Text(
-                    l10n.sendResetLink,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
-                  ),
-          ),
+        AppButton(
+          label: l10n.sendResetLink,
+          isLoading: _isLoading,
+          onPressed: _submit,
         ),
       ],
     );
@@ -171,13 +149,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       decoration: BoxDecoration(
         color: context.colors.surfaceCard,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.colors.primary.withValues(alpha: 0.4)),
+        border: Border.all(
+          color: context.colors.primary.withValues(alpha: 0.4),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.mark_email_read_outlined,
-              color: context.colors.primary, size: 32),
+          Icon(
+            Icons.mark_email_read_outlined,
+            color: context.colors.primary,
+            size: 32,
+          ),
           const SizedBox(height: 12),
           Text(
             l10n.resetLinkSentTitle,

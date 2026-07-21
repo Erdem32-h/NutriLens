@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_button.dart';
 
 /// Modal bottom sheet shown to guest users when they hit a gated
 /// feature (scan-limit reached, premium purchase, community submit,
@@ -133,27 +134,12 @@ class GuestRegisterSheet extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Primary CTA
-          GestureDetector(
-            onTap: () {
+          AppButton(
+            label: primaryActionLabel ?? context.l10n.createAccountCta,
+            onPressed: () {
               Navigator.of(context).pop(true);
               context.go('/register');
             },
-            child: Container(
-              height: 52,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                gradient: colors.primaryGradient,
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                primaryActionLabel ?? context.l10n.createAccountCta,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
-              ),
-            ),
           ),
           const SizedBox(height: 8),
 

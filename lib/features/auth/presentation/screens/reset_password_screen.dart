@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
+import '../../../../core/widgets/app_button.dart';
 
 /// Reached only after the user taps the password-reset link in their
 /// email. Supabase's deep-link handling sets the recovery session
@@ -42,12 +43,14 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     if (!mounted) return;
     setState(() => _isLoading = false);
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(context.l10n.passwordUpdated)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.passwordUpdated)));
     context.go('/meals');
   }
 
@@ -97,15 +100,19 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     hintText: '••••••••',
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined),
-                      onPressed: () => setState(
-                          () => _obscurePassword = !_obscurePassword),
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                      ),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
                   validator: (v) {
-                    if (v == null || v.isEmpty) return context.l10n.enterPassword;
+                    if (v == null || v.isEmpty) {
+                      return context.l10n.enterPassword;
+                    }
                     if (v.length < 6) return context.l10n.passwordMinLength;
                     return null;
                   },
@@ -121,15 +128,19 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     hintText: '••••••••',
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscureConfirm
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined),
+                      icon: Icon(
+                        _obscureConfirm
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                      ),
                       onPressed: () =>
                           setState(() => _obscureConfirm = !_obscureConfirm),
                     ),
                   ),
                   validator: (v) {
-                    if (v == null || v.isEmpty) return context.l10n.enterPasswordAgain;
+                    if (v == null || v.isEmpty) {
+                      return context.l10n.enterPasswordAgain;
+                    }
                     if (v != _passwordController.text) {
                       return context.l10n.passwordsDontMatch;
                     }
@@ -137,37 +148,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   },
                 ),
                 const SizedBox(height: 32),
-                GestureDetector(
-                  onTap: _isLoading ? null : _submit,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: double.infinity,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      gradient:
-                          _isLoading ? null : context.colors.primaryGradient,
-                      color: _isLoading ? context.colors.surfaceCard2 : null,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    alignment: Alignment.center,
-                    child: _isLoading
-                        ? SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              color: context.colors.primary,
-                            ),
-                          )
-                        : Text(
-                            context.l10n.updatePassword,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black,
-                            ),
-                          ),
-                  ),
+                AppButton(
+                  label: context.l10n.updatePassword,
+                  isLoading: _isLoading,
+                  onPressed: _submit,
                 ),
               ],
             ),
@@ -178,11 +162,11 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   }
 
   Widget _label(String text) => Text(
-        text,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: context.colors.textSecondary,
-        ),
-      );
+    text,
+    style: TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: context.colors.textSecondary,
+    ),
+  );
 }

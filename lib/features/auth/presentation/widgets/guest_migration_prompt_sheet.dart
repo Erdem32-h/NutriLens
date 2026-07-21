@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/session/guest_migration_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_button.dart';
 
 /// Shown to a freshly-registered user who arrived from guest mode and
 /// has local data on the device. Lets them choose whether to attach
@@ -100,24 +101,9 @@ class GuestMigrationPromptSheet extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(true),
-            child: Container(
-              height: 52,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                gradient: colors.primaryGradient,
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: Text(
-                l10n.migrationYes,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
-              ),
-            ),
+          AppButton(
+            label: l10n.migrationYes,
+            onPressed: () => Navigator.of(context).pop(true),
           ),
           const SizedBox(height: 8),
           TextButton(

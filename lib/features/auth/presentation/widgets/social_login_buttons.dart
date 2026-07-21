@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_button.dart';
 import '../providers/auth_provider.dart';
 
 class SocialLoginButtons extends ConsumerWidget {
@@ -21,65 +21,24 @@ class SocialLoginButtons extends ConsumerWidget {
 
     return Column(
       children: [
-        _SocialButton(
+        AppButton(
+          label: l10n.continueWithGoogle,
+          variant: AppButtonVariant.secondary,
+          icon: Icons.g_mobiledata,
           onPressed: () =>
               ref.read(authNotifierProvider.notifier).signInWithGoogle(),
-          icon: Icons.g_mobiledata,
-          label: l10n.continueWithGoogle,
         ),
         if (showApple) ...[
           const SizedBox(height: 12),
-          _SocialButton(
+          AppButton(
+            label: l10n.continueWithApple,
+            variant: AppButtonVariant.secondary,
+            icon: Icons.apple,
             onPressed: () =>
                 ref.read(authNotifierProvider.notifier).signInWithApple(),
-            icon: Icons.apple,
-            label: l10n.continueWithApple,
           ),
         ],
       ],
-    );
-  }
-}
-
-class _SocialButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final IconData icon;
-  final String label;
-
-  const _SocialButton({
-    required this.onPressed,
-    required this.icon,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: double.infinity,
-        height: 52,
-        decoration: BoxDecoration(
-          color: context.colors.surfaceCard,
-          borderRadius: BorderRadius.circular(50),
-          border: Border.all(color: context.colors.border),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 24, color: context.colors.textPrimary),
-            const SizedBox(width: 10),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: context.colors.textPrimary,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

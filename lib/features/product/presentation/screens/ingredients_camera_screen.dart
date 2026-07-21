@@ -13,6 +13,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
 import '../providers/ocr_provider.dart';
 import '../providers/product_provider.dart';
+import '../../../../core/widgets/app_button.dart';
 
 /// First-save ingredients capture flow.
 ///
@@ -344,37 +345,11 @@ class _IngredientsCameraScreenState
                       ),
                     ),
                     const SizedBox(height: 24),
-                    GestureDetector(
-                      onTap: _takePicture,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: context.colors.primaryGradient,
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.camera_alt_rounded,
-                              color: Colors.black,
-                              size: 18,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Fotoğraf Çek',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    AppButton(
+                      label: 'Fotoğraf Çek',
+                      icon: Icons.camera_alt_rounded,
+                      expand: false,
+                      onPressed: _takePicture,
                     ),
                   ],
                 ),

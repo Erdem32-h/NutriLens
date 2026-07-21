@@ -11,6 +11,7 @@ import '../../domain/entities/product_entity.dart';
 import '../providers/product_provider.dart';
 import '../widgets/additive_chip.dart';
 import '../widgets/chemical_load_gauge.dart';
+import '../../../../core/widgets/app_button.dart';
 
 class IngredientsVerificationScreen extends ConsumerStatefulWidget {
   final String barcode;
@@ -351,79 +352,22 @@ class _IngredientsVerificationScreenState
               children: [
                 // Retake photo
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () => context.go('/product/${widget.barcode}/ocr'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      decoration: BoxDecoration(
-                        color: context.colors.surfaceCard,
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(color: context.colors.border),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.camera_alt_rounded,
-                            color: context.colors.textPrimary,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Tekrar Çek',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: context.colors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: AppButton(
+                    label: 'Tekrar Çek',
+                    variant: AppButtonVariant.secondary,
+                    icon: Icons.camera_alt_rounded,
+                    onPressed: () =>
+                        context.go('/product/${widget.barcode}/ocr'),
                   ),
                 ),
                 const SizedBox(width: 12),
                 // Save
                 Expanded(
-                  child: GestureDetector(
-                    onTap: _isSaving ? null : _saveProduct,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      decoration: BoxDecoration(
-                        gradient: context.colors.primaryGradient,
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (_isSaving)
-                            const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.black,
-                              ),
-                            )
-                          else ...[
-                            const Icon(
-                              Icons.check_rounded,
-                              color: Colors.black,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Onayla ve Kaydet',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
+                  child: AppButton(
+                    label: 'Onayla ve Kaydet',
+                    icon: Icons.check_rounded,
+                    isLoading: _isSaving,
+                    onPressed: _saveProduct,
                   ),
                 ),
               ],

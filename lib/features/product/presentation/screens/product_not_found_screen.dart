@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_button.dart';
 
 class ProductNotFoundScreen extends StatefulWidget {
   final String barcode;
@@ -224,69 +225,19 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
             const SizedBox(height: 24),
 
             // CTA: Take Ingredients Photo
-            GestureDetector(
-              onTap: _goToOcr,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  gradient: context.colors.primaryGradient,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.camera_alt_rounded,
-                      color: Colors.black,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Bilgileri Fotoğrafla Tamamla',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            AppButton(
+              label: 'Bilgileri Fotoğrafla Tamamla',
+              icon: Icons.camera_alt_rounded,
+              onPressed: _goToOcr,
             ),
             const SizedBox(height: 12),
 
             // CTA: Manual Entry
-            GestureDetector(
-              onTap: _goToManual,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: context.colors.surfaceCard,
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(color: context.colors.border),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.edit_note_rounded,
-                      color: context.colors.textPrimary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Manuel Gir',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: context.colors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            AppButton(
+              label: 'Manuel Gir',
+              variant: AppButtonVariant.secondary,
+              icon: Icons.edit_note_rounded,
+              onPressed: _goToManual,
             ),
             const SizedBox(height: 32),
           ],

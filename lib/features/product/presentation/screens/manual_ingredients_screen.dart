@@ -11,6 +11,7 @@ import '../../domain/entities/product_entity.dart';
 import '../providers/product_provider.dart';
 import '../widgets/additive_chip.dart';
 import '../widgets/chemical_load_gauge.dart';
+import '../../../../core/widgets/app_button.dart';
 
 class ManualIngredientsScreen extends ConsumerStatefulWidget {
   final String barcode;
@@ -327,46 +328,11 @@ class _ManualIngredientsScreenState
 
             // Save button
             const SizedBox(height: 8),
-            GestureDetector(
-              onTap: _isSaving ? null : _saveProduct,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  gradient: context.colors.primaryGradient,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (_isSaving)
-                      const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.black,
-                        ),
-                      )
-                    else ...[
-                      const Icon(
-                        Icons.check_rounded,
-                        color: Colors.black,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Kaydet',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+            AppButton(
+              label: 'Kaydet',
+              icon: Icons.check_rounded,
+              isLoading: _isSaving,
+              onPressed: _saveProduct,
             ),
             const SizedBox(height: 32),
           ],
