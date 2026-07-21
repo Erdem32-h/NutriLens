@@ -2,48 +2,63 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
+/// Dimming mask with a clear square in the middle, drawn over the camera
+/// preview.
+///
+/// [IgnorePointer] is load-bearing, not decoration: this is a full-screen
+/// stack of opaque `Container`s, and a decorated Container is hit-testable.
+/// Without it the overlay silently swallowed every tap aimed at whatever the
+/// scanner screen stacked underneath — which is how the "Enter barcode
+/// manually" button on the camera-permission-denied screen ended up visible
+/// but impossible to press.
 class ScannerOverlay extends StatelessWidget {
   const ScannerOverlay({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ColorFiltered(
-      colorFilter: const ColorFilter.mode(Colors.black54, BlendMode.srcOut),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              backgroundBlendMode: BlendMode.dstOut,
-            ),
-          ),
-          Center(
-            child: Container(
-              width: 280,
-              height: 280,
-              decoration: BoxDecoration(
-                color: Colors.red, // Any color works with srcOut
-                borderRadius: BorderRadius.circular(20),
+    return IgnorePointer(
+      child: ColorFiltered(
+        colorFilter: const ColorFilter.mode(Colors.black54, BlendMode.srcOut),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                backgroundBlendMode: BlendMode.dstOut,
               ),
             ),
-          ),
-        ],
+            Center(
+              child: Container(
+                width: 280,
+                height: 280,
+                decoration: BoxDecoration(
+                  color: Colors.red, // Any color works with srcOut
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
+/// The four corner brackets around the viewfinder. Purely decorative, so it
+/// must not intercept touches either — see [ScannerOverlay].
 class ScannerOverlayBorder extends StatelessWidget {
   const ScannerOverlayBorder({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 280,
-        height: 280,
-        child: CustomPaint(painter: _CornerPainter(context.colors.primary)),
+    return IgnorePointer(
+      child: Center(
+        child: SizedBox(
+          width: 280,
+          height: 280,
+          child: CustomPaint(painter: _CornerPainter(context.colors.primary)),
+        ),
       ),
     );
   }
