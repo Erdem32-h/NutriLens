@@ -27,7 +27,7 @@
 <body>
 
 <h1>Gizlilik Politikası</h1>
-<p class="meta">Son güncelleme: 7 Haziran 2026 · <a href="#en">English version below</a></p>
+<p class="meta">Son güncelleme: 22 Temmuz 2026 · <a href="#en">English version below</a></p>
 
 <nav class="toc">
   <strong>İçindekiler</strong>
@@ -95,7 +95,12 @@
   <tr>
     <td>Hash'li cihaz tanımlayıcısı (ANDROID_ID / IDFV'nin SHA-256 özeti)</td>
     <td>İşletim sistemi — yalnızca geri döndürülemez özet (hash) sunucumuza gönderilir, ham değer cihazdan çıkmaz</td>
-    <td>Evet (misafir ücretsiz tarama limitini ve kötüye kullanımı önlemek için)</td>
+    <td>Evet (misafir ücretsiz tarama limiti ve kötüye kullanımı önleme); ayrıca kullanım istatistikleri için — bu kısmı kapatabilirsiniz</td>
+  </tr>
+  <tr>
+    <td>Kullanım olayları (hangi ekranı açtığınız, taramanın başarılı olup olmadığı, kameranın açılıp açılmadığı gibi adımlar)</td>
+    <td>Uygulama içi kullanım — hash'li cihaz tanımlayıcısına bağlıdır. <strong>Taradığınız ürünlerin barkodları, girdiğiniz metinler ve hata mesajlarının içeriği gönderilmez.</strong></td>
+    <td>Hayır — Profil &gt; Gizlilik &gt; "Kullanım verilerini paylaş" ile kapatabilirsiniz</td>
   </tr>
   <tr>
     <td>Çökme kayıtları, performans verileri</td>
@@ -113,6 +118,7 @@
   <li>Misafir (hesapsız) kullanımda ücretsiz tarama hakkını cihaz başına sınırlamak ve kötüye kullanımı önlemek — cihaz tanımlayıcısının geri döndürülemez hash'i ile; çapraz-uygulama takibi için kullanılmaz</li>
   <li>Reklam göstermek (yalnız ücretsiz kullanıcılarda)</li>
   <li>Hata tespiti, uygulama performansını iyileştirme</li>
+  <li>Uygulamayı geliştirmek için kullanım istatistikleri üretmek — örneğin kullanıcıların hangi adımda zorlandığını görmek. Bu veriler hash'li cihaz tanımlayıcısına bağlıdır, kimliğinizi belirlemek veya size reklam hedeflemek için kullanılmaz ve üçüncü taraf bir analitik sağlayıcısına gönderilmez; kendi sunucumuzda (Supabase) kalır. <strong>Profil &gt; Gizlilik bölümünden istediğiniz zaman kapatabilirsiniz.</strong></li>
 </ul>
 
 <h2 id="tr-3p">3. Üçüncü Taraf Hizmetler</h2>
@@ -185,7 +191,7 @@
   <li>İşlemeyi kısıtlama</li>
   <li>Veri taşınabilirliği</li>
 </ul>
-<p>haklarına sahipsiniz. Uygulamadaki <em>“Tüm Verilerimi Sil”</em> ve <em>“Hesabımı Sil”</em> butonları silme hakkınızı doğrudan kullanmanızı sağlar. Diğer talepler için bizimle iletişime geçin.</p>
+<p>haklarına sahipsiniz. Uygulamadaki <em>“Tüm Verilerimi Sil”</em> ve <em>“Hesabımı Sil”</em> butonları silme hakkınızı doğrudan kullanmanızı sağlar. <em>Profil &gt; Gizlilik &gt; “Kullanım verilerini paylaş”</em> anahtarı ise kullanım istatistiklerinin toplanmasını durdurur; kapattığınızda cihazınızda gönderilmeyi bekleyen olaylar da silinir. Diğer talepler için bizimle iletişime geçin.</p>
 
 <h2 id="tr-iletisim">7. İletişim</h2>
 <p>Sorular için: <a href="mailto:privacy@nutrilens.app">privacy@nutrilens.app</a></p>
@@ -208,7 +214,8 @@
   <tr><td>Ingredient/nutrition label photos (transient)</td><td>Camera</td><td>No</td></tr>
   <tr><td>Subscription status, purchase history</td><td>App Store / Google Play</td><td>Premium only</td></tr>
   <tr><td>Anonymous device identifier</td><td>OS-provided</td><td>Yes (subscription tracking)</td></tr>
-  <tr><td>Hashed device identifier (SHA-256 of ANDROID_ID / IDFV)</td><td>OS-provided — only the irreversible hash is sent to our server; the raw value never leaves the device</td><td>Yes (to enforce the guest free-scan limit and prevent abuse)</td></tr>
+  <tr><td>Hashed device identifier (SHA-256 of ANDROID_ID / IDFV)</td><td>OS-provided — only the irreversible hash is sent to our server; the raw value never leaves the device</td><td>Yes (to enforce the guest free-scan limit and prevent abuse); also used for usage analytics, which you can turn off</td></tr>
+  <tr><td>Usage events (which screens you open, whether a scan succeeded, whether the camera started)</td><td>In-app usage — linked to the hashed device identifier. <strong>The barcodes you scan, any text you type, and the contents of error messages are not sent.</strong></td><td>No — turn it off under Profile &gt; Privacy &gt; "Share usage data"</td></tr>
   <tr><td>Crash logs, performance data</td><td>Automatic (anonymous)</td><td>Yes</td></tr>
 </table>
 
@@ -221,13 +228,14 @@
   <li>Enforcing the guest (no-account) free-scan limit per device and preventing abuse — using an irreversible hash of the device identifier; not used for cross-app tracking</li>
   <li>Ad serving (free users only)</li>
   <li>Crash diagnostics, performance improvement</li>
+  <li>Producing usage statistics to improve the app — for example, seeing which step users get stuck on. This data is linked to the hashed device identifier, is never used to identify you or to target ads, and is not shared with any third-party analytics provider; it stays on our own server (Supabase). <strong>You can turn it off at any time under Profile &gt; Privacy.</strong></li>
 </ul>
 
 <h2>3. Third-Party Services</h2>
 <p>Our data flow involves the providers below. Each has its own privacy policy.</p>
 <table>
   <tr><th>Service</th><th>Data Processed</th><th>Purpose</th><th>Policy</th></tr>
-  <tr><td>Supabase</td><td>Email, name, scan history, favorites</td><td>Backend storage, auth</td><td><a href="https://supabase.com/privacy">Link</a></td></tr>
+  <tr><td>Supabase</td><td>Email, name, scan history, favorites, usage events</td><td>Backend storage, auth, usage analytics</td><td><a href="https://supabase.com/privacy">Link</a></td></tr>
   <tr><td>Anthropic (Claude API)</td><td>Uploaded photos (transient)</td><td>OCR and meal analysis</td><td><a href="https://www.anthropic.com/legal/privacy">Link</a></td></tr>
   <tr><td>RevenueCat</td><td>Anonymous device ID, subscription state</td><td>Subscription management</td><td><a href="https://www.revenuecat.com/privacy/">Link</a></td></tr>
   <tr><td>Google AdMob</td><td>Device identifier, ad interactions</td><td>Ad serving (free users only)</td><td><a href="https://policies.google.com/privacy">Link</a></td></tr>
@@ -257,7 +265,7 @@
   <li>Restrict processing</li>
   <li>Data portability</li>
 </ul>
-<p>The in-app <em>“Delete all my data”</em> and <em>“Delete my account”</em> buttons let you exercise your deletion right directly. For other requests, contact us.</p>
+<p>The in-app <em>“Delete all my data”</em> and <em>“Delete my account”</em> buttons let you exercise your deletion right directly. The <em>Profile &gt; Privacy &gt; “Share usage data”</em> switch stops usage analytics from being collected; turning it off also discards any events still queued on your device. For other requests, contact us.</p>
 
 <h2>7. Contact</h2>
 <p>Questions: <a href="mailto:privacy@nutrilens.app">privacy@nutrilens.app</a></p>

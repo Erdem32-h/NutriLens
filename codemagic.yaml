@@ -243,16 +243,11 @@ workflows:
     artifacts:
       - build/app/outputs/bundle/release/app-release.aab
       - build/app/outputs/mapping/release/mapping.txt
-    # Play Console publishing is currently manual: download the AAB
-    # artifact from Codemagic and upload via Play Console → Internal
-    # testing → New release. Enabling auto-publish only requires
-    # putting GCLOUD_SERVICE_ACCOUNT_CREDENTIALS back into MyGroup and
-    # un-commenting the block below.
-    # publishing:
-    #   google_play:
-    #     credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-    #     track: internal
-    #     submit_as_draft: false
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: production
+        submit_as_draft: false
 
   android-maestro:
     name: Android Maestro E2E

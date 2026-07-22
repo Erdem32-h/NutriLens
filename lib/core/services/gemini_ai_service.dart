@@ -96,16 +96,31 @@ class NutritionOcrResult {
 
   factory NutritionOcrResult.fromJson(Map<String, dynamic> json) {
     return NutritionOcrResult(
-      energyKcal: (json['energy_kcal'] as num?)?.toDouble(),
-      fat: (json['fat'] as num?)?.toDouble(),
-      saturatedFat: (json['saturated_fat'] as num?)?.toDouble(),
-      transFat: (json['trans_fat'] as num?)?.toDouble(),
-      carbohydrates: (json['carbohydrates'] as num?)?.toDouble(),
-      sugars: (json['sugars'] as num?)?.toDouble(),
-      salt: (json['salt'] as num?)?.toDouble(),
-      fiber: (json['fiber'] as num?)?.toDouble(),
-      protein: (json['protein'] as num?)?.toDouble(),
+      energyKcal: _lenientDouble(json['energy_kcal']),
+      fat: _lenientDouble(json['fat']),
+      saturatedFat: _lenientDouble(json['saturated_fat']),
+      transFat: _lenientDouble(json['trans_fat']),
+      carbohydrates: _lenientDouble(json['carbohydrates']),
+      sugars: _lenientDouble(json['sugars']),
+      salt: _lenientDouble(json['salt']),
+      fiber: _lenientDouble(json['fiber']),
+      protein: _lenientDouble(json['protein']),
     );
+  }
+
+  /// Accepts a JSON number OR a numeric string ("27.5", "0,42").
+  ///
+  /// The model's output format is not a contract: on 2026-07-22 a
+  /// server-side thinking-budget experiment made Gemini quote every quantity
+  /// as a string, and the then-strict `as num?` cast silently nulled the
+  /// whole scan. The values inside the strings were correct — only the JSON
+  /// type had drifted, and that class of drift is now tolerated here.
+  static double? _lenientDouble(Object? value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value.trim().replaceAll(',', '.'));
+    }
+    return null;
   }
 }
 

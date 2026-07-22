@@ -44,10 +44,26 @@ const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const OPENROUTER_MEAL_MODEL =
   Deno.env.get("OPENROUTER_MEAL_MODEL") ?? "google/gemini-2.5-flash";
 // Label OCR (ingredients + nutrition) moved off the direct-Gemini key — that
-// path was returning 502s (quota / model availability). gemini-2.5-flash via
-// OpenRouter keeps the same strong Turkish-label OCR but on the funded key.
+// path was returning 502s (quota / model availability). Default model chosen
+// by the 2026-07-22 A/B (21 runs, clean/rotated/degraded Turkish label):
+// gemini-3.5-flash-lite produced byte-identical text to 2.5-flash at half
+// the median latency (1.6 s vs 3.1 s server-side, no 16-18 s capacity
+// spikes observed) and the same price. Roll back by setting the env var to
+// google/gemini-2.5-flash — no redeploy needed.
 const OPENROUTER_OCR_MODEL =
-  Deno.env.get("OPENROUTER_OCR_MODEL") ?? "google/gemini-2.5-flash";
+  Deno.env.get("OPENROUTER_OCR_MODEL") ?? "google/gemini-3.5-flash-lite";
+
+// Models the anon-callable OCR actions may be switched to per request via
+// `payload.model_override` — the A/B harness for latency/quality tests
+// without redeploying or touching the default everyone else gets. Hard
+// allowlist on purpose: this endpoint is reachable with the anon key, and a
+// caller must never be able to point our OpenRouter spend at an expensive
+// model. Every listed model is in the same cheap Flash tier.
+const AB_TEST_OCR_MODELS = new Set([
+  "google/gemini-2.5-flash",
+  "google/gemini-3.5-flash-lite",
+  "google/gemini-3.6-flash",
+]);
 
 function languageName(code?: string): string {
   switch ((code ?? "tr").toLowerCase()) {
@@ -175,12 +191,25 @@ interface OpenRouterResult {
   status: number;
   text: string;
   errBody: string;
+  /// Wall time of the OpenRouter round trip, for the latency logs and the
+  /// `duration_ms` field returned to the client.
+  elapsedMs: number;
+  completionTokens: number | null;
+  /// Thinking tokens the provider spent (usage.completion_tokens_details).
+  /// The direct evidence for whether a reasoning setting actually took —
+  /// latency alone can't distinguish "thinking disabled" from "fast network".
+  reasoningTokens: number | null;
 }
 
 async function callOpenRouter(
   messages: unknown[],
   maxTokens: number,
-  opts: { model?: string; json?: boolean; temperature?: number } = {},
+  opts: {
+    model?: string;
+    json?: boolean;
+    temperature?: number;
+    reasoning?: Record<string, unknown>;
+  } = {},
 ): Promise<OpenRouterResult> {
   const body: Record<string, unknown> = {
     model: opts.model ?? OPENROUTER_MEAL_MODEL,
@@ -193,6 +222,21 @@ async function callOpenRouter(
   if (opts.json !== false) {
     body.response_format = { type: "json_object" };
   }
+  // Thinking control. Left unset, Gemini-family models default to *dynamic*
+  // thinking — the model decides per request how long to reason, which on
+  // dense/blurry label photos dominates wall time (the 15-25 s tail) and is
+  // billed at the output-token rate. OCR actions pass an explicit setting;
+  // meal analysis deliberately keeps the provider default (portion estimation
+  // is a genuine reasoning task).
+  if (opts.reasoning) {
+    body.reasoning = opts.reasoning;
+  }
+  // Ask OpenRouter to attach token accounting to the response. Without this
+  // some providers omit completion_tokens_details, and reasoning_tokens is
+  // the only ground truth for whether a reasoning setting actually reached
+  // the model — latency alone can't tell "thinking off" from "quiet network".
+  body.usage = { include: true };
+  const startedAt = Date.now();
   const resp = await fetch(OPENROUTER_URL, {
     method: "POST",
     headers: {
@@ -204,16 +248,39 @@ async function callOpenRouter(
     body: JSON.stringify(body),
   });
   const raw = await resp.text();
+  const elapsedMs = Date.now() - startedAt;
   if (!resp.ok) {
-    return { ok: false, status: resp.status, text: "", errBody: raw.slice(0, 300) };
+    return {
+      ok: false,
+      status: resp.status,
+      text: "",
+      errBody: raw.slice(0, 300),
+      elapsedMs,
+      completionTokens: null,
+      reasoningTokens: null,
+    };
   }
   let content = "";
+  let completionTokens: number | null = null;
+  let reasoningTokens: number | null = null;
   try {
-    content = JSON.parse(raw)?.choices?.[0]?.message?.content ?? "";
+    const parsed = JSON.parse(raw);
+    content = parsed?.choices?.[0]?.message?.content ?? "";
+    completionTokens = parsed?.usage?.completion_tokens ?? null;
+    reasoningTokens =
+      parsed?.usage?.completion_tokens_details?.reasoning_tokens ?? null;
   } catch (_) {
     // leave content empty; caller treats empty as a failure
   }
-  return { ok: true, status: resp.status, text: content, errBody: "" };
+  return {
+    ok: true,
+    status: resp.status,
+    text: content,
+    errBody: "",
+    elapsedMs,
+    completionTokens,
+    reasoningTokens,
+  };
 }
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -244,6 +311,9 @@ interface RequestBody {
     // Hashed device id — required for the anon-allowed OpenRouter actions so
     // they can be rate-limited per device without a user JWT.
     device_hash?: string;
+    // Optional OCR model override for A/B testing. Ignored unless it is in
+    // AB_TEST_OCR_MODELS; never applies to meal analysis.
+    model_override?: string;
   };
 }
 
@@ -308,6 +378,7 @@ async function handleOpenRouterAction(
   let model = OPENROUTER_MEAL_MODEL;
   let json = true;
   let temperature = 0.2;
+  let reasoning: Record<string, unknown> | undefined;
 
   if (action === "meal_analysis") {
     if (!payload.image_base64) return missingImage();
@@ -341,13 +412,46 @@ async function handleOpenRouterAction(
     const promptText = built.contents?.[0]?.parts?.[0]?.text ?? "";
     messages = imageMessage(promptText);
     model = OPENROUTER_OCR_MODEL;
+    // Allowlisted per-request override — see AB_TEST_OCR_MODELS. Unknown
+    // values fall through to the default silently rather than erroring, so
+    // an old test script can never take the OCR path down.
+    if (
+      payload.model_override &&
+      AB_TEST_OCR_MODELS.has(payload.model_override)
+    ) {
+      model = payload.model_override;
+    }
     temperature = 0;
     if (action === "ocr_ingredients_image") {
       json = false; // free-form list or the İÇİNDEKİLER_BULUNAMADI sentinel
-      maxTokens = 4096;
+      // 2048, down from 4096. Two reasons: (1) the longest real multi-section
+      // label + allergen block measures ~600 output tokens, so 2048 is still
+      // 3x headroom; (2) OpenRouter pre-authorizes a request against the
+      // account balance using max_tokens as the ceiling — at 4096 a low
+      // balance 402s this action while the 1024-token nutrition action still
+      // passes, which is exactly the outage observed on 2026-07-22.
+      maxTokens = 2048;
+      // Reading a label verbatim is transcription, not reasoning — pin
+      // thinking to the floor. The floor is model-generation-specific:
+      //  - Gemini 2.5: `enabled:false` turns thinking fully off (verified
+      //    reasoning_tokens=0). `effort:"none"` is silently IGNORED, and a
+      //    positive budget turns thinking ON — both measured, both wrong.
+      //  - Gemini 3.x: thinking cannot be disabled at all; sending
+      //    `enabled:false` gets the whole request 400'd by OpenRouter
+      //    (measured in the 2026-07-22 A/B). `effort:"minimal"` maps to
+      //    Google's thinkingLevel=minimal, the lowest valid setting.
+      reasoning = model.startsWith("google/gemini-3")
+        ? { effort: "minimal" }
+        : { enabled: false };
     } else {
       json = true; // strict nutrition JSON object
       maxTokens = 1024;
+      // Deliberately NO reasoning override: v40 tried a fixed 512-token
+      // budget and the model started returning quantities as JSON *strings*
+      // ("518" instead of 518) — which the Dart parser rejects — while
+      // also getting slower (fixed budgets are spent; dynamic thinking on
+      // an easy table is brief). Provider-default dynamic thinking is both
+      // the accuracy-proven and the empirically faster setting here.
     }
   }
 
@@ -355,6 +459,7 @@ async function handleOpenRouterAction(
     model,
     json,
     temperature,
+    reasoning,
   });
   if (!or.ok || !or.text) {
     console.error(
@@ -367,10 +472,28 @@ async function handleOpenRouterAction(
       { status: clientStatus, headers: jsonHeaders },
     );
   }
-  return new Response(JSON.stringify({ result: or.text, action }), {
-    status: 200,
-    headers: jsonHeaders,
-  });
+  // One line per successful call: the before/after latency evidence lives in
+  // the function logs, not in a dashboard we'd have to build. reasoning_tokens
+  // is the ground truth that a reasoning setting actually took effect.
+  console.log(
+    `[openrouter ${action}] model=${model} elapsed_ms=${or.elapsedMs} ` +
+      `completion_tokens=${or.completionTokens ?? "?"} ` +
+      `reasoning_tokens=${or.reasoningTokens ?? "?"}`,
+  );
+  return new Response(
+    // duration_ms: server-side wall time of the model call — lets the client
+    // (and the measurement script) separate "model was slow" from "my mobile
+    // connection was slow". The token counts serve the same diagnostic role
+    // for cost: reasoning_tokens shows whether thinking ran on this call.
+    JSON.stringify({
+      result: or.text,
+      action,
+      duration_ms: or.elapsedMs,
+      completion_tokens: or.completionTokens,
+      reasoning_tokens: or.reasoningTokens,
+    }),
+    { status: 200, headers: jsonHeaders },
+  );
 }
 
 function checkRateLimit(userId: string): boolean {
