@@ -174,6 +174,15 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     if (!allowed) {
       if (!mounted) return false;
+      // Guest hit the lifetime scan cap → the register-upsell sheet is their
+      // paywall. Tracked here (shared by barcode + food paths) so "blocked by
+      // limit" stops looking like a plain drop-off.
+      ref
+          .read(analyticsServiceProvider)
+          .track(
+            FunnelEvents.paywallShown,
+            props: {'trigger': 'scan_limit', 'guest': true},
+          );
       final wantsRegister = await GuestRegisterSheet.showScanLimitReached(
         context,
       );
@@ -208,6 +217,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       return false;
     }
 
+    // Real paywall (out of free scans, not a transient network error, which
+    // returned above). Shared by barcode + food paths.
+    ref
+        .read(analyticsServiceProvider)
+        .track(
+          FunnelEvents.paywallShown,
+          props: {'trigger': 'scan_limit', 'guest': false},
+        );
     final granted = await ScanLimitSheet.show(context);
     return granted;
   }
@@ -343,6 +360,21 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
         MobileScannerErrorCode.permissionDenied => 'permission_denied',
         MobileScannerErrorCode.unsupported => 'unsupported',
         _ => 'error',
+      };
+    }
+    // The AI (food) path uses the `camera` plugin, whose CameraException
+    // carries a machine `code` — the whole reason every one of the field
+    // failures logged a useless generic 'error'. Normalise the permission
+    // codes, pass the rest through verbatim so we finally see what breaks
+    // (e.g. 'CameraAccessRestricted', 'cameraPermission', a platform code).
+    if (error is CameraException) {
+      return switch (error.code) {
+        'CameraAccessDenied' ||
+        'CameraAccessDeniedWithoutPrompt' ||
+        'cameraPermission' ||
+        'AVFoundationErrorDomain' => 'permission_denied',
+        'CameraAccessRestricted' => 'restricted',
+        _ => 'cam_${error.code}',
       };
     }
     return 'error';
@@ -629,6 +661,13 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       final Uint8List imageBytes = await xFile.readAsBytes();
 
       if (!mounted) return;
+
+      // The shutter produced a frame. Fire before the scan-limit gate so a
+      // device that tapped-but-was-blocked is separable from one that never
+      // tapped — both otherwise stall at `scan_camera_ready`.
+      ref
+          .read(analyticsServiceProvider)
+          .track(FunnelEvents.scanPhotoCaptured, props: {'mode': 'food'});
 
       // Guest mode: same server-authoritative gate as the barcode path.
       if (ref.read(isGuestProvider)) {

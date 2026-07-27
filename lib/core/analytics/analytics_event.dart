@@ -105,6 +105,13 @@ abstract final class FunnelEvents {
   /// table into a per-device consumption profile.
   static const scanBarcodeDetected = 'scan_barcode_detected';
 
+  /// The AI (food) shutter fired and produced a frame. Sits between
+  /// [scanCameraReady] and the meal-analysis events: without it, a device
+  /// that got the camera up but never tapped is indistinguishable from one
+  /// that tapped and had analysis fail — both stall at `camera_ready`.
+  /// props: `mode` (food)
+  static const scanPhotoCaptured = 'scan_photo_captured';
+
   /// props: `source` (local|off|api|community|ocr) — which link of the
   /// lookup chain answered.
   static const scanLookupSucceeded = 'scan_lookup_succeeded';
@@ -114,6 +121,25 @@ abstract final class FunnelEvents {
 
   /// props: `has_score` (bool)
   static const productViewed = 'product_viewed';
+
+  // --- AI meal analysis (the food branch, default mode) ---------------
+  // These split the widest blind spot in the funnel: the gap between the
+  // camera coming up and a meal being saved. `scan_photo_captured` →
+  // `meal_analysis_started` → succeeded|failed → `meal_added` turns a single
+  // opaque drop-off into a diagnosable chain.
+
+  /// The proxy meal-analysis call was issued. props: `retry` (bool)
+  static const mealAnalysisStarted = 'meal_analysis_started';
+
+  /// The model returned a usable result. props: `low_confidence` (bool),
+  /// `packaged` (bool — a retail product shot in the food tab, where the
+  /// meal estimate is meaningless and we steer them to barcode).
+  static const mealAnalysisSucceeded = 'meal_analysis_succeeded';
+
+  /// Analysis failed before a result. props: `reason`
+  /// (quota — out of credit/rate-limited 429 | service — proxy down |
+  /// error — anything else).
+  static const mealAnalysisFailed = 'meal_analysis_failed';
 
   // --- Activation -----------------------------------------------------
   static const favoriteAdded = 'favorite_added';

@@ -100,13 +100,19 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     super.dispose();
   }
 
-  Future<void> _analyzeFood() async {
+  Future<void> _analyzeFood({bool retry = false}) async {
     setState(() {
       _loading = true;
       _error = null;
       _serviceUnavailable = false;
       _quotaExhausted = false;
     });
+
+    final analytics = ref.read(analyticsServiceProvider);
+    analytics.track(
+      FunnelEvents.mealAnalysisStarted,
+      props: {'retry': retry},
+    );
 
     try {
       final prepared = await prepareMealAnalysisImage(widget.imageBytes);
@@ -132,6 +138,13 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         _ingredientsController.text = result.ingredientsText ?? '';
         _loading = false;
       });
+      analytics.track(
+        FunnelEvents.mealAnalysisSucceeded,
+        props: {
+          'low_confidence': result.confidence < 0.6,
+          'packaged': result.isPackagedProduct,
+        },
+      );
       // Non-homemade food (packaged product, restaurant, or takeout/delivery)
       // → default the source label to "Hazır Gıda" instead of "Ev yapımı",
       // unless the user already changed it.
@@ -150,13 +163,18 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       debugPrint('[FoodResult] proxy meal analysis failed: $e');
       unawaited(Sentry.captureException(e, stackTrace: st));
       if (!mounted) return;
+      final quota = e.statusCode == 429;
       setState(() {
         _serviceUnavailable = true;
         // Proxy maps OpenRouter out-of-credit/rate-limit to HTTP 429.
-        _quotaExhausted = e.statusCode == 429;
+        _quotaExhausted = quota;
         _error = e.toString();
         _loading = false;
       });
+      analytics.track(
+        FunnelEvents.mealAnalysisFailed,
+        props: {'reason': quota ? 'quota' : 'service'},
+      );
     } catch (e) {
       debugPrint('[FoodResult] analysis error: $e');
       if (!mounted) return;
@@ -164,6 +182,10 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         _error = e.toString();
         _loading = false;
       });
+      analytics.track(
+        FunnelEvents.mealAnalysisFailed,
+        props: {'reason': 'error'},
+      );
     }
   }
 
@@ -518,7 +540,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: _analyzeFood,
+              onPressed: () => _analyzeFood(retry: true),
               icon: const Icon(Icons.refresh_rounded),
               label: Text(l10n.retry),
             ),
