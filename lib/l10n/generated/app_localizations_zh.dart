@@ -217,6 +217,33 @@ class AppLocalizationsZh extends AppLocalizations {
   String get personalFiltersDescription => '设置过敏原、饮食偏好及避忌成分，获取定制化分析。';
 
   @override
+  String get onboardingMealTitle => '拍下你的餐盘，剩下的交给我们。';
+
+  @override
+  String get onboardingMealBody => '热量、蛋白质和健康评分——一张照片搞定。';
+
+  @override
+  String get onboardingBarcodeTitle => '包装食品？扫描条形码。';
+
+  @override
+  String get onboardingBarcodeBody => '添加剂、糖和盐，一目了然。';
+
+  @override
+  String get onboardingFiltersTitle => '为你定制的提醒。';
+
+  @override
+  String get onboardingFiltersBody => '选择过敏原和饮食偏好，问题立刻显现。';
+
+  @override
+  String get onboardingSampleMealName => '肉酱意面';
+
+  @override
+  String get onboardingSamplePortion => '约 320 克一份';
+
+  @override
+  String get onboardingSampleWarning => '该产品含乳糖——在你的清单中。';
+
+  @override
   String get start => '开始';
 
   @override

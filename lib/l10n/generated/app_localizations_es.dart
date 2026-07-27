@@ -222,6 +222,36 @@ class AppLocalizationsEs extends AppLocalizations {
       'Configura tus alérgenos, preferencias dietéticas y sustancias a evitar. Obtén análisis personalizados.';
 
   @override
+  String get onboardingMealTitle => 'Fotografía tu plato, nosotros contamos.';
+
+  @override
+  String get onboardingMealBody =>
+      'Calorías, proteína y puntuación de salud — con una foto.';
+
+  @override
+  String get onboardingBarcodeTitle => '¿Envasado? Escanea el código.';
+
+  @override
+  String get onboardingBarcodeBody => 'Aditivos, azúcar y sal de un vistazo.';
+
+  @override
+  String get onboardingFiltersTitle => 'Avisos hechos para ti.';
+
+  @override
+  String get onboardingFiltersBody =>
+      'Elige tus alérgenos y tu dieta, detecta lo dañino al instante.';
+
+  @override
+  String get onboardingSampleMealName => 'Pasta con carne picada';
+
+  @override
+  String get onboardingSamplePortion => '~320 g de ración';
+
+  @override
+  String get onboardingSampleWarning =>
+      'Este producto contiene lactosa — está en tu lista.';
+
+  @override
   String get start => 'Comenzar';
 
   @override

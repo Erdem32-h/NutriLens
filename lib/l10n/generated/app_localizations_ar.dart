@@ -221,6 +221,36 @@ class AppLocalizationsAr extends AppLocalizations {
       'حدد مسببات الحساسية وتفضيلاتك الغذائية والمواد التي تتجنبها للحصول على تحليلات مخصصة.';
 
   @override
+  String get onboardingMealTitle => 'صوّر طبقك، ونحن نحسب الباقي.';
+
+  @override
+  String get onboardingMealBody =>
+      'السعرات والبروتين ودرجة الصحة — من صورة واحدة.';
+
+  @override
+  String get onboardingBarcodeTitle => 'مُغلّف؟ امسح الباركود.';
+
+  @override
+  String get onboardingBarcodeBody => 'المضافات والسكر والملح بنظرة واحدة.';
+
+  @override
+  String get onboardingFiltersTitle => 'تنبيهات على مقاسك.';
+
+  @override
+  String get onboardingFiltersBody =>
+      'اختر مسبّبات حساسيتك ونظامك الغذائي، واكتشف الضار فورًا.';
+
+  @override
+  String get onboardingSampleMealName => 'مكرونة باللحم المفروم';
+
+  @override
+  String get onboardingSamplePortion => '~320 غ للحصة';
+
+  @override
+  String get onboardingSampleWarning =>
+      'هذا المنتج يحتوي على اللاكتوز — وهو ضمن قائمتك.';
+
+  @override
   String get start => 'بدء';
 
   @override

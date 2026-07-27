@@ -520,6 +520,60 @@ abstract class AppLocalizations {
   /// **'Alerjenlerinizi, diyet tercihlerinizi ve kaçındığınız maddeleri belirleyin. Size özel analiz alın.'**
   String get personalFiltersDescription;
 
+  /// No description provided for @onboardingMealTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tabağını çek, gerisini biz sayalım.'**
+  String get onboardingMealTitle;
+
+  /// No description provided for @onboardingMealBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kalori, protein ve sağlık puanı — tek fotoğrafla.'**
+  String get onboardingMealBody;
+
+  /// No description provided for @onboardingBarcodeTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paketliyse barkodu okut.'**
+  String get onboardingBarcodeTitle;
+
+  /// No description provided for @onboardingBarcodeBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Katkı maddeleri, şeker ve tuz tek bakışta.'**
+  String get onboardingBarcodeBody;
+
+  /// No description provided for @onboardingFiltersTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sana göre uyarı versin.'**
+  String get onboardingFiltersTitle;
+
+  /// No description provided for @onboardingFiltersBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alerjenini ve diyetini seç, sakıncalıyı hemen gör.'**
+  String get onboardingFiltersBody;
+
+  /// No description provided for @onboardingSampleMealName.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kıymalı makarna'**
+  String get onboardingSampleMealName;
+
+  /// No description provided for @onboardingSamplePortion.
+  ///
+  /// In tr, this message translates to:
+  /// **'~320 g porsiyon'**
+  String get onboardingSamplePortion;
+
+  /// No description provided for @onboardingSampleWarning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu üründe laktoz var — senin listende.'**
+  String get onboardingSampleWarning;
+
   /// No description provided for @start.
   ///
   /// In tr, this message translates to:

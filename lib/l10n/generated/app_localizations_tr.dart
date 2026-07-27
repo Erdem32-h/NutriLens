@@ -220,6 +220,37 @@ class AppLocalizationsTr extends AppLocalizations {
       'Alerjenlerinizi, diyet tercihlerinizi ve kaçındığınız maddeleri belirleyin. Size özel analiz alın.';
 
   @override
+  String get onboardingMealTitle => 'Tabağını çek, gerisini biz sayalım.';
+
+  @override
+  String get onboardingMealBody =>
+      'Kalori, protein ve sağlık puanı — tek fotoğrafla.';
+
+  @override
+  String get onboardingBarcodeTitle => 'Paketliyse barkodu okut.';
+
+  @override
+  String get onboardingBarcodeBody =>
+      'Katkı maddeleri, şeker ve tuz tek bakışta.';
+
+  @override
+  String get onboardingFiltersTitle => 'Sana göre uyarı versin.';
+
+  @override
+  String get onboardingFiltersBody =>
+      'Alerjenini ve diyetini seç, sakıncalıyı hemen gör.';
+
+  @override
+  String get onboardingSampleMealName => 'Kıymalı makarna';
+
+  @override
+  String get onboardingSamplePortion => '~320 g porsiyon';
+
+  @override
+  String get onboardingSampleWarning =>
+      'Bu üründe laktoz var — senin listende.';
+
+  @override
   String get start => 'Başla';
 
   @override
