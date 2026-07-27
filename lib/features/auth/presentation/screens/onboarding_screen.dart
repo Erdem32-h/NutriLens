@@ -8,6 +8,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../widgets/onboarding_previews.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -32,7 +33,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     );
     _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
     _animController.forward();
-    ref.read(analyticsServiceProvider).track(FunnelEvents.onboardingShown);
+    final analytics = ref.read(analyticsServiceProvider);
+    analytics.track(FunnelEvents.onboardingShown);
+    // PageView.onPageChanged ilk sayfa için ateşlenmez, dolayısıyla sayfa 0
+    // bugüne kadar hiç ölçülmedi ve huni ancak onboarding_shown'dan çıkarım
+    // yapılarak okunabiliyordu. Karşılaştırma metriği değişmiyor (§3):
+    // öncesi/sonrası hâlâ page=1 / onboarding_shown üzerinden okunur.
+    analytics.track(FunnelEvents.onboardingPageViewed, props: {'page': 0});
   }
 
   /// Finish the intro by dropping the visitor into the product as a
@@ -97,22 +104,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
 
     final pages = [
       _PageData(
-        icon: Icons.qr_code_scanner_rounded,
-        title: l10n.scanBarcodeTitle,
-        description: l10n.scanBarcodeDescription,
-        gradient: const [Color(0xFF16A34A), Color(0xFF4ADE80)],
+        visual: (_) => const MealPreview(),
+        title: l10n.onboardingMealTitle,
+        description: l10n.onboardingMealBody,
       ),
       _PageData(
-        icon: Icons.analytics_rounded,
-        title: l10n.healthScoreTitle,
-        description: l10n.healthScoreDescription,
-        gradient: const [Color(0xFF065F46), Color(0xFF34D399)],
+        visual: (_) => const ScorePreview(),
+        title: l10n.onboardingBarcodeTitle,
+        description: l10n.onboardingBarcodeBody,
       ),
       _PageData(
-        icon: Icons.tune_rounded,
-        title: l10n.personalFilters,
-        description: l10n.personalFiltersDescription,
-        gradient: const [Color(0xFF14532D), Color(0xFF4ADE80)],
+        visual: (_) => const FiltersPreview(),
+        title: l10n.onboardingFiltersTitle,
+        description: l10n.onboardingFiltersBody,
       ),
     ];
 
@@ -210,63 +214,57 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       final page = pages[index];
                       return FadeTransition(
                         opacity: _fadeAnim,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Icon container with gradient
-                              Container(
-                                width: 140,
-                                height: 140,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: page.gradient,
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(40),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: context.colors.primary.withValues(
-                                        alpha: 0.3,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            // Önizlemelerin kendi içeriği (fotoğraf + besin
+                            // ızgarası) küçük ekranda dış Column'un ayırdığı
+                            // paydan büyük olabiliyor; bir üst ConstrainedBox
+                            // onu sıkıştırmak yerine taşmayı içeri taşıyordu.
+                            // Kaydırma + minHeight: kısa içerik dikeyde
+                            // ortalanmış kalır, uzun içerik sığmadığında
+                            // hatasız kayar.
+                            return SingleChildScrollView(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: constraints.maxHeight,
+                                ),
+                                child: IntrinsicHeight(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      page.visual(context),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        page.title,
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w800,
+                                          color: context.colors.textPrimary,
+                                          letterSpacing: -0.5,
+                                          height: 1.2,
+                                        ),
+                                        textAlign: TextAlign.center,
                                       ),
-                                      blurRadius: 40,
-                                      offset: const Offset(0, 16),
-                                    ),
-                                  ],
-                                ),
-                                child: Icon(
-                                  page.icon,
-                                  size: 64,
-                                  color: Colors.white,
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        page.description,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                          color: context.colors.textMuted,
+                                          height: 1.5,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 48),
-                              Text(
-                                page.title,
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w800,
-                                  color: context.colors.textPrimary,
-                                  letterSpacing: -0.5,
-                                  height: 1.2,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                page.description,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: context.colors.textMuted,
-                                  height: 1.6,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
                       );
                     },
@@ -336,15 +334,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
 }
 
 class _PageData {
-  final IconData icon;
+  /// Sayfanın görseli. Eskiden sabit bir `IconData` idi; üç sayfanın
+  /// görseli artık birbirinden farklı gerçek ürün önizlemeleri.
+  final WidgetBuilder visual;
   final String title;
   final String description;
-  final List<Color> gradient;
 
   const _PageData({
-    required this.icon,
+    required this.visual,
     required this.title,
     required this.description,
-    required this.gradient,
   });
 }
