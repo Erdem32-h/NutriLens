@@ -20,6 +20,7 @@ import '../../../../core/services/share_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
+import '../../../../core/widgets/scanning_photo.dart';
 import '../providers/scanner_mode_provider.dart';
 import '../../../meals/data/services/meal_thumbnail_service.dart';
 import '../../../meals/domain/entities/meal_entry_entity.dart';
@@ -488,7 +489,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
               borderRadius: BorderRadius.circular(24),
               child: AspectRatio(
                 aspectRatio: 16 / 9,
-                child: _ScanningPhoto(imageBytes: widget.imageBytes),
+                child: ScanningPhoto(image: MemoryImage(widget.imageBytes)),
               ),
             ),
           ),
@@ -911,144 +912,6 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             nutriFactor * ScoreConstants.nutriWeight)
         .clamp(0.0, 100.0);
   }
-}
-
-/// Meal photo with a scanning-line overlay. The line sweeps from top to
-/// bottom (and back) while AI analysis is in flight. A soft tint band
-/// trails behind the line so the effect reads even on low-contrast
-/// photos. Stops automatically when the widget is disposed.
-class _ScanningPhoto extends StatefulWidget {
-  final Uint8List imageBytes;
-
-  const _ScanningPhoto({required this.imageBytes});
-
-  @override
-  State<_ScanningPhoto> createState() => _ScanningPhotoState();
-}
-
-class _ScanningPhotoState extends State<_ScanningPhoto>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1600),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Image.memory(widget.imageBytes, fit: BoxFit.cover),
-        // Subtle dim so the scan line stays readable.
-        Container(color: Colors.black.withValues(alpha: 0.18)),
-        AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            return CustomPaint(
-              painter: _ScanLinePainter(
-                progress: _controller.value,
-                color: colors.primary,
-              ),
-            );
-          },
-        ),
-        // Viewfinder corner accents — completes the "scanning" feel.
-        IgnorePointer(
-          child: CustomPaint(
-            painter: _ViewfinderCornersPainter(color: colors.primary),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ScanLinePainter extends CustomPainter {
-  final double progress; // 0..1
-  final Color color;
-
-  _ScanLinePainter({required this.progress, required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final inset = 12.0;
-    final top = inset;
-    final bottom = size.height - inset;
-    final y = top + (bottom - top) * progress;
-
-    // Trailing gradient band behind the line for a glow effect.
-    final bandHeight = size.height * 0.18;
-    final bandTop = y - bandHeight;
-    final bandRect = Rect.fromLTWH(
-      inset,
-      bandTop,
-      size.width - inset * 2,
-      bandHeight,
-    );
-    final bandPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [color.withValues(alpha: 0.0), color.withValues(alpha: 0.22)],
-      ).createShader(bandRect);
-    canvas.drawRect(bandRect, bandPaint);
-
-    // The line itself.
-    final linePaint = Paint()
-      ..color = color
-      ..strokeWidth = 2.0
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(Offset(inset, y), Offset(size.width - inset, y), linePaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _ScanLinePainter old) =>
-      old.progress != progress || old.color != color;
-}
-
-class _ViewfinderCornersPainter extends CustomPainter {
-  final Color color;
-
-  _ViewfinderCornersPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final p = Paint()
-      ..color = color.withValues(alpha: 0.85)
-      ..strokeWidth = 3.0
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    final pad = 12.0;
-    final len = size.shortestSide * 0.10;
-
-    void corner(Offset origin, double dx, double dy) {
-      canvas.drawLine(origin, origin.translate(len * dx, 0), p);
-      canvas.drawLine(origin, origin.translate(0, len * dy), p);
-    }
-
-    corner(Offset(pad, pad), 1, 1);
-    corner(Offset(size.width - pad, pad), -1, 1);
-    corner(Offset(pad, size.height - pad), 1, -1);
-    corner(Offset(size.width - pad, size.height - pad), -1, -1);
-  }
-
-  @override
-  bool shouldRepaint(covariant _ViewfinderCornersPainter old) =>
-      old.color != color;
 }
 
 /// Four-chip portion selector shown below the AI's portion badge.
