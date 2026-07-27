@@ -52,3 +52,6 @@ NotebookLM_*/
 *.zip
 nul
 nutrilens-release.jks
+
+# Superpowers brainstorming visual companion (local mockups)
+.superpowers/
