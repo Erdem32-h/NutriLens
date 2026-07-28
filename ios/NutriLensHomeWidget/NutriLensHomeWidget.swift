@@ -19,16 +19,22 @@ import SwiftUI
 private let kAppGroup = "group.app.nutrilens.ios"
 private let kKeyKcal = "today_kcal"
 private let kKeyMealCount = "today_meal_count"
+private let kKeyProteinPct = "today_protein_pct"
+private let kKeyCarbPct = "today_carb_pct"
+private let kKeyFatPct = "today_fat_pct"
 
 struct NutriLensEntry: TimelineEntry {
     let date: Date
     let kcal: Int
     let mealCount: Int
+    let proteinPct: Int
+    let carbPct: Int
+    let fatPct: Int
 }
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> NutriLensEntry {
-        NutriLensEntry(date: Date(), kcal: 0, mealCount: 0)
+        NutriLensEntry(date: Date(), kcal: 0, mealCount: 0, proteinPct: 0, carbPct: 0, fatPct: 0)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (NutriLensEntry) -> Void) {
@@ -49,7 +55,34 @@ struct Provider: TimelineProvider {
         let defaults = UserDefaults(suiteName: kAppGroup)
         let kcal = defaults?.integer(forKey: kKeyKcal) ?? 0
         let count = defaults?.integer(forKey: kKeyMealCount) ?? 0
-        return NutriLensEntry(date: Date(), kcal: kcal, mealCount: count)
+        let protein = defaults?.integer(forKey: kKeyProteinPct) ?? 0
+        let carb = defaults?.integer(forKey: kKeyCarbPct) ?? 0
+        let fat = defaults?.integer(forKey: kKeyFatPct) ?? 0
+        return NutriLensEntry(date: Date(), kcal: kcal, mealCount: count, proteinPct: protein, carbPct: carb, fatPct: fat)
+    }
+}
+
+private struct MacroRow: View {
+    let label: String
+    let pct: Int
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Text("\(label) %\(pct)")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundColor(Color.white.opacity(0.8))
+                .frame(width: 44, alignment: .leading)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.white.opacity(0.15))
+                    Capsule()
+                        .fill(color)
+                        .frame(width: geo.size.width * CGFloat(pct) / 100)
+                }
+            }
+            .frame(height: 4)
+        }
     }
 }
 
@@ -84,6 +117,16 @@ struct NutriLensHomeWidgetView: View {
                 Text("\(entry.mealCount) öğün · bugün")
                     .font(.system(size: 12))
                     .foregroundColor(Color.white.opacity(0.7))
+
+                VStack(spacing: 3) {
+                    MacroRow(label: "P", pct: entry.proteinPct,
+                             color: Color(red: 0.39, green: 0.40, blue: 0.95)) // #6366F1
+                    MacroRow(label: "K", pct: entry.carbPct,
+                             color: Color(red: 0.96, green: 0.62, blue: 0.04)) // #F59E0B
+                    MacroRow(label: "Y", pct: entry.fatPct,
+                             color: Color(red: 0.93, green: 0.28, blue: 0.60)) // #EC4899
+                }
+                .padding(.top, 4)
 
                 Spacer()
 
