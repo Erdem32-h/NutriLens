@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:home_widget/home_widget.dart';
 
 import '../../config/drift/app_database.dart';
+import '../constants/macro_reference_constants.dart';
+import '../../features/product/data/models/nutriments_dto.dart';
+import '../../features/product/domain/entities/nutriments_entity.dart';
 
 /// Pushes today's meal summary to the OS-level home-screen widget on
 /// both Android (AppWidget) and iOS (WidgetKit).
@@ -30,6 +33,9 @@ class HomeWidgetService {
   static const _keyKcal = 'today_kcal';
   static const _keyMealCount = 'today_meal_count';
   static const _keyLastUpdate = 'last_update_iso';
+  static const _keyProteinPct = 'today_protein_pct';
+  static const _keyCarbPct = 'today_carb_pct';
+  static const _keyFatPct = 'today_fat_pct';
 
   final AppDatabase _db;
 
@@ -45,6 +51,29 @@ class HomeWidgetService {
       // Older OS / not-installed widget — non-fatal.
       debugPrint('[HomeWidget] setAppGroupId failed: $e');
     }
+  }
+
+  /// Bugünün makro-kcal paylarını (0-100 int) hesaplar. Payda üç
+  /// makronun toplam kcal'idir; veri yoksa üçü de 0 döner.
+  @visibleForTesting
+  static ({int protein, int carb, int fat}) macroPercentages(
+    Iterable<NutrimentsEntity> items,
+  ) {
+    var proteinKcal = 0.0, carbKcal = 0.0, fatKcal = 0.0;
+    for (final n in items) {
+      proteinKcal +=
+          (n.proteins ?? 0) * MacroReferenceConstants.kcalPerGramProtein;
+      carbKcal +=
+          (n.carbohydrates ?? 0) * MacroReferenceConstants.kcalPerGramCarb;
+      fatKcal += (n.fat ?? 0) * MacroReferenceConstants.kcalPerGramFat;
+    }
+    final total = proteinKcal + carbKcal + fatKcal;
+    if (total == 0) return (protein: 0, carb: 0, fat: 0);
+    return (
+      protein: (proteinKcal / total * 100).round(),
+      carb: (carbKcal / total * 100).round(),
+      fat: (fatKcal / total * 100).round(),
+    );
   }
 
   /// Recompute today's snapshot from Drift and push it to the widget.
@@ -77,6 +106,10 @@ class HomeWidgetService {
       }
       final count = rows.length;
 
+      final macros = macroPercentages(
+        rows.map((r) => NutrimentsDto.fromJsonString(r.nutriments)),
+      );
+
       await Future.wait<void>([
         HomeWidget.saveWidgetData<int>(_keyKcal, kcal.round()),
         HomeWidget.saveWidgetData<int>(_keyMealCount, count),
@@ -84,6 +117,9 @@ class HomeWidgetService {
           _keyLastUpdate,
           now.toIso8601String(),
         ),
+        HomeWidget.saveWidgetData<int>(_keyProteinPct, macros.protein),
+        HomeWidget.saveWidgetData<int>(_keyCarbPct, macros.carb),
+        HomeWidget.saveWidgetData<int>(_keyFatPct, macros.fat),
       ]);
 
       await HomeWidget.updateWidget(
