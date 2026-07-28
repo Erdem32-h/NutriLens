@@ -38,6 +38,8 @@ class _RecordingUploader {
 Future<ProviderContainer> _pumpOnboarding(
   WidgetTester tester, {
   _RecordingUploader? uploader,
+  ThemeData? theme,
+  Locale locale = const Locale('tr'),
 }) async {
   tester.view.physicalSize = _smallPhone;
   tester.view.devicePixelRatio = 1.0;
@@ -88,8 +90,8 @@ Future<ProviderContainer> _pumpOnboarding(
     UncontrolledProviderScope(
       container: container,
       child: MaterialApp.router(
-        theme: AppTheme.light,
-        locale: const Locale('tr'),
+        theme: theme ?? AppTheme.light,
+        locale: locale,
         supportedLocales: AppLocalizations.supportedLocales,
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -198,5 +200,32 @@ void main() {
       ),
       hasLength(1),
     );
+  });
+
+  testWidgets('koyu temada 375x667 ekranda tasma yok', (tester) async {
+    await _pumpOnboarding(tester, theme: AppTheme.dark);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Arapca (RTL) 375x667 ekranda tasma yok', (tester) async {
+    // En uzun ceviriler ve ters yon duzeni birlikte en zorlu durum.
+    await _pumpOnboarding(tester, locale: const Locale('ar'));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('uc sayfa da kaydirilarak gezilebilir', (tester) async {
+    await _pumpOnboarding(tester);
+
+    // Sayfa 0 -> 1
+    await tester.drag(find.byType(PageView), const Offset(-400, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('Katkı maddeleri, şeker ve tuz tek bakışta.'), findsOneWidget);
+
+    // Sayfa 1 -> 2
+    await tester.drag(find.byType(PageView), const Offset(-400, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('Alerjenini ve diyetini seç, sakıncalıyı hemen gör.'), findsOneWidget);
+    // Son sayfada birincil eylem "Ucretsiz basla" olur.
+    expect(find.text('Ücretsiz başla'), findsOneWidget);
   });
 }
