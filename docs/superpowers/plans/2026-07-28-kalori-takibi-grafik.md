@@ -1481,10 +1481,16 @@ yüzden her çağrı noktasında **doğrudan yer değiştirme** yapılır, dolay
 1. `meal_provider.dart` başına ekle: `import 'meal_chart_provider.dart';`
 2. `meal_provider.dart:52` (`mealCloudSyncProvider` içinde):
    `ref.invalidate(mealCalorieSummaryProvider)` → `ref.invalidate(calorieChartDataProvider)`
-3. `food_result_screen.dart:371`: aynı değişiklik, dosya başına
-   `import '../../meals/presentation/providers/meal_chart_provider.dart';`
-   ekle (gerçek relative path'i dosyanın konumuna göre doğrula).
-4. `profile_screen.dart:321` ve `:380`: aynı değişiklik, gerekli import'u ekle.
+3. `food_result_screen.dart:371`: aynı değişiklik. Dosya zaten
+   `import '../../../meals/presentation/providers/meal_provider.dart';`
+   satırını içeriyor (3 seviye yukarı) — aynı deseni izleyerek yanına
+   `import '../../../meals/presentation/providers/meal_chart_provider.dart';`
+   ekle.
+4. `profile_screen.dart:321` ve `:380`: aynı değişiklik. Bu dosya da
+   `import '../../../meals/presentation/providers/meal_provider.dart';`
+   kullanıyor (3 seviye yukarı) — aynı şekilde
+   `import '../../../meals/presentation/providers/meal_chart_provider.dart';`
+   ekle.
 
 **Step 3: Failing ekran testi yaz**
 
@@ -1496,11 +1502,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutrilens/config/drift/app_database.dart';
+import 'package:nutrilens/core/providers/monetization_provider.dart';
+import 'package:nutrilens/core/session/app_session.dart';
+import 'package:nutrilens/core/theme/app_theme.dart';
+import 'package:nutrilens/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nutrilens/features/meals/presentation/screens/meals_screen.dart';
+import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
-// appDatabaseProvider ve effectiveUserIdProvider override'ları için gerçek
-// import yollarını kontrol et: lib/features/product/presentation/providers/
-// product_provider.dart (appDatabaseProvider) ve lib/core/session/app_session.dart.
 
 void main() {
   testWidgets('boş veri: dönem seçici + boş mesaj görünür', (tester) async {
@@ -1511,9 +1519,20 @@ void main() {
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(db),
-          effectiveUserIdProvider.overrideWith((ref) => 'user-1'),
+          effectiveUserIdProvider.overrideWithValue('user-1'),
+          // MealsScreen, mealCloudSyncProvider'ı da watch ediyor; o da
+          // currentUserProvider + isPremiumProvider'ı koşulsuz watch eder
+          // (meal_provider.dart — `if` kontrolünden ÖNCE ikisi de okunur).
+          // Bu ikisi olmadan zincir Supabase/RevenueCat'e uzanır ve testte
+          // patlar — bu yüzden burada da kısa devre ediyoruz.
+          currentUserProvider.overrideWithValue(null),
+          isPremiumProvider.overrideWithValue(false),
         ],
         child: MaterialApp(
+          // context.colors, AppColorsExtension olmayan bir temada debug
+          // assert fırlatır (app_colors.dart:311-320) — Task 9'da aynı
+          // sebeple eklenmişti, burada da gerekli.
+          theme: AppTheme.light,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('tr'),
@@ -1529,7 +1548,11 @@ void main() {
 }
 ```
 
-Not: `effectiveUserIdProvider` override sözdizimi provider tipine göre değişir — gerçek tanımına bak (`app_session.dart`) ve uygun `overrideWith` biçimini kullan. `MealsScreen` `mealCloudSyncProvider`'ı da watch ediyor; o da `isPremiumProvider`/`currentUserProvider`'a bağlı — testte guest/free varsayılanları yeterliyse override gerekmez, ilk çalıştırmada hata çıkarsa ilgili provider'ları da override et.
+Not: `appDatabaseProvider` (`Provider<AppDatabase>`, product_provider.dart:32),
+`effectiveUserIdProvider` (`Provider<String?>`, app_session.dart:79),
+`currentUserProvider` (`Provider<UserEntity?>`, auth_provider.dart:24) ve
+`isPremiumProvider` (`Provider<bool>`, monetization_provider.dart:72) dördü
+de düz `Provider` — `overrideWithValue` hepsinde geçerli.
 
 **Step 4: Testler geç**
 
