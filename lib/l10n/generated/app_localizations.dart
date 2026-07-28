@@ -490,36 +490,6 @@ abstract class AppLocalizations {
   /// **'Barkod Tara'**
   String get scanBarcodeTitle;
 
-  /// No description provided for @scanBarcodeDescription.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ürünün barkodunu tarayın ve saniyeler içinde sağlık analizini görün.'**
-  String get scanBarcodeDescription;
-
-  /// No description provided for @healthScoreTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sağlık Puanı'**
-  String get healthScoreTitle;
-
-  /// No description provided for @healthScoreDescription.
-  ///
-  /// In tr, this message translates to:
-  /// **'NutriLens HP skoru ile ürünün kimyasal yükü, risk faktörü ve beslenme değerini öğren.'**
-  String get healthScoreDescription;
-
-  /// No description provided for @personalFilters.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kişisel Filtreler'**
-  String get personalFilters;
-
-  /// No description provided for @personalFiltersDescription.
-  ///
-  /// In tr, this message translates to:
-  /// **'Alerjenlerinizi, diyet tercihlerinizi ve kaçındığınız maddeleri belirleyin. Size özel analiz alın.'**
-  String get personalFiltersDescription;
-
   /// No description provided for @onboardingMealTitle.
   ///
   /// In tr, this message translates to:

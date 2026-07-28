@@ -203,24 +203,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scanBarcodeTitle => 'مسح الباركود';
 
   @override
-  String get scanBarcodeDescription =>
-      'امسح الباركود الخاص بالمنتج واطلع على التقييم الصحي خلال ثوانٍ.';
-
-  @override
-  String get healthScoreTitle => 'درجة الصحة';
-
-  @override
-  String get healthScoreDescription =>
-      'اكتشف العبء الكيميائي وعامل الخطر والقيمة الغذائية للمنتج عبر تقييم NutriLens HP.';
-
-  @override
-  String get personalFilters => 'المرشحات الشخصية';
-
-  @override
-  String get personalFiltersDescription =>
-      'حدد مسببات الحساسية وتفضيلاتك الغذائية والمواد التي تتجنبها للحصول على تحليلات مخصصة.';
-
-  @override
   String get onboardingMealTitle => 'صوّر طبقك، ونحن نحسب الباقي.';
 
   @override

@@ -202,24 +202,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanBarcodeTitle => 'Scan Barcode';
 
   @override
-  String get scanBarcodeDescription =>
-      'Scan the product barcode and see the health analysis in seconds.';
-
-  @override
-  String get healthScoreTitle => 'Health Score';
-
-  @override
-  String get healthScoreDescription =>
-      'Learn the chemical load, risk factor and nutritional value of the product with the NutriLens HP score.';
-
-  @override
-  String get personalFilters => 'Personal Filters';
-
-  @override
-  String get personalFiltersDescription =>
-      'Set your allergens, diet preferences and substances you avoid. Get personalized analysis.';
-
-  @override
   String get onboardingMealTitle => 'Snap your plate, we\'ll do the math.';
 
   @override

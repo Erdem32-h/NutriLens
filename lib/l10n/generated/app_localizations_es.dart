@@ -204,24 +204,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scanBarcodeTitle => 'Escanear Código de Barras';
 
   @override
-  String get scanBarcodeDescription =>
-      'Escanea el código de barras del producto y obtén el análisis de salud en segundos.';
-
-  @override
-  String get healthScoreTitle => 'Puntuación de Salud';
-
-  @override
-  String get healthScoreDescription =>
-      'Descubre la carga química, el factor de riesgo y el valor nutricional del producto con el puntaje NutriLens HP.';
-
-  @override
-  String get personalFilters => 'Filtros Personales';
-
-  @override
-  String get personalFiltersDescription =>
-      'Configura tus alérgenos, preferencias dietéticas y sustancias a evitar. Obtén análisis personalizados.';
-
-  @override
   String get onboardingMealTitle => 'Fotografía tu plato, nosotros contamos.';
 
   @override

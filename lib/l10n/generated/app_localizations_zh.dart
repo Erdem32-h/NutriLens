@@ -201,22 +201,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scanBarcodeTitle => '扫描条形码';
 
   @override
-  String get scanBarcodeDescription => '扫描商品条形码，几秒内即可获取健康分析报告。';
-
-  @override
-  String get healthScoreTitle => '健康评分';
-
-  @override
-  String get healthScoreDescription =>
-      '通过 NutriLens HP 评分，了解产品的化学负荷、风险因子和营养价值。';
-
-  @override
-  String get personalFilters => '个人偏好筛选';
-
-  @override
-  String get personalFiltersDescription => '设置过敏原、饮食偏好及避忌成分，获取定制化分析。';
-
-  @override
   String get onboardingMealTitle => '拍下你的餐盘，剩下的交给我们。';
 
   @override

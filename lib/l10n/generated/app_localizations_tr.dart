@@ -202,24 +202,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get scanBarcodeTitle => 'Barkod Tara';
 
   @override
-  String get scanBarcodeDescription =>
-      'Ürünün barkodunu tarayın ve saniyeler içinde sağlık analizini görün.';
-
-  @override
-  String get healthScoreTitle => 'Sağlık Puanı';
-
-  @override
-  String get healthScoreDescription =>
-      'NutriLens HP skoru ile ürünün kimyasal yükü, risk faktörü ve beslenme değerini öğren.';
-
-  @override
-  String get personalFilters => 'Kişisel Filtreler';
-
-  @override
-  String get personalFiltersDescription =>
-      'Alerjenlerinizi, diyet tercihlerinizi ve kaçındığınız maddeleri belirleyin. Size özel analiz alın.';
-
-  @override
   String get onboardingMealTitle => 'Tabağını çek, gerisini biz sayalım.';
 
   @override
