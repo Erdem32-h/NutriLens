@@ -1251,6 +1251,45 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mealTypeSnack => 'Ara Öğün';
 
   @override
+  String get caloriePeriodDay => 'Gün';
+
+  @override
+  String get caloriePeriodWeek => 'Hafta';
+
+  @override
+  String get caloriePeriodMonth => 'Ay';
+
+  @override
+  String get caloriePeriodYear => 'Yıl';
+
+  @override
+  String get macroProtein => 'Protein';
+
+  @override
+  String get macroCarbs => 'Karbonhidrat';
+
+  @override
+  String get macroFat => 'Yağ';
+
+  @override
+  String get macroLevelLow => 'Düşük';
+
+  @override
+  String get macroLevelNormal => 'Normal';
+
+  @override
+  String get macroLevelHigh => 'Yüksek';
+
+  @override
+  String get calorieChartEmptyPeriod => 'Bu dönemde kayıtlı öğün yok';
+
+  @override
+  String get calorieCardAverageDaily => 'Günlük ortalama';
+
+  @override
+  String get calorieCardTotal => 'Toplam';
+
+  @override
   String get mealBrandHomemade => 'Ev yapımı';
 
   @override

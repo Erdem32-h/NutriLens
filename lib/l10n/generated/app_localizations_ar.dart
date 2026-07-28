@@ -1250,6 +1250,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mealTypeSnack => 'وجبة خفيفة';
 
   @override
+  String get caloriePeriodDay => 'يوم';
+
+  @override
+  String get caloriePeriodWeek => 'أسبوع';
+
+  @override
+  String get caloriePeriodMonth => 'شهر';
+
+  @override
+  String get caloriePeriodYear => 'سنة';
+
+  @override
+  String get macroProtein => 'البروتينات';
+
+  @override
+  String get macroCarbs => 'الكربوهيدرات';
+
+  @override
+  String get macroFat => 'الدهون';
+
+  @override
+  String get macroLevelLow => 'منخفض';
+
+  @override
+  String get macroLevelNormal => 'طبيعي';
+
+  @override
+  String get macroLevelHigh => 'مرتفع';
+
+  @override
+  String get calorieChartEmptyPeriod => 'لا توجد وجبات مسجلة في هذه الفترة';
+
+  @override
+  String get calorieCardAverageDaily => 'المتوسط اليومي';
+
+  @override
+  String get calorieCardTotal => 'الإجمالي';
+
+  @override
   String get mealBrandHomemade => 'منزلي';
 
   @override

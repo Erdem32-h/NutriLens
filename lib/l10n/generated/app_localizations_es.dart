@@ -1256,6 +1256,46 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mealTypeSnack => 'Merienda';
 
   @override
+  String get caloriePeriodDay => 'Día';
+
+  @override
+  String get caloriePeriodWeek => 'Semana';
+
+  @override
+  String get caloriePeriodMonth => 'Mes';
+
+  @override
+  String get caloriePeriodYear => 'Año';
+
+  @override
+  String get macroProtein => 'Proteínas';
+
+  @override
+  String get macroCarbs => 'Carbohidratos';
+
+  @override
+  String get macroFat => 'Grasas';
+
+  @override
+  String get macroLevelLow => 'Bajo';
+
+  @override
+  String get macroLevelNormal => 'Normal';
+
+  @override
+  String get macroLevelHigh => 'Alto';
+
+  @override
+  String get calorieChartEmptyPeriod =>
+      'No hay comidas registradas en este período';
+
+  @override
+  String get calorieCardAverageDaily => 'Promedio diario';
+
+  @override
+  String get calorieCardTotal => 'Total';
+
+  @override
   String get mealBrandHomemade => 'Casero';
 
   @override

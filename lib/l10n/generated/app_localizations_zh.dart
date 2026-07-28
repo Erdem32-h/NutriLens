@@ -1232,6 +1232,45 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mealTypeSnack => '零食 / 加餐';
 
   @override
+  String get caloriePeriodDay => '日';
+
+  @override
+  String get caloriePeriodWeek => '周';
+
+  @override
+  String get caloriePeriodMonth => '月';
+
+  @override
+  String get caloriePeriodYear => '年';
+
+  @override
+  String get macroProtein => '蛋白质';
+
+  @override
+  String get macroCarbs => '碳水化合物';
+
+  @override
+  String get macroFat => '脂肪';
+
+  @override
+  String get macroLevelLow => '低';
+
+  @override
+  String get macroLevelNormal => '正常';
+
+  @override
+  String get macroLevelHigh => '高';
+
+  @override
+  String get calorieChartEmptyPeriod => '该时段内暂无饮食记录';
+
+  @override
+  String get calorieCardAverageDaily => '每日平均';
+
+  @override
+  String get calorieCardTotal => '总计';
+
+  @override
   String get mealBrandHomemade => '自制';
 
   @override

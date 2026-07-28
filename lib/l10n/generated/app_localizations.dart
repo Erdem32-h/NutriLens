@@ -2464,6 +2464,84 @@ abstract class AppLocalizations {
   /// **'Ara Öğün'**
   String get mealTypeSnack;
 
+  /// No description provided for @caloriePeriodDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gün'**
+  String get caloriePeriodDay;
+
+  /// No description provided for @caloriePeriodWeek.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hafta'**
+  String get caloriePeriodWeek;
+
+  /// No description provided for @caloriePeriodMonth.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ay'**
+  String get caloriePeriodMonth;
+
+  /// No description provided for @caloriePeriodYear.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıl'**
+  String get caloriePeriodYear;
+
+  /// No description provided for @macroProtein.
+  ///
+  /// In tr, this message translates to:
+  /// **'Protein'**
+  String get macroProtein;
+
+  /// No description provided for @macroCarbs.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karbonhidrat'**
+  String get macroCarbs;
+
+  /// No description provided for @macroFat.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yağ'**
+  String get macroFat;
+
+  /// No description provided for @macroLevelLow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düşük'**
+  String get macroLevelLow;
+
+  /// No description provided for @macroLevelNormal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Normal'**
+  String get macroLevelNormal;
+
+  /// No description provided for @macroLevelHigh.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yüksek'**
+  String get macroLevelHigh;
+
+  /// No description provided for @calorieChartEmptyPeriod.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu dönemde kayıtlı öğün yok'**
+  String get calorieChartEmptyPeriod;
+
+  /// No description provided for @calorieCardAverageDaily.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük ortalama'**
+  String get calorieCardAverageDaily;
+
+  /// No description provided for @calorieCardTotal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam'**
+  String get calorieCardTotal;
+
   /// No description provided for @mealBrandHomemade.
   ///
   /// In tr, this message translates to:
