@@ -870,8 +870,13 @@ class CaloriePeriodSelector extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
+                          // AppColorsExtension'da onPrimary yok; AppButton'ın
+                          // primary-dolgu konvansiyonu (app_button.dart:112-116)
+                          // seçili pilin üstünde de aynı şekilde Colors.black
+                          // kullanır — iki temada da primary dolgu üstünde
+                          // okunur kalır.
                           color: p == period
-                              ? colors.onPrimary
+                              ? Colors.black
                               : colors.textMuted,
                         ),
                       ),
@@ -901,9 +906,12 @@ class CaloriePeriodSelector extends ConsumerWidget {
             ),
             IconButton(
               icon: const Icon(Icons.chevron_right_rounded),
-              color: offset == 0
-                  ? colors.textMuted.withValues(alpha: 0.3)
-                  : colors.textMuted,
+              color: colors.textMuted,
+              // IconButton disabled durumda `color`'u değil `disabledColor`'ı
+              // kullanır (Flutter davranışı) — disabledColor açıkça
+              // verilmezse tema varsayılanına döner, tasarımdaki soluk
+              // görünüm kaybolur.
+              disabledColor: colors.textMuted.withValues(alpha: 0.3),
               // Gelecek döneme geçilemez (spec §11).
               onPressed: offset == 0
                   ? null
@@ -938,9 +946,6 @@ class CaloriePeriodSelector extends ConsumerWidget {
 
 Not — `CalorieChartAggregator` import'u:
 `../../domain/services/calorie_chart_aggregator.dart`.
-`colors.onPrimary` yoksa (`AppColorsExtension`'ı kontrol et) `Colors.white`
-yerine mevcut temada primary üstü için kullanılan rengi kullan — mevcut
-`AppButton` implementasyonuna bak ve aynı deseni uygula.
 
 **Step 2: Analyze + Commit**
 
