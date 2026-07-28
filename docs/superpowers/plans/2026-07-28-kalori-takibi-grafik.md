@@ -1456,16 +1456,19 @@ class _CalorieInsights extends ConsumerWidget {
 
 **Step 2: Ölü provider'ı sil + diğer call-site'ları güncelle**
 
-- `meal_provider.dart`: `mealCalorieSummaryProvider` (64-101) ve `MealCalorieSummary` (103-109) silinir; `mealCloudSyncProvider` içindeki `ref.invalidate(mealCalorieSummaryProvider)` (52) → `ref.invalidate(calorieChartDataProvider)` (import: `meal_chart_provider.dart` — dairesel import olmaması için `meal_chart_provider.dart`'ın `meal_provider.dart`'ı import ettiğine dikkat; **çözüm:** `mealCloudSyncProvider`'daki invalidation'ı `meal_chart_provider.dart`'a taşımak yerine, `mealCloudSyncProvider` sadece `mealsProvider`'ı invalidate etsin ve `calorieChartDataProvider` zaten `mealLocalDataSourceProvider`'ı watch ettiğinden ekran yenilemesinde tazelenir. En basit güvenli yol: `mealCloudSyncProvider` invalidation satırını `ref.invalidate(mealsProvider)` olarak bırak, kalori grafiği invalidation'ını ekranın kendisi yapar — `mealsProvider`'ı dinleyen `ref.listen` ile `meals_screen.dart` içinde:
+`meal_provider.dart`'tan `mealCalorieSummaryProvider` (64-101) ve
+`MealCalorieSummary` (103-109) silinir. Dart'ta iki dosya arasında
+karşılıklı `import` geçerlidir (döngüsel import hatası vermez) — bu
+yüzden her çağrı noktasında **doğrudan yer değiştirme** yapılır, dolaylı
+`ref.listen` gerekmez:
 
-```dart
-    // Cloud sync veya kayıt sonrası öğün listesi değişince grafiği tazele.
-    ref.listen(mealsProvider, (previous, next) {
-      ref.invalidate(calorieChartDataProvider);
-    });
-```
-
-  Bu, `food_result_screen.dart` ve `profile_screen.dart` güncellemelerini de basitleştirir: oralarda `ref.invalidate(mealCalorieSummaryProvider)` satırları **silinir** (yerine bir şey eklemek gerekmez — hepsi zaten `mealsProvider`'ı da invalidate ediyor; et: bu varsayımı her call-site'ta doğrula, `mealsProvider` invalidate edilmiyorsa `ref.invalidate(calorieChartDataProvider)` koy).
+1. `meal_provider.dart` başına ekle: `import 'meal_chart_provider.dart';`
+2. `meal_provider.dart:52` (`mealCloudSyncProvider` içinde):
+   `ref.invalidate(mealCalorieSummaryProvider)` → `ref.invalidate(calorieChartDataProvider)`
+3. `food_result_screen.dart:371`: aynı değişiklik, dosya başına
+   `import '../../meals/presentation/providers/meal_chart_provider.dart';`
+   ekle (gerçek relative path'i dosyanın konumuna göre doğrula).
+4. `profile_screen.dart:321` ve `:380`: aynı değişiklik, gerekli import'u ekle.
 
 **Step 3: Failing ekran testi yaz**
 
@@ -1583,11 +1586,10 @@ Expected: derleme hatası (`macroPercentages` yok).
 
 `home_widget_service.dart`'a:
 
-1. Import ekle:
+1. Import ekle (dosya zaten `package:flutter/foundation.dart` import ediyor —
+   `visibleForTesting` oradan gelir, yeni import gerekmez):
 
 ```dart
-import 'package:flutter/material.dart' show visibleForTesting;
-// veya foundation zaten import'lu — visibleForTesting oradan gelir.
 import '../constants/macro_reference_constants.dart';
 import '../../features/product/data/models/nutriments_dto.dart';
 import '../../features/product/domain/entities/nutriments_entity.dart';
