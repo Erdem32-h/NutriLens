@@ -1733,7 +1733,8 @@ RemoteViews allow-list'i not: `ProgressBar` (horizontal style) RemoteViews-safe'
             <ProgressBar
                 android:id="@+id/widget_protein_bar"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="4dp"
                 android:max="100"
                 android:progressTint="#6366F1"
@@ -1756,7 +1757,8 @@ RemoteViews allow-list'i not: `ProgressBar` (horizontal style) RemoteViews-safe'
             <ProgressBar
                 android:id="@+id/widget_carb_bar"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="4dp"
                 android:max="100"
                 android:progressTint="#F59E0B"
@@ -1779,7 +1781,8 @@ RemoteViews allow-list'i not: `ProgressBar` (horizontal style) RemoteViews-safe'
             <ProgressBar
                 android:id="@+id/widget_fat_bar"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="4dp"
                 android:max="100"
                 android:progressTint="#EC4899"
