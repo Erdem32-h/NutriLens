@@ -110,10 +110,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     });
 
     final analytics = ref.read(analyticsServiceProvider);
-    analytics.track(
-      FunnelEvents.mealAnalysisStarted,
-      props: {'retry': retry},
-    );
+    analytics.track(FunnelEvents.mealAnalysisStarted, props: {'retry': retry});
 
     try {
       final prepared = await prepareMealAnalysisImage(widget.imageBytes);
@@ -199,11 +196,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: colors.surfaceCard,
-        icon: Icon(
-          Icons.inventory_2_outlined,
-          color: colors.primary,
-          size: 36,
-        ),
+        icon: Icon(Icons.inventory_2_outlined, color: colors.primary, size: 36),
         title: Text(
           l10n.aiPackagedTitle,
           style: TextStyle(color: colors.textPrimary),
@@ -254,11 +247,13 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       final note = portionNote.isEmpty ? null : portionNote;
       // Proxy for everyone (guests included), same as _analyzeFood.
       final deviceHash = await ref.read(deviceIdServiceProvider).deviceHash();
-      final recalc = await ref.read(geminiAiServiceProvider).recalculateMeal(
-        ingredientsText: ingredients,
-        portionNote: note,
-        deviceHash: deviceHash,
-      );
+      final recalc = await ref
+          .read(geminiAiServiceProvider)
+          .recalculateMeal(
+            ingredientsText: ingredients,
+            portionNote: note,
+            deviceHash: deviceHash,
+          );
       if (!mounted) return;
       if (recalc != null) {
         setState(() {
@@ -290,9 +285,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       }
     } on GeminiServiceException {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.recalcFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.recalcFailed)));
       }
     } finally {
       if (mounted) setState(() => _recalcLoading = false);
@@ -433,14 +428,17 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         storeUrl: AppLinks.shareStoreUrl,
       );
 
-      await ref.read(shareServiceProvider).captureAndShare(
-        context: context,
-        card: card,
-        logicalSize: const Size(360, 360),
-        pixelRatio: 3.0,
-        fileName: 'nutrilens_meal_${DateTime.now().millisecondsSinceEpoch}.png',
-        caption: caption,
-      );
+      await ref
+          .read(shareServiceProvider)
+          .captureAndShare(
+            context: context,
+            card: card,
+            logicalSize: const Size(360, 360),
+            pixelRatio: 3.0,
+            fileName:
+                'nutrilens_meal_${DateTime.now().millisecondsSinceEpoch}.png',
+            caption: caption,
+          );
     } catch (e) {
       if (mounted) {
         messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));
@@ -985,9 +983,7 @@ class _PortionMultiplierSelector extends StatelessWidget {
           color: selected ? null : colors.surfaceCard,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected
-                ? Colors.transparent
-                : colors.border,
+            color: selected ? Colors.transparent : colors.border,
           ),
         ),
         child: Column(

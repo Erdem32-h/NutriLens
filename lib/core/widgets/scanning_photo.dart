@@ -85,8 +85,7 @@ class _ScanningPhotoState extends State<ScanningPhoto>
           errorBuilder: (_, _, _) => ColoredBox(color: colors.surfaceCard),
         ),
         // Karartma yalnızca tarama sürerken: bittiğinde fotoğraf net kalsın.
-        if (!_finished)
-          Container(color: Colors.black.withValues(alpha: 0.18)),
+        if (!_finished) Container(color: Colors.black.withValues(alpha: 0.18)),
         if (!_finished)
           AnimatedBuilder(
             key: const ValueKey('scan-line'),

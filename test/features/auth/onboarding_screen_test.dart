@@ -13,6 +13,7 @@ import 'package:nutrilens/core/theme/app_theme.dart';
 import 'package:nutrilens/core/widgets/app_button.dart';
 import 'package:nutrilens/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:nutrilens/features/auth/presentation/providers/auth_provider.dart';
+import 'package:nutrilens/features/auth/presentation/widgets/onboarding_previews.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -216,15 +217,26 @@ void main() {
   testWidgets('uc sayfa da kaydirilarak gezilebilir', (tester) async {
     await _pumpOnboarding(tester);
 
+    // Sayfa 0 (kaydirmadan once): bu dal ustunde artik eski barkod vaadi
+    // degil, MealPreview + yemek kopyasi gosterilmeli.
+    expect(find.text('Tabağını çek, gerisini biz sayalım.'), findsOneWidget);
+    expect(find.byType(MealPreview), findsOneWidget);
+
     // Sayfa 0 -> 1
     await tester.drag(find.byType(PageView), const Offset(-400, 0));
     await tester.pumpAndSettle();
-    expect(find.text('Katkı maddeleri, şeker ve tuz tek bakışta.'), findsOneWidget);
+    expect(
+      find.text('Katkı maddeleri, şeker ve tuz tek bakışta.'),
+      findsOneWidget,
+    );
 
     // Sayfa 1 -> 2
     await tester.drag(find.byType(PageView), const Offset(-400, 0));
     await tester.pumpAndSettle();
-    expect(find.text('Alerjenini ve diyetini seç, sakıncalıyı hemen gör.'), findsOneWidget);
+    expect(
+      find.text('Alerjenini ve diyetini seç, sakıncalıyı hemen gör.'),
+      findsOneWidget,
+    );
     // Son sayfada birincil eylem "Ucretsiz basla" olur.
     expect(find.text('Ücretsiz başla'), findsOneWidget);
   });

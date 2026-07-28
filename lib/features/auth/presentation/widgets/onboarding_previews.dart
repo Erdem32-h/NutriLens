@@ -111,7 +111,10 @@ class ScorePreview extends StatelessWidget {
       children: [
         // Ürün ekranındaki widget'ın ta kendisi — onboarding'in vaadi ile
         // uygulamanın gösterdiği şey birebir aynı olsun diye.
-        const HealthScoreBar(hpScore: _Sample.productHp),
+        const HealthScoreBar(
+          hpScore: _Sample.productHp,
+          padding: EdgeInsets.symmetric(vertical: 12),
+        ),
         const SizedBox(height: 4),
         Row(
           children: [
@@ -207,11 +210,7 @@ class _StatCell extends StatelessWidget {
   final String label;
   final Color? valueColor;
 
-  const _StatCell({
-    required this.value,
-    required this.label,
-    this.valueColor,
-  });
+  const _StatCell({required this.value, required this.label, this.valueColor});
 
   @override
   Widget build(BuildContext context) {
@@ -270,9 +269,7 @@ class _Chip extends StatelessWidget {
             ? colors.primary.withValues(alpha: 0.15)
             : colors.surfaceCard,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: selected ? colors.primary : colors.border,
-        ),
+        border: Border.all(color: selected ? colors.primary : colors.border),
       ),
       child: Text(
         label,

@@ -7,7 +7,17 @@ import '../../../../core/theme/app_colors.dart';
 class HealthScoreBar extends StatelessWidget {
   final double? hpScore;
 
-  const HealthScoreBar({super.key, required this.hpScore});
+  /// Dış boşluk. Varsayılan, mevcut ekranlardaki (ürün detayı, öğün detayı,
+  /// tarama sonucu) sabit değerle birebir aynı — bu 4 çağrı noktası
+  /// davranış değişikliği görmez. Onboarding önizlemesi kendi sayfa
+  /// gutter'ını zaten uyguladığı için sıfır yatay padding geçer.
+  final EdgeInsets padding;
+
+  const HealthScoreBar({
+    super.key,
+    required this.hpScore,
+    this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +29,7 @@ class HealthScoreBar extends StatelessWidget {
     final gaugeColor = colors.gaugeColor(gaugeLevel);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: padding,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(

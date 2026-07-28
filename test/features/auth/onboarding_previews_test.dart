@@ -59,10 +59,7 @@ void main() {
 
     expect(find.text('Gluten'), findsOneWidget);
     expect(find.text('Laktoz'), findsOneWidget);
-    expect(
-      find.text('Bu üründe laktoz var — senin listende.'),
-      findsOneWidget,
-    );
+    expect(find.text('Bu üründe laktoz var — senin listende.'), findsOneWidget);
   });
 
   testWidgets('uc onizleme de koyu temada hatasiz cizilir', (tester) async {
