@@ -702,6 +702,9 @@ Provider ince bir katman (mantık Task 4'te test edildi); ayrı unit test yazıl
 
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// Riverpod 3 moved StateProvider/StateController to the legacy library
+// (see lib/features/scanner/presentation/providers/scanner_mode_provider.dart).
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../../../../core/session/app_session.dart';
 import '../../domain/entities/calorie_chart_data.dart';
