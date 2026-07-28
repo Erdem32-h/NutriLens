@@ -117,4 +117,28 @@ void main() {
     );
     expect((await dataSource.getMealById('c'))!.updatedAt, ts);
   });
+
+  test('getMealsInRange aralıktaki tam satırları döndürür', () async {
+    await dataSource.saveMeal(
+      meal(id: 'in-1', capturedAt: DateTime(2026, 4, 26, 8), kcal: 350),
+    );
+    await dataSource.saveMeal(
+      meal(id: 'in-2', capturedAt: DateTime(2026, 4, 26, 20), kcal: 650),
+    );
+    await dataSource.saveMeal(
+      meal(id: 'before', capturedAt: DateTime(2026, 4, 25, 23), kcal: 900),
+    );
+    await dataSource.saveMeal(
+      meal(id: 'at-end-excluded', capturedAt: DateTime(2026, 4, 27), kcal: 100),
+    );
+
+    final rows = await dataSource.getMealsInRange(
+      userId: 'user-1',
+      from: DateTime(2026, 4, 26),
+      to: DateTime(2026, 4, 27),
+    );
+
+    expect(rows.map((m) => m.id).toSet(), {'in-1', 'in-2'});
+    expect(rows.first.nutriments.proteins, 20); // tam entity döner
+  });
 }

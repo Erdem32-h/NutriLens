@@ -16,6 +16,15 @@ abstract interface class MealLocalDataSource {
     required DateTime from,
     required DateTime to,
   });
+
+  /// Aralıktaki tam öğün satırları — kalori grafiğinin bucket'laması
+  /// ham veriye ihtiyaç duyar; [totalCalories] yalnızca toplam döndürür.
+  Future<List<MealEntryEntity>> getMealsInRange({
+    required String userId,
+    required DateTime from,
+    required DateTime to,
+  });
+
   Future<void> deleteMeal(String id);
 
   /// Total rows belonging to [userId]. Used by the guest→register
@@ -116,6 +125,27 @@ final class MealLocalDataSourceImpl implements MealLocalDataSource {
       return rows.fold<double>(0, (sum, row) => sum + row.calories);
     } catch (e) {
       throw CacheException('Failed to summarize meal calories: $e');
+    }
+  }
+
+  @override
+  Future<List<MealEntryEntity>> getMealsInRange({
+    required String userId,
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    try {
+      final rows =
+          await (_db.select(_db.mealEntries)..where(
+                (t) =>
+                    t.userId.equals(userId) &
+                    t.capturedAt.isBiggerOrEqualValue(from) &
+                    t.capturedAt.isSmallerThanValue(to),
+              ))
+              .get();
+      return rows.map(_fromRow).toList();
+    } catch (e) {
+      throw CacheException('Failed to read meals in range: $e');
     }
   }
 
