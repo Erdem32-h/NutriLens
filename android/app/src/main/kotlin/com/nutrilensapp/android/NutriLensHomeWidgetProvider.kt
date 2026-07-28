@@ -35,10 +35,16 @@ class NutriLensHomeWidgetProvider : AppWidgetProvider() {
     ) {
         var kcal = 0
         var mealCount = 0
+        var proteinPct = 0
+        var carbPct = 0
+        var fatPct = 0
         try {
             val prefs = HomeWidgetPlugin.getData(context)
             kcal = prefs.getInt("today_kcal", 0)
             mealCount = prefs.getInt("today_meal_count", 0)
+            proteinPct = prefs.getInt("today_protein_pct", 0)
+            carbPct = prefs.getInt("today_carb_pct", 0)
+            fatPct = prefs.getInt("today_fat_pct", 0)
         } catch (t: Throwable) {
             Log.e(TAG, "Failed reading widget data, falling back to zeros", t)
         }
@@ -54,6 +60,12 @@ class NutriLensHomeWidgetProvider : AppWidgetProvider() {
                     R.id.widget_meal_count,
                     "$mealCount öğün · bugün"
                 )
+                views.setTextViewText(R.id.widget_protein_label, "P %$proteinPct")
+                views.setProgressBar(R.id.widget_protein_bar, 100, proteinPct, false)
+                views.setTextViewText(R.id.widget_carb_label, "K %$carbPct")
+                views.setProgressBar(R.id.widget_carb_bar, 100, carbPct, false)
+                views.setTextViewText(R.id.widget_fat_label, "Y %$fatPct")
+                views.setProgressBar(R.id.widget_fat_bar, 100, fatPct, false)
 
                 val scanIntent: PendingIntent = HomeWidgetLaunchIntent.getActivity(
                     context,
