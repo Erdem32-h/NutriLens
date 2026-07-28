@@ -1142,15 +1142,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mealsLoadError => 'تعذر تحميل الوجبات.';
 
   @override
-  String get summaryToday => 'اليوم';
-
-  @override
-  String get summaryWeek => 'الأسبوع';
-
-  @override
-  String get summaryMonth => 'الشهر';
-
-  @override
   String get scoreLabel => 'التقييم';
 
   @override

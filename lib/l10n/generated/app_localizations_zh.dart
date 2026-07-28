@@ -1128,15 +1128,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mealsLoadError => '无法加载饮食记录。';
 
   @override
-  String get summaryToday => '今天';
-
-  @override
-  String get summaryWeek => '本周';
-
-  @override
-  String get summaryMonth => '本月';
-
-  @override
   String get scoreLabel => '评分';
 
   @override

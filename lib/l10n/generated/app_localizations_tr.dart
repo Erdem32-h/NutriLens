@@ -1143,15 +1143,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mealsLoadError => 'Öğünler yüklenemedi.';
 
   @override
-  String get summaryToday => 'Bugün';
-
-  @override
-  String get summaryWeek => 'Hafta';
-
-  @override
-  String get summaryMonth => 'Ay';
-
-  @override
   String get scoreLabel => 'Skor';
 
   @override

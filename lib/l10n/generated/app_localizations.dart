@@ -2260,24 +2260,6 @@ abstract class AppLocalizations {
   /// **'Öğünler yüklenemedi.'**
   String get mealsLoadError;
 
-  /// No description provided for @summaryToday.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bugün'**
-  String get summaryToday;
-
-  /// No description provided for @summaryWeek.
-  ///
-  /// In tr, this message translates to:
-  /// **'Hafta'**
-  String get summaryWeek;
-
-  /// No description provided for @summaryMonth.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ay'**
-  String get summaryMonth;
-
   /// No description provided for @scoreLabel.
   ///
   /// In tr, this message translates to:

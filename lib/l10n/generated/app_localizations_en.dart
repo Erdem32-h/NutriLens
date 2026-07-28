@@ -1141,15 +1141,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mealsLoadError => 'Meals could not be loaded.';
 
   @override
-  String get summaryToday => 'Today';
-
-  @override
-  String get summaryWeek => 'Week';
-
-  @override
-  String get summaryMonth => 'Month';
-
-  @override
   String get scoreLabel => 'Score';
 
   @override

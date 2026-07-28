@@ -1148,15 +1148,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mealsLoadError => 'No se pudieron cargar las comidas.';
 
   @override
-  String get summaryToday => 'Hoy';
-
-  @override
-  String get summaryWeek => 'Semana';
-
-  @override
-  String get summaryMonth => 'Mes';
-
-  @override
   String get scoreLabel => 'Puntaje';
 
   @override
