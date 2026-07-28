@@ -26,6 +26,7 @@ import '../../../meals/data/services/meal_thumbnail_service.dart';
 import '../../../meals/domain/entities/meal_entry_entity.dart';
 import '../../../meals/domain/services/meal_defaults.dart';
 import '../../../meals/presentation/meal_display.dart';
+import '../../../meals/presentation/providers/meal_chart_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
 import '../../../product/domain/entities/nutriments_entity.dart';
 import '../../../product/presentation/providers/product_provider.dart';
@@ -368,7 +369,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         unawaited(ref.read(mealSyncServiceProvider).pushMeal(meal));
       }
       ref.invalidate(mealsProvider);
-      ref.invalidate(mealCalorieSummaryProvider);
+      ref.invalidate(calorieChartDataProvider);
       // Home-screen widget reflects today's kcal — refresh on save so the
       // user sees the new total without waiting for the OS scheduler.
       unawaited(ref.read(homeWidgetServiceProvider).refresh(userId: userId));

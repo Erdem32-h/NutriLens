@@ -14,6 +14,7 @@ import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../history/presentation/providers/history_provider.dart';
+import '../../../meals/presentation/providers/meal_chart_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
 import '../providers/health_filters_provider.dart';
 import '../providers/user_data_deletion_provider.dart';
@@ -318,7 +319,7 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(favoritesProvider);
       ref.invalidate(blacklistProvider);
       ref.invalidate(mealsProvider);
-      ref.invalidate(mealCalorieSummaryProvider);
+      ref.invalidate(calorieChartDataProvider);
       ref.invalidate(healthFiltersProvider);
 
       if (!context.mounted) return;
@@ -377,7 +378,7 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(favoritesProvider);
       ref.invalidate(blacklistProvider);
       ref.invalidate(mealsProvider);
-      ref.invalidate(mealCalorieSummaryProvider);
+      ref.invalidate(calorieChartDataProvider);
       ref.invalidate(healthFiltersProvider);
       ref.invalidate(authStateProvider);
 

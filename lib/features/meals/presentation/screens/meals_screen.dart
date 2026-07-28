@@ -16,7 +16,11 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 import '../../domain/entities/meal_entry_entity.dart';
 import '../meal_display.dart';
+import '../providers/meal_chart_provider.dart';
 import '../providers/meal_provider.dart';
+import '../widgets/calorie_period_selector.dart';
+import '../widgets/calorie_stacked_bar_chart.dart';
+import '../widgets/macro_balance_card.dart';
 import '../../../scanner/presentation/providers/scanner_mode_provider.dart';
 
 class MealsScreen extends ConsumerWidget {
@@ -26,7 +30,6 @@ class MealsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final mealsAsync = ref.watch(mealsProvider);
-    final summaryAsync = ref.watch(mealCalorieSummaryProvider);
     // Premium-only one-shot: push pending local meals + pull cloud meals down.
     ref.watch(mealCloudSyncProvider);
 
@@ -39,19 +42,15 @@ class MealsScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(mealsProvider);
-          ref.invalidate(mealCalorieSummaryProvider);
+          ref.invalidate(calorieChartDataProvider);
         },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(
-              child: summaryAsync.when(
-                data: (summary) => _SummaryCards(summary: summary),
-                loading: () => const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: LinearProgressIndicator(),
-                ),
-                error: (error, stackTrace) => const SizedBox.shrink(),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
+                child: _CalorieInsights(),
               ),
             ),
             mealsAsync.when(
@@ -80,74 +79,6 @@ class MealsScreen extends ConsumerWidget {
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _SummaryCards extends StatelessWidget {
-  final MealCalorieSummary summary;
-
-  const _SummaryCards({required this.summary});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
-      child: Row(
-        children: [
-          Expanded(
-            child: _SummaryCard(label: l10n.summaryToday, kcal: summary.today),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _SummaryCard(label: l10n.summaryWeek, kcal: summary.week),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: _SummaryCard(label: l10n.summaryMonth, kcal: summary.month),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SummaryCard extends StatelessWidget {
-  final String label;
-  final double kcal;
-
-  const _SummaryCard({required this.label, required this.kcal});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colors.surfaceCard,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: TextStyle(color: colors.textMuted, fontSize: 12)),
-          const SizedBox(height: 6),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '${kcal.round()} kcal',
-              style: TextStyle(
-                color: colors.textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -285,7 +216,7 @@ class _MealTile extends ConsumerWidget {
       }
     }
     ref.invalidate(mealsProvider);
-    ref.invalidate(mealCalorieSummaryProvider);
+    ref.invalidate(calorieChartDataProvider);
   }
 }
 
@@ -366,6 +297,54 @@ class _EmptyMeals extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CalorieInsights extends ConsumerWidget {
+  const _CalorieInsights();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final chartAsync = ref.watch(calorieChartDataProvider);
+
+    return Column(
+      children: [
+        const CaloriePeriodSelector(),
+        const SizedBox(height: 14),
+        chartAsync.when(
+          loading: () => const Padding(
+            padding: EdgeInsets.symmetric(vertical: 40),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (error, stackTrace) => const SizedBox.shrink(),
+          data: (data) {
+            if (data.isEmpty) {
+              return Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: colors.surfaceCard,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Center(
+                  child: Text(
+                    context.l10n.calorieChartEmptyPeriod,
+                    style: TextStyle(color: colors.textMuted),
+                  ),
+                ),
+              );
+            }
+            return Column(
+              children: [
+                CalorieStackedBarChart(data: data),
+                const SizedBox(height: 14),
+                MacroBalanceCard(data: data),
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 }
