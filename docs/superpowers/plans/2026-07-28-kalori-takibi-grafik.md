@@ -974,7 +974,7 @@ Kurulum deseni için `test/features/auth/onboarding_screen_test.dart`'taki
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nutrilens/core/theme/app_theme.dart'; // gerçek tema dosyasını kontrol et
+import 'package:nutrilens/core/theme/app_theme.dart'; // AppTheme.light/dark (static ThemeData getter'lar)
 import 'package:nutrilens/features/meals/domain/entities/calorie_chart_data.dart';
 import 'package:nutrilens/features/meals/presentation/widgets/calorie_stacked_bar_chart.dart';
 import 'package:nutrilens/features/meals/presentation/widgets/macro_balance_card.dart';
@@ -999,6 +999,10 @@ CalorieChartData weekData() => CalorieChartData(
     );
 
 Widget wrap(Widget child) => MaterialApp(
+      // context.colors, temada AppColorsExtension yoksa debug modda assert
+      // fırlatır (bkz. app_colors.dart:311-320) — widget testleri assert'lerle
+      // çalışır, theme'i atlamak testi bu assert'le çökertir.
+      theme: AppTheme.light,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: const Locale('tr'),
@@ -1257,8 +1261,12 @@ class MacroBalanceCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            (isDay ? l10n.calorieCardTotal : l10n.calorieCardAverageDaily)
-                .toUpperCase(),
+            // toUpperCase() BİLEREK yok: Dart'ın toUpperCase()'i locale-aware
+            // değil (Türkçe "i" → "İ" değil "I" olur) ve widget testi bu
+            // metni verbatim ("Toplam"/"Günlük ortalama") arıyor — l10n
+            // değeri zaten doğru büyük/küçük harfle yazılmış, üstüne
+            // dokunmuyoruz.
+            isDay ? l10n.calorieCardTotal : l10n.calorieCardAverageDaily,
             style: TextStyle(
               fontSize: 11,
               letterSpacing: 1.2,
