@@ -9,7 +9,7 @@
 -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="180dp"
-    android:minHeight="110dp"
+    android:minHeight="180dp"
     android:updatePeriodMillis="7200000"
     android:initialLayout="@layout/nutrilens_home_widget"
     android:previewImage="@mipmap/ic_launcher"

@@ -3,8 +3,8 @@ import '../entities/calorie_chart_data.dart';
 import '../entities/meal_entry_entity.dart';
 
 /// Saf bucket'lama mantığı — provider'dan bağımsız, testi kolay.
-/// Tüm tarihler cihazın yerel saatiyle çalışır (mevcut
-/// mealCalorieSummaryProvider davranışıyla tutarlı, spec §11).
+/// Tüm tarihler cihazın yerel saatiyle çalışır (DateTime.now(), UTC değil —
+/// spec §11).
 abstract final class CalorieChartAggregator {
   static ({DateTime start, DateTime end}) rangeFor(
     CaloriePeriod period,

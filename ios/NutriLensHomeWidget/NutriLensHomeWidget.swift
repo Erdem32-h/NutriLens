@@ -88,6 +88,7 @@ private struct MacroRow: View {
 
 struct NutriLensHomeWidgetView: View {
     var entry: Provider.Entry
+    @Environment(\.widgetFamily) var family
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -118,15 +119,20 @@ struct NutriLensHomeWidgetView: View {
                     .font(.system(size: 12))
                     .foregroundColor(Color.white.opacity(0.7))
 
-                VStack(spacing: 3) {
-                    MacroRow(label: "P", pct: entry.proteinPct,
-                             color: Color(red: 0.39, green: 0.40, blue: 0.95)) // #6366F1
-                    MacroRow(label: "K", pct: entry.carbPct,
-                             color: Color(red: 0.96, green: 0.62, blue: 0.04)) // #F59E0B
-                    MacroRow(label: "Y", pct: entry.fatPct,
-                             color: Color(red: 0.93, green: 0.28, blue: 0.60)) // #EC4899
+                // .systemSmall'da bu 3 satırlık makro bloğu toplam yüksekliği
+                // Tara butonunu kırpacak kadar aşıyor — sadece .systemMedium'da
+                // render ediyoruz (bkz. final review Fix 2).
+                if family == .systemMedium {
+                    VStack(spacing: 3) {
+                        MacroRow(label: "P", pct: entry.proteinPct,
+                                 color: Color(red: 0.39, green: 0.40, blue: 0.95)) // #6366F1
+                        MacroRow(label: "K", pct: entry.carbPct,
+                                 color: Color(red: 0.96, green: 0.62, blue: 0.04)) // #F59E0B
+                        MacroRow(label: "Y", pct: entry.fatPct,
+                                 color: Color(red: 0.93, green: 0.28, blue: 0.60)) // #EC4899
+                    }
+                    .padding(.top, 4)
                 }
-                .padding(.top, 4)
 
                 Spacer()
 

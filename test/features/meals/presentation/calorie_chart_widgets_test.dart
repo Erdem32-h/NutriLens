@@ -72,15 +72,33 @@ void main() {
     // 2 dolu bucket × 3 makro = en az bu 3 kimlik rengi render olmalı.
     expect(segmentColors.length, greaterThanOrEqualTo(3));
 
-    for (final element in find.byType(ColoredBox).evaluate()) {
+    // Scaffold'un varsayılan arka plan ColoredBox'ı (alpha 0) dahil tüm
+    // ağacı değil, sadece CalorieStackedBarChart'ın alt ağacındaki, gerçek
+    // (saydam olmayan) makro segmentlerini say. `if (size.height > 0)` gibi
+    // atlama koşulu YOK — 0×0'a çöken bir segment burada kaçmaz.
+    final nonEmptySegments = find
+        .descendant(
+          of: find.byType(CalorieStackedBarChart),
+          matching: find.byType(ColoredBox),
+        )
+        .evaluate()
+        .where((element) => (element.widget as ColoredBox).color.a > 0)
+        .toList();
+
+    // 2 dolu bucket × 3 makro = en az 6 saydam olmayan segment beklenir.
+    expect(nonEmptySegments.length, greaterThanOrEqualTo(6));
+    for (final element in nonEmptySegments) {
       final size = (element.renderObject as RenderBox).size;
-      if (size.height > 0) {
-        expect(
-          size.width,
-          greaterThan(0),
-          reason: 'Renkli makro segmenti sıfır genişlikte render oldu',
-        );
-      }
+      expect(
+        size.width,
+        greaterThan(0),
+        reason: 'Renkli makro segmenti sıfır genişlikte render oldu',
+      );
+      expect(
+        size.height,
+        greaterThan(0),
+        reason: 'Renkli makro segmenti sıfır yükseklikte render oldu',
+      );
     }
   });
 
@@ -117,5 +135,36 @@ void main() {
     // K %78.7 → Yüksek; P %11.2 Normal; Y %10.1 Düşük
     expect(find.text('Yüksek'), findsOneWidget);
     expect(find.text('Düşük'), findsOneWidget);
+  });
+
+  testWidgets(
+      'macro balance card makro dökümü yokken yanıltıcı Düşük göstermez',
+      (tester) async {
+    // kcal var (bir öğün loglanmış) ama proteinKcal/carbKcal/fatKcal hepsi
+    // 0 — yani sadece kalori girilmiş, makro dökümü olmayan bir öğün.
+    // %0/Düşük göstermek "eksik besleniyorsun" yanılgısı üretir; bunun
+    // yerine nötr bir yer tutucu ("—") gösterilmeli.
+    final data = CalorieChartData(
+      period: CaloriePeriod.day,
+      rangeStart: DateTime(2026, 7, 28),
+      rangeEnd: DateTime(2026, 7, 29),
+      buckets: const [
+        CalorieBucket(kcal: 500),
+        CalorieBucket(),
+        CalorieBucket(),
+        CalorieBucket(),
+      ],
+      totalKcal: 500,
+      proteinKcal: 0,
+      carbKcal: 0,
+      fatKcal: 0,
+      daysWithData: 1,
+    );
+    await tester.pumpWidget(wrap(MacroBalanceCard(data: data)));
+    await tester.pumpAndSettle();
+    expect(find.text('Düşük'), findsNothing);
+    expect(find.text('Normal'), findsNothing);
+    expect(find.text('Yüksek'), findsNothing);
+    expect(find.text('—'), findsNWidgets(3));
   });
 }

@@ -1121,6 +1121,10 @@ class CalorieStackedBarChart extends StatelessWidget {
     Widget segment(double kcal, Color color) {
       if (macro == 0 || kcal == 0) return const SizedBox.shrink();
       return SizedBox(
+        // ColoredBox olmadan child verildiğinde, gevşek genişlik
+        // kısıtında en küçük boyutu (0) seçer — width olmadan segment
+        // görünmez bir dilime çöker.
+        width: double.infinity,
         height: barHeight * (kcal / macro),
         child: ColoredBox(color: color),
       );

@@ -318,7 +318,19 @@ class _CalorieInsights extends ConsumerWidget {
             padding: EdgeInsets.symmetric(vertical: 40),
             child: Center(child: CircularProgressIndicator()),
           ),
-          error: (error, stackTrace) => const SizedBox.shrink(),
+          error: (error, stackTrace) => Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: colors.surfaceCard,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Center(
+              child: Text(
+                context.l10n.mealsLoadError,
+                style: TextStyle(color: colors.textMuted),
+              ),
+            ),
+          ),
           data: (data) {
             if (data.isEmpty) {
               return Container(

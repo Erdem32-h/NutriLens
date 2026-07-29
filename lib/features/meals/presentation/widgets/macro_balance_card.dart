@@ -17,6 +17,12 @@ class MacroBalanceCard extends StatelessWidget {
     final l10n = context.l10n;
     final isDay = data.period == CaloriePeriod.day;
     final kcalValue = isDay ? data.totalKcal : data.avgKcalPerDay;
+    // kcal var ama makro dökümü yok (örn. sadece kalori girilmiş bir öğün) —
+    // bu durumda %0/Düşük göstermek "eksik besleniyorsun" yanılgısı üretir;
+    // calorie_stacked_bar_chart.dart'taki nötr gri bar ile aynı ruhta,
+    // pay+etiket yerine nötr bir yer tutucu gösteriyoruz.
+    final hasMacroData =
+        data.proteinKcal + data.carbKcal + data.fatKcal > 0;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -66,14 +72,13 @@ class MacroBalanceCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _macroRow(context, l10n.macroProtein, MacroColors.protein,
-              data.proteinPct, data.proteinLevel),
+              data.proteinPct, data.proteinLevel, hasMacroData),
           const SizedBox(height: 10),
           _macroRow(context, l10n.macroCarbs, MacroColors.carbs, data.carbPct,
-              data.carbLevel),
+              data.carbLevel, hasMacroData),
           const SizedBox(height: 10),
-          _macroRow(
-              context, l10n.macroFat, MacroColors.fat, data.fatPct,
-              data.fatLevel),
+          _macroRow(context, l10n.macroFat, MacroColors.fat, data.fatPct,
+              data.fatLevel, hasMacroData),
         ],
       ),
     );
@@ -85,6 +90,7 @@ class MacroBalanceCard extends StatelessWidget {
     Color identityColor,
     double pct,
     MacroLevel level,
+    bool hasMacroData,
   ) {
     final colors = context.colors;
     final l10n = context.l10n;
@@ -93,7 +99,8 @@ class MacroBalanceCard extends StatelessWidget {
       MacroLevel.normal => l10n.macroLevelNormal,
       MacroLevel.high => l10n.macroLevelHigh,
     };
-    final levelColor = MacroColors.levelColor(level);
+    final levelColor =
+        MacroColors.levelColor(level, Theme.of(context).brightness);
 
     return Row(
       children: [
@@ -114,30 +121,41 @@ class MacroBalanceCard extends StatelessWidget {
             ),
           ),
         ),
-        Text(
-          '%${pct.round()}',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: colors.textPrimary,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: levelColor.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(999),
-          ),
-          child: Text(
-            levelLabel,
+        if (!hasMacroData)
+          Text(
+            '—',
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: levelColor,
+              color: colors.textMuted,
+            ),
+          )
+        else ...[
+          Text(
+            '%${pct.round()}',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
             ),
           ),
-        ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: levelColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              levelLabel,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: levelColor,
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
