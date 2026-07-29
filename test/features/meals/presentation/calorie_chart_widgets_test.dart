@@ -45,6 +45,45 @@ void main() {
     expect(find.text('Yağ'), findsOneWidget);
   });
 
+  testWidgets(
+      'bar chart makro segmentleri sıfır genişliğe çökmez (regresyon)',
+      (tester) async {
+    // ColoredBox, child'ı olmadan gevşek genişlik kısıtında en küçük
+    // boyutu (0) seçer — SizedBox'a width verilmezse segment görünmez
+    // bir dilime çöker (yükseklik doğru olsa bile). Bu test, her
+    // segmentin ClipRRect kapsayıcısıyla aynı genişlikte render
+    // olduğunu doğrular.
+    await tester.pumpWidget(wrap(CalorieStackedBarChart(data: weekData())));
+    await tester.pumpAndSettle();
+
+    final barWidths = find
+        .byType(ClipRRect)
+        .evaluate()
+        .map((e) => (e.renderObject as RenderBox).size.width)
+        .where((w) => w > 0)
+        .toSet();
+    expect(barWidths, isNotEmpty);
+
+    final segmentColors = find
+        .byType(ColoredBox)
+        .evaluate()
+        .map((e) => (e.widget as ColoredBox).color)
+        .toSet();
+    // 2 dolu bucket × 3 makro = en az bu 3 kimlik rengi render olmalı.
+    expect(segmentColors.length, greaterThanOrEqualTo(3));
+
+    for (final element in find.byType(ColoredBox).evaluate()) {
+      final size = (element.renderObject as RenderBox).size;
+      if (size.height > 0) {
+        expect(
+          size.width,
+          greaterThan(0),
+          reason: 'Renkli makro segmenti sıfır genişlikte render oldu',
+        );
+      }
+    }
+  });
+
   testWidgets('macro balance card ortalama kcal ve seviyeleri gösterir',
       (tester) async {
     await tester.pumpWidget(wrap(MacroBalanceCard(data: weekData())));
