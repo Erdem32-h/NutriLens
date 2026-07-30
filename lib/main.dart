@@ -52,13 +52,11 @@ Future<void> main() async {
 
       // Session Replay — records every tap/scroll/screen change so we
       // can play back exactly what a user did before a crash or stuck
-      // state. While we're still in beta the on-error sample rate is
-      // 1.0 (every error attaches a replay) and the session rate is
-      // 1.0 (every session is recorded). Lower the session rate to
-      // ~0.1 after public launch to stay inside the free quota; the
-      // on-error rate stays at 1.0 because those are the most
-      // valuable recordings.
-      options.replay.sessionSampleRate = 1.0;
+      // state. The app is past beta (~450 aktif cihaz/hafta): at 1.0
+      // the healthy-session recordings would burn the replay quota in
+      // days and crowd out the recordings that matter. The on-error
+      // rate stays at 1.0 because those are the most valuable ones.
+      options.replay.sessionSampleRate = 0.1;
       options.replay.onErrorSampleRate = 1.0;
       // Default-on aggressive privacy: every text field and image is
       // masked in the replay (these are default-true in 9.20+, set
