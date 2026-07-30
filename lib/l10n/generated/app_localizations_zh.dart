@@ -637,8 +637,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fieldRequired => 'This field is required';
 
   @override
-  String get newProductHint =>
-      'This product is not in our database yet. Fill in the details to add it!';
+  String get newProductHint => '该产品尚未收录到我们的数据库。只需登记一次——之后扫描即可立即打开，其他用户也能受益。';
 
   @override
   String get completeProductInfo =>

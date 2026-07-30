@@ -216,7 +216,7 @@
   "missingInfo": "Missing info can be completed",
   "noProductName": "Unnamed Product",
   "fieldRequired": "This field is required",
-  "newProductHint": "This product is not in our database yet. Fill in the details to add it!",
+  "newProductHint": "Este produto ainda não está no nosso banco de dados. Cadastre-o uma única vez — as próximas leituras o abrirão na hora e outros usuários também se beneficiam.",
   "completeProductInfo": "Some information is missing. Please complete the required fields.",
   "noHealthierAlternative": "No healthier alternative found in this category.",
   "share": "Compartilhar",

@@ -216,7 +216,7 @@
   "missingInfo": "Eksik bilgiler tamamlanabilir",
   "noProductName": "İsimsiz Ürün",
   "fieldRequired": "Bu alan zorunludur",
-  "newProductHint": "Bu ürün veritabanımızda yok. Bilgileri doldurarak ekleyebilirsiniz!",
+  "newProductHint": "Bu ürün henüz veritabanımızda yok. Bir kez kaydetmen yeterli — sonraki taramalarda anında açılır, diğer kullanıcılar da yararlanır.",
   "completeProductInfo": "Bazı bilgiler eksik. Lütfen zorunlu alanları tamamlayın.",
   "noHealthierAlternative": "Bu kategoride daha sağlıklı bir alternatif bulunamadı.",
   "share": "Paylaş",

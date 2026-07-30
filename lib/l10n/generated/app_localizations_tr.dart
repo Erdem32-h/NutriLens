@@ -647,7 +647,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get newProductHint =>
-      'Bu ürün veritabanımızda yok. Bilgileri doldurarak ekleyebilirsiniz!';
+      'Bu ürün henüz veritabanımızda yok. Bir kez kaydetmen yeterli — sonraki taramalarda anında açılır, diğer kullanıcılar da yararlanır.';
 
   @override
   String get completeProductInfo =>

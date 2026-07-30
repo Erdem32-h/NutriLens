@@ -1345,7 +1345,7 @@ abstract class AppLocalizations {
   /// No description provided for @newProductHint.
   ///
   /// In tr, this message translates to:
-  /// **'Bu ürün veritabanımızda yok. Bilgileri doldurarak ekleyebilirsiniz!'**
+  /// **'Bu ürün henüz veritabanımızda yok. Bir kez kaydetmen yeterli — sonraki taramalarda anında açılır, diğer kullanıcılar da yararlanır.'**
   String get newProductHint;
 
   /// No description provided for @completeProductInfo.

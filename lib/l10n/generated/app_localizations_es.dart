@@ -653,7 +653,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get newProductHint =>
-      'This product is not in our database yet. Fill in the details to add it!';
+      'Este producto aún no está en nuestra base de datos. Regístralo una sola vez: los próximos escaneos lo abrirán al instante y otros usuarios también se beneficiarán.';
 
   @override
   String get completeProductInfo =>

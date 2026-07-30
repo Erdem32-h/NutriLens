@@ -216,7 +216,7 @@
   "missingInfo": "Missing info can be completed",
   "noProductName": "Unnamed Product",
   "fieldRequired": "This field is required",
-  "newProductHint": "This product is not in our database yet. Fill in the details to add it!",
+  "newProductHint": "该产品尚未收录到我们的数据库。只需登记一次——之后扫描即可立即打开，其他用户也能受益。",
   "completeProductInfo": "Some information is missing. Please complete the required fields.",
   "noHealthierAlternative": "No healthier alternative found in this category.",
   "share": "分享",

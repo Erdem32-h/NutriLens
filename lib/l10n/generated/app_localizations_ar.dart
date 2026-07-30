@@ -647,7 +647,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get newProductHint =>
-      'This product is not in our database yet. Fill in the details to add it!';
+      'هذا المنتج غير موجود في قاعدة بياناتنا بعد. يكفي تسجيله مرة واحدة — سيفتح فورًا في عمليات المسح القادمة ويستفيد منه المستخدمون الآخرون أيضًا.';
 
   @override
   String get completeProductInfo =>
