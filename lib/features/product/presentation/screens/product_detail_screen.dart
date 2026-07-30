@@ -22,6 +22,7 @@ import '../../../share/presentation/widgets/product_share_card.dart';
 import '../providers/product_provider.dart';
 import '../widgets/alternative_placeholder.dart';
 import '../widgets/bento_nutrition_grid.dart';
+import '../widgets/compare_hint_strip.dart';
 import '../widgets/content_analysis_section.dart';
 import '../widgets/editorial_header.dart';
 import '../widgets/editorial_nutrient_table.dart';
@@ -338,6 +339,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             selectedIndex: _selectedTab,
             onTabChanged: (i) => setState(() => _selectedTab = i),
           ),
+          const CompareHintStrip(),
           const SizedBox(height: 16),
           if (_selectedTab == 0) ..._buildHealthTab(product),
           if (_selectedTab == 1) ..._buildNutritionTab(product),
@@ -567,6 +569,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             label: Text(context.l10n.compare),
             onPressed: () => _startCompare(product),
           ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+        child: Text(
+          context.l10n.compareCaption,
+          style: TextStyle(fontSize: 12.5, color: context.colors.textMuted),
         ),
       ),
       // "Did you know?" tip card — always visible
