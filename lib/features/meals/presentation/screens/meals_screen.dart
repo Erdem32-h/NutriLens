@@ -314,6 +314,11 @@ class _CalorieInsights extends ConsumerWidget {
         const CaloriePeriodSelector(),
         const SizedBox(height: 14),
         chartAsync.when(
+          // Sekme/dönem değişiminde provider yeniden yüklenirken önceki
+          // grafik ekranda kalmalı: loading dalı grafiği ~40px'lik
+          // spinner'a çökertip alttaki öğün listesini zıplatıyor. Spinner
+          // yalnızca ilk yüklemede (henüz hiç veri yokken) görünür.
+          skipLoadingOnReload: true,
           loading: () => const Padding(
             padding: EdgeInsets.symmetric(vertical: 40),
             child: Center(child: CircularProgressIndicator()),
