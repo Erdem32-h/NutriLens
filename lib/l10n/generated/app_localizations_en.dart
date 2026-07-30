@@ -687,6 +687,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get comparePickerEmpty => 'No products to compare';
 
   @override
+  String get compareHintStrip =>
+      'Tip: You can compare two products side by side — see the ALTERNATIVE tab.';
+
+  @override
+  String get compareCaption =>
+      'See two products\' nutrition, additives, and scores side by side.';
+
+  @override
+  String get compareHintDismiss => 'Dismiss';
+
+  @override
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
@@ -1516,7 +1527,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addProductIntro =>
-      'This product isn\'t in our database yet.\nAdd its details to contribute it to the community database!';
+      'This product isn\'t in our database yet. Add it once and you\'re done — future scans open it instantly, and other users benefit too.';
 
   @override
   String get productPhotoOptional => 'Product Photo (optional)';

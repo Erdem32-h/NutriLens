@@ -688,6 +688,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get comparePickerEmpty => 'Kıyaslanacak ürün bulunamadı';
 
   @override
+  String get compareHintStrip =>
+      'İpucu: İki ürünü yan yana kıyaslayabilirsin — ALTERNATİF sekmesine bak.';
+
+  @override
+  String get compareCaption =>
+      'İki ürünün besin değerlerini, katkılarını ve skorlarını yan yana gör.';
+
+  @override
+  String get compareHintDismiss => 'Kapat';
+
+  @override
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
@@ -1518,7 +1529,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get addProductIntro =>
-      'Bu ürün henüz veritabanımızda yok.\nBilgileri girerek topluluk veritabanına ekleyebilirsiniz!';
+      'Bu ürün henüz veritabanımızda yok. Bir kez kaydetmen yeterli — sonraki taramalarda anında açılır, diğer kullanıcılar da yararlanır.';
 
   @override
   String get productPhotoOptional => 'Ürün Fotoğrafı (opsiyonel)';

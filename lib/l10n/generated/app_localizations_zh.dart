@@ -679,6 +679,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get comparePickerEmpty => 'No products to compare';
 
   @override
+  String get compareHintStrip => '提示：可以并排对比两款产品——请查看 ALTERNATIVE 标签页。';
+
+  @override
+  String get compareCaption => '并排查看两款产品的营养成分、添加剂和评分。';
+
+  @override
+  String get compareHintDismiss => '关闭';
+
+  @override
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
@@ -1481,8 +1490,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get alreadyHaveAccountSignIn => 'I already have an account';
 
   @override
-  String get addProductIntro =>
-      'This product isn\'t in our database yet.\nAdd its details to contribute it to the community database!';
+  String get addProductIntro => '该产品尚未收录到我们的数据库。只需登记一次——之后扫描即可立即打开，其他用户也能受益。';
 
   @override
   String get productPhotoOptional => 'Product Photo (optional)';

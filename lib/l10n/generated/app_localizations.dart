@@ -1420,6 +1420,24 @@ abstract class AppLocalizations {
   /// **'Kıyaslanacak ürün bulunamadı'**
   String get comparePickerEmpty;
 
+  /// No description provided for @compareHintStrip.
+  ///
+  /// In tr, this message translates to:
+  /// **'İpucu: İki ürünü yan yana kıyaslayabilirsin — ALTERNATİF sekmesine bak.'**
+  String get compareHintStrip;
+
+  /// No description provided for @compareCaption.
+  ///
+  /// In tr, this message translates to:
+  /// **'İki ürünün besin değerlerini, katkılarını ve skorlarını yan yana gör.'**
+  String get compareCaption;
+
+  /// No description provided for @compareHintDismiss.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kapat'**
+  String get compareHintDismiss;
+
   /// No description provided for @nutriScoreLabel.
   ///
   /// In tr, this message translates to:
@@ -2941,7 +2959,7 @@ abstract class AppLocalizations {
   /// No description provided for @addProductIntro.
   ///
   /// In tr, this message translates to:
-  /// **'Bu ürün henüz veritabanımızda yok.\nBilgileri girerek topluluk veritabanına ekleyebilirsiniz!'**
+  /// **'Bu ürün henüz veritabanımızda yok. Bir kez kaydetmen yeterli — sonraki taramalarda anında açılır, diğer kullanıcılar da yararlanır.'**
   String get addProductIntro;
 
   /// No description provided for @productPhotoOptional.
