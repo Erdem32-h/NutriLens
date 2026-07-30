@@ -80,8 +80,10 @@ görünmez:
 
 ## 4. Teknik detaylar
 
-- **Prefs anahtarı:** `compare_hint_dismissed` (bool). Anahtar sabiti,
-  `kOnboardingSeenKey`'in tanımlandığı yerde (aynı sabitler dosyası).
+- **Prefs anahtarı:** `compare_hint_dismissed` (bool). Anahtar sabiti
+  (`kCompareHintDismissedKey`) tek tüketicisiyle birlikte
+  `compare_hint_provider.dart` içinde yaşar — `app_session.dart`'a
+  koymak, provider'ı ürün feature'ına koyma gerekçesiyle çelişirdi.
 - **Provider:** `compareHintDismissedProvider` — pattern
   `hasSeenOnboardingProvider` ile aynı, ama yeri ürün feature'ı:
   `lib/features/product/presentation/providers/compare_hint_provider.dart`
@@ -96,8 +98,9 @@ görünmez:
 1. Şerit widget testi: ilk render'da görünür → X'e bas → prefs flag
    yazıldı → yeniden pump → görünmez.
 2. Prefs erişilemez (null) durumunda şerit görünmez (savunmacı varsayılan).
-3. ALTERNATİF sekmesi caption'ı render oluyor (mevcut ürün detay testine
-   ekleme ya da yeni küçük test).
+3. ALTERNATİF sekmesi caption'ı: ayrı widget testi YOK (bilinçli) —
+   `ProductDetailScreen` ağır provider zinciri ister, caption statik
+   metin; render teyidi madde 5'teki canlı doğrulamada yapılır.
 4. `addProductIntro` yeni metni: `flutter gen-l10n` sonrası derleme +
    mevcut testlerin kırılmaması (metne exact-match assert eden test var mı
    plan aşamasında taranacak).
