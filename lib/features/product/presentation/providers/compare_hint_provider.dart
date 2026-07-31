@@ -23,9 +23,10 @@ final compareHintDismissedProvider = Provider<bool>((ref) {
 /// döndüğü için şerit ekranda değildir, buraya normalde gelinmez.
 Future<void> dismissCompareHint(WidgetRef ref) async {
   try {
-    await ref
+    final write = ref
         .read(sharedPreferencesProvider)
         .setBool(kCompareHintDismissedKey, true);
+    ref.invalidate(compareHintDismissedProvider);
+    await write;
   } catch (_) {}
-  ref.invalidate(compareHintDismissedProvider);
 }

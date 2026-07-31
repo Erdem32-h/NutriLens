@@ -19,7 +19,7 @@ class CompareHintStrip extends ConsumerWidget {
     final colors = context.colors;
     return Container(
       margin: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-      padding: const EdgeInsets.fromLTRB(12, 4, 4, 4),
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 4, 4),
       decoration: BoxDecoration(
         color: colors.surfaceCard,
         borderRadius: BorderRadius.circular(12),
