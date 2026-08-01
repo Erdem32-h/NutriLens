@@ -386,10 +386,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   /// the app is backgrounded. Pair the *return* with [_restartBarcodeScanner]
   /// rather than a bare [_startScanning]: re-acquiring the camera on the
   /// same controller after a stop() is unreliable on many devices.
-  void _stopScanning() {
-    unawaited(_subscription?.cancel());
+  Future<void> _stopScanning() async {
+    await _subscription?.cancel();
     _subscription = null;
-    unawaited(_controller.stop());
+    await _controller.stop();
   }
 
   /// Revive the barcode preview when returning to the scanner (or resuming
@@ -434,7 +434,16 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     // Permission dialogs trigger lifecycle changes before the controller
     // has a real camera handle — guard against that per mobile_scanner
     // docs.
-    if (!_controller.value.hasCameraPermission) return;
+    //
+    // Barcode mode only: `hasCameraPermission` is `isInitialized && not
+    // denied`, so it reads false for the whole time we're in AI mode (that
+    // path never starts mobile_scanner — the `camera` plugin owns the
+    // hardware). Applying the guard to the entire handler meant
+    // backgrounding while in AI mode never released that camera; its next
+    // ImageReader frame then reached an already-detached engine and killed
+    // the process with "Cannot execute operation because FlutterJNI is not
+    // attached to native".
+    if (_scanMode == 0 && !_controller.value.hasCameraPermission) return;
 
     switch (state) {
       case AppLifecycleState.resumed:
@@ -453,7 +462,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
         if (_scanMode == 0) {
-          _stopScanning();
+          unawaited(_stopScanning());
         } else {
           _disposeAiCamera();
         }
@@ -537,7 +546,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     // controller from scratch instead of restarting this one — a
     // same-instance stop()→start() leaves the preview frozen/black or throws
     // on many devices ("won't scan a second time until app restart").
-    _stopScanning();
+    //
+    // Awaited (not fire-and-forget): pushing the new route while the native
+    // camera view is still mid-teardown races the widget tree unmount and
+    // trips a framework assertion ('_dependents.isEmpty' in framework.dart) —
+    // reproduced by scanning/entering a barcode and immediately crashing on
+    // the product route.
+    await _stopScanning();
+    if (!mounted) return;
     context.push('/product/$value').then((_) async {
       if (!mounted) return;
       _isNavigating = false;
@@ -572,79 +588,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   }
 
   Future<void> _showManualBarcodeDialog() async {
-    final textController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    await showDialog<void>(
+    final barcode = await showDialog<String>(
       context: context,
-      builder: (context) {
-        final colors = Theme.of(context).extension<AppColorsExtension>()!;
-        final l10n = context.l10n;
-
-        return AlertDialog(
-          backgroundColor: colors.surfaceCard,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: colors.border),
-          ),
-          title: Text(
-            l10n.enterBarcodeManually,
-            style: TextStyle(color: colors.textPrimary),
-          ),
-          content: Form(
-            key: formKey,
-            child: TextFormField(
-              controller: textController,
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(13),
-              ],
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                hintText: l10n.barcodeInputHint,
-                labelText: l10n.barcodeInputLabel,
-              ),
-              validator: (v) {
-                if (v == null || v.isEmpty) {
-                  return l10n.enterBarcodeManually;
-                }
-                if (!BarcodeValidator.isValidBarcode(v)) {
-                  return l10n.invalidBarcode;
-                }
-                return null;
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                l10n.cancel,
-                style: TextStyle(color: colors.textMuted),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                if (formKey.currentState!.validate()) {
-                  final barcode = textController.text.trim();
-                  Navigator.of(context).pop();
-                  _processBarcode(barcode);
-                }
-              },
-              child: Text(
-                l10n.search,
-                style: TextStyle(
-                  color: colors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+      builder: (_) => const _ManualBarcodeDialog(),
     );
-    textController.dispose();
+
+    if (barcode != null && barcode.isNotEmpty && mounted) {
+      await _processBarcode(barcode);
+    }
   }
 
   Future<void> _captureForAi() async {
@@ -1173,6 +1124,103 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       behavior: HitTestBehavior.opaque,
       onTap: () => unawaited(_restartBarcodeScanner()),
       child: view,
+    );
+  }
+}
+
+/// Manual barcode entry dialog.
+///
+/// Stateful (rather than an inline `builder:` closure) so the
+/// [TextEditingController] is owned by the dialog's own element and torn down
+/// in its [State.dispose] — i.e. after the route is unmounted. Disposing it in
+/// the caller right after `showDialog` returns is too early: that future
+/// completes on `pop()`, while the dialog subtree keeps animating out and
+/// re-subscribes to the controller (`_AnimatedState.didUpdateWidget`). The
+/// resulting "used after being disposed" throw aborts an in-flight element
+/// update and leaves an InheritedElement holding stale dependents, which
+/// surfaces one frame later as the red-screen `'_dependents.isEmpty'`
+/// assertion when the user backs out of the scanner.
+class _ManualBarcodeDialog extends StatefulWidget {
+  const _ManualBarcodeDialog();
+
+  @override
+  State<_ManualBarcodeDialog> createState() => _ManualBarcodeDialogState();
+}
+
+class _ManualBarcodeDialogState extends State<_ManualBarcodeDialog> {
+  final _controller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      Navigator.of(context).pop(_controller.text.trim());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorsExtension>()!;
+    final l10n = context.l10n;
+
+    return AlertDialog(
+      backgroundColor: colors.surfaceCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: colors.border),
+      ),
+      title: Text(
+        l10n.enterBarcodeManually,
+        style: TextStyle(color: colors.textPrimary),
+      ),
+      content: Form(
+        key: _formKey,
+        child: TextFormField(
+          controller: _controller,
+          keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.search,
+          onFieldSubmitted: (_) => _submit(),
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(13),
+          ],
+          style: TextStyle(color: colors.textPrimary),
+          decoration: InputDecoration(
+            hintText: l10n.barcodeInputHint,
+            labelText: l10n.barcodeInputLabel,
+          ),
+          validator: (v) {
+            if (v == null || v.isEmpty) {
+              return l10n.enterBarcodeManually;
+            }
+            if (!BarcodeValidator.isValidBarcode(v)) {
+              return l10n.invalidBarcode;
+            }
+            return null;
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel, style: TextStyle(color: colors.textMuted)),
+        ),
+        TextButton(
+          onPressed: _submit,
+          child: Text(
+            l10n.search,
+            style: TextStyle(
+              color: colors.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

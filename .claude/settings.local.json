@@ -51,7 +51,23 @@
       "Bash(git checkout *)",
       "Bash(git branch *)",
       "Bash(git commit *)",
-      "Bash(sort -t: -k2 -rn)"
+      "Bash(sort -t: -k2 -rn)",
+      "Bash(adb -s emulator-5554 logcat -d)",
+      "Read(//c/Users/m_fat/AppData/Local/Temp/claude/C--Users-m-fat-OneDrive-Desktop-Github-NutriLens/54543929-b27f-4b53-a435-92f3004175d3/scratchpad/**)",
+      "Bash(adb -s emulator-5554 shell input keyevent 4)",
+      "Bash(adb -s emulator-5554 exec-out screencap -p)",
+      "Bash(adb -s emulator-5554 logcat -G 16M)",
+      "Bash(adb -s emulator-5554 logcat -c)",
+      "Bash(adb -s emulator-5554 shell input tap 1049 263)",
+      "Bash(adb -s emulator-5554 shell input tap 674 1504)",
+      "Bash(adb -s emulator-5554 shell input text \"3017620422003\")",
+      "Bash(adb -s emulator-5554 shell input tap 972 1289)",
+      "Bash(curl -s -X POST http://127.0.0.1:58827/jiIbpZuHRrY=/ -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"method\":\"getVM\",\"params\":{}}')",
+      "Bash(where node *)",
+      "Bash(adb -s emulator-5554 shell input text \"8690504048935\")",
+      "Bash(git -C \"C:\\\\Users\\\\m_fat\\\\OneDrive\\\\Desktop\\\\Github\\\\NutriLens\" show --stat 67dab9f 65fe79c 6f11832)",
+      "Bash(git -C \"C:\\\\Users\\\\m_fat\\\\OneDrive\\\\Desktop\\\\Github\\\\NutriLens\" show 65fe79c -- lib/features/product/presentation/screens/product_detail_screen.dart)",
+      "Bash(adb -s emulator-5554 logcat -d --pid=19335)"
     ]
   }
 }
