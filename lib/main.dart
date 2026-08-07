@@ -33,10 +33,28 @@ Future<void> main() async {
   // local runs never report noise to the production Sentry project.
   const sentryDsn = String.fromEnvironment('SENTRY_DSN');
 
+  // Announce which way this branch went, loudly, on every build.
+  //
+  // The DSN is a compile-time `String.fromEnvironment`, so a build that
+  // forgets the `--dart-define` behaves completely normally at runtime — it
+  // just reports nothing, forever, with no symptom. That silence has already
+  // cost two separate ~90-day stretches of blind Android releases: Sentry
+  // showed only `app.nutrilens.ios@*` releases while Android carried ~95% of
+  // the users, and the emptiness read as "no crashes" rather than "no
+  // reporting". One line in `adb logcat`/Console now answers "is crash
+  // reporting actually on in this binary?" without a round trip to Sentry.
   if (sentryDsn.isEmpty) {
+    // ignore: avoid_print
+    print(
+      '[sentry] DISABLED — no SENTRY_DSN dart-define in this build. '
+      'It will report NO crashes. Expected for local debug runs; on a '
+      'release artifact it means the build forgot --dart-define=SENTRY_DSN.',
+    );
     _bootApp();
     return;
   }
+  // ignore: avoid_print
+  print('[sentry] enabled — crash reporting active');
 
   await SentryFlutter.init(
     (options) {
