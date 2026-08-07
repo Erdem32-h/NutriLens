@@ -35,6 +35,7 @@ import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
 import '../../../product/presentation/widgets/health_score_bar.dart';
 import '../../../share/domain/share_caption.dart';
 import '../../../share/presentation/widgets/meal_share_card.dart';
+import '../widgets/meal_save_bar.dart';
 
 class FoodResultScreen extends ConsumerStatefulWidget {
   final Uint8List imageBytes;
@@ -471,6 +472,22 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
           : _error != null
           ? _buildError(l10n, colors)
           : _buildResult(l10n, colors),
+      // Sticky save CTA. It used to be the last widget of a long scroll —
+      // below the photo, the name/brand fields, the macro grid, the portion
+      // chips, the HP-Score bar and the description — so on a phone it sat
+      // roughly a screen and a half below the fold. The result page reads as
+      // a report, and a reader with no visible next step leaves: in the
+      // funnel 22 devices reached `meal_analysis_succeeded` over 7 days and
+      // exactly 1 reached `meal_added`. As a `bottomNavigationBar` the
+      // Scaffold lays the body out above it, so the action is on screen from
+      // the first frame and nothing gets covered.
+      bottomNavigationBar: (!_loading && _error == null && _result != null)
+          ? MealSaveBar(
+              onSave: _saveMeal,
+              saving: _saving,
+              label: l10n.saveToMeals,
+            )
+          : null,
     );
   }
 
@@ -814,42 +831,21 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             ),
           ),
           const SizedBox(height: 24),
+          // Save lives in the sticky bar now (see [_buildSaveBar]); only the
+          // secondary escape stays at the end of the content.
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: FilledButton.icon(
-                    onPressed: _saving ? null : _saveMeal,
-                    icon: _saving
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.save_rounded),
-                    label: Text(l10n.saveToMeals),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: OutlinedButton.icon(
-                    onPressed: () => context.pop(),
-                    icon: const Icon(Icons.camera_alt_rounded),
-                    label: Text(l10n.aiRetake),
-                  ),
-                ),
-              ],
+            child: SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: OutlinedButton.icon(
+                onPressed: () => context.pop(),
+                icon: const Icon(Icons.camera_alt_rounded),
+                label: Text(l10n.aiRetake),
+              ),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
         ],
       ),
     );
