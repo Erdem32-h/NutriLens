@@ -83,9 +83,57 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   /// whenever the user is in AI mode. Only one of the two cameras is
   /// alive at any moment — see [_setScanMode] for the hand-off.
   CameraController? _aiCamera;
-  Future<void>? _aiCameraInit;
   bool _capturing = false;
-  bool _cameraOutcomeTracked = false;
+
+  /// Set once [_initAiCamera] has exhausted its retries; drives the AI-mode
+  /// error/retry view. Null while initialising and once the preview is live.
+  Object? _aiCameraError;
+
+  /// Bumped by every [_disposeAiCamera] so an in-flight [_initAiCamera] can
+  /// tell it has been superseded (backgrounding, mode switch, screen pop) and
+  /// must drop the controller it just built instead of leaking a camera that
+  /// nobody will dispose.
+  int _aiCameraGeneration = 0;
+
+  /// True while an init ladder is running. Two overlapping ladders are the
+  /// root cause of the field's most common camera failure: the OS permission
+  /// sheet puts the app in `inactive`, dismissing it fires `resumed`, and the
+  /// resulting second `initialize()` hits the plugin's `ongoing` guard and
+  /// throws `CameraPermissionsRequestOngoing` while the *first* call is still
+  /// legitimately waiting for the user's answer.
+  bool _aiCameraStarting = false;
+
+  /// A start was asked for while a ladder was already running. The running
+  /// ladder re-runs itself once it unwinds, so a superseded attempt never
+  /// leaves the preview permanently dark.
+  bool _aiCameraRestartPending = false;
+
+  /// Sticky once the OS has refused camera access. Retrying cannot change the
+  /// answer, and without this the screen re-enters the ladder ~10×/second:
+  /// while the preview is dark Android oscillates inactive↔resumed, and every
+  /// resume asks for the camera again. Cleared by an explicit retry tap or by
+  /// a real background round trip (the user going to Settings and back) — see
+  /// [_lastLifecycleState].
+  bool _aiCameraDenied = false;
+
+  /// Latched when the app actually leaves the foreground (`paused`, `hidden`
+  /// or `detached`), cleared on the next `resumed`. A latch rather than a
+  /// "previous state" comparison because Android does not hand us
+  /// `paused` → `resumed`: it interleaves `inactive`, so the state right
+  /// before a resume is always `inactive` and the comparison never fired.
+  /// `inactive` on its own must not count — a dark preview makes the OS
+  /// oscillate inactive↔resumed, and only a real background trip can mean
+  /// "the user went to Settings and may have granted the permission".
+  bool _wentToBackground = false;
+
+  // Per-visit funnel flags. Split into two so a camera that comes up *after*
+  // a reported failure (user granted at the OS prompt, we recovered on
+  // resume) still records `scan_camera_ready`. With the previous single flag
+  // the first failure permanently masked the recovery — which is exactly the
+  // outcome the retry fix is meant to produce, and would have made the fix
+  // look like it did nothing.
+  bool _cameraReadyTracked = false;
+  bool _cameraFailureTracked = false;
 
   @override
   void initState() {
@@ -249,64 +297,181 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     } catch (_) {}
   }
 
+  /// How long we keep waiting while the OS permission sheet is on screen.
+  /// The plugin reports `CameraPermissionsRequestOngoing` for as long as that
+  /// sheet is up, and a person needs seconds to read and tap it — the old
+  /// ladder (3 tries, 350ms apart) gave up after 700ms and left a
+  /// permanently black preview that only an app restart cleared.
+  static const _permissionWaitBudget = Duration(seconds: 25);
+  static const _permissionPollDelay = Duration(milliseconds: 400);
+
+  /// Backoff for ordinary transient failures — the camera is typically still
+  /// held by a client that is mid-release.
+  static const _transientRetryDelay = Duration(milliseconds: 350);
+  static const _transientRetryLimit = 3;
+
   /// Boot the native camera for AI mode. Picks the back camera, lowest
   /// reasonable resolution that still works for meal analysis. Audio
   /// is disabled — we never record video here, just take stills.
-  Future<void> _initAiCamera({int attempt = 0}) async {
+  ///
+  /// Retries are split by failure kind, because they need very different
+  /// budgets:
+  ///
+  ///  * `CameraPermissionsRequestOngoing` — either the OS sheet is up and the
+  ///    user hasn't answered yet, or a second init raced the first. Poll until
+  ///    [_permissionWaitBudget]; the first call resolves as soon as the user
+  ///    taps and the next poll then succeeds.
+  ///  * A hard denial — retrying cannot help, so stop immediately and show the
+  ///    "enable camera access" view rather than spinning behind a black rect.
+  ///  * Anything else (camera busy) — the original short backoff still applies.
+  Future<void> _initAiCamera() async {
     if (_aiCamera != null) return; // already alive
+    if (_aiCameraDenied) return; // see [_aiCameraDenied]
+    if (_aiCameraStarting) {
+      // Never run two ladders at once — see [_aiCameraStarting]. Remember the
+      // request so the running ladder re-runs if it turns out to be stale.
+      _aiCameraRestartPending = true;
+      return;
+    }
+    _aiCameraStarting = true;
+
+    // `_restartBarcodeScanner` also calls this, in barcode mode, purely to
+    // cycle CameraX. That path is awaited inline, so it must stay a single
+    // fast attempt — a retry ladder there would stall the barcode restart —
+    // and it is plumbing, not a step the user took, so it reports nothing.
+    final forFoodMode = _scanMode == 1;
+    final generation = _aiCameraGeneration;
+    final permissionDeadline = DateTime.now().add(_permissionWaitBudget);
+    var transientAttempt = 0;
+
     try {
-      final cameras = await availableCameras();
-      if (cameras.isEmpty) return;
-      final back = cameras.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.back,
-        orElse: () => cameras.first,
-      );
-      final controller = CameraController(
-        back,
-        ResolutionPreset.high, // ~1280x720 — plenty for Claude vision
-        enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.jpeg,
-      );
-      _aiCamera = controller;
-      _aiCameraInit = controller.initialize();
-      await _aiCameraInit;
-      if (!mounted) {
-        await controller.dispose();
-        _aiCamera = null;
-        return;
+      while (true) {
+        if (!mounted || generation != _aiCameraGeneration) return;
+        // Held outside the try so the `finally` can drop a controller we
+        // never took ownership of. The permission poll can now run dozens of
+        // times, so a controller leaked per failed `initialize()` would add
+        // up instead of being a one-off.
+        CameraController? pending;
+        try {
+          final cameras = await availableCameras();
+          if (cameras.isEmpty) {
+            if (forFoodMode) {
+              _failAiCamera(
+                CameraException('cameraNotFound', 'No cameras reported'),
+              );
+            }
+            return;
+          }
+          final back = cameras.firstWhere(
+            (c) => c.lensDirection == CameraLensDirection.back,
+            orElse: () => cameras.first,
+          );
+          pending = CameraController(
+            back,
+            ResolutionPreset.high, // ~1280x720 — plenty for Claude vision
+            enableAudio: false,
+            imageFormatGroup: ImageFormatGroup.jpeg,
+          );
+          await pending.initialize();
+          // A teardown may have landed while `initialize()` was in flight —
+          // leaving `pending` set hands it to the finally below.
+          if (!mounted || generation != _aiCameraGeneration) return;
+          _aiCamera = pending;
+          pending = null; // ownership transferred to _aiCamera
+          if (forFoodMode) _trackCameraOutcome(ready: true);
+          setState(() => _aiCameraError = null);
+          return;
+        } catch (e) {
+          debugPrint('[Scanner] AI camera init failed: $e');
+          if (!mounted) return;
+          // Barcode-mode HAL cycle: one shot, no retry, no error UI.
+          if (!forFoodMode) return;
+
+          // Checked before the generation guard on purpose: a refusal is the
+          // OS's answer to this app, not to this attempt, so a newer
+          // generation would only be told the same thing. Bailing here on a
+          // stale generation is what left the preview stuck on a spinner
+          // while lifecycle churn bumped the counter ~10×/second.
+          if (e is CameraException && _isHardCameraDenial(e)) {
+            _aiCameraDenied = true;
+            _failAiCamera(e);
+            return;
+          }
+
+          if (generation != _aiCameraGeneration) return;
+
+          final isPermissionWait =
+              e is CameraException &&
+              e.code == 'CameraPermissionsRequestOngoing';
+          if (isPermissionWait) {
+            if (DateTime.now().isAfter(permissionDeadline)) {
+              _failAiCamera(e);
+              return;
+            }
+            await Future<void>.delayed(_permissionPollDelay);
+            continue;
+          }
+
+          transientAttempt++;
+          if (transientAttempt >= _transientRetryLimit) {
+            _failAiCamera(e);
+            return;
+          }
+          await Future<void>.delayed(_transientRetryDelay);
+        } finally {
+          if (pending != null) {
+            try {
+              await pending.dispose();
+            } catch (_) {}
+          }
+        }
       }
-      // Only report for a real food-mode visit. _restartBarcodeScanner also
-      // calls this as a CameraX rebind trick while _scanMode is 0, and that
-      // is plumbing, not a step the user took.
-      if (_scanMode == 1) _trackCameraOutcome(ready: true);
-      setState(() {});
-    } catch (e) {
-      debugPrint('[Scanner] AI camera init failed (attempt $attempt): $e');
-      // Report only once the retries are spent, so a transient "camera busy"
-      // that recovers on attempt 2 isn't counted as a failed visit.
-      if (_scanMode == 1 && attempt >= 2) {
-        _trackCameraOutcome(ready: false, error: e);
-      }
-      _aiCamera = null;
-      _aiCameraInit = null;
-      // The camera may still be held by a client that's mid-release (e.g.
-      // we returned to the scanner the instant the previous controller was
-      // torn down). Back off briefly and retry so a transient "camera busy"
-      // doesn't leave a permanent black preview that only an app restart
-      // clears.
-      if (mounted && _scanMode == 1 && attempt < 2) {
-        await Future<void>.delayed(const Duration(milliseconds: 350));
+    } finally {
+      _aiCameraStarting = false;
+      if (_aiCameraRestartPending) {
+        _aiCameraRestartPending = false;
+        // Only food mode auto-restarts: in barcode mode the only caller is
+        // the HAL cycle, which drives its own teardown straight after.
         if (mounted && _scanMode == 1 && _aiCamera == null) {
-          await _initAiCamera(attempt: attempt + 1);
+          unawaited(_initAiCamera());
         }
       }
     }
   }
 
+  /// Retrying cannot help once the user (or an MDM policy) has said no, so
+  /// these codes go straight to the settings prompt.
+  static bool _isHardCameraDenial(CameraException e) => switch (e.code) {
+    'CameraAccessDenied' ||
+    'CameraAccessDeniedWithoutPrompt' ||
+    'CameraAccessRestricted' ||
+    'cameraPermission' => true,
+    _ => false,
+  };
+
+  /// Give up on the AI camera: record it once for the funnel and surface a
+  /// retry view. Without this the AI branch rendered `SizedBox.shrink()` — a
+  /// black rectangle with no message and nothing to tap.
+  void _failAiCamera(Object error) {
+    if (!mounted) return;
+    _trackCameraOutcome(ready: false, error: error);
+    setState(() => _aiCameraError = error);
+  }
+
+  /// Clear a previous give-up and try again. Used by the retry view and by a
+  /// return from the background — the user may have just flipped the
+  /// permission in Settings.
+  void _retryAiCamera() {
+    if (!mounted) return;
+    _aiCameraDenied = false;
+    setState(() => _aiCameraError = null);
+    unawaited(_initAiCamera());
+  }
+
   Future<void> _disposeAiCamera() async {
     final c = _aiCamera;
     _aiCamera = null;
-    _aiCameraInit = null;
+    _aiCameraGeneration++;
     if (c != null) {
       try {
         await c.dispose();
@@ -340,14 +505,17 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   /// [_startScanning] runs again on every resume, so the flag keeps a single
   /// visit from reporting the same outcome repeatedly.
   void _trackCameraOutcome({required bool ready, Object? error}) {
-    if (_cameraOutcomeTracked || !mounted) return;
-    _cameraOutcomeTracked = true;
+    if (!mounted) return;
     final mode = _scanMode == 1 ? 'food' : 'barcode';
     final analytics = ref.read(analyticsServiceProvider);
     if (ready) {
+      if (_cameraReadyTracked) return;
+      _cameraReadyTracked = true;
       analytics.track(FunnelEvents.scanCameraReady, props: {'mode': mode});
       return;
     }
+    if (_cameraFailureTracked) return;
+    _cameraFailureTracked = true;
     analytics.track(
       FunnelEvents.scanCameraFailed,
       props: {'mode': mode, 'reason': _cameraFailureReason(error)},
@@ -447,20 +615,32 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     switch (state) {
       case AppLifecycleState.resumed:
+        final cameBackFromBackground = _wentToBackground;
+        _wentToBackground = false;
         if (!_isNavigating) {
           if (_scanMode == 0) {
             // Background did a full stop(); rebuild a fresh controller
             // rather than restart this one (same unreliable round-trip).
             unawaited(_restartBarcodeScanner());
+          } else if (_aiCameraDenied && cameBackFromBackground) {
+            // Only a genuine background trip clears a denial — the user may
+            // have just granted the permission in Settings. Plain `inactive`
+            // churn must not, or we are back to hammering the OS for an
+            // answer it already gave.
+            _retryAiCamera();
           } else {
             _initAiCamera();
           }
         }
         break;
-      case AppLifecycleState.inactive:
       case AppLifecycleState.hidden:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
+        // Only these three mean the app really left the foreground.
+        _wentToBackground = true;
+        continue release;
+      release:
+      case AppLifecycleState.inactive:
         if (_scanMode == 0) {
           unawaited(_stopScanning());
         } else {
@@ -688,8 +868,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
           //   - barcode: MobileScanner, decoded via `controller.barcodes`
           //     stream (no onDetect — canonical v7 manual lifecycle).
           //   - AI: `camera` package preview, lets _captureForAi grab
-          //     a still in one tap. While the controller is still
-          //     initialising we show a plain black background.
+          //     a still in one tap. While the controller is still coming
+          //     up we show a spinner, and once it has given up a retry
+          //     view — this branch used to render `SizedBox.shrink()` for
+          //     both, i.e. an unexplained black screen with nothing to tap.
           if (_scanMode == 0)
             MobileScanner(
               controller: _controller,
@@ -699,8 +881,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
             )
           else if (_aiCamera?.value.isInitialized ?? false)
             Positioned.fill(child: CameraPreview(_aiCamera!))
+          else if (_aiCameraError != null)
+            Positioned.fill(child: _buildAiCameraError(context))
           else
-            const SizedBox.shrink(),
+            const Positioned.fill(
+              child: Center(
+                child: CircularProgressIndicator(color: Colors.white54),
+              ),
+            ),
 
           // Barcode mode: overlay + hint
           if (_scanMode == 0) ...[
@@ -736,8 +924,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
             ),
           ],
 
-          // AI mode: hint + capture button
-          if (_scanMode == 1) ...[
+          // AI mode: hint + capture button. Suppressed once the camera has
+          // given up — "frame the food" and a shutter button on top of a
+          // "camera access denied" panel is both unreadable and a lie.
+          if (_scanMode == 1 && _aiCameraError == null) ...[
             // Semi-transparent overlay
             Container(color: Colors.black.withValues(alpha: 0.3)),
             // Hint text
@@ -1054,14 +1244,43 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   }
 
   Widget _buildCameraError(BuildContext context, MobileScannerException error) {
-    final l10n = context.l10n;
-
     // Only an actual permission denial should send the user to settings.
     // Other errors (e.g. the camera failed to re-acquire after returning to
     // the scanner) are transient — show a tappable retry that rebuilds the
     // controller instead of the misleading "permission denied" message.
-    final isPermissionDenied =
-        error.errorCode == MobileScannerErrorCode.permissionDenied;
+    return _buildCameraErrorView(
+      context,
+      isPermissionDenied:
+          error.errorCode == MobileScannerErrorCode.permissionDenied,
+      onRetry: () => unawaited(_restartBarcodeScanner()),
+    );
+  }
+
+  /// AI-mode counterpart of [_buildCameraError]. Different plugin, different
+  /// exception type and a different recovery call, but the user sees exactly
+  /// the same thing. Returning from Settings also self-heals without a tap:
+  /// `resumed` re-runs [_initAiCamera] while `_aiCamera` is still null.
+  Widget _buildAiCameraError(BuildContext context) {
+    final error = _aiCameraError;
+    return _buildCameraErrorView(
+      context,
+      isPermissionDenied: error is CameraException && _isHardCameraDenial(error),
+      onRetry: _retryAiCamera,
+      // Unlike barcode mode, keep the tap-to-retry even on a denial: this is
+      // the default mode and the whole screen is otherwise a dead end, so the
+      // user needs a way back that doesn't require guessing that returning
+      // from Settings is what re-arms it.
+      alwaysAllowRetry: true,
+    );
+  }
+
+  Widget _buildCameraErrorView(
+    BuildContext context, {
+    required bool isPermissionDenied,
+    required VoidCallback onRetry,
+    bool alwaysAllowRetry = false,
+  }) {
+    final l10n = context.l10n;
 
     final view = Center(
       child: Padding(
@@ -1119,10 +1338,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       ),
     );
 
-    if (isPermissionDenied) return view;
+    if (isPermissionDenied && !alwaysAllowRetry) return view;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () => unawaited(_restartBarcodeScanner()),
+      onTap: onRetry,
       child: view,
     );
   }
