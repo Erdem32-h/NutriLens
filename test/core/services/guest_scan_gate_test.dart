@@ -13,6 +13,8 @@ void main() {
             // must not be second-guessed by the cache.
             hasServerBaseline: false,
             localCanScan: false,
+            goodwillAvailable: false,
+            scanWorksOffline: false,
           ),
           GuestScanDecision.allowed,
         );
@@ -28,6 +30,8 @@ void main() {
             // A data clear leaves the local counter looking fresh; the
             // server is what remembers.
             localCanScan: true,
+            goodwillAvailable: true,
+            scanWorksOffline: true,
           ),
           GuestScanDecision.blockedByLimit,
         );
@@ -35,18 +39,49 @@ void main() {
     });
 
     group('server unreachable', () {
-      test('REGRESSION: an install that never synced is blocked, not '
-          'granted a fresh budget', () {
-        // The hole: the old code fell straight through to the local
-        // counter here, so clearing app data and turning the network off
-        // handed out five more scans — repeatable indefinitely, which is
-        // exactly what the device-hash check exists to prevent.
+      test('REGRESSION: a never-synced install does not get a fresh five-scan '
+          'budget from the local counter', () {
+        // The hole: the old code fell straight through to the local counter
+        // here, so clearing app data and turning the network off handed out
+        // five more scans — repeatable indefinitely, which is exactly what
+        // the device-hash check exists to prevent. At most it is now one
+        // courtesy scan, and only on a path that works offline.
+        final decision = decideGuestScan(
+          serverAnswered: false,
+          serverAllowed: false,
+          hasServerBaseline: false,
+          localCanScan: true,
+          goodwillAvailable: true,
+          scanWorksOffline: true,
+        );
+        expect(decision, GuestScanDecision.allowedOnGoodwill);
+        expect(decision, isNot(GuestScanDecision.allowed));
+      });
+
+      test('the courtesy scan is one-off', () {
         expect(
           decideGuestScan(
             serverAnswered: false,
             serverAllowed: false,
             hasServerBaseline: false,
             localCanScan: true,
+            goodwillAvailable: false,
+            scanWorksOffline: true,
+          ),
+          GuestScanDecision.blockedByNetwork,
+        );
+      });
+
+      test('the courtesy scan is not spent on the AI path, which cannot '
+          'succeed offline anyway', () {
+        expect(
+          decideGuestScan(
+            serverAnswered: false,
+            serverAllowed: false,
+            hasServerBaseline: false,
+            localCanScan: true,
+            goodwillAvailable: true,
+            scanWorksOffline: false,
           ),
           GuestScanDecision.blockedByNetwork,
         );
@@ -59,6 +94,8 @@ void main() {
           serverAllowed: false,
           hasServerBaseline: false,
           localCanScan: false,
+          goodwillAvailable: false,
+          scanWorksOffline: true,
         );
         expect(decision, GuestScanDecision.blockedByNetwork);
         expect(decision, isNot(GuestScanDecision.blockedByLimit));
@@ -73,19 +110,26 @@ void main() {
             serverAllowed: false,
             hasServerBaseline: true,
             localCanScan: true,
+            goodwillAvailable: false,
+            scanWorksOffline: true,
           ),
           GuestScanDecision.allowed,
         );
       });
 
-      test('a previously synced install with an exhausted local counter '
-          'gets the paywall', () {
+      test('a synced install spends its real budget, never the courtesy '
+          'scan', () {
+        // Courtesy must not top up an exhausted budget — otherwise every
+        // guest gets six scans and the fifth-scan nudge lands in the wrong
+        // place.
         expect(
           decideGuestScan(
             serverAnswered: false,
             serverAllowed: false,
             hasServerBaseline: true,
             localCanScan: false,
+            goodwillAvailable: true,
+            scanWorksOffline: true,
           ),
           GuestScanDecision.blockedByLimit,
         );
@@ -101,6 +145,8 @@ void main() {
           serverAllowed: true,
           hasServerBaseline: false,
           localCanScan: true,
+          goodwillAvailable: false,
+          scanWorksOffline: false,
         ),
         GuestScanDecision.blockedByNetwork,
       );

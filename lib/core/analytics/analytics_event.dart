@@ -130,6 +130,16 @@ abstract final class FunnelEvents {
   /// lookup chain answered.
   static const scanLookupSucceeded = 'scan_lookup_succeeded';
 
+  /// A guest scan was granted without the server authorising it: the
+  /// device has never synced and the server was unreachable, so the one-off
+  /// offline courtesy scan was spent. No props.
+  ///
+  /// Worth watching. The courtesy flag lives in app storage, so clearing app
+  /// data refills it; the abuse is capped at one on-device barcode lookup per
+  /// cycle (no server call, no model spend), but a count that climbs out of
+  /// proportion to installs means someone is running the loop anyway.
+  static const guestGoodwillScan = 'guest_goodwill_scan';
+
   /// props: `reason` (not_found|network|limit|error|limit_network — the
   /// server-side scan-limit check itself failed, which blocks the scan and
   /// shows a "check your connection" snackbar), `detail` (machine code for

@@ -198,11 +198,16 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   /// Server-authoritative guest scan gate. Returns true if the scan may
   /// proceed (and consumes one).
   ///
-  /// Three outcomes, see `decideGuestScan`: budget left → proceed; budget
+  /// See `decideGuestScan` for the outcomes: budget left → proceed; budget
   /// spent → register sheet (and /register if chosen); server unreachable on
-  /// an install that has never synced → a "get online" snackbar, because
-  /// there is no count we can trust to spend from.
-  Future<bool> _consumeGuestScan() async {
+  /// an install that has never synced → one courtesy scan if this path can
+  /// work offline, otherwise a "get online" snackbar.
+  ///
+  /// [worksOffline] is true only for the barcode path, which can answer from
+  /// on-device product data. The AI path passes false: it is a server call,
+  /// so a courtesy scan there would be spent on a request that cannot
+  /// succeed.
+  Future<bool> _consumeGuestScan({required bool worksOffline}) async {
     final server = await ref
         .read(guestScanLimitServiceProvider)
         .checkAndIncrement();
@@ -213,7 +218,18 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       serverAllowed: server?.allowed ?? false,
       hasServerBaseline: counter.hasServerBaseline,
       localCanScan: counter.canScan,
+      goodwillAvailable: counter.goodwillAvailable,
+      scanWorksOffline: worksOffline,
     );
+
+    if (decision == GuestScanDecision.allowedOnGoodwill) {
+      await counter.spendGoodwill();
+      // Tracked because this is the one path that grants a scan without the
+      // server having authorised it. A rate that climbs out of proportion to
+      // installs is the signal that someone found the clear-data loop.
+      ref.read(analyticsServiceProvider).track(FunnelEvents.guestGoodwillScan);
+      return true;
+    }
 
     if (decision == GuestScanDecision.blockedByNetwork) {
       if (!mounted) return false;
@@ -734,7 +750,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     // counter fallback when offline. Authenticated users go through the
     // per-user Supabase RPC instead.
     if (ref.read(isGuestProvider)) {
-      if (!await _consumeGuestScan()) {
+      // worksOffline: the barcode chain starts at the on-device product data,
+      // so this scan can still answer with no network — which is what makes
+      // it eligible for the offline courtesy scan.
+      if (!await _consumeGuestScan(worksOffline: true)) {
         analytics.track(
           FunnelEvents.scanLookupFailed,
           props: {'reason': 'guest_limit'},
@@ -845,9 +864,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
           .read(analyticsServiceProvider)
           .track(FunnelEvents.scanPhotoCaptured, props: {'mode': 'food'});
 
-      // Guest mode: same server-authoritative gate as the barcode path.
+      // Guest mode: same server-authoritative gate as the barcode path, but
+      // no offline courtesy — meal analysis is a proxy call, so a courtesy
+      // scan here would be spent on a request that cannot succeed anyway.
       if (ref.read(isGuestProvider)) {
-        if (!await _consumeGuestScan()) return;
+        if (!await _consumeGuestScan(worksOffline: false)) return;
       } else {
         // Check scan limit
         final scanLimitService = ref.read(scanLimitServiceProvider);

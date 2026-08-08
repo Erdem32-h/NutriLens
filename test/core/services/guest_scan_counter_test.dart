@@ -80,15 +80,47 @@ void main() {
       expect(counter.hasServerBaseline, isFalse);
     });
 
-    test('reset() clears the baseline along with the count', () async {
+    test('the courtesy scan is available once and survives a restart '
+        'as spent', () async {
+      final first = await _containerOver(prefs);
+      final counter = first.read(guestScanCounterProvider.notifier);
+      expect(counter.goodwillAvailable, isTrue);
+
+      await counter.spendGoodwill();
+      expect(counter.goodwillAvailable, isFalse);
+
+      final second = await _containerOver(prefs);
+      expect(
+        second.read(guestScanCounterProvider.notifier).goodwillAvailable,
+        isFalse,
+      );
+    });
+
+    test('spending the courtesy scan does not touch the server-mirrored '
+        'count', () async {
+      final container = await _containerOver(prefs);
+      final counter = container.read(guestScanCounterProvider.notifier);
+      await counter.syncFromServer(2);
+
+      await counter.spendGoodwill();
+
+      // The count mirrors the server. Letting courtesy write to it would
+      // make an unauthorised scan look server-granted on the next sync.
+      expect(counter.count, 2);
+    });
+
+    test('reset() clears the baseline and the courtesy scan along with '
+        'the count', () async {
       final container = await _containerOver(prefs);
       final counter = container.read(guestScanCounterProvider.notifier);
       await counter.syncFromServer(3);
+      await counter.spendGoodwill();
 
       await counter.reset();
 
       expect(counter.count, 0);
       expect(counter.hasServerBaseline, isFalse);
+      expect(counter.goodwillAvailable, isTrue);
     });
   });
 
