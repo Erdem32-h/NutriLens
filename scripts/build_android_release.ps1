@@ -20,7 +20,7 @@ $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
 if (-not (Test-Path '.env')) {
-  throw ".env not found in $root — put your PRODUCTION .env there first."
+  throw ".env not found in $root - put your PRODUCTION .env there first."
 }
 
 # Parse .env (KEY=VALUE; skip blanks/comments).
@@ -66,7 +66,7 @@ if ($missing.Count -gt 0) {
   throw "Missing required .env values: $($missing -join ', ')"
 }
 if (-not $sentryDsn) {
-  Write-Warning 'SENTRY_DSN not set — this release will have NO crash reporting.'
+  Write-Warning 'SENTRY_DSN not set - this release will have NO crash reporting.'
 }
 
 $defines = @(

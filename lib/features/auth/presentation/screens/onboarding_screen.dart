@@ -18,22 +18,37 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final _pageController = PageController();
   int _currentPage = 0;
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
+  /// When this screen appeared, so an abandonment can report how long they
+  /// actually looked at it.
+  final _openedAt = DateTime.now();
+
+  /// True once the visitor left through a door we already measure — the CTA,
+  /// the skip link, or the login link. Guards [_trackAbandoned] so the two
+  /// never both fire for the same exit.
+  bool _exitTracked = false;
+
+  /// Held rather than read through `ref` on demand: [dispose] is one of the
+  /// places abandonment is recorded, and reading a provider while the element
+  /// is being torn down is not allowed.
+  late final _analytics = ref.read(analyticsServiceProvider);
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
     _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
     _animController.forward();
-    final analytics = ref.read(analyticsServiceProvider);
+    final analytics = _analytics;
     analytics.track(FunnelEvents.onboardingShown);
     // PageView.onPageChanged ilk sayfa için ateşlenmez, dolayısıyla sayfa 0
     // bugüne kadar hiç ölçülmedi ve huni ancak onboarding_shown'dan çıkarım
@@ -59,6 +74,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   /// visitor who never saw the value pitch, and if that turns out to be the
   /// dominant path the pitch is what needs work, not the funnel below it.
   Future<void> _startAsGuest({required String via}) async {
+    _exitTracked = true;
     final analytics = ref.read(analyticsServiceProvider);
     analytics.track(
       FunnelEvents.onboardingCompleted,
@@ -73,6 +89,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
 
   /// Returning user who reinstalled or already registered elsewhere.
   Future<void> _goToLogin() async {
+    _exitTracked = true;
     ref
         .read(analyticsServiceProvider)
         .track(
@@ -90,8 +107,42 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     );
   }
 
+  /// Records a departure that no other event covers.
+  ///
+  /// Fires at most once — whoever gets here first wins — so a visitor who
+  /// backgrounds the app and never returns is counted exactly like one who
+  /// force-kills it, and neither is double counted on dispose.
+  void _trackAbandoned(String reason) {
+    if (_exitTracked) return;
+    _exitTracked = true;
+    _analytics.track(
+      FunnelEvents.onboardingAbandoned,
+      props: {
+        'page': _currentPage,
+        'seconds': DateTime.now().difference(_openedAt).inSeconds,
+        'reason': reason,
+      },
+    );
+  }
+
+  /// Backgrounding is the signal that matters: the common way to quit
+  /// onboarding is to leave the app, and then [dispose] never runs. `track`
+  /// persists to SharedPreferences synchronously enough to survive the kill
+  /// that usually follows, and the event ships on the next launch.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _trackAbandoned('background');
+    }
+  }
+
   @override
   void dispose() {
+    // Navigated away without using one of the measured doors.
+    _trackAbandoned('disposed');
+    WidgetsBinding.instance.removeObserver(this);
     _pageController.dispose();
     _animController.dispose();
     super.dispose();
@@ -216,50 +267,67 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                         opacity: _fadeAnim,
                         child: LayoutBuilder(
                           builder: (context, constraints) {
-                            // Önizlemelerin kendi içeriği (fotoğraf + besin
-                            // ızgarası) küçük ekranda dış Column'un ayırdığı
-                            // paydan büyük olabiliyor; bir üst ConstrainedBox
-                            // onu sıkıştırmak yerine taşmayı içeri taşıyordu.
-                            // Kaydırma + minHeight: kısa içerik dikeyde
-                            // ortalanmış kalır, uzun içerik sığmadığında
-                            // hatasız kayar.
-                            return SingleChildScrollView(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                              ),
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  minHeight: constraints.maxHeight,
+                            // Metin görselden önce gelir.
+                            //
+                            // Önceki hâl kaydırma + minHeight idi. Taşma
+                            // hatası vermiyordu ama 640 dp'den kısa ekranlarda
+                            // başlığı cümlenin ortasında kesip açıklamayı
+                            // tamamen kadrajın altında bırakıyordu — üstelik
+                            // kaydırılabildiğine dair hiçbir ipucu olmadan.
+                            // Yani ekranın var oluş sebebi olan vaat, ilk
+                            // boyamada görünmüyordu ve hiçbir hata da düşmüyordu.
+                            //
+                            // Artık içerik tek parça hâlinde orantılı küçülüyor:
+                            // sığmayan şey görünmez olmak yerine ufalıyor.
+                            // scaleDown olduğu için uzun ekranlarda hiçbir şey
+                            // değişmez (ölçek 1'de kalır).
+                            //
+                            // SizedBox şart: FittedBox çocuğuna sınırsız
+                            // genişlik verir, önizlemelerdeki Row/Expanded ise
+                            // sınırsız genişlikte patlar.
+                            const hPad = 24.0;
+                            return Center(
+                              child: Padding(
+                                // Dikey pay olmadan ölçeklenen içerik alanı
+                                // sonuna kadar dolduruyor ve son satır dip
+                                // göstergelere yapışıyor.
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: hPad,
+                                  vertical: 8,
                                 ),
-                                child: IntrinsicHeight(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      page.visual(context),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        page.title,
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.w800,
-                                          color: context.colors.textPrimary,
-                                          letterSpacing: -0.5,
-                                          height: 1.2,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: SizedBox(
+                                    width: constraints.maxWidth - hPad * 2,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        page.visual(context),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          page.title,
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w800,
+                                            color: context.colors.textPrimary,
+                                            letterSpacing: -0.5,
+                                            height: 1.2,
+                                          ),
+                                          textAlign: TextAlign.center,
                                         ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        page.description,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          color: context.colors.textMuted,
-                                          height: 1.5,
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          page.description,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w400,
+                                            color: context.colors.textMuted,
+                                            height: 1.5,
+                                          ),
+                                          textAlign: TextAlign.center,
                                         ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -145,10 +146,13 @@ class AnalyticsService {
       final locale = _prefs?.getString(_localeKey);
       final platform = Platform.operatingSystem;
 
+      final screen = _screenProps();
+
       final payload = batch
           .map(
             (e) => {
               ...e.toJson(),
+              if (screen.isNotEmpty) 'props': {...e.props, ...screen},
               'app_version': version,
               'platform': platform,
               'locale': locale,
@@ -191,6 +195,40 @@ class AnalyticsService {
         },
       );
     };
+  }
+
+  /// Logical screen size in dp, merged into every event's props at flush.
+  ///
+  /// Read from the platform view rather than a `BuildContext` so it costs no
+  /// wiring from the widget tree, and stamped here rather than in [track]
+  /// because it is constant for a whole batch — the same reason app version
+  /// and locale live at this level.
+  ///
+  /// It goes in `props` (jsonb) instead of a column so no migration and no
+  /// change to the `track_events` RPC signature is needed; a param mismatch
+  /// there makes the server drop the entire batch.
+  ///
+  /// Why it is worth carrying: onboarding page 0 clips its own body copy
+  /// below ~640 dp of height, and with only `platform` and `app_version` in
+  /// the table there was no way to ask how much of the drop-off came from
+  /// short screens.
+  Map<String, Object?> _screenProps() {
+    try {
+      final view = ui.PlatformDispatcher.instance.implicitView;
+      if (view == null) return const {};
+      final ratio = view.devicePixelRatio;
+      final size = view.physicalSize;
+      if (ratio <= 0 || size.isEmpty) return const {};
+      return {
+        'screen_w': (size.width / ratio).round(),
+        'screen_h': (size.height / ratio).round(),
+      };
+    } catch (e) {
+      // Headless test binding, or a view torn down mid-flush. Screen size is
+      // a nice-to-have; losing it must never cost us the batch.
+      debugPrint('[Analytics] screen metrics unavailable: $e');
+      return const {};
+    }
   }
 
   Future<String?> _resolveAppVersion() async {

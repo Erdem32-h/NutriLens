@@ -74,6 +74,20 @@ abstract final class FunnelEvents {
   static const onboardingCompleted = 'onboarding_completed';
   static const onboardingSkipped = 'onboarding_skipped';
 
+  /// They left onboarding without either finishing it or asking for login.
+  ///
+  /// Fills the blind spot that made the biggest leak in the funnel
+  /// unreadable: 46 of 116 devices that saw page 0 in the week to 2026-08-07
+  /// produced nothing after the launch burst. Nothing fires while someone
+  /// sits on an onboarding page, so "closed it in two seconds" and "read it
+  /// for a minute and gave up" were indistinguishable — the first is store
+  /// browsing, the second is a copy problem, and they need opposite fixes.
+  ///
+  /// props: `page` (int), `seconds` (int, time on the screen),
+  /// `reason` (background — app sent to background | disposed — navigated
+  /// away without completing).
+  static const onboardingAbandoned = 'onboarding_abandoned';
+
   // --- Entering a session ---------------------------------------------
   static const authScreenShown = 'auth_screen_shown';
   static const guestStarted = 'guest_started';
