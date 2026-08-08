@@ -15,17 +15,31 @@ import '../providers/locale_provider.dart';
 /// scanner-screen badge) rebuild automatically after each increment.
 class GuestScanCounter extends Notifier<int> {
   static const _kCountKey = 'guest.scan_count_v1';
+
+  /// Set the first time the server's device-keyed count is read on this
+  /// install. Separate from the count itself because a count of zero is
+  /// ambiguous — see [hasServerBaseline].
+  static const _kBaselineKey = 'guest.server_baseline_v1';
   static const int lifetimeLimit = 5;
 
   late SharedPreferences _prefs;
+  bool _hasServerBaseline = false;
 
   @override
   int build() {
     _prefs = ref.watch(sharedPreferencesProvider);
+    _hasServerBaseline = _prefs.getBool(_kBaselineKey) ?? false;
     return _prefs.getInt(_kCountKey) ?? 0;
   }
 
   int get count => state;
+
+  /// Whether the server's authoritative count has ever been read on this
+  /// install. Until it has, a local count of zero proves nothing: it is what
+  /// a first launch AND an app-data wipe both look like. Callers must not
+  /// spend from the local counter while this is false — see
+  /// `decideGuestScan` in `guest_scan_gate.dart`.
+  bool get hasServerBaseline => _hasServerBaseline;
 
   int get remaining {
     final r = lifetimeLimit - state;
@@ -51,6 +65,13 @@ class GuestScanCounter extends Notifier<int> {
   /// floor, never a way to gift scans back), so a cache/data clear that reset
   /// the local counter to 0 gets corrected to the real server total.
   Future<void> syncFromServer(int serverCount) async {
+    // Recorded before the early return below: hearing from the server at all
+    // is what makes the local counter trustworthy afterwards, even when the
+    // server's count matches what we already had and nothing needs writing.
+    if (!_hasServerBaseline) {
+      _hasServerBaseline = true;
+      await _prefs.setBool(_kBaselineKey, true);
+    }
     final clamped = serverCount.clamp(0, lifetimeLimit);
     if (clamped <= state) return;
     await _prefs.setInt(_kCountKey, clamped);
@@ -62,6 +83,11 @@ class GuestScanCounter extends Notifier<int> {
   /// server-side daily limit instead of inheriting the local cap.
   Future<void> reset() async {
     await _prefs.remove(_kCountKey);
+    // The baseline goes with it: it describes a guest identity that no longer
+    // applies. If this device ever falls back to guest mode it must re-earn
+    // the server's answer rather than inherit a stale licence to spend.
+    await _prefs.remove(_kBaselineKey);
+    _hasServerBaseline = false;
     state = 0;
   }
 }

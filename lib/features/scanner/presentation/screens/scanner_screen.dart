@@ -14,6 +14,7 @@ import '../../../../core/utils/barcode_validator.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/guest_scan_counter.dart';
+import '../../../../core/services/guest_scan_gate.dart';
 import '../../../../core/services/scan_limit_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -194,33 +195,64 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
         .syncFromServer(GuestScanCounter.lifetimeLimit - remaining);
   }
 
-  /// Server-authoritative guest scan gate with an offline local fallback.
-  /// Returns true if the scan may proceed (and consumes one); on hard-block
-  /// it shows the register sheet (and navigates to /register if chosen).
+  /// Server-authoritative guest scan gate. Returns true if the scan may
+  /// proceed (and consumes one).
+  ///
+  /// Three outcomes, see `decideGuestScan`: budget left → proceed; budget
+  /// spent → register sheet (and /register if chosen); server unreachable on
+  /// an install that has never synced → a "get online" snackbar, because
+  /// there is no count we can trust to spend from.
   Future<bool> _consumeGuestScan() async {
     final server = await ref
         .read(guestScanLimitServiceProvider)
         .checkAndIncrement();
     final counter = ref.read(guestScanCounterProvider.notifier);
 
-    bool allowed;
+    final decision = decideGuestScan(
+      serverAnswered: server != null,
+      serverAllowed: server?.allowed ?? false,
+      hasServerBaseline: counter.hasServerBaseline,
+      localCanScan: counter.canScan,
+    );
+
+    if (decision == GuestScanDecision.blockedByNetwork) {
+      if (!mounted) return false;
+      // Deliberately NOT the register sheet: this guest has not spent their
+      // budget, we simply cannot verify it. Showing a paywall here would be
+      // a lie, and letting the scan through was the hole — an offline guest
+      // got a fresh five-scan budget on every app-data clear, forever.
+      ref
+          .read(analyticsServiceProvider)
+          .track(
+            FunnelEvents.scanLookupFailed,
+            props: {'reason': 'limit_network', 'detail': 'guest_no_baseline'},
+          );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.scanLimitNetworkError),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+      return false;
+    }
+
     int remaining;
     if (server != null) {
       // Server already incremented; mirror its count into the local fallback.
       await counter.syncFromServer(
         GuestScanCounter.lifetimeLimit - server.remaining,
       );
-      allowed = server.allowed;
       remaining = server.remaining;
     } else {
-      // Offline: fall back to the local counter.
-      allowed = counter.canScan;
-      remaining = allowed
+      // Offline but previously synced: the local counter still carries the
+      // server's floor, so spending from it cannot manufacture budget.
+      remaining = decision == GuestScanDecision.allowed
           ? GuestScanCounter.lifetimeLimit - (await counter.increment())
           : 0;
     }
 
-    if (!allowed) {
+    if (decision == GuestScanDecision.blockedByLimit) {
       if (!mounted) return false;
       // Guest hit the lifetime scan cap → the register-upsell sheet is their
       // paywall. Tracked here (shared by barcode + food paths) so "blocked by
