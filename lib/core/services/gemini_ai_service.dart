@@ -404,13 +404,20 @@ class GeminiAiService {
   /// Pro-on-Flash path did.
   static const _invokeTimeout = Duration(seconds: 75);
 
-  /// Meal analysis is the one action with a measured server-side profile:
-  /// every gemini-proxy `meal_analysis` invocation observed in production
-  /// completes in ~2 s. A request still open at 30 s is a dead socket, not a
-  /// slow model — and the shared 75 s budget just meant the user stared at a
-  /// spinner long enough to back out, which silently dropped the failure
-  /// event. Fail fast so the retry button appears while they still care.
-  static const _mealTimeout = Duration(seconds: 30);
+  /// Meal analysis fails faster than the shared budget because 75 s only ever
+  /// bought the user a spinner to give up in front of.
+  ///
+  /// 45 s is an interim value, NOT a measured one. The server-side profile
+  /// (`execution_time_ms` ~2 s for every observed `meal_analysis` invocation)
+  /// is tempting but wrong to size this with: it starts once the request body
+  /// has arrived, whereas this timeout covers the whole round trip including
+  /// the upload of a ~0.5-1.2 MB base64 frame. On a weak uplink that leg alone
+  /// can run tens of seconds, so a tighter bound would convert slow-but-
+  /// successful analyses into failures.
+  ///
+  /// `meal_analysis_succeeded|failed.duration_ms` now measures the real
+  /// client-side distribution; set this from that data next release.
+  static const _mealTimeout = Duration(seconds: 45);
 
   Future<Map<String, dynamic>> _invokeOnce(
     String action,

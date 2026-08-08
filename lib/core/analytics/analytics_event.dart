@@ -150,7 +150,12 @@ abstract final class FunnelEvents {
 
   /// The model returned a usable result. props: `low_confidence` (bool),
   /// `packaged` (bool — a retail product shot in the food tab, where the
-  /// meal estimate is meaningless and we steer them to barcode).
+  /// meal estimate is meaningless and we steer them to barcode),
+  /// `duration_ms`, `abandoned` (bool — see [mealAnalysisFailed]).
+  ///
+  /// Filter on `abandoned = false` when measuring the succeeded→meal_added
+  /// conversion: an analysis the user walked away from succeeded technically
+  /// but was never seen.
   static const mealAnalysisSucceeded = 'meal_analysis_succeeded';
 
   /// Analysis failed before a result. props: `reason`
@@ -158,7 +163,12 @@ abstract final class FunnelEvents {
   /// otherwise a derived machine code: network, timeout, or the error type),
   /// `status` (HTTP status when the proxy answered), `abandoned` (bool — the
   /// screen was already disposed, i.e. the user backed out before the error
-  /// surfaced; those never reached this table before 1.2.4).
+  /// surfaced; those never reached this table before 1.2.4), `duration_ms`.
+  ///
+  /// `duration_ms` spans on-device image prep plus the full round trip — the
+  /// wait the user actually experiences, and the only measurement that can
+  /// size the client timeout. The edge function's `execution_time_ms` cannot:
+  /// it starts after the uploaded frame has arrived.
   static const mealAnalysisFailed = 'meal_analysis_failed';
 
   // --- Activation -----------------------------------------------------

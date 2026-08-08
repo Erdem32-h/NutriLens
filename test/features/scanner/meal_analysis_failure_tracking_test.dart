@@ -17,6 +17,7 @@ import 'package:nutrilens/core/providers/locale_provider.dart';
 import 'package:nutrilens/core/services/anthropic_ai_service.dart';
 import 'package:nutrilens/core/services/gemini_ai_service.dart';
 import 'package:nutrilens/core/theme/app_colors.dart';
+import 'package:nutrilens/features/product/domain/entities/nutriments_entity.dart';
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
 import 'package:nutrilens/features/scanner/presentation/screens/food_result_screen.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
@@ -70,6 +71,33 @@ class _FailingGemini extends GeminiAiService {
     reached = true;
     await gate.future;
     throw failure;
+  }
+}
+
+/// Succeeds on demand. Mirrors [_FailingGemini] so the success path can be
+/// held open long enough for the user to walk away from it.
+class _SucceedingGemini extends GeminiAiService {
+  _SucceedingGemini() : super(MockSupabaseClient());
+
+  final gate = Completer<void>();
+  bool reached = false;
+
+  @override
+  Future<MealAnalysisResult> analyzeMeal(
+    String base64Image, {
+    String languageCode = 'tr',
+    required String deviceHash,
+  }) async {
+    reached = true;
+    await gate.future;
+    return const MealAnalysisResult(
+      foodName: 'Mercimek çorbası',
+      portionGrams: 300,
+      nutriments: NutrimentsEntity(),
+      confidence: 0.9,
+      description: 'test',
+      rawJson: '{}',
+    );
   }
 }
 
@@ -146,6 +174,9 @@ void main() {
       expect(failed, hasLength(1));
       expect(failed.single['abandoned'], isTrue);
       expect(failed.single['reason'], 'service');
+      // The abandoned tail is the part of the latency distribution that has
+      // to survive: it is what the client timeout gets sized against.
+      expect(failed.single['duration_ms'], isA<int>());
     });
 
     testWidgets('carries the proxy status when the error is shown on screen',
@@ -168,6 +199,7 @@ void main() {
       expect(failed.single['abandoned'], isFalse);
       expect(failed.single['reason'], 'service');
       expect(failed.single['status'], 503);
+      expect(failed.single['duration_ms'], isA<int>());
     });
 
     testWidgets('separates an out-of-credit 429 from a plain outage',
@@ -228,6 +260,48 @@ void main() {
       final started = analytics.propsFor(FunnelEvents.mealAnalysisStarted);
       expect(started, hasLength(1));
       expect(started.single['retry'], isFalse);
+    });
+
+    testWidgets('a success the user walked away from is still measured',
+        (tester) async {
+      final analytics = _RecordingAnalytics();
+      final gemini = _SucceedingGemini();
+
+      await tester.pumpWidget(
+        _subject(analytics, gemini, prefs, image),
+      );
+      await _drain(tester, () => gemini.reached);
+      await tester.pumpWidget(const SizedBox());
+      gemini.gate.complete();
+      await _drain(
+        tester,
+        () => analytics.propsFor(FunnelEvents.mealAnalysisSucceeded).isNotEmpty,
+      );
+
+      // The slow-but-successful tail is exactly the population the client
+      // timeout must not cut off, so it cannot be allowed to go unrecorded.
+      final ok = analytics.propsFor(FunnelEvents.mealAnalysisSucceeded);
+      expect(ok, hasLength(1));
+      expect(ok.single['abandoned'], isTrue);
+      expect(ok.single['duration_ms'], isA<int>());
+    });
+
+    testWidgets('a success seen on screen is not marked abandoned',
+        (tester) async {
+      final analytics = _RecordingAnalytics();
+      final gemini = _SucceedingGemini();
+
+      await tester.pumpWidget(_subject(analytics, gemini, prefs, image));
+      await _drain(tester, () => gemini.reached);
+      gemini.gate.complete();
+      await _drain(
+        tester,
+        () => analytics.propsFor(FunnelEvents.mealAnalysisSucceeded).isNotEmpty,
+      );
+
+      final ok = analytics.propsFor(FunnelEvents.mealAnalysisSucceeded);
+      expect(ok.single['abandoned'], isFalse);
+      expect(ok.single['low_confidence'], isFalse);
     });
   });
 }

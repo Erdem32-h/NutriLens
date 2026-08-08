@@ -114,6 +114,11 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
 
     final analytics = ref.read(analyticsServiceProvider);
     analytics.track(FunnelEvents.mealAnalysisStarted, props: {'retry': retry});
+    // What the user actually waits through: on-device image prep (1-3 s of
+    // isolate CPU) plus the full round trip. The edge function's own
+    // execution_time_ms excludes the upload of the frame, so it cannot be
+    // used to size the client timeout — this can.
+    final elapsed = Stopwatch()..start();
 
     try {
       final prepared = await prepareMealAnalysisImage(widget.imageBytes);
@@ -133,19 +138,26 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             languageCode: languageCode,
             deviceHash: deviceHash,
           );
+      // Same ordering rule as the catch blocks below: an analysis slow enough
+      // for the user to walk away still succeeded, and it is precisely the
+      // long tail this duration histogram has to see. `abandoned` keeps those
+      // out of the succeeded→meal_added conversion, which only makes sense
+      // for users who were still looking at the screen.
+      analytics.track(
+        FunnelEvents.mealAnalysisSucceeded,
+        props: {
+          'low_confidence': result.confidence < 0.6,
+          'packaged': result.isPackagedProduct,
+          'duration_ms': elapsed.elapsedMilliseconds,
+          'abandoned': !mounted,
+        },
+      );
       if (!mounted) return;
       setState(() {
         _result = result;
         _ingredientsController.text = result.ingredientsText ?? '';
         _loading = false;
       });
-      analytics.track(
-        FunnelEvents.mealAnalysisSucceeded,
-        props: {
-          'low_confidence': result.confidence < 0.6,
-          'packaged': result.isPackagedProduct,
-        },
-      );
       // Non-homemade food (packaged product, restaurant, or takeout/delivery)
       // → default the source label to "Hazır Gıda" instead of "Ev yapımı",
       // unless the user already changed it.
@@ -175,6 +187,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
           'reason': quota ? 'quota' : 'service',
           if (e.statusCode != null) 'status': e.statusCode,
           'abandoned': !mounted,
+          'duration_ms': elapsed.elapsedMilliseconds,
         },
       );
       if (!mounted) return;
@@ -193,7 +206,11 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       // identical to a dead socket.
       analytics.track(
         FunnelEvents.mealAnalysisFailed,
-        props: {'reason': authFailureReason(e), 'abandoned': !mounted},
+        props: {
+          'reason': authFailureReason(e),
+          'abandoned': !mounted,
+          'duration_ms': elapsed.elapsedMilliseconds,
+        },
       );
       if (!mounted) return;
       setState(() {
