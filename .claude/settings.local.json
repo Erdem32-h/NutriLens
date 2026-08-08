@@ -69,5 +69,9 @@
       "Bash(git -C \"C:\\\\Users\\\\m_fat\\\\OneDrive\\\\Desktop\\\\Github\\\\NutriLens\" show 65fe79c -- lib/features/product/presentation/screens/product_detail_screen.dart)",
       "Bash(adb -s emulator-5554 logcat -d --pid=19335)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "flutter-skill"
+  ],
+  "enableAllProjectMcpServers": true
 }
