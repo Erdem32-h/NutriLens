@@ -130,7 +130,10 @@ abstract final class FunnelEvents {
   /// lookup chain answered.
   static const scanLookupSucceeded = 'scan_lookup_succeeded';
 
-  /// props: `reason` (not_found|network|limit|error)
+  /// props: `reason` (not_found|network|limit|error|limit_network — the
+  /// server-side scan-limit check itself failed, which blocks the scan and
+  /// shows a "check your connection" snackbar), `detail` (machine code for
+  /// the underlying cause on `limit_network`).
   static const scanLookupFailed = 'scan_lookup_failed';
 
   /// props: `has_score` (bool)
@@ -152,7 +155,10 @@ abstract final class FunnelEvents {
 
   /// Analysis failed before a result. props: `reason`
   /// (quota — out of credit/rate-limited 429 | service — proxy down |
-  /// error — anything else).
+  /// otherwise a derived machine code: network, timeout, or the error type),
+  /// `status` (HTTP status when the proxy answered), `abandoned` (bool — the
+  /// screen was already disposed, i.e. the user backed out before the error
+  /// surfaced; those never reached this table before 1.2.4).
   static const mealAnalysisFailed = 'meal_analysis_failed';
 
   // --- Activation -----------------------------------------------------

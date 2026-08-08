@@ -255,6 +255,19 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     if (!mounted) return false;
 
     if (scanResult.reason == 'network_error') {
+      // The limit check failing blocks the scan outright, so it belongs in the
+      // funnel next to the other refusals — otherwise it is indistinguishable
+      // from "user opened the scanner and lost interest". `detail` carries the
+      // real cause (expired JWT vs actual transport failure).
+      ref
+          .read(analyticsServiceProvider)
+          .track(
+            FunnelEvents.scanLookupFailed,
+            props: {
+              'reason': 'limit_network',
+              if (scanResult.detail != null) 'detail': scanResult.detail,
+            },
+          );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(context.l10n.scanLimitNetworkError),

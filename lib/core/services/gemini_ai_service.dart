@@ -301,7 +301,7 @@ class GeminiAiService {
       'image_base64': base64Image,
       'language_code': languageCode,
       'device_hash': deviceHash,
-    }, requireAuth: false);
+    }, requireAuth: false, timeout: _mealTimeout);
     final result = (response['result'] as String?)?.trim();
     if (result == null || result.isEmpty) {
       throw const GeminiServiceException('AI returned empty meal result');
@@ -368,6 +368,7 @@ class GeminiAiService {
     String action,
     Map<String, dynamic> payload, {
     bool requireAuth = true,
+    Duration? timeout,
   }) async {
     // Pre-flight: authed actions (OCR/Gemini) need a session. The public
     // OpenRouter actions (meal_analysis / recalc_nutrition) pass
@@ -378,7 +379,7 @@ class GeminiAiService {
     }
 
     try {
-      return await _invokeOnce(action, payload);
+      return await _invokeOnce(action, payload, timeout);
     } on GeminiServiceException catch (e) {
       // Single retry on auth failure: refresh the session and try once more.
       // Only meaningful for authed actions — guests have no session to refresh.
@@ -390,7 +391,7 @@ class GeminiAiService {
           debugPrint('[GeminiAI] session refresh failed: $refreshError');
           rethrow;
         }
-        return await _invokeOnce(action, payload);
+        return await _invokeOnce(action, payload, timeout);
       }
       rethrow;
     }
@@ -403,15 +404,24 @@ class GeminiAiService {
   /// Pro-on-Flash path did.
   static const _invokeTimeout = Duration(seconds: 75);
 
+  /// Meal analysis is the one action with a measured server-side profile:
+  /// every gemini-proxy `meal_analysis` invocation observed in production
+  /// completes in ~2 s. A request still open at 30 s is a dead socket, not a
+  /// slow model — and the shared 75 s budget just meant the user stared at a
+  /// spinner long enough to back out, which silently dropped the failure
+  /// event. Fail fast so the retry button appears while they still care.
+  static const _mealTimeout = Duration(seconds: 30);
+
   Future<Map<String, dynamic>> _invokeOnce(
     String action,
-    Map<String, dynamic> payload,
-  ) async {
+    Map<String, dynamic> payload, [
+    Duration? timeout,
+  ]) async {
     try {
       final response = await _client.functions
           .invoke('gemini-proxy', body: {'action': action, 'payload': payload})
           .timeout(
-            _invokeTimeout,
+            timeout ?? _invokeTimeout,
             onTimeout: () => throw const GeminiServiceException(
               'AI service timed out',
               statusCode: 408,

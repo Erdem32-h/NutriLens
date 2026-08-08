@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/analytics/analytics_event.dart';
 import '../../../../core/analytics/analytics_provider.dart';
+import '../../../../core/analytics/failure_reason.dart';
 import '../../../../core/constants/app_links.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
@@ -162,8 +163,21 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     } on GeminiServiceException catch (e, st) {
       debugPrint('[FoodResult] proxy meal analysis failed: $e');
       unawaited(Sentry.captureException(e, stackTrace: st));
-      if (!mounted) return;
       final quota = e.statusCode == 429;
+      // Tracked BEFORE the mounted guard. The guard used to sit above this
+      // call, so a user who backed out of a slow analysis took the failure
+      // event with them — which is why meal_analysis_failed had never once
+      // been recorded despite a 35% started→succeeded gap. `abandoned`
+      // separates "user gave up waiting" from "error shown on screen".
+      analytics.track(
+        FunnelEvents.mealAnalysisFailed,
+        props: {
+          'reason': quota ? 'quota' : 'service',
+          if (e.statusCode != null) 'status': e.statusCode,
+          'abandoned': !mounted,
+        },
+      );
+      if (!mounted) return;
       setState(() {
         _serviceUnavailable = true;
         // Proxy maps OpenRouter out-of-credit/rate-limit to HTTP 429.
@@ -171,21 +185,21 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         _error = e.toString();
         _loading = false;
       });
+    } catch (e, st) {
+      debugPrint('[FoodResult] analysis error: $e');
+      unawaited(Sentry.captureException(e, stackTrace: st));
+      // Same ordering rule as above. The reason is derived rather than
+      // hardcoded to 'error' so an on-device image-prep failure stops looking
+      // identical to a dead socket.
       analytics.track(
         FunnelEvents.mealAnalysisFailed,
-        props: {'reason': quota ? 'quota' : 'service'},
+        props: {'reason': authFailureReason(e), 'abandoned': !mounted},
       );
-    } catch (e) {
-      debugPrint('[FoodResult] analysis error: $e');
       if (!mounted) return;
       setState(() {
         _error = e.toString();
         _loading = false;
       });
-      analytics.track(
-        FunnelEvents.mealAnalysisFailed,
-        props: {'reason': 'error'},
-      );
     }
   }
 

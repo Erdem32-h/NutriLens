@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -9,6 +11,13 @@ class MockSupabaseClient extends Mock implements SupabaseClient {}
 class MockGoTrueClient extends Mock implements GoTrueClient {}
 
 class MockUser extends Mock implements User {}
+
+/// Puts a signed-in user behind the client so the RPC is actually attempted.
+void _authenticate(MockGoTrueClient auth) {
+  final user = MockUser();
+  when(() => auth.currentUser).thenReturn(user);
+  when(() => user.id).thenReturn('user-123');
+}
 
 void main() {
   group('ScanCheckResult', () {
@@ -137,9 +146,7 @@ void main() {
       );
 
       test('returns networkBlocked fallback when RPC throws', () async {
-        final mockUser = MockUser();
-        when(() => mockAuth.currentUser).thenReturn(mockUser);
-        when(() => mockUser.id).thenReturn('user-123');
+        _authenticate(mockAuth);
         when(
           () => mockClient.rpc(
             'check_and_increment_scan',
@@ -153,6 +160,100 @@ void main() {
         expect(result.isPremium, isFalse);
         expect(result.remaining, 0);
         expect(result.reason, 'network_error');
+      });
+
+      test('a transport failure is not retried and reports its own cause',
+          () async {
+        _authenticate(mockAuth);
+        when(
+          () => mockClient.rpc(
+            'check_and_increment_scan',
+            params: any(named: 'params'),
+          ),
+        ).thenThrow(const SocketException('Failed host lookup'));
+
+        final result = await service.checkAndIncrement();
+
+        expect(result.reason, 'network_error');
+        // `detail` is what separates a real outage from the auth rollover
+        // that used to wear the same "check your internet" message.
+        expect(result.detail, 'network');
+        verifyNever(() => mockAuth.refreshSession());
+        verify(
+          () => mockClient.rpc(
+            'check_and_increment_scan',
+            params: any(named: 'params'),
+          ),
+        ).called(1);
+      });
+
+      test('an expired JWT refreshes the session and retries once', () async {
+        _authenticate(mockAuth);
+        when(() => mockAuth.refreshSession()).thenAnswer(
+          (_) async => AuthResponse(),
+        );
+        // Both attempts throw so the assertion can stay on the observable
+        // behaviour: `rpc` returns a PostgrestFilterBuilder, which cannot be
+        // faked convincingly enough to return a success payload.
+        when(
+          () => mockClient.rpc(
+            'check_and_increment_scan',
+            params: any(named: 'params'),
+          ),
+        ).thenThrow(
+          PostgrestException(message: 'JWT expired', code: 'PGRST301'),
+        );
+
+        final result = await service.checkAndIncrement();
+
+        verify(() => mockAuth.refreshSession()).called(1);
+        verify(
+          () => mockClient.rpc(
+            'check_and_increment_scan',
+            params: any(named: 'params'),
+          ),
+        ).called(2);
+        // Still fails closed after the retry — a scan must never slip through
+        // just because the limit check could not be verified.
+        expect(result.allowed, isFalse);
+        expect(result.reason, 'network_error');
+      });
+
+      test('an AuthException is treated as recoverable too', () async {
+        _authenticate(mockAuth);
+        when(
+          () => mockAuth.refreshSession(),
+        ).thenThrow(const AuthException('refresh failed'));
+        when(
+          () => mockClient.rpc(
+            'check_and_increment_scan',
+            params: any(named: 'params'),
+          ),
+        ).thenThrow(const AuthException('Invalid JWT'));
+
+        final result = await service.checkAndIncrement();
+
+        verify(() => mockAuth.refreshSession()).called(1);
+        expect(result.allowed, isFalse);
+        expect(result.reason, 'network_error');
+      });
+
+      test('a non-auth PostgrestException is not retried', () async {
+        _authenticate(mockAuth);
+        when(
+          () => mockClient.rpc(
+            'check_and_increment_scan',
+            params: any(named: 'params'),
+          ),
+        ).thenThrow(
+          PostgrestException(message: 'permission denied', code: '42501'),
+        );
+
+        final result = await service.checkAndIncrement();
+
+        verifyNever(() => mockAuth.refreshSession());
+        expect(result.reason, 'network_error');
+        expect(result.detail, 'postgrest_exception');
       });
     });
 
