@@ -2068,6 +2068,30 @@ abstract class AppLocalizations {
   /// **'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.'**
   String get guestLastFreeScan;
 
+  /// No description provided for @cameraRationaleTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kamera izni gerekiyor'**
+  String get cameraRationaleTitle;
+
+  /// No description provided for @cameraRationaleBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tabağını ya da ürün barkodunu çekebilmemiz için kamera erişimi gerekiyor. Kamerayı yalnızca sen tarama yaparken kullanırız.'**
+  String get cameraRationaleBody;
+
+  /// No description provided for @cameraRationaleContinue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam et'**
+  String get cameraRationaleContinue;
+
+  /// No description provided for @cameraRationaleNotNow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şimdi değil'**
+  String get cameraRationaleNotNow;
+
   /// No description provided for @guestScanLimitTitle.
   ///
   /// In tr, this message translates to:

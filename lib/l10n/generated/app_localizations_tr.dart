@@ -1034,6 +1034,19 @@ class AppLocalizationsTr extends AppLocalizations {
       'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.';
 
   @override
+  String get cameraRationaleTitle => 'Kamera izni gerekiyor';
+
+  @override
+  String get cameraRationaleBody =>
+      'Tabağını ya da ürün barkodunu çekebilmemiz için kamera erişimi gerekiyor. Kamerayı yalnızca sen tarama yaparken kullanırız.';
+
+  @override
+  String get cameraRationaleContinue => 'Devam et';
+
+  @override
+  String get cameraRationaleNotNow => 'Şimdi değil';
+
+  @override
   String get guestScanLimitTitle => '5 ücretsiz tarama bitti';
 
   @override

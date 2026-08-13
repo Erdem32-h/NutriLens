@@ -1036,6 +1036,19 @@ class AppLocalizationsPt extends AppLocalizations {
       'Your last free scan. Sign up to keep your history.';
 
   @override
+  String get cameraRationaleTitle => 'Camera access needed';
+
+  @override
+  String get cameraRationaleBody =>
+      'We need the camera so you can photograph your plate or scan a product barcode. It is only used while you are scanning.';
+
+  @override
+  String get cameraRationaleContinue => 'Continue';
+
+  @override
+  String get cameraRationaleNotNow => 'Not now';
+
+  @override
   String get guestScanLimitTitle => '5 free scans used';
 
   @override

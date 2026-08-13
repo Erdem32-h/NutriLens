@@ -13,6 +13,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/barcode_validator.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
+import '../../../../core/services/camera_priming_store.dart';
 import '../../../../core/services/guest_scan_counter.dart';
 import '../../../../core/services/guest_scan_gate.dart';
 import '../../../../core/services/scan_limit_service.dart';
@@ -20,6 +21,7 @@ import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../providers/scanner_mode_provider.dart';
+import '../widgets/camera_rationale_sheet.dart';
 import '../widgets/scanner_overlay.dart';
 import '../../../auth/presentation/widgets/guest_register_sheet.dart';
 import '../../../premium/presentation/widgets/scan_limit_sheet.dart';
@@ -136,6 +138,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   bool _cameraReadyTracked = false;
   bool _cameraFailureTracked = false;
 
+  /// Whether this visit skipped the rationale because the camera had already
+  /// worked on this install. Reported on both camera outcomes so the sheet's
+  /// effect is measurable without inferring the cohort from the app version.
+  bool _primed = true;
+
   @override
   void initState() {
     super.initState();
@@ -169,16 +176,48 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
             'requested_mode': requestedMode != null,
           },
         );
-    if (_scanMode == 1) {
-      _initAiCamera();
+    // On an install whose camera has never come up, explain before the OS
+    // asks. Starting the camera here is what raises that prompt, so the sheet
+    // has to come first — see CameraPrimingStore for why the loss can only be
+    // addressed ahead of the question.
+    _primed = !ref.read(cameraPrimingStoreProvider).needsRationale;
+    if (_primed) {
+      _startCameraForMode();
     } else {
-      _startScanning();
+      // Deferred: initState has no context to show a sheet from.
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => unawaited(_explainThenStartCamera()),
+      );
     }
     // Reconcile the guest badge/counter with the server's device-keyed total
     // so a cache/data clear that reset the local counter to 0 gets corrected.
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _reconcileGuestBudget(),
     );
+  }
+
+  void _startCameraForMode() {
+    if (_scanMode == 1) {
+      _initAiCamera();
+    } else {
+      _startScanning();
+    }
+  }
+
+  /// Shows the rationale, then starts the camera only if the user agreed.
+  ///
+  /// Declining leaves the screen without ever raising the OS prompt and pops
+  /// back where they came from. That is the point: on Android the dialog is
+  /// effectively one-shot, so spending it on someone who has just said "not
+  /// now" trades a recoverable no for a permanent one.
+  Future<void> _explainThenStartCamera() async {
+    final agreed = await CameraRationaleSheet.show(context);
+    if (!mounted) return;
+    if (agreed == true) {
+      _startCameraForMode();
+      return;
+    }
+    if (context.canPop()) context.pop();
   }
 
   /// Pulls the authoritative guest scan count from the server (device-hash
@@ -572,14 +611,25 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     if (ready) {
       if (_cameraReadyTracked) return;
       _cameraReadyTracked = true;
-      analytics.track(FunnelEvents.scanCameraReady, props: {'mode': mode});
+      // Same moment, same condition as the funnel event: once the camera has
+      // demonstrably worked, the permission question is settled and the
+      // rationale must never appear again.
+      unawaited(ref.read(cameraPrimingStoreProvider).markCameraWorked());
+      analytics.track(
+        FunnelEvents.scanCameraReady,
+        props: {'mode': mode, 'primed': _primed},
+      );
       return;
     }
     if (_cameraFailureTracked) return;
     _cameraFailureTracked = true;
     analytics.track(
       FunnelEvents.scanCameraFailed,
-      props: {'mode': mode, 'reason': _cameraFailureReason(error)},
+      props: {
+        'mode': mode,
+        'reason': _cameraFailureReason(error),
+        'primed': _primed,
+      },
     );
   }
 

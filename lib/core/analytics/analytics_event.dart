@@ -110,9 +110,18 @@ abstract final class FunnelEvents {
   /// [scannerOpened] is where a permission wall or a black preview hides —
   /// both of which look identical to "user opened the scanner and left" in
   /// any server-side table.
+  /// props: `mode`, `primed` (see [scanCameraFailed])
   static const scanCameraReady = 'scan_camera_ready';
 
-  /// props: `reason` (permission_denied|unavailable|error), `mode`
+  /// props: `reason` (permission_denied|unavailable|error), `mode`,
+  /// `primed` (bool — false means this visit showed the camera rationale
+  /// sheet first, i.e. the camera had never worked on this install).
+  ///
+  /// `primed` exists to measure that sheet. Over 7 days on 1.2.3+14,
+  /// `permission_denied` hit 101 devices — 85 of them exactly once, at the
+  /// first ask — and 62 never reached [scanCameraReady] afterwards, which is
+  /// 18% of everyone who opened the scanner. Compare denial rates across
+  /// `primed` to see whether explaining first actually moves that.
   static const scanCameraFailed = 'scan_camera_failed';
 
   /// props: `mode` (barcode|food) — no barcode value, that would turn the
