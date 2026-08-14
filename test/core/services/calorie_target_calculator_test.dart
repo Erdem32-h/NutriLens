@@ -108,18 +108,30 @@ void main() {
       expect(r.target, greaterThanOrEqualTo(r.bmr));
     });
 
-    test('sınır dışı girdiler kırpılır, patlamaz', () {
+    test('sınır dışı girdiler kırpılır, doğru sonuç verir', () {
+      // Kırpma sınırları: yaş 16–100, boy 120–230, kilo 30–300
+      // Girdiler: age 5, height 400, weight 500, targetWeight 50 (tümü sınır dışı)
+      // Beklenen kırpma: age→16, height→230, weight→300, targetWeight→30
       final r = calculateCalorieTarget(
         const CalorieTargetInput(
           sex: BiologicalSex.male,
           age: 5,
           heightCm: 400,
           weightKg: 500,
+          targetWeightKg: 50,
           activity: ActivityLevel.active,
         ),
       );
-      expect(r.bmr, greaterThan(0));
-      expect(r.target, greaterThanOrEqualTo(1200));
+
+      // Kırpılmış: 10*300 + 6.25*230 - 5*16 + 5 = 4362.5 → 4360
+      expect(r.bmr, 4360);
+
+      // TDEE = 4362.5 * 1.725 = 7527.1875 → 7530
+      expect(r.tdee, 7530);
+
+      // target=30 < weight=300-1 → %85 açık: 7530*0.85 = 6400.5 → 6400
+      expect(r.target, 6400);
+      expect(r.target, lessThan(r.tdee)); // açık uygulandı
     });
 
     test('aktivite faktörleri beklenen sırada', () {
