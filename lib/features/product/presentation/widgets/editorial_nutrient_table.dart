@@ -19,7 +19,16 @@ import '../../domain/entities/nutriments_entity.dart';
 class EditorialNutrientTable extends StatelessWidget {
   final NutrimentsEntity nutriments;
 
-  const EditorialNutrientTable({super.key, required this.nutriments});
+  /// Tablodaki sayıların hangi miktara ait olduğu. Paketli ürünlerde
+  /// `'100g'` (etiket standardı), öğünlerde porsiyonun gerçek gramajı —
+  /// öğün değerleri 100 g için değil, porsiyon TOPLAMI için gelir.
+  final String? basisLabel;
+
+  const EditorialNutrientTable({
+    super.key,
+    required this.nutriments,
+    this.basisLabel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +173,7 @@ class EditorialNutrientTable extends StatelessWidget {
                 children: [
                   Expanded(child: Text(l10n.detailedContent.isEmpty ? '' : '')),
                   Text(
-                    '100g',
+                    basisLabel ?? l10n.portion100g,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,

@@ -166,6 +166,23 @@
   "noAdditives": "خالي من المواد المضافة",
   "noNutrientData": "Nutritional information not available",
   "portion100g": "100g",
+  "nutritionBasisPortion": "portion",
+  "nutritionBasisGrams": "{grams} g",
+  "@nutritionBasisGrams": {
+    "placeholders": {
+      "grams": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyValueNotePersonal": "* Percentages are based on your personal daily target of {kcal} kcal.",
+  "@dailyValueNotePersonal": {
+    "placeholders": {
+      "kcal": {
+        "type": "int"
+      }
+    }
+  },
   "foodCategory": "FOOD",
   "delete": "Delete",
   "edit": "Edit",

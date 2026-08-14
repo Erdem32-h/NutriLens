@@ -1102,6 +1102,24 @@ abstract class AppLocalizations {
   /// **'100g'**
   String get portion100g;
 
+  /// No description provided for @nutritionBasisPortion.
+  ///
+  /// In tr, this message translates to:
+  /// **'porsiyon'**
+  String get nutritionBasisPortion;
+
+  /// No description provided for @nutritionBasisGrams.
+  ///
+  /// In tr, this message translates to:
+  /// **'{grams} g'**
+  String nutritionBasisGrams(int grams);
+
+  /// No description provided for @dailyValueNotePersonal.
+  ///
+  /// In tr, this message translates to:
+  /// **'* Yüzdelik değerler günlük {kcal} kcal\'lik kişisel hedefinize göre hesaplanmıştır.'**
+  String dailyValueNotePersonal(int kcal);
+
   /// No description provided for @foodCategory.
   ///
   /// In tr, this message translates to:

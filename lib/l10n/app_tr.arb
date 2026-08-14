@@ -166,6 +166,23 @@
   "noAdditives": "Bu üründe katkı maddesi bulunmuyor",
   "noNutrientData": "Besin değeri bilgisi mevcut değil",
   "portion100g": "100g",
+  "nutritionBasisPortion": "porsiyon",
+  "nutritionBasisGrams": "{grams} g",
+  "@nutritionBasisGrams": {
+    "placeholders": {
+      "grams": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyValueNotePersonal": "* Yüzdelik değerler günlük {kcal} kcal'lik kişisel hedefinize göre hesaplanmıştır.",
+  "@dailyValueNotePersonal": {
+    "placeholders": {
+      "kcal": {
+        "type": "int"
+      }
+    }
+  },
   "foodCategory": "GIDA",
   "delete": "Sil",
   "edit": "Düzenle",

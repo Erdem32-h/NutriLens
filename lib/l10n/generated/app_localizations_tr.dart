@@ -519,6 +519,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get portion100g => '100g';
 
   @override
+  String get nutritionBasisPortion => 'porsiyon';
+
+  @override
+  String nutritionBasisGrams(int grams) {
+    return '$grams g';
+  }
+
+  @override
+  String dailyValueNotePersonal(int kcal) {
+    return '* Yüzdelik değerler günlük $kcal kcal\'lik kişisel hedefinize göre hesaplanmıştır.';
+  }
+
+  @override
   String get foodCategory => 'GIDA';
 
   @override

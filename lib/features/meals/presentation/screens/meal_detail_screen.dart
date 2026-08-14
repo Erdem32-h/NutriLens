@@ -103,9 +103,19 @@ class MealDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  BentoNutritionGrid(nutriments: meal.nutriments),
+                  BentoNutritionGrid(
+                    nutriments: meal.nutriments,
+                    basisLabel: meal.portionGrams != null
+                        ? l10n.nutritionBasisGrams(meal.portionGrams!)
+                        : l10n.nutritionBasisPortion,
+                  ),
                   const SizedBox(height: 16),
-                  EditorialNutrientTable(nutriments: meal.nutriments),
+                  EditorialNutrientTable(
+                    nutriments: meal.nutriments,
+                    basisLabel: meal.portionGrams != null
+                        ? l10n.nutritionBasisGrams(meal.portionGrams!)
+                        : l10n.nutritionBasisPortion,
+                  ),
                 ],
               ),
             ),

@@ -521,6 +521,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get portion100g => '100g';
 
   @override
+  String get nutritionBasisPortion => 'portion';
+
+  @override
+  String nutritionBasisGrams(int grams) {
+    return '$grams g';
+  }
+
+  @override
+  String dailyValueNotePersonal(int kcal) {
+    return '* Percentages are based on your personal daily target of $kcal kcal.';
+  }
+
+  @override
   String get foodCategory => 'FOOD';
 
   @override
