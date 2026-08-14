@@ -116,6 +116,7 @@ class GuestMigrationService {
     for (final m in mealsToWipe) {
       await _mealDs.deleteMeal(m.id);
     }
+    await _metricsDs.deleteFor(kGuestUserId);
     await _counter.reset();
   }
 }

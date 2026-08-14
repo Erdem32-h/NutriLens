@@ -15,6 +15,11 @@ abstract interface class UserMetricsLocalDataSource {
     required String fromUserId,
     required String toUserId,
   });
+
+  /// Bir kullanıcının satırını koşulsuz siler. `reassignOwner`'ın kullandığı
+  /// aynı silme yolunu paylaşır — misafir devri reddedildiğinde
+  /// (`GuestMigrationService.discard`) de bu kullanılır.
+  Future<void> deleteFor(String userId);
 }
 
 final class UserMetricsLocalDataSourceImpl
@@ -75,8 +80,13 @@ final class UserMetricsLocalDataSourceImpl
     if (guestRow != null && existing == null) {
       await save(guestRow.copyWith(userId: toUserId));
     }
+    await deleteFor(fromUserId);
+  }
+
+  @override
+  Future<void> deleteFor(String userId) async {
     await (_db.delete(
       _db.userMetrics,
-    )..where((t) => t.userId.equals(fromUserId))).go();
+    )..where((t) => t.userId.equals(userId))).go();
   }
 }
