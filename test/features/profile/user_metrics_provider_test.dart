@@ -102,4 +102,77 @@ void main() {
       expect(expected, isNot(kDefaultDailyCalories));
     });
   });
+
+  // personalDailyCaloriesProvider "metrics VAR mi" ayrimini tek yerde toplar.
+  // dailyCalorieTargetProvider her zaman bir sayi (2000 dahil) dondugu icin bu
+  // ayrimi ondan turetmek yanlis olur — asagidaki testler ozellikle "metrics
+  // yok -> null" ile "metrics var -> hesaplanan sayi" arasindaki farki
+  // koruyor. Ucuncu ekranin kendi kopyasini yazmasina gerek kalmasin diye
+  // cikarilan sağlayici bu.
+  group('personalDailyCaloriesProvider', () {
+    test('metrics yoksa null doner', () async {
+      final container = ProviderContainer(
+        overrides: [userMetricsProvider.overrideWith((ref) async => null)],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(userMetricsProvider.future);
+
+      expect(container.read(personalDailyCaloriesProvider), isNull);
+    });
+
+    test(
+      'yukleniyor durumunda null doner (henuz metrics cozulmedi)',
+      () async {
+        final completer = Completer<UserMetricsEntity?>();
+        final container = ProviderContainer(
+          overrides: [
+            userMetricsProvider.overrideWith((ref) => completer.future),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        expect(container.read(personalDailyCaloriesProvider), isNull);
+
+        completer.complete(null);
+        await container.read(userMetricsProvider.future);
+      },
+    );
+
+    test('hata durumunda istisna sizmadan null doner', () async {
+      final container = ProviderContainer(
+        // dailyCalorieTargetProvider testindeki ayni gerekce: varsayilan
+        // retry testi 30 saniyelik zaman asimina sokuyor.
+        retry: (retryCount, error) => null,
+        overrides: [
+          userMetricsProvider.overrideWith((ref) async {
+            throw Exception('boom');
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(userMetricsProvider.future).catchError((_) => null);
+
+      expect(() => container.read(personalDailyCaloriesProvider), returnsNormally);
+      expect(container.read(personalDailyCaloriesProvider), isNull);
+    });
+
+    test('metrics varsa hesaplanan hedefi doner (null degil)', () async {
+      final m = metrics();
+      final container = ProviderContainer(
+        overrides: [userMetricsProvider.overrideWith((ref) async => m)],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(userMetricsProvider.future);
+
+      final expected = calculateCalorieTarget(
+        m.toCalculatorInput(DateTime.now()),
+      ).target;
+
+      expect(container.read(personalDailyCaloriesProvider), expected);
+      expect(container.read(personalDailyCaloriesProvider), isNotNull);
+    });
+  });
 }

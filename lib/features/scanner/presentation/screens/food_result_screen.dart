@@ -761,10 +761,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                 EditorialNutrientTable(
                   nutriments: nutriments,
                   basisLabel: l10n.nutritionBasisGrams(scaledPortion),
-                  personalDailyCalories:
-                      ref.watch(userMetricsProvider).value == null
-                      ? null
-                      : ref.watch(dailyCalorieTargetProvider),
+                  personalDailyCalories: ref.watch(personalDailyCaloriesProvider),
                 ),
               ],
             ),

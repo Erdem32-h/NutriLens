@@ -26,3 +26,14 @@ final dailyCalorieTargetProvider = Provider<int>((ref) {
   if (metrics == null) return kDefaultDailyCalories;
   return calculateCalorieTarget(metrics.toCalculatorInput(DateTime.now())).target;
 });
+
+/// Kişisel hedef VARSA değeri, yoksa null. Dipnotun/yüzdeliklerin hangi metni
+/// seçeceğini belirler: `dailyCalorieTargetProvider` metrics olsun olmasın
+/// her zaman bir sayı döndürür, bu yüzden "metrics yok" ile "hedef tesadüfen
+/// 2000 kcal çıktı" ayrımı buradan yapılır — çağıran ekranlar bu ayrımı
+/// kendileri tekrar tekrar kurmasın diye tek yerde toplanmıştır.
+final personalDailyCaloriesProvider = Provider<int?>((ref) {
+  final metrics = ref.watch(userMetricsProvider).value;
+  if (metrics == null) return null;
+  return ref.watch(dailyCalorieTargetProvider);
+});

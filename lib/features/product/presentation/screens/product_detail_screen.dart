@@ -551,9 +551,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       const SizedBox(height: 16),
       EditorialNutrientTable(
         nutriments: product.nutriments,
-        personalDailyCalories: ref.watch(userMetricsProvider).value == null
-            ? null
-            : ref.watch(dailyCalorieTargetProvider),
+        personalDailyCalories: ref.watch(personalDailyCaloriesProvider),
       ),
     ];
   }

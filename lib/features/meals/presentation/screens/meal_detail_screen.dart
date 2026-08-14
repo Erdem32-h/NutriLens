@@ -105,17 +105,11 @@ class MealDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Consumer(
                 builder: (context, ref, _) {
-                  // dailyCalorieTargetProvider metrics yoksa da her zaman
-                  // bir sayı (2000) döner — "kişisel hedef var mı" ayrımını
-                  // userMetricsProvider'ın null olup olmadığıyla yapıyoruz.
-                  final hasPersonalTarget =
-                      ref.watch(userMetricsProvider).value != null;
-                  final dailyCalories = ref.watch(dailyCalorieTargetProvider);
                   return Column(
                     children: [
                       BentoNutritionGrid(
                         nutriments: meal.nutriments,
-                        dailyCalories: dailyCalories,
+                        dailyCalories: ref.watch(dailyCalorieTargetProvider),
                       ),
                       const SizedBox(height: 16),
                       EditorialNutrientTable(
@@ -123,9 +117,9 @@ class MealDetailScreen extends StatelessWidget {
                         basisLabel: meal.portionGrams != null
                             ? l10n.nutritionBasisGrams(meal.portionGrams!)
                             : l10n.nutritionBasisPortion,
-                        personalDailyCalories: hasPersonalTarget
-                            ? dailyCalories
-                            : null,
+                        personalDailyCalories: ref.watch(
+                          personalDailyCaloriesProvider,
+                        ),
                       ),
                     ],
                   );
