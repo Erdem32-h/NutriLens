@@ -653,5 +653,46 @@
   },
   "scanFood": "مسح الوجبة",
   "noHistoryScanCta": "مسح الباركود",
-  "historyLoadError": "History could not be loaded."
+  "historyLoadError": "History could not be loaded.",
+  "metricsSexStepTitle": "ما هو جنسك؟",
+  "metricsSexStepSubtitle": "يُعدَّل حساب السعرات الحرارية حسب الجنس البيولوجي.",
+  "metricsSexFemale": "أنثى",
+  "metricsSexMale": "ذكر",
+  "metricsSexUnspecified": "أفضّل عدم القول",
+  "metricsBodyStepTitle": "مقاييس جسمك",
+  "metricsBodyStepSubtitle": "تبقى هذه المعلومات على جهازك، وتُستخدم فقط لتقدير هدفك.",
+  "metricsAgeLabel": "العمر",
+  "metricsHeightLabel": "الطول (سم)",
+  "metricsWeightLabel": "الوزن (كجم)",
+  "metricsRangeError": "أدخل قيمة بين {min} و {max}",
+  "@metricsRangeError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "metricsTargetStepTitle": "وزنك المستهدف",
+  "metricsTargetStepSubtitle": "نضبط هدفك اليومي من السعرات الحرارية وفق هدفك.",
+  "metricsTargetWeightLabel": "الوزن المستهدف (كجم)",
+  "metricsMaintainWeightOption": "أريد الحفاظ على وزني الحالي",
+  "metricsActivityStepTitle": "مستوى نشاطك",
+  "metricsActivityStepSubtitle": "اختر الأقرب إلى روتينك اليومي.",
+  "metricsActivitySedentary": "خامل",
+  "metricsActivitySedentaryDesc": "عمل مكتبي، بدون تمارين",
+  "metricsActivityLight": "نشاط خفيف",
+  "metricsActivityLightDesc": "تمارين خفيفة 1-3 أيام في الأسبوع",
+  "metricsActivityModerate": "نشاط متوسط",
+  "metricsActivityModerateDesc": "تمارين 3-5 أيام في الأسبوع",
+  "metricsActivityActive": "نشاط عالٍ",
+  "metricsActivityActiveDesc": "تمارين مكثفة 6-7 أيام في الأسبوع",
+  "metricsResultStepTitle": "إليك هدفك اليومي التقديري",
+  "metricsResultKcalPerDay": "سعرة حرارية / يوم",
+  "metricsMedicalDisclaimer": "هذه قيمة تقديرية ولا تُغني عن الاستشارة الطبية.",
+  "metricsSaveToAccountCta": "حفظ في الحساب",
+  "metricsCloseTooltip": "إغلاق",
+  "metricsBackTooltip": "رجوع"
 }

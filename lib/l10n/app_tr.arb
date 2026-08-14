@@ -678,5 +678,46 @@
   },
   "scanFood": "Yemek Tara",
   "noHistoryScanCta": "Barkod Tara",
-  "historyLoadError": "Geçmiş yüklenemedi."
+  "historyLoadError": "Geçmiş yüklenemedi.",
+  "metricsSexStepTitle": "Cinsiyetin nedir?",
+  "metricsSexStepSubtitle": "Kalori hesabı biyolojik cinsiyete göre ayarlanır.",
+  "metricsSexFemale": "Kadın",
+  "metricsSexMale": "Erkek",
+  "metricsSexUnspecified": "Belirtmek istemiyorum",
+  "metricsBodyStepTitle": "Vücut ölçülerin",
+  "metricsBodyStepSubtitle": "Bu bilgiler cihazında kalır, yalnızca hedefini tahmin etmek için kullanılır.",
+  "metricsAgeLabel": "Yaş",
+  "metricsHeightLabel": "Boy (cm)",
+  "metricsWeightLabel": "Kilo (kg)",
+  "metricsRangeError": "{min}-{max} arasında bir değer gir",
+  "@metricsRangeError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "metricsTargetStepTitle": "Hedef kilon",
+  "metricsTargetStepSubtitle": "Hedefine göre günlük kalori hedefini ayarlarız.",
+  "metricsTargetWeightLabel": "Hedef kilo (kg)",
+  "metricsMaintainWeightOption": "Şu anki kilomu korumak istiyorum",
+  "metricsActivityStepTitle": "Aktivite seviyen",
+  "metricsActivityStepSubtitle": "Günlük hareket düzeyine en yakın olanı seç.",
+  "metricsActivitySedentary": "Hareketsiz",
+  "metricsActivitySedentaryDesc": "Masa başı iş, egzersiz yok",
+  "metricsActivityLight": "Az hareketli",
+  "metricsActivityLightDesc": "Haftada 1-3 gün hafif egzersiz",
+  "metricsActivityModerate": "Orta hareketli",
+  "metricsActivityModerateDesc": "Haftada 3-5 gün egzersiz",
+  "metricsActivityActive": "Çok hareketli",
+  "metricsActivityActiveDesc": "Haftada 6-7 gün yoğun egzersiz",
+  "metricsResultStepTitle": "İşte tahmini günlük hedefin",
+  "metricsResultKcalPerDay": "kcal / gün",
+  "metricsMedicalDisclaimer": "Tahmini değerdir, tıbbi tavsiye yerine geçmez.",
+  "metricsSaveToAccountCta": "Hesaba Kaydet",
+  "metricsCloseTooltip": "Kapat",
+  "metricsBackTooltip": "Geri"
 }

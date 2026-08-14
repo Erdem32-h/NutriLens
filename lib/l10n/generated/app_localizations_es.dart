@@ -1805,4 +1805,106 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get historyLoadError => 'History could not be loaded.';
+
+  @override
+  String get metricsSexStepTitle => '¿Cuál es tu sexo?';
+
+  @override
+  String get metricsSexStepSubtitle =>
+      'El cálculo de calorías se ajusta según el sexo biológico.';
+
+  @override
+  String get metricsSexFemale => 'Mujer';
+
+  @override
+  String get metricsSexMale => 'Hombre';
+
+  @override
+  String get metricsSexUnspecified => 'Prefiero no decirlo';
+
+  @override
+  String get metricsBodyStepTitle => 'Tus medidas corporales';
+
+  @override
+  String get metricsBodyStepSubtitle =>
+      'Esto se queda en tu dispositivo, solo se usa para estimar tu objetivo.';
+
+  @override
+  String get metricsAgeLabel => 'Edad';
+
+  @override
+  String get metricsHeightLabel => 'Altura (cm)';
+
+  @override
+  String get metricsWeightLabel => 'Peso (kg)';
+
+  @override
+  String metricsRangeError(int min, int max) {
+    return 'Introduce un valor entre $min y $max';
+  }
+
+  @override
+  String get metricsTargetStepTitle => 'Tu peso objetivo';
+
+  @override
+  String get metricsTargetStepSubtitle =>
+      'Ajustamos tu objetivo calórico diario según tu meta.';
+
+  @override
+  String get metricsTargetWeightLabel => 'Peso objetivo (kg)';
+
+  @override
+  String get metricsMaintainWeightOption => 'Quiero mantener mi peso actual';
+
+  @override
+  String get metricsActivityStepTitle => 'Tu nivel de actividad';
+
+  @override
+  String get metricsActivityStepSubtitle =>
+      'Elige el que más se acerque a tu rutina diaria.';
+
+  @override
+  String get metricsActivitySedentary => 'Sedentario';
+
+  @override
+  String get metricsActivitySedentaryDesc =>
+      'Trabajo de oficina, sin ejercicio';
+
+  @override
+  String get metricsActivityLight => 'Poco activo';
+
+  @override
+  String get metricsActivityLightDesc => 'Ejercicio ligero 1-3 días por semana';
+
+  @override
+  String get metricsActivityModerate => 'Moderadamente activo';
+
+  @override
+  String get metricsActivityModerateDesc => 'Ejercicio 3-5 días por semana';
+
+  @override
+  String get metricsActivityActive => 'Muy activo';
+
+  @override
+  String get metricsActivityActiveDesc =>
+      'Ejercicio intenso 6-7 días por semana';
+
+  @override
+  String get metricsResultStepTitle => 'Este es tu objetivo diario estimado';
+
+  @override
+  String get metricsResultKcalPerDay => 'kcal / día';
+
+  @override
+  String get metricsMedicalDisclaimer =>
+      'Es un valor estimado, no sustituye el consejo médico.';
+
+  @override
+  String get metricsSaveToAccountCta => 'Guardar en la Cuenta';
+
+  @override
+  String get metricsCloseTooltip => 'Cerrar';
+
+  @override
+  String get metricsBackTooltip => 'Atrás';
 }

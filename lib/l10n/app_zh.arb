@@ -653,5 +653,46 @@
   },
   "scanFood": "拍摄食物打卡",
   "noHistoryScanCta": "扫描条形码",
-  "historyLoadError": "History could not be loaded."
+  "historyLoadError": "History could not be loaded.",
+  "metricsSexStepTitle": "你的性别是？",
+  "metricsSexStepSubtitle": "热量计算会根据生理性别调整。",
+  "metricsSexFemale": "女",
+  "metricsSexMale": "男",
+  "metricsSexUnspecified": "不愿透露",
+  "metricsBodyStepTitle": "你的身体数据",
+  "metricsBodyStepSubtitle": "这些信息只保存在你的设备上，仅用于估算你的目标。",
+  "metricsAgeLabel": "年龄",
+  "metricsHeightLabel": "身高（厘米）",
+  "metricsWeightLabel": "体重（公斤）",
+  "metricsRangeError": "请输入 {min} 到 {max} 之间的数值",
+  "@metricsRangeError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "metricsTargetStepTitle": "目标体重",
+  "metricsTargetStepSubtitle": "我们会根据你的目标调整每日热量目标。",
+  "metricsTargetWeightLabel": "目标体重（公斤）",
+  "metricsMaintainWeightOption": "我想保持目前的体重",
+  "metricsActivityStepTitle": "你的活动水平",
+  "metricsActivityStepSubtitle": "选择最接近你日常状态的一项。",
+  "metricsActivitySedentary": "久坐",
+  "metricsActivitySedentaryDesc": "办公室工作，不运动",
+  "metricsActivityLight": "轻度活动",
+  "metricsActivityLightDesc": "每周1-3天轻度运动",
+  "metricsActivityModerate": "中度活动",
+  "metricsActivityModerateDesc": "每周3-5天运动",
+  "metricsActivityActive": "高度活动",
+  "metricsActivityActiveDesc": "每周6-7天高强度运动",
+  "metricsResultStepTitle": "这是你的每日预估目标",
+  "metricsResultKcalPerDay": "千卡 / 天",
+  "metricsMedicalDisclaimer": "这是一个估算值，不能替代医疗建议。",
+  "metricsSaveToAccountCta": "保存到账户",
+  "metricsCloseTooltip": "关闭",
+  "metricsBackTooltip": "返回"
 }

@@ -1804,4 +1804,104 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get historyLoadError => 'Geçmiş yüklenemedi.';
+
+  @override
+  String get metricsSexStepTitle => 'Cinsiyetin nedir?';
+
+  @override
+  String get metricsSexStepSubtitle =>
+      'Kalori hesabı biyolojik cinsiyete göre ayarlanır.';
+
+  @override
+  String get metricsSexFemale => 'Kadın';
+
+  @override
+  String get metricsSexMale => 'Erkek';
+
+  @override
+  String get metricsSexUnspecified => 'Belirtmek istemiyorum';
+
+  @override
+  String get metricsBodyStepTitle => 'Vücut ölçülerin';
+
+  @override
+  String get metricsBodyStepSubtitle =>
+      'Bu bilgiler cihazında kalır, yalnızca hedefini tahmin etmek için kullanılır.';
+
+  @override
+  String get metricsAgeLabel => 'Yaş';
+
+  @override
+  String get metricsHeightLabel => 'Boy (cm)';
+
+  @override
+  String get metricsWeightLabel => 'Kilo (kg)';
+
+  @override
+  String metricsRangeError(int min, int max) {
+    return '$min-$max arasında bir değer gir';
+  }
+
+  @override
+  String get metricsTargetStepTitle => 'Hedef kilon';
+
+  @override
+  String get metricsTargetStepSubtitle =>
+      'Hedefine göre günlük kalori hedefini ayarlarız.';
+
+  @override
+  String get metricsTargetWeightLabel => 'Hedef kilo (kg)';
+
+  @override
+  String get metricsMaintainWeightOption => 'Şu anki kilomu korumak istiyorum';
+
+  @override
+  String get metricsActivityStepTitle => 'Aktivite seviyen';
+
+  @override
+  String get metricsActivityStepSubtitle =>
+      'Günlük hareket düzeyine en yakın olanı seç.';
+
+  @override
+  String get metricsActivitySedentary => 'Hareketsiz';
+
+  @override
+  String get metricsActivitySedentaryDesc => 'Masa başı iş, egzersiz yok';
+
+  @override
+  String get metricsActivityLight => 'Az hareketli';
+
+  @override
+  String get metricsActivityLightDesc => 'Haftada 1-3 gün hafif egzersiz';
+
+  @override
+  String get metricsActivityModerate => 'Orta hareketli';
+
+  @override
+  String get metricsActivityModerateDesc => 'Haftada 3-5 gün egzersiz';
+
+  @override
+  String get metricsActivityActive => 'Çok hareketli';
+
+  @override
+  String get metricsActivityActiveDesc => 'Haftada 6-7 gün yoğun egzersiz';
+
+  @override
+  String get metricsResultStepTitle => 'İşte tahmini günlük hedefin';
+
+  @override
+  String get metricsResultKcalPerDay => 'kcal / gün';
+
+  @override
+  String get metricsMedicalDisclaimer =>
+      'Tahmini değerdir, tıbbi tavsiye yerine geçmez.';
+
+  @override
+  String get metricsSaveToAccountCta => 'Hesaba Kaydet';
+
+  @override
+  String get metricsCloseTooltip => 'Kapat';
+
+  @override
+  String get metricsBackTooltip => 'Geri';
 }

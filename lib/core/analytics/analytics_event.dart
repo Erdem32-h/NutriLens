@@ -205,4 +205,18 @@ abstract final class FunnelEvents {
   // --- Monetization ---------------------------------------------------
   /// props: `trigger` (scan_limit|profile|feature_gate)
   static const paywallShown = 'paywall_shown';
+
+  // --- Kişisel kalori hedefi ------------------------------------------
+  /// İlk öğün kaydından sonra ölçü sihirbazı açıldı.
+  static const metricsPromptShown = 'metrics_prompt_shown';
+
+  /// props: `step` (sex|body|target|activity)
+  static const metricsStepCompleted = 'metrics_step_completed';
+
+  /// props: `target_kcal`, `activity`
+  static const metricsCompleted = 'metrics_completed';
+
+  /// props: `step` — hangi adımda bırakıldı. Formun nerede kaybettiğini
+  /// ölçmeden adım sayısını tartışmak kör uçuş.
+  static const metricsDismissed = 'metrics_dismissed';
 }

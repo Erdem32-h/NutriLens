@@ -653,5 +653,46 @@
   },
   "scanFood": "Escanear plato",
   "noHistoryScanCta": "Escanear código",
-  "historyLoadError": "History could not be loaded."
+  "historyLoadError": "History could not be loaded.",
+  "metricsSexStepTitle": "¿Cuál es tu sexo?",
+  "metricsSexStepSubtitle": "El cálculo de calorías se ajusta según el sexo biológico.",
+  "metricsSexFemale": "Mujer",
+  "metricsSexMale": "Hombre",
+  "metricsSexUnspecified": "Prefiero no decirlo",
+  "metricsBodyStepTitle": "Tus medidas corporales",
+  "metricsBodyStepSubtitle": "Esto se queda en tu dispositivo, solo se usa para estimar tu objetivo.",
+  "metricsAgeLabel": "Edad",
+  "metricsHeightLabel": "Altura (cm)",
+  "metricsWeightLabel": "Peso (kg)",
+  "metricsRangeError": "Introduce un valor entre {min} y {max}",
+  "@metricsRangeError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "metricsTargetStepTitle": "Tu peso objetivo",
+  "metricsTargetStepSubtitle": "Ajustamos tu objetivo calórico diario según tu meta.",
+  "metricsTargetWeightLabel": "Peso objetivo (kg)",
+  "metricsMaintainWeightOption": "Quiero mantener mi peso actual",
+  "metricsActivityStepTitle": "Tu nivel de actividad",
+  "metricsActivityStepSubtitle": "Elige el que más se acerque a tu rutina diaria.",
+  "metricsActivitySedentary": "Sedentario",
+  "metricsActivitySedentaryDesc": "Trabajo de oficina, sin ejercicio",
+  "metricsActivityLight": "Poco activo",
+  "metricsActivityLightDesc": "Ejercicio ligero 1-3 días por semana",
+  "metricsActivityModerate": "Moderadamente activo",
+  "metricsActivityModerateDesc": "Ejercicio 3-5 días por semana",
+  "metricsActivityActive": "Muy activo",
+  "metricsActivityActiveDesc": "Ejercicio intenso 6-7 días por semana",
+  "metricsResultStepTitle": "Este es tu objetivo diario estimado",
+  "metricsResultKcalPerDay": "kcal / día",
+  "metricsMedicalDisclaimer": "Es un valor estimado, no sustituye el consejo médico.",
+  "metricsSaveToAccountCta": "Guardar en la Cuenta",
+  "metricsCloseTooltip": "Cerrar",
+  "metricsBackTooltip": "Atrás"
 }
