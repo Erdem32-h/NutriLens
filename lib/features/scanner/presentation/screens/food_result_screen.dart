@@ -752,10 +752,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                BentoNutritionGrid(
-                  nutriments: nutriments,
-                  basisLabel: l10n.nutritionBasisGrams(scaledPortion),
-                ),
+                BentoNutritionGrid(nutriments: nutriments),
                 const SizedBox(height: 16),
                 EditorialNutrientTable(
                   nutriments: nutriments,

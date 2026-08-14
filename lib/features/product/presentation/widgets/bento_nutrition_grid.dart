@@ -14,15 +14,10 @@ class BentoNutritionGrid extends StatelessWidget {
   /// kişisel hedefi yoksa besin etiketi standardı olan 2000 kcal.
   final int dailyCalories;
 
-  /// Tablodaki sayıların hangi miktara ait olduğu. Paketli ürünlerde
-  /// `'100g'`, öğünlerde porsiyonun gerçek gramajı.
-  final String? basisLabel;
-
   const BentoNutritionGrid({
     super.key,
     required this.nutriments,
     this.dailyCalories = kDefaultDailyCalories,
-    this.basisLabel,
   });
 
   // Daily reference values (grams). Protein RDA is 0.8 g/kg body
