@@ -1161,11 +1161,38 @@ void main() {
     expect(find.textContaining('40'), findsWidgets);
   });
 
-  test('metrics yoksa saglayici varsayilana duser', () {
-    final container = ProviderContainer();
+  test('metrics yoksa saglayici 2000 kcal doner', () {
+    final container = ProviderContainer(
+      overrides: [
+        userMetricsProvider.overrideWith((ref) async => null),
+      ],
+    );
     addTearDown(container.dispose);
-    // userMetricsProvider yuklenmeden valueOrNull null olur
-    expect(kDefaultDailyCalories, 2000);
+    expect(container.read(dailyCalorieTargetProvider), kDefaultDailyCalories);
+  });
+
+  test('metrics varsa saglayici hesaplanan hedefi doner', () async {
+    final metrics = UserMetricsEntity(
+      userId: 'guest',
+      sex: BiologicalSex.male,
+      birthYear: 1996,
+      heightCm: 180,
+      weightKg: 80,
+      activity: ActivityLevel.sedentary,
+      updatedAt: DateTime(2026, 8, 14),
+    );
+    final container = ProviderContainer(
+      overrides: [
+        userMetricsProvider.overrideWith((ref) async => metrics),
+      ],
+    );
+    addTearDown(container.dispose);
+    // Saglayici FutureProvider'a bagli: once cozulmesini bekle.
+    await container.read(userMetricsProvider.future);
+    final expected = calculateCalorieTarget(
+      metrics.toCalculatorInput(DateTime(2026, 8, 14)),
+    ).target;
+    expect(container.read(dailyCalorieTargetProvider), expected);
   });
 }
 ```
