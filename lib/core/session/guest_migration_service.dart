@@ -5,6 +5,8 @@ import '../../features/history/data/datasources/scan_history_local_datasource.da
 import '../../features/history/presentation/providers/history_provider.dart';
 import '../../features/meals/data/datasources/meal_local_datasource.dart';
 import '../../features/meals/presentation/providers/meal_provider.dart';
+import '../../features/profile/data/datasources/user_metrics_local_datasource.dart';
+import '../../features/profile/presentation/providers/user_metrics_provider.dart';
 import '../services/guest_scan_counter.dart';
 import 'app_session.dart';
 
@@ -23,16 +25,19 @@ class GuestDataSummary {
 class GuestMigrationService {
   final ScanHistoryLocalDataSource _scanDs;
   final MealLocalDataSource _mealDs;
+  final UserMetricsLocalDataSource _metricsDs;
   final SupabaseClient _supabase;
   final GuestScanCounter _counter;
 
   GuestMigrationService({
     required ScanHistoryLocalDataSource scanDs,
     required MealLocalDataSource mealDs,
+    required UserMetricsLocalDataSource metricsDs,
     required SupabaseClient supabase,
     required GuestScanCounter counter,
   })  : _scanDs = scanDs,
         _mealDs = mealDs,
+        _metricsDs = metricsDs,
         _supabase = supabase,
         _counter = counter;
 
@@ -43,9 +48,11 @@ class GuestMigrationService {
   }
 
   /// Performs the migration:
-  ///   1. Re-key local Drift rows (scan_history, meal_entries) from
-  ///      [kGuestUserId] to [newUserId] — instant, all-or-nothing per
-  ///      table.
+  ///   1. Re-key local Drift rows (scan_history, meal_entries,
+  ///      user_metrics) from [kGuestUserId] to [newUserId] — instant,
+  ///      all-or-nothing per table. `user_metrics` never overwrites an
+  ///      existing row on the target account (see
+  ///      [UserMetricsLocalDataSource.reassignOwner]).
   ///   2. Bulk-upsert scan rows into Supabase so the new user sees
   ///      their guest history on other devices. Meals stay local-only
   ///      (matches the current "meals are device-local" design).
@@ -64,6 +71,10 @@ class GuestMigrationService {
       toUserId: newUserId,
     );
     await _mealDs.reassignOwner(
+      fromUserId: kGuestUserId,
+      toUserId: newUserId,
+    );
+    await _metricsDs.reassignOwner(
       fromUserId: kGuestUserId,
       toUserId: newUserId,
     );
@@ -113,6 +124,7 @@ final guestMigrationServiceProvider = Provider<GuestMigrationService>((ref) {
   return GuestMigrationService(
     scanDs: ref.watch(scanHistoryLocalDataSourceProvider),
     mealDs: ref.watch(mealLocalDataSourceProvider),
+    metricsDs: ref.watch(userMetricsLocalDataSourceProvider),
     supabase: Supabase.instance.client,
     counter: ref.watch(guestScanCounterProvider.notifier),
   );
