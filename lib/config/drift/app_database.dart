@@ -12,6 +12,7 @@ import 'tables/favorites_table.dart';
 import 'tables/blacklist_table.dart';
 import 'tables/counterfeit_products_table.dart';
 import 'tables/meal_entries_table.dart';
+import 'tables/user_metrics_table.dart';
 
 part 'app_database.g.dart';
 
@@ -25,6 +26,7 @@ part 'app_database.g.dart';
     Blacklist,
     CounterfeitProducts,
     MealEntries,
+    UserMetrics,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -33,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -47,6 +49,10 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 3) {
           await m.createTable(mealEntries);
+        }
+        if (from < 4) {
+          await m.createTable(userMetrics);
+          await m.addColumn(mealEntries, mealEntries.portionGrams);
         }
       },
     );

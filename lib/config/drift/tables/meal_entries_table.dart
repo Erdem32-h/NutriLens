@@ -13,6 +13,11 @@ class MealEntries extends Table {
   RealColumn get calories => real().withDefault(const Constant(0))();
   RealColumn get hpScore => real().nullable()();
   RealColumn get confidence => real().nullable()();
+
+  /// Öğünün toplam gramajı (yiyecek + içecek). AI tahmin eder, kullanıcı
+  /// porsiyon çarpanıyla ölçekler. Besin değerleri bu gramaj için TOPLAM
+  /// değerdir — 100 g için değil. v4 öncesi kayıtlarda null.
+  IntColumn get portionGrams => integer().nullable()();
   TextColumn get aiRawJson => text().nullable()();
   TextColumn get syncStatus =>
       text().withDefault(const Constant('local_only'))();
