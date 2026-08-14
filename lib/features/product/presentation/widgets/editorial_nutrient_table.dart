@@ -24,10 +24,18 @@ class EditorialNutrientTable extends StatelessWidget {
   /// öğün değerleri 100 g için değil, porsiyon TOPLAMI için gelir.
   final String? basisLabel;
 
+  /// Kullanıcının kişisel günlük kalori hedefi — dipnotta kullanılır.
+  /// null ise (metrics girilmemiş) mevcut 2000 kcal dipnotu korunur;
+  /// `dailyCalorieTargetProvider`'ın döndürdüğü sayı DEĞİL, metrics'in
+  /// gerçekten var olup olmadığı bu alanı besler — çağıran taraf ayrımı
+  /// yapmalı.
+  final int? personalDailyCalories;
+
   const EditorialNutrientTable({
     super.key,
     required this.nutriments,
     this.basisLabel,
+    this.personalDailyCalories,
   });
 
   @override
@@ -211,7 +219,11 @@ class EditorialNutrientTable extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: Text(
-                context.l10n.dailyValueNote,
+                personalDailyCalories != null
+                    ? context.l10n.dailyValueNotePersonal(
+                        personalDailyCalories!,
+                      )
+                    : context.l10n.dailyValueNote,
                 style: TextStyle(
                   fontSize: 11,
                   color: colors.textMuted,

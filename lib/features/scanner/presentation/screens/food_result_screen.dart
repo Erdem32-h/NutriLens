@@ -34,6 +34,7 @@ import '../../../product/presentation/providers/product_provider.dart';
 import '../../../product/presentation/widgets/bento_nutrition_grid.dart';
 import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
 import '../../../product/presentation/widgets/health_score_bar.dart';
+import '../../../profile/presentation/providers/user_metrics_provider.dart';
 import '../../../share/domain/share_caption.dart';
 import '../../../share/presentation/widgets/meal_share_card.dart';
 import '../widgets/meal_save_bar.dart';
@@ -752,11 +753,18 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                BentoNutritionGrid(nutriments: nutriments),
+                BentoNutritionGrid(
+                  nutriments: nutriments,
+                  dailyCalories: ref.watch(dailyCalorieTargetProvider),
+                ),
                 const SizedBox(height: 16),
                 EditorialNutrientTable(
                   nutriments: nutriments,
                   basisLabel: l10n.nutritionBasisGrams(scaledPortion),
+                  personalDailyCalories:
+                      ref.watch(userMetricsProvider).value == null
+                      ? null
+                      : ref.watch(dailyCalorieTargetProvider),
                 ),
               ],
             ),
