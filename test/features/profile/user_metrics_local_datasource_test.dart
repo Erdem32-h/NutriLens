@@ -67,4 +67,32 @@ void main() {
     final m = sample('guest');
     expect(m.ageAt(DateTime(2026, 8, 14)), 36);
   });
+
+  test(
+    'bozuk enum metni cokmez, guvenli varsayilana duser',
+    () async {
+      // Elle bozuk bir satir yaz — entity katmanindan degil, dogrudan
+      // Drift'e. Uygulama disi bir surecin (elle DB duzenleme, eski surum
+      // migration'i) beklenmedik bir metin birakmasini simule ediyor.
+      await db
+          .into(db.userMetrics)
+          .insertOnConflictUpdate(
+            UserMetricsCompanion.insert(
+              userId: 'corrupted',
+              sex: 'not-a-real-sex',
+              birthYear: 1990,
+              heightCm: 170,
+              weightKg: 70,
+              activityLevel: 'not-a-real-activity',
+              updatedAt: DateTime(2026, 8, 14),
+            ),
+          );
+
+      final read = await ds.get('corrupted');
+
+      expect(read, isNotNull);
+      expect(read!.sex, BiologicalSex.unspecified);
+      expect(read.activity, ActivityLevel.sedentary);
+    },
+  );
 }
