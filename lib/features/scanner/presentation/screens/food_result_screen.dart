@@ -385,6 +385,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         calories: scaledNutriments.energyKcal ?? 0,
         hpScore: hpResult.hpScore,
         confidence: _result!.confidence,
+        portionGrams: (_result!.portionGrams * _portionMultiplier).round(),
         aiRawJson: _result!.rawJson,
       );
 

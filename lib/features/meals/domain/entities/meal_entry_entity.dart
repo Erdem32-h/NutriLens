@@ -17,6 +17,7 @@ class MealEntryEntity extends Equatable {
   final double calories;
   final double? hpScore;
   final double? confidence;
+  final int? portionGrams;
   final String? aiRawJson;
   final String syncStatus;
   final DateTime? createdAt;
@@ -35,6 +36,7 @@ class MealEntryEntity extends Equatable {
     this.calories = 0,
     this.hpScore,
     this.confidence,
+    this.portionGrams,
     this.aiRawJson,
     this.syncStatus = 'local_only',
     this.createdAt,
@@ -55,6 +57,7 @@ class MealEntryEntity extends Equatable {
     calories,
     hpScore,
     confidence,
+    portionGrams,
     aiRawJson,
     syncStatus,
     createdAt,

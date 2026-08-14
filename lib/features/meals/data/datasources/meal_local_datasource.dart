@@ -76,6 +76,7 @@ final class MealLocalDataSourceImpl implements MealLocalDataSource {
               calories: Value(meal.calories),
               hpScore: Value(meal.hpScore),
               confidence: Value(meal.confidence),
+              portionGrams: Value(meal.portionGrams),
               aiRawJson: Value(meal.aiRawJson),
               syncStatus: Value(meal.syncStatus),
               // Preserve an explicit timestamp (cloud-pull passes the row's
@@ -235,6 +236,7 @@ final class MealLocalDataSourceImpl implements MealLocalDataSource {
       calories: row.calories,
       hpScore: row.hpScore,
       confidence: row.confidence,
+      portionGrams: row.portionGrams,
       aiRawJson: row.aiRawJson,
       syncStatus: row.syncStatus,
       createdAt: row.createdAt,
