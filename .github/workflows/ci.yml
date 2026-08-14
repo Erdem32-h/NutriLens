@@ -44,7 +44,7 @@ jobs:
           cache: true
 
       - name: Stub .env (CI has no secrets baked in)
-        # Tests don't talk to Supabase / Anthropic / RevenueCat — they
+        # Tests don't talk to Supabase / RevenueCat — they
         # pass empty values through flutter_dotenv. Without this file
         # the asset loader fails on first test run because pubspec
         # declares `.env` as an asset.
@@ -52,7 +52,6 @@ jobs:
           cat > .env <<'EOF'
           SUPABASE_URL=
           SUPABASE_ANON_KEY=
-          ANTHROPIC_API_KEY=
           RC_API_KEY_ANDROID=
           RC_API_KEY_IOS=
           ADMOB_APP_ID=

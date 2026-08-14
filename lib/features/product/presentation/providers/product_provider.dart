@@ -8,7 +8,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../config/drift/app_database.dart';
 import '../../../../core/network/connectivity_provider.dart';
-import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/services/hp_score_calculator.dart';
 import '../../../../core/services/product_score_enricher.dart';
@@ -127,14 +126,11 @@ final geminiAiServiceProvider = Provider<GeminiAiService>((ref) {
   return GeminiAiService(ref.watch(supabaseClientProvider));
 });
 
-final anthropicAiServiceProvider = Provider<AnthropicAiService>((ref) {
-  return AnthropicAiService(
-    dio: ref.watch(dioProvider),
-    apiKey: dotenv.env['ANTHROPIC_API_KEY'] ?? '',
-    // Optional ops override; falls back to the service's default model.
-    model: dotenv.env['ANTHROPIC_MODEL'],
-  );
-});
+// No direct-Anthropic provider: every AI call goes through the Supabase edge
+// function (GeminiAiService). Wiring a client here meant shipping a billable
+// ANTHROPIC_API_KEY inside the .env asset — readable in any unzipped APK —
+// for a code path nothing called. AnthropicAiService survives only for its
+// static response parsers, which the proxy path reuses.
 
 // --- UI Providers ---
 

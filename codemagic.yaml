@@ -26,7 +26,6 @@ workflows:
         script: |
           echo "SUPABASE_URL=$SUPABASE_URL" > .env
           echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
-          echo "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY" >> .env
           echo "RC_API_KEY_IOS=$RC_API_KEY_IOS" >> .env
           echo "RC_API_KEY_ANDROID=$RC_API_KEY_ANDROID" >> .env
           echo "ADMOB_APP_ID=$ADMOB_APP_ID_IOS" >> .env
@@ -216,7 +215,6 @@ workflows:
         script: |
           echo "SUPABASE_URL=$SUPABASE_URL" > .env
           echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
-          echo "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY" >> .env
           echo "RC_API_KEY_ANDROID=$RC_API_KEY_ANDROID" >> .env
           echo "RC_API_KEY_IOS=$RC_API_KEY_IOS" >> .env
           echo "ADMOB_APP_ID=$ADMOB_APP_ID_ANDROID" >> .env
@@ -270,7 +268,6 @@ workflows:
         script: |
           echo "SUPABASE_URL=$SUPABASE_URL" > .env
           echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
-          echo "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY" >> .env
           echo "RC_API_KEY_ANDROID=$RC_API_KEY_ANDROID" >> .env
           echo "PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL" >> .env
           echo "TERMS_OF_USE_URL=$TERMS_OF_USE_URL" >> .env
