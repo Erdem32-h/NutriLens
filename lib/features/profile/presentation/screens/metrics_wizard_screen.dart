@@ -59,13 +59,55 @@ class _MetricsWizardScreenState extends ConsumerState<MetricsWizardScreen> {
   bool _saving = false;
 
   /// Guards against re-seeding the form every time [userMetricsProvider]
-  /// rebuilds this widget (e.g. after the save below invalidates it) —
-  /// without this, finishing the wizard would immediately overwrite the
-  /// just-typed values with the freshly saved ones on the next frame.
+  /// changes (e.g. after the save below invalidates it) — without this,
+  /// finishing the wizard would immediately overwrite the just-typed values
+  /// with the freshly saved ones on the next resolve.
   bool _seeded = false;
+
+  /// Manual (not build-scoped) subscription so seeding can happen exactly
+  /// once, from `initState`, instead of being re-evaluated on every build —
+  /// see the comment on [_metricsSub]'s callback for why this can't be a
+  /// plain `ref.watch` in `build()`.
+  late final ProviderSubscription<AsyncValue<UserMetricsEntity?>> _metricsSub;
+
+  @override
+  void initState() {
+    super.initState();
+    // Existing metrics (edit-in-place case): seed the form once, the first
+    // time a value is available.
+    //
+    // This is NOT done by reading `ref.watch(userMetricsProvider).value`
+    // inline in `build()` and mutating the controllers there — a prior
+    // version of this screen did exactly that, and code review flagged it
+    // as a live crash risk: `userMetricsProvider` is a `FutureProvider`
+    // backed by a Drift query, so it never resolves in the same frame as
+    // the first build. By the time it resolves and triggers a rebuild, the
+    // `TextFormField`s already have mounted `EditableText`s listening to
+    // these controllers — setting `.text` on them synchronously inside
+    // `build()` calls `notifyListeners()` synchronously, which can call
+    // `setState()` on an already-built element mid-frame ("setState() or
+    // markNeedsBuild() called during build"). `ref.listenManual` fires
+    // outside the build phase, and the `addPostFrameCallback` below adds a
+    // second layer of safety by deferring the mutation until after the
+    // current frame is fully done.
+    _metricsSub = ref.listenManual<AsyncValue<UserMetricsEntity?>>(
+      userMetricsProvider,
+      (previous, next) {
+        final existing = next.value;
+        if (_seeded || existing == null) return;
+        _seeded = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          setState(() => _seedFrom(existing));
+        });
+      },
+      fireImmediately: true,
+    );
+  }
 
   @override
   void dispose() {
+    _metricsSub.close();
     _pageController.dispose();
     _ageController.dispose();
     _heightController.dispose();
@@ -198,16 +240,6 @@ class _MetricsWizardScreenState extends ConsumerState<MetricsWizardScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
-
-    // Existing metrics (edit-in-place case): seed the form once, the first
-    // time a value is available. Mutating fields here — rather than in
-    // initState — is what lets a not-yet-loaded FutureProvider fill the
-    // form in as soon as it resolves.
-    final existing = ref.watch(userMetricsProvider).value;
-    if (!_seeded && existing != null) {
-      _seeded = true;
-      _seedFrom(existing);
-    }
 
     return PopScope(
       canPop: false,

@@ -18,12 +18,19 @@ import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Kaydedilen degeri yakalar — gercek Drift/AppDatabase kurmadan sihirbazin
-/// datasource'a ne yolladigini dogrudan gozlemlemek icin.
+/// datasource'a ne yolladigini dogrudan gozlemlemek icin. [existing] verilirse
+/// "mevcut kayit varsa alanlar dolu acilir" senaryosunu simule eder — gercek
+/// datasource'ta oldugu gibi `get()` gercekten async (mikrotask'ta cozulur),
+/// boylece build() sirasinda seed etmenin dogurdugu crash riski testte de
+/// gercekci sekilde tetiklenir.
 class _FakeUserMetricsLocalDataSource implements UserMetricsLocalDataSource {
+  _FakeUserMetricsLocalDataSource({this.existing});
+
+  final UserMetricsEntity? existing;
   UserMetricsEntity? saved;
 
   @override
-  Future<UserMetricsEntity?> get(String userId) async => null;
+  Future<UserMetricsEntity?> get(String userId) async => existing;
 
   @override
   Future<void> save(UserMetricsEntity metrics) async {
@@ -40,7 +47,23 @@ class _FakeUserMetricsLocalDataSource implements UserMetricsLocalDataSource {
   Future<void> deleteFor(String userId) async {}
 }
 
-Future<_FakeUserMetricsLocalDataSource> _pumpWizard(WidgetTester tester) async {
+/// Bir alanin gorunen metnini okur. Key, alani saran `_NumberField`
+/// widget'ina verilmis (metric*Field), gercek `TextFormField`'a degil —
+/// bu yuzden `find.byKey` dogrudan `TextFormField`'a cast edilemez, once
+/// descendant olarak asagi inmek gerekiyor.
+String _fieldText(WidgetTester tester, String key) {
+  final finder = find.descendant(
+    of: find.byKey(Key(key)),
+    matching: find.byType(TextFormField),
+  );
+  return tester.widget<TextFormField>(finder).controller!.text;
+}
+
+Future<_FakeUserMetricsLocalDataSource> _pumpWizard(
+  WidgetTester tester, {
+  UserMetricsEntity? existingMetrics,
+  AppSessionState session = AppSessionState.authenticated,
+}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
 
@@ -54,13 +77,15 @@ Future<_FakeUserMetricsLocalDataSource> _pumpWizard(WidgetTester tester) async {
   );
   addTearDown(analytics.dispose);
 
-  final fakeDataSource = _FakeUserMetricsLocalDataSource();
+  final fakeDataSource = _FakeUserMetricsLocalDataSource(
+    existing: existingMetrics,
+  );
 
   final container = ProviderContainer(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(prefs),
       analyticsServiceProvider.overrideWithValue(analytics),
-      appSessionProvider.overrideWithValue(AppSessionState.authenticated),
+      appSessionProvider.overrideWithValue(session),
       effectiveUserIdProvider.overrideWithValue('test-user'),
       userMetricsLocalDataSourceProvider.overrideWithValue(fakeDataSource),
     ],
@@ -250,6 +275,95 @@ void main() {
       expect(saved, isNotNull);
       expect(saved!.targetWeightKg, isNull);
       expect(saved.activity, ActivityLevel.sedentary);
+    },
+  );
+
+  testWidgets('mevcut kayit varsa alanlar dolu acilir', (tester) async {
+    final existing = UserMetricsEntity(
+      userId: 'test-user',
+      sex: BiologicalSex.male,
+      birthYear: DateTime.now().year - 28,
+      heightCm: 182,
+      weightKg: 78,
+      targetWeightKg: 75,
+      activity: ActivityLevel.light,
+      updatedAt: DateTime(2026, 1, 1),
+    );
+    await _pumpWizard(tester, existingMetrics: existing);
+
+    // Cinsiyet onceden "Erkek" olarak seed edilmis olmali: "Devam" butonu
+    // hicbir sey secmeden dogrudan basilabilir olur (aksi halde null secim
+    // butonu devre disi birakir ve bu tap hicbir sey yapmaz).
+    await tester.tap(find.byKey(const Key('metricsSexNext')));
+    await tester.pumpAndSettle();
+
+    expect(_fieldText(tester, 'metricsAgeField'), '28');
+    expect(_fieldText(tester, 'metricsHeightField'), '182');
+    expect(_fieldText(tester, 'metricsWeightField'), '78');
+
+    await tester.tap(find.byKey(const Key('metricsBodyNext')));
+    await tester.pumpAndSettle();
+
+    expect(_fieldText(tester, 'metricsTargetWeightField'), '75');
+
+    await tester.tap(find.byKey(const Key('metricsTargetNext')));
+    await tester.pumpAndSettle();
+
+    // Aktivite onceden "Az hareketli" (light) secilmis olmali.
+    await tester.tap(find.byKey(const Key('metricsActivityNext')));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets(
+    'misafirken tamamlaninca olculer yine de kaydedilir ve /register\'a yonlendirilir',
+    (tester) async {
+      final fakeDataSource = await _pumpWizard(
+        tester,
+        session: AppSessionState.guest,
+      );
+
+      await tester.tap(find.text('Kadın'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsSexNext')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('metricsAgeField')),
+        '22',
+      );
+      await tester.enterText(
+        find.byKey(const Key('metricsHeightField')),
+        '165',
+      );
+      await tester.enterText(
+        find.byKey(const Key('metricsWeightField')),
+        '60',
+      );
+      await tester.tap(find.byKey(const Key('metricsBodyNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Şu anki kilomu korumak istiyorum'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsTargetNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Az hareketli'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsActivityNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('metricsFinish')));
+      await tester.pumpAndSettle();
+
+      // Yonlendirme kaydin yerine gecmemeli: olcumler yine kaydedilmis
+      // olmali, misafir olmak bunu engellememeli.
+      final saved = fakeDataSource.saved;
+      expect(saved, isNotNull);
+      expect(saved!.userId, 'test-user');
+      expect(saved.activity, ActivityLevel.light);
+
+      // Router /register'a gitmis olmali.
+      expect(find.text('register'), findsOneWidget);
     },
   );
 }
