@@ -440,6 +440,25 @@
   },
   "noMealsYet": "暂无饮食记录",
   "noMealsHint": "在扫描页面使用 AI 分析拍摄食物，即可保存记录到这里。",
+  "dailyCalorieSummary": "{consumed} / {target} 千卡",
+  "@dailyCalorieSummary": {
+    "placeholders": {
+      "consumed": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCalorieOver": "超出目标 {over} 千卡",
+  "@dailyCalorieOver": {
+    "placeholders": {
+      "over": {
+        "type": "int"
+      }
+    }
+  },
   "ingredientsTitle": "成分表",
   "confidenceSuffix": "可信度",
   "aiConfidenceHint": "AI 对识别出的食物、分量及热量估算的准确度把握。",
@@ -694,5 +713,15 @@
   "metricsMedicalDisclaimer": "这是一个估算值，不能替代医疗建议。",
   "metricsSaveToAccountCta": "保存到账户",
   "metricsCloseTooltip": "关闭",
-  "metricsBackTooltip": "返回"
+  "metricsBackTooltip": "返回",
+  "calorieTargetCardTitle": "个人卡路里目标",
+  "calorieTargetCardSubtitleSet": "你的每日目标是 {target} 千卡",
+  "@calorieTargetCardSubtitleSet": {
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "calorieTargetCardSubtitleUnset": "计算你的个人卡路里目标"
 }

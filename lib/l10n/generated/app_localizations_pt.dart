@@ -1200,6 +1200,16 @@ class AppLocalizationsPt extends AppLocalizations {
       'Use a Análise de IA na tela de escaneamento para fotografar sua refeição e salvá-la aqui.';
 
   @override
+  String dailyCalorieSummary(int consumed, int target) {
+    return '$consumed / $target kcal';
+  }
+
+  @override
+  String dailyCalorieOver(int over) {
+    return 'Você ultrapassou sua meta em $over kcal';
+  }
+
+  @override
   String get ingredientsTitle => 'Ingredientes';
 
   @override
@@ -1904,4 +1914,16 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get metricsBackTooltip => 'Voltar';
+
+  @override
+  String get calorieTargetCardTitle => 'Meta calórica pessoal';
+
+  @override
+  String calorieTargetCardSubtitleSet(int target) {
+    return 'Sua meta diária é $target kcal';
+  }
+
+  @override
+  String get calorieTargetCardSubtitleUnset =>
+      'Calcule sua meta calórica pessoal';
 }

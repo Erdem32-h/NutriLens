@@ -1198,6 +1198,16 @@ class AppLocalizationsTr extends AppLocalizations {
       'Tarama ekranındaki AI Analizi ile yemeğini fotoğraflayıp buraya kaydedebilirsin.';
 
   @override
+  String dailyCalorieSummary(int consumed, int target) {
+    return '$consumed / $target kcal';
+  }
+
+  @override
+  String dailyCalorieOver(int over) {
+    return 'Hedefin $over kcal üzerindesin';
+  }
+
+  @override
   String get ingredientsTitle => 'İçerik';
 
   @override
@@ -1904,4 +1914,16 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get metricsBackTooltip => 'Geri';
+
+  @override
+  String get calorieTargetCardTitle => 'Kişisel kalori hedefi';
+
+  @override
+  String calorieTargetCardSubtitleSet(int target) {
+    return 'Günlük hedefin $target kcal';
+  }
+
+  @override
+  String get calorieTargetCardSubtitleUnset =>
+      'Kişisel kalori hedefini hesapla';
 }

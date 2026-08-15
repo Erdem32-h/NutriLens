@@ -1179,6 +1179,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noMealsHint => '在扫描页面使用 AI 分析拍摄食物，即可保存记录到这里。';
 
   @override
+  String dailyCalorieSummary(int consumed, int target) {
+    return '$consumed / $target 千卡';
+  }
+
+  @override
+  String dailyCalorieOver(int over) {
+    return '超出目标 $over 千卡';
+  }
+
+  @override
   String get ingredientsTitle => '成分表';
 
   @override
@@ -1856,4 +1866,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get metricsBackTooltip => '返回';
+
+  @override
+  String get calorieTargetCardTitle => '个人卡路里目标';
+
+  @override
+  String calorieTargetCardSubtitleSet(int target) {
+    return '你的每日目标是 $target 千卡';
+  }
+
+  @override
+  String get calorieTargetCardSubtitleUnset => '计算你的个人卡路里目标';
 }

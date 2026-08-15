@@ -17,6 +17,7 @@ import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart';
+import '../../../../core/services/metrics_prompt_store.dart';
 import '../../../../core/services/share_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -35,6 +36,7 @@ import '../../../product/presentation/widgets/bento_nutrition_grid.dart';
 import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
 import '../../../product/presentation/widgets/health_score_bar.dart';
 import '../../../profile/presentation/providers/user_metrics_provider.dart';
+import '../../../profile/presentation/screens/metrics_wizard_screen.dart';
 import '../../../share/domain/share_caption.dart';
 import '../../../share/presentation/widgets/meal_share_card.dart';
 import '../widgets/meal_save_bar.dart';
@@ -404,10 +406,37 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       }
       ref.invalidate(mealsProvider);
       ref.invalidate(calorieChartDataProvider);
+      ref.invalidate(todayCalorieTotalProvider);
       // Home-screen widget reflects today's kcal — refresh on save so the
       // user sees the new total without waiting for the OS scheduler.
       unawaited(ref.read(homeWidgetServiceProvider).refresh(userId: userId));
 
+      if (!mounted) return;
+
+      // İlk öğün kaydından sonra kişisel kalori hedefi sihirbazını sun —
+      // yalnızca metrics kaydı YOKSA ve MetricsPromptStore.shouldPrompt()
+      // true dönüyorsa (kullanıcı daha önce reddetmemiş/tamamlamamışsa).
+      // Kayıt başarısız olsaydı buraya hiç ulaşılmazdı (yukarıdaki catch
+      // bloğu erken döner) — tetikleyici bilerek yalnızca başarılı kayıttan
+      // sonra çalışır. `await` sonrası her `context`/`ref` kullanımından
+      // önce `mounted` kontrolü şart (bkz. commit accf979: dispose sonrası
+      // ref erişimi hatası) — bu yüzden hem sihirbaz push'undan önce hem de
+      // sonrasında ayrı ayrı kontrol ediliyor.
+      final promptStore = ref.read(metricsPromptStoreProvider);
+      final metrics = await ref
+          .read(userMetricsLocalDataSourceProvider)
+          .get(userId);
+      if (!mounted) return;
+
+      if (metrics == null && await promptStore.shouldPrompt()) {
+        if (!mounted) return;
+        ref
+            .read(analyticsServiceProvider)
+            .track(FunnelEvents.metricsPromptShown);
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const MetricsWizardScreen()),
+        );
+      }
       if (!mounted) return;
 
       final messenger = ScaffoldMessenger.of(context);

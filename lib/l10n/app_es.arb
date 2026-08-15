@@ -440,6 +440,25 @@
   },
   "noMealsYet": "Aún no hay comidas",
   "noMealsHint": "Usa el Análisis por IA en la pantalla de escaneo para fotografiar tu plato y guardarlo aquí.",
+  "dailyCalorieSummary": "{consumed} / {target} kcal",
+  "@dailyCalorieSummary": {
+    "placeholders": {
+      "consumed": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCalorieOver": "Superaste tu objetivo por {over} kcal",
+  "@dailyCalorieOver": {
+    "placeholders": {
+      "over": {
+        "type": "int"
+      }
+    }
+  },
   "ingredientsTitle": "Ingredientes",
   "confidenceSuffix": "confianza",
   "aiConfidenceHint": "Grado de certeza de la IA sobre la comida, porción y estimación de calorías.",
@@ -694,5 +713,15 @@
   "metricsMedicalDisclaimer": "Es un valor estimado, no sustituye el consejo médico.",
   "metricsSaveToAccountCta": "Guardar en la Cuenta",
   "metricsCloseTooltip": "Cerrar",
-  "metricsBackTooltip": "Atrás"
+  "metricsBackTooltip": "Atrás",
+  "calorieTargetCardTitle": "Objetivo calórico personal",
+  "calorieTargetCardSubtitleSet": "Tu objetivo diario es {target} kcal",
+  "@calorieTargetCardSubtitleSet": {
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "calorieTargetCardSubtitleUnset": "Calcula tu objetivo calórico personal"
 }

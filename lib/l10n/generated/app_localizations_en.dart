@@ -1196,6 +1196,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use AI Analysis on the scan screen to photograph your food and save it here.';
 
   @override
+  String dailyCalorieSummary(int consumed, int target) {
+    return '$consumed / $target kcal';
+  }
+
+  @override
+  String dailyCalorieOver(int over) {
+    return 'You are $over kcal over your target';
+  }
+
+  @override
   String get ingredientsTitle => 'Ingredients';
 
   @override
@@ -1901,4 +1911,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get metricsBackTooltip => 'Back';
+
+  @override
+  String get calorieTargetCardTitle => 'Personal calorie target';
+
+  @override
+  String calorieTargetCardSubtitleSet(int target) {
+    return 'Your daily target is $target kcal';
+  }
+
+  @override
+  String get calorieTargetCardSubtitleUnset =>
+      'Calculate your personal calorie target';
 }

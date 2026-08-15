@@ -440,6 +440,25 @@
   },
   "noMealsYet": "Henüz öğün yok",
   "noMealsHint": "Tarama ekranındaki AI Analizi ile yemeğini fotoğraflayıp buraya kaydedebilirsin.",
+  "dailyCalorieSummary": "{consumed} / {target} kcal",
+  "@dailyCalorieSummary": {
+    "placeholders": {
+      "consumed": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCalorieOver": "Hedefin {over} kcal üzerindesin",
+  "@dailyCalorieOver": {
+    "placeholders": {
+      "over": {
+        "type": "int"
+      }
+    }
+  },
   "ingredientsTitle": "İçerik",
   "confidenceSuffix": "güven",
   "aiConfidenceHint": "Yapay zekânın tespit ettiği yemek, porsiyon ve kalori tahmininden ne kadar emin olduğunu gösterir.",
@@ -719,5 +738,15 @@
   "metricsMedicalDisclaimer": "Tahmini değerdir, tıbbi tavsiye yerine geçmez.",
   "metricsSaveToAccountCta": "Hesaba Kaydet",
   "metricsCloseTooltip": "Kapat",
-  "metricsBackTooltip": "Geri"
+  "metricsBackTooltip": "Geri",
+  "calorieTargetCardTitle": "Kişisel kalori hedefi",
+  "calorieTargetCardSubtitleSet": "Günlük hedefin {target} kcal",
+  "@calorieTargetCardSubtitleSet": {
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "calorieTargetCardSubtitleUnset": "Kişisel kalori hedefini hesapla"
 }

@@ -440,6 +440,25 @@
   },
   "noMealsYet": "لا توجد وجبات حتى الآن",
   "noMealsHint": "استخدم تحليل الذكاء الاصطناعي في شاشة المسح لالتقاط صورة لوجبتك وحفظها هنا.",
+  "dailyCalorieSummary": "{consumed} / {target} kcal",
+  "@dailyCalorieSummary": {
+    "placeholders": {
+      "consumed": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCalorieOver": "تجاوزت هدفك بمقدار {over} سعرة حرارية",
+  "@dailyCalorieOver": {
+    "placeholders": {
+      "over": {
+        "type": "int"
+      }
+    }
+  },
   "ingredientsTitle": "المكونات",
   "confidenceSuffix": "مستوى الثقة",
   "aiConfidenceHint": "درجة تأكد الذكاء الاصطناعي من الطعام والحصة والسعرات الحرارية المقدرة.",
@@ -694,5 +713,15 @@
   "metricsMedicalDisclaimer": "هذه قيمة تقديرية ولا تُغني عن الاستشارة الطبية.",
   "metricsSaveToAccountCta": "حفظ في الحساب",
   "metricsCloseTooltip": "إغلاق",
-  "metricsBackTooltip": "رجوع"
+  "metricsBackTooltip": "رجوع",
+  "calorieTargetCardTitle": "هدف السعرات الحرارية الشخصي",
+  "calorieTargetCardSubtitleSet": "هدفك اليومي هو {target} سعرة حرارية",
+  "@calorieTargetCardSubtitleSet": {
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "calorieTargetCardSubtitleUnset": "احسب هدف السعرات الحرارية الشخصي"
 }

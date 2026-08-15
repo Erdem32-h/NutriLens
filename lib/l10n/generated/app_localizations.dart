@@ -2350,6 +2350,18 @@ abstract class AppLocalizations {
   /// **'Tarama ekranındaki AI Analizi ile yemeğini fotoğraflayıp buraya kaydedebilirsin.'**
   String get noMealsHint;
 
+  /// No description provided for @dailyCalorieSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'{consumed} / {target} kcal'**
+  String dailyCalorieSummary(int consumed, int target);
+
+  /// No description provided for @dailyCalorieOver.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefin {over} kcal üzerindesin'**
+  String dailyCalorieOver(int over);
+
   /// No description provided for @ingredientsTitle.
   ///
   /// In tr, this message translates to:
@@ -3663,6 +3675,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Geri'**
   String get metricsBackTooltip;
+
+  /// No description provided for @calorieTargetCardTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kişisel kalori hedefi'**
+  String get calorieTargetCardTitle;
+
+  /// No description provided for @calorieTargetCardSubtitleSet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük hedefin {target} kcal'**
+  String calorieTargetCardSubtitleSet(int target);
+
+  /// No description provided for @calorieTargetCardSubtitleUnset.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kişisel kalori hedefini hesapla'**
+  String get calorieTargetCardSubtitleUnset;
 }
 
 class _AppLocalizationsDelegate

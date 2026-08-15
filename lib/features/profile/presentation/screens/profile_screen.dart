@@ -18,6 +18,8 @@ import '../../../meals/presentation/providers/meal_chart_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
 import '../providers/health_filters_provider.dart';
 import '../providers/user_data_deletion_provider.dart';
+import '../providers/user_metrics_provider.dart';
+import '../screens/metrics_wizard_screen.dart';
 import '../widgets/analytics_opt_out_tile.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 
@@ -150,6 +152,34 @@ class ProfileScreen extends ConsumerWidget {
             title: l10n.language,
             value: _getLanguageDisplayName(currentLocale.languageCode),
             onTap: () => _showLanguageDialog(context, ref, currentLocale),
+          ),
+
+          const SizedBox(height: 28),
+
+          // Kişisel kalori hedefi — hesaplanmışsa hedefi alt metinde
+          // gösterir, yoksa hesaplamaya davet eder. shouldPrompt() kontrolü
+          // BİLEREK burada yapılmaz: food_result_screen'deki otomatik
+          // tetikleyici yalnızca ilk-öğün-sonrası bir kez açılır ve
+          // reddedildikten sonra bir daha kendiliğinden açılmaz, ama profil
+          // her zaman bir giriş noktası olarak kalmalı. Mevcut kayıt varsa
+          // sihirbaz kendi initState'inde alanları doldurur (bkz.
+          // MetricsWizardScreen dokümantasyonu) — burada bir şey geçmiyoruz.
+          Consumer(
+            builder: (context, ref, _) {
+              final personalTarget = ref.watch(personalDailyCaloriesProvider);
+              return _SettingsTile(
+                icon: Icons.local_fire_department_rounded,
+                title: l10n.calorieTargetCardTitle,
+                value: personalTarget != null
+                    ? l10n.calorieTargetCardSubtitleSet(personalTarget)
+                    : l10n.calorieTargetCardSubtitleUnset,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const MetricsWizardScreen(),
+                  ),
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 28),
@@ -320,6 +350,7 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(blacklistProvider);
       ref.invalidate(mealsProvider);
       ref.invalidate(calorieChartDataProvider);
+      ref.invalidate(todayCalorieTotalProvider);
       ref.invalidate(healthFiltersProvider);
 
       if (!context.mounted) return;
@@ -379,6 +410,7 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(blacklistProvider);
       ref.invalidate(mealsProvider);
       ref.invalidate(calorieChartDataProvider);
+      ref.invalidate(todayCalorieTotalProvider);
       ref.invalidate(healthFiltersProvider);
       ref.invalidate(authStateProvider);
 

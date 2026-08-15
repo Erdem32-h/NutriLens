@@ -51,6 +51,7 @@ final mealCloudSyncProvider = Provider<void>((ref) {
     if (changed) {
       ref.invalidate(mealsProvider);
       ref.invalidate(calorieChartDataProvider);
+      ref.invalidate(todayCalorieTotalProvider);
     }
   });
 });
@@ -60,5 +61,27 @@ final mealsProvider = FutureProvider<List<MealEntryEntity>>((ref) async {
   if (userId == null) return [];
   final dataSource = ref.watch(mealLocalDataSourceProvider);
   return dataSource.getMeals(userId: userId);
+});
+
+/// Bugünün (yerel gece yarısından şimdiye) toplam alınan kalorisi.
+/// Öğünlerim ekranındaki "alınan / hedef" özet satırını besler —
+/// grafik bölümünün dönem sekmesinden (calorieChartDataProvider,
+/// caloriePeriodProvider/calorieOffsetProvider) bilerek bağımsızdır:
+/// kullanıcı grafikte Ay/Yıl sekmesine geçse bile bu satır her zaman
+/// BUGÜNÜ gösterir. Diğer meal-mutasyon noktalarıyla aynı elle-invalidate
+/// deseni izlenir (bkz. bu dosyadaki + meals_screen.dart + profile_screen.dart
+/// içindeki mealsProvider/calorieChartDataProvider invalidate çağrıları) —
+/// provider zincirini watch üzerinden kurmak yerine.
+final todayCalorieTotalProvider = FutureProvider<double>((ref) async {
+  final userId = ref.watch(effectiveUserIdProvider);
+  if (userId == null) return 0;
+  final now = DateTime.now();
+  final startOfDay = DateTime(now.year, now.month, now.day);
+  final dataSource = ref.watch(mealLocalDataSourceProvider);
+  return dataSource.totalCalories(
+    userId: userId,
+    from: startOfDay,
+    to: startOfDay.add(const Duration(days: 1)),
+  );
 });
 

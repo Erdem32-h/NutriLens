@@ -1197,6 +1197,16 @@ class AppLocalizationsAr extends AppLocalizations {
       'استخدم تحليل الذكاء الاصطناعي في شاشة المسح لالتقاط صورة لوجبتك وحفظها هنا.';
 
   @override
+  String dailyCalorieSummary(int consumed, int target) {
+    return '$consumed / $target kcal';
+  }
+
+  @override
+  String dailyCalorieOver(int over) {
+    return 'تجاوزت هدفك بمقدار $over سعرة حرارية';
+  }
+
+  @override
   String get ingredientsTitle => 'المكونات';
 
   @override
@@ -1892,4 +1902,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get metricsBackTooltip => 'رجوع';
+
+  @override
+  String get calorieTargetCardTitle => 'هدف السعرات الحرارية الشخصي';
+
+  @override
+  String calorieTargetCardSubtitleSet(int target) {
+    return 'هدفك اليومي هو $target سعرة حرارية';
+  }
+
+  @override
+  String get calorieTargetCardSubtitleUnset =>
+      'احسب هدف السعرات الحرارية الشخصي';
 }
