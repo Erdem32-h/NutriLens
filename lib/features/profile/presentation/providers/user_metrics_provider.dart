@@ -4,10 +4,20 @@ import '../../../../core/services/calorie_target_calculator.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../data/datasources/user_metrics_local_datasource.dart';
+import '../../data/datasources/user_metrics_remote_datasource.dart';
 import '../../domain/entities/user_metrics_entity.dart';
 
 final userMetricsLocalDataSourceProvider = Provider<UserMetricsLocalDataSource>(
   (ref) => UserMetricsLocalDataSourceImpl(ref.watch(appDatabaseProvider)),
+);
+
+// --- Signed-in cloud mirror ---
+// Write-only from this task's scope: the wizard's finish handler upserts
+// here for authenticated users right after the local save. No pull/merge
+// path exists yet — local Drift remains the single source of truth read by
+// every screen (see userMetricsProvider below).
+final userMetricsRemoteDataSourceProvider = Provider<UserMetricsRemoteDataSource>(
+  (ref) => UserMetricsRemoteDataSource(ref.watch(supabaseClientProvider)),
 );
 
 /// `effectiveUserIdProvider` yalnızca çıkış yapılmış kullanıcıda null döner

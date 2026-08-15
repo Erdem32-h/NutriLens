@@ -215,6 +215,18 @@ class _MetricsWizardScreenState extends ConsumerState<MetricsWizardScreen> {
     await ref.read(userMetricsLocalDataSourceProvider).save(entity);
     ref.invalidate(userMetricsProvider);
 
+    // Best-effort cloud mirror: signed-in users only, never blocks the local
+    // save above, and a failure never surfaces to the user — local Drift is
+    // the source of truth, the cloud copy just gets retried next time this
+    // screen is finished.
+    if (ref.read(isAuthenticatedProvider)) {
+      try {
+        await ref.read(userMetricsRemoteDataSourceProvider).upsert(entity);
+      } catch (e) {
+        debugPrint('[MetricsWizard] remote upsert failed: $e');
+      }
+    }
+
     final result = calculateCalorieTarget(
       entity.toCalculatorInput(DateTime.now()),
     );

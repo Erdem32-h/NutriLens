@@ -11,6 +11,7 @@ import 'package:nutrilens/core/services/device_id_service.dart';
 import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/core/theme/app_theme.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
+import 'package:nutrilens/features/profile/data/datasources/user_metrics_remote_datasource.dart';
 import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.dart';
 import 'package:nutrilens/features/profile/presentation/providers/user_metrics_provider.dart';
 import 'package:nutrilens/features/profile/presentation/screens/metrics_wizard_screen.dart';
@@ -47,6 +48,37 @@ class _FakeUserMetricsLocalDataSource implements UserMetricsLocalDataSource {
   Future<void> deleteFor(String userId) async {}
 }
 
+/// Cagri sayisi + son gonderilen entity'yi yakalar — "girisli kullaniciyi
+/// yalnizca yerel kayittan sonra ek olarak buluta yazar, misafirde hic ag
+/// cagrisi yapmaz" davranisini gercek Supabase kurmadan dogrulamak icin.
+class _FakeUserMetricsRemoteDataSource implements UserMetricsRemoteDataSource {
+  UserMetricsEntity? upserted;
+  int upsertCallCount = 0;
+
+  @override
+  Future<void> upsert(UserMetricsEntity m) async {
+    upsertCallCount++;
+    upserted = m;
+  }
+
+  @override
+  Future<UserMetricsEntity?> fetch(String userId) async => null;
+}
+
+/// Her cagriyi patlatir — "uzak yazma basarisiz olursa kullaniciya hata
+/// gostermez, sihirbaz normal akisina devam eder" davranisini dogrulamak
+/// icin.
+class _ThrowingUserMetricsRemoteDataSource
+    implements UserMetricsRemoteDataSource {
+  @override
+  Future<void> upsert(UserMetricsEntity m) async {
+    throw Exception('network down');
+  }
+
+  @override
+  Future<UserMetricsEntity?> fetch(String userId) async => null;
+}
+
 /// Bir alanin gorunen metnini okur. Key, alani saran `_NumberField`
 /// widget'ina verilmis (metric*Field), gercek `TextFormField`'a degil —
 /// bu yuzden `find.byKey` dogrudan `TextFormField`'a cast edilemez, once
@@ -63,6 +95,7 @@ Future<_FakeUserMetricsLocalDataSource> _pumpWizard(
   WidgetTester tester, {
   UserMetricsEntity? existingMetrics,
   AppSessionState session = AppSessionState.authenticated,
+  UserMetricsRemoteDataSource? remote,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -88,6 +121,9 @@ Future<_FakeUserMetricsLocalDataSource> _pumpWizard(
       appSessionProvider.overrideWithValue(session),
       effectiveUserIdProvider.overrideWithValue('test-user'),
       userMetricsLocalDataSourceProvider.overrideWithValue(fakeDataSource),
+      userMetricsRemoteDataSourceProvider.overrideWithValue(
+        remote ?? _FakeUserMetricsRemoteDataSource(),
+      ),
     ],
   );
   addTearDown(container.dispose);
@@ -364,6 +400,145 @@ void main() {
 
       // Router /register'a gitmis olmali.
       expect(find.text('register'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'girisli kullanicida tamamlaninca yerel kayittan sonra buluta da yazilir',
+    (tester) async {
+      final fakeRemote = _FakeUserMetricsRemoteDataSource();
+      await _pumpWizard(
+        tester,
+        session: AppSessionState.authenticated,
+        remote: fakeRemote,
+      );
+
+      await tester.tap(find.text('Kadın'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsSexNext')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const Key('metricsAgeField')), '31');
+      await tester.enterText(
+        find.byKey(const Key('metricsHeightField')),
+        '168',
+      );
+      await tester.enterText(
+        find.byKey(const Key('metricsWeightField')),
+        '62',
+      );
+      await tester.tap(find.byKey(const Key('metricsBodyNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Şu anki kilomu korumak istiyorum'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsTargetNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Orta hareketli'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsActivityNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('metricsFinish')));
+      await tester.pumpAndSettle();
+
+      expect(fakeRemote.upsertCallCount, 1);
+      expect(fakeRemote.upserted?.userId, 'test-user');
+      expect(fakeRemote.upserted?.sex, BiologicalSex.female);
+      expect(fakeRemote.upserted?.heightCm, 168);
+      expect(fakeRemote.upserted?.weightKg, 62);
+      expect(fakeRemote.upserted?.activity, ActivityLevel.moderate);
+    },
+  );
+
+  testWidgets(
+    'misafirken tamamlaninca buluta hicbir ag cagrisi yapilmaz',
+    (tester) async {
+      final fakeRemote = _FakeUserMetricsRemoteDataSource();
+      await _pumpWizard(
+        tester,
+        session: AppSessionState.guest,
+        remote: fakeRemote,
+      );
+
+      await tester.tap(find.text('Erkek'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsSexNext')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const Key('metricsAgeField')), '25');
+      await tester.enterText(
+        find.byKey(const Key('metricsHeightField')),
+        '178',
+      );
+      await tester.enterText(
+        find.byKey(const Key('metricsWeightField')),
+        '80',
+      );
+      await tester.tap(find.byKey(const Key('metricsBodyNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Şu anki kilomu korumak istiyorum'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsTargetNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Hareketsiz'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsActivityNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('metricsFinish')));
+      await tester.pumpAndSettle();
+
+      expect(fakeRemote.upsertCallCount, 0);
+    },
+  );
+
+  testWidgets(
+    'bulut yazma hata verirse kullaniciya hata gosterilmez, akis normal devam eder',
+    (tester) async {
+      await _pumpWizard(
+        tester,
+        session: AppSessionState.authenticated,
+        remote: _ThrowingUserMetricsRemoteDataSource(),
+      );
+
+      await tester.tap(find.text('Kadın'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsSexNext')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const Key('metricsAgeField')), '29');
+      await tester.enterText(
+        find.byKey(const Key('metricsHeightField')),
+        '170',
+      );
+      await tester.enterText(
+        find.byKey(const Key('metricsWeightField')),
+        '58',
+      );
+      await tester.tap(find.byKey(const Key('metricsBodyNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Şu anki kilomu korumak istiyorum'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsTargetNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Az hareketli'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsActivityNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('metricsFinish')));
+      await tester.pumpAndSettle();
+
+      // Wizard normalde kapanir (base'e doner) — hata popup'i, snackbar,
+      // exception vs. hicbiri gorunmemeli.
+      expect(find.text('base'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     },
   );
 }
