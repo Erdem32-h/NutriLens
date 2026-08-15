@@ -212,7 +212,28 @@ class _MetricsWizardScreenState extends ConsumerState<MetricsWizardScreen> {
       updatedAt: DateTime.now(),
     );
 
-    await ref.read(userMetricsLocalDataSourceProvider).save(entity);
+    // Only I/O in this method that wasn't already guarded — an unhandled
+    // throw here (e.g. a full disk) used to leave `_saving` stuck at true
+    // forever: `onFinish: _saving ? null : _handleFinish` disables the CTA
+    // with no message, and the only way out was the close button, which
+    // permanently marks the wizard dismissed. `finally` guarantees the flag
+    // always comes back down, whether save succeeded or not.
+    var localSaveFailed = false;
+    try {
+      await ref.read(userMetricsLocalDataSourceProvider).save(entity);
+    } catch (e) {
+      debugPrint('[MetricsWizard] local save failed: $e');
+      localSaveFailed = true;
+    } finally {
+      if (localSaveFailed && mounted) setState(() => _saving = false);
+    }
+    if (localSaveFailed) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.saveFailedDatabase)),
+      );
+      return;
+    }
     ref.invalidate(userMetricsProvider);
 
     // Best-effort cloud mirror: signed-in users only, never blocks the local

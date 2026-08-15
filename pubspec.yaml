@@ -110,6 +110,11 @@ dev_dependencies:
 
   # Testing
   mocktail: ^1.0.4
+  # Used directly in test/config/drift/migration_v1_v2_test.dart to open a
+  # raw in-memory sqlite3 database with hand-rolled v1/v2-era DDL — drift
+  # only re-exports the NativeDatabase wrapper, not the underlying sqlite3
+  # API, so this needs to be a real (not merely transitive) dependency.
+  sqlite3: ^2.9.0
 
   # Linting
   flutter_lints: ^6.0.0

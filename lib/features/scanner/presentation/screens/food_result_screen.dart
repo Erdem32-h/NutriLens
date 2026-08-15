@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -567,7 +568,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   /// Loading view: shows the captured photo with a scanning-line animation
   /// sweeping vertically — gives the user concrete visual feedback that
   /// the image is being processed instead of a generic spinner.
-  Widget _buildLoading(dynamic l10n, AppColorsExtension colors) {
+  Widget _buildLoading(AppLocalizations l10n, AppColorsExtension colors) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -599,7 +600,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     );
   }
 
-  Widget _buildError(dynamic l10n, AppColorsExtension colors) {
+  Widget _buildError(AppLocalizations l10n, AppColorsExtension colors) {
     final isServiceDown = _serviceUnavailable;
     final iconColor = isServiceDown ? colors.warning : colors.error;
     final icon = isServiceDown
@@ -645,7 +646,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     );
   }
 
-  Widget _buildResult(dynamic l10n, AppColorsExtension colors) {
+  Widget _buildResult(AppLocalizations l10n, AppColorsExtension colors) {
     final result = _result!;
     final confidencePercent = (result.confidence * 100).toInt();
     // All UI below renders the SCALED nutrients so the BentoGrid,

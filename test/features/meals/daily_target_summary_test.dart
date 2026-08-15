@@ -146,4 +146,22 @@ void main() {
 
     expect(find.textContaining('üzerindesin'), findsNothing);
   });
+
+  testWidgets(
+      'metrics yokken (varsayilan 2000 kcal) dahi tibbi tavsiye dipnotu '
+      'gorunur — gosterilen sayi kisisel olsun olmasin tahmini bir '
+      'referanstir', (tester) async {
+    await _useTallSurface(tester);
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(db.close);
+    await MealLocalDataSourceImpl(db).saveMeal(_todayMeal(calories: 1420));
+
+    await tester.pumpWidget(wrap(db));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Tahmini değerdir, tıbbi tavsiye yerine geçmez.'),
+      findsOneWidget,
+    );
+  });
 }

@@ -138,6 +138,69 @@ void main() {
   });
 
   testWidgets(
+      'hedefin altındaki barda kesikli hedef çizgisi bulunur ve doğru '
+      'konumda çizilir', (tester) async {
+    // weekData()'daki en yüksek bar 2000 kcal; hedef 1800 < 2000, yani
+    // effectiveMax == maxKcal (rescale yok) ve çizgi normal aralıkta.
+    await tester.pumpWidget(
+      wrap(CalorieStackedBarChart(data: weekData(), targetKcal: 1800)),
+    );
+    await tester.pumpAndSettle();
+
+    final lineFinder = find.byWidgetPredicate(
+      (w) => w.runtimeType.toString() == '_TargetLine',
+    );
+    expect(lineFinder, findsOneWidget);
+
+    final positioned = tester.widget<Positioned>(
+      find.ancestor(of: lineFinder, matching: find.byType(Positioned)).first,
+    );
+    // chartHeight=160, labelRowHeight=24 (widget'ın private sabitleri):
+    // bottom = 24 + 160*(1800/2000) = 168.
+    expect(positioned.bottom, closeTo(168, 0.01));
+  });
+
+  testWidgets(
+      'hedef en yüksek bardan büyük olduğunda (en yaygın senaryo) çizgi '
+      'grafik alanının dışına taşıp kırpılmaz', (tester) async {
+    // En yüksek bar 2000 kcal; hedef 3000 > 2000 → effectiveMax hedefe
+    // genişler ve ham oran tam 1.0 olur. Düzeltmeden önce bu durumda
+    // `bottom` Stack'in tam yüksekliğine eşitlenip çizgi Clip.hardEdge ile
+    // tamamen kırpılıyordu — yani çizgi TAM OLARAK en çok gerektiği anda
+    // görünmüyordu.
+    await tester.pumpWidget(
+      wrap(CalorieStackedBarChart(data: weekData(), targetKcal: 3000)),
+    );
+    await tester.pumpAndSettle();
+
+    final lineFinder = find.byWidgetPredicate(
+      (w) => w.runtimeType.toString() == '_TargetLine',
+    );
+    expect(lineFinder, findsOneWidget);
+
+    final positioned = tester.widget<Positioned>(
+      find.ancestor(of: lineFinder, matching: find.byType(Positioned)).first,
+    );
+    // Grafik alanı labelRowHeight(24) + chartHeight(160) = 184 yüksekliğinde;
+    // çizgi 4px — bottom en fazla 180 olabilir, yoksa üstten taşar.
+    expect(positioned.bottom, isNotNull);
+    expect(positioned.bottom, lessThanOrEqualTo(180));
+    expect(positioned.bottom, greaterThanOrEqualTo(0));
+  });
+
+  testWidgets(
+      'targetKcal null iken (metrics yok) hedef çizgisi render olmaz ve '
+      'grafik öncekiyle bit bit aynı kalır', (tester) async {
+    await tester.pumpWidget(wrap(CalorieStackedBarChart(data: weekData())));
+    await tester.pumpAndSettle();
+
+    final lineFinder = find.byWidgetPredicate(
+      (w) => w.runtimeType.toString() == '_TargetLine',
+    );
+    expect(lineFinder, findsNothing);
+  });
+
+  testWidgets(
       'macro balance card makro dökümü yokken yanıltıcı Düşük göstermez',
       (tester) async {
     // kcal var (bir öğün loglanmış) ama proteinKcal/carbKcal/fatKcal hepsi

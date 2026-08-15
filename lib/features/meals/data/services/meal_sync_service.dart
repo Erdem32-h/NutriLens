@@ -153,23 +153,5 @@ MealEntryEntity _guardPortionGrams(
   if (cloudEntity.portionGrams != null || local?.portionGrams == null) {
     return cloudEntity;
   }
-  return MealEntryEntity(
-    id: cloudEntity.id,
-    userId: cloudEntity.userId,
-    photoThumbnailPath: cloudEntity.photoThumbnailPath,
-    mealName: cloudEntity.mealName,
-    brand: cloudEntity.brand,
-    mealType: cloudEntity.mealType,
-    capturedAt: cloudEntity.capturedAt,
-    ingredientsText: cloudEntity.ingredientsText,
-    nutriments: cloudEntity.nutriments,
-    calories: cloudEntity.calories,
-    hpScore: cloudEntity.hpScore,
-    confidence: cloudEntity.confidence,
-    portionGrams: local!.portionGrams,
-    aiRawJson: cloudEntity.aiRawJson,
-    syncStatus: cloudEntity.syncStatus,
-    createdAt: cloudEntity.createdAt,
-    updatedAt: cloudEntity.updatedAt,
-  );
+  return cloudEntity.copyWith(portionGrams: local!.portionGrams);
 }

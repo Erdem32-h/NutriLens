@@ -10,6 +10,7 @@ import 'package:nutrilens/core/services/calorie_target_calculator.dart';
 import 'package:nutrilens/core/services/device_id_service.dart';
 import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/core/theme/app_theme.dart';
+import 'package:nutrilens/core/widgets/app_button.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_remote_datasource.dart';
 import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.dart';
@@ -73,6 +74,31 @@ class _ThrowingUserMetricsRemoteDataSource
   }
 }
 
+/// `save()` her zaman patlar — item 5 regresyonu icin: yerel Drift yazmasi
+/// basarisiz olursa `_saving` sonsuza kadar true'da kilitlenip kapatma
+/// dugmesi disinda cikis yolu birakmamaliydi (bkz. metrics_wizard_screen.dart
+/// `_handleFinish`). `get`/`reassignOwner`/`deleteFor` bu senaryoda hic
+/// cagrilmiyor, o yuzden implement etmiyoruz bile.
+class _ThrowingUserMetricsLocalDataSource
+    implements UserMetricsLocalDataSource {
+  @override
+  Future<UserMetricsEntity?> get(String userId) async => null;
+
+  @override
+  Future<void> save(UserMetricsEntity metrics) async {
+    throw Exception('disk full');
+  }
+
+  @override
+  Future<void> reassignOwner({
+    required String fromUserId,
+    required String toUserId,
+  }) async {}
+
+  @override
+  Future<void> deleteFor(String userId) async {}
+}
+
 /// Bir alanin gorunen metnini okur. Key, alani saran `_NumberField`
 /// widget'ina verilmis (metric*Field), gercek `TextFormField`'a degil —
 /// bu yuzden `find.byKey` dogrudan `TextFormField`'a cast edilemez, once
@@ -90,6 +116,7 @@ Future<_FakeUserMetricsLocalDataSource> _pumpWizard(
   UserMetricsEntity? existingMetrics,
   AppSessionState session = AppSessionState.authenticated,
   UserMetricsRemoteDataSource? remote,
+  UserMetricsLocalDataSource? localDataSource,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -114,7 +141,9 @@ Future<_FakeUserMetricsLocalDataSource> _pumpWizard(
       analyticsServiceProvider.overrideWithValue(analytics),
       appSessionProvider.overrideWithValue(session),
       effectiveUserIdProvider.overrideWithValue('test-user'),
-      userMetricsLocalDataSourceProvider.overrideWithValue(fakeDataSource),
+      userMetricsLocalDataSourceProvider.overrideWithValue(
+        localDataSource ?? fakeDataSource,
+      ),
       userMetricsRemoteDataSourceProvider.overrideWithValue(
         remote ?? _FakeUserMetricsRemoteDataSource(),
       ),
@@ -533,6 +562,72 @@ void main() {
       // exception vs. hicbiri gorunmemeli.
       expect(find.text('base'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'yerel kayit patlarsa hata snackbar\'i gorunur ve CTA kilitli kalmaz '
+    '(regresyon: item 5)',
+    (tester) async {
+      await _pumpWizard(
+        tester,
+        localDataSource: _ThrowingUserMetricsLocalDataSource(),
+      );
+
+      await tester.tap(find.text('Kadın'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsSexNext')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const Key('metricsAgeField')), '29');
+      await tester.enterText(
+        find.byKey(const Key('metricsHeightField')),
+        '170',
+      );
+      await tester.enterText(
+        find.byKey(const Key('metricsWeightField')),
+        '58',
+      );
+      await tester.tap(find.byKey(const Key('metricsBodyNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Şu anki kilomu korumak istiyorum'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsTargetNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Az hareketli'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('metricsActivityNext')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('metricsFinish')));
+      await tester.pumpAndSettle();
+
+      // Ekran kapanmadi (base'e donmedi) — yerel kayit basarisiz oldugu
+      // icin akis burada durdu, ama patlamadi ve sessizce takilip kalmadi.
+      expect(find.text('base'), findsNothing);
+      expect(tester.takeException(), isNull);
+      expect(
+        find.text('Veritabanına kaydedilemedi. Lütfen tekrar deneyin.'),
+        findsOneWidget,
+      );
+
+      // Duzeltmeden once bu, sonsuza dek devre disi kalirdi (`_saving`
+      // hicbir zaman false'a donmezdi, cunku hata yolunda hicbir yerde
+      // sifirlanmiyordu). AppButton.onPressed, `_saving ? null :
+      // _handleFinish`'in dogrudan yansimasi — null olmadigini gormek
+      // `_saving`in geri false'a dustugunu, widget ic durumuna
+      // erismeden dogrular.
+      final button = tester.widget<AppButton>(
+        find.byKey(const Key('metricsFinish')),
+      );
+      expect(
+        button.onPressed,
+        isNotNull,
+        reason:
+            'yerel kayit hatasindan sonra CTA sonsuza dek kilitli kalmamali',
+      );
     },
   );
 }

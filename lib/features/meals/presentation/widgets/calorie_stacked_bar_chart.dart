@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -54,9 +56,18 @@ class CalorieStackedBarChart extends StatelessWidget {
                 Positioned(
                   left: 0,
                   right: 0,
-                  bottom:
-                      _labelRowHeight +
-                      _chartHeight * (targetKcal! / effectiveMax),
+                  // Kesikli çizginin taşan barları işaretlediği durum
+                  // (target < effectiveMax) zaten `bottom`u chartHeight'in
+                  // içinde tutar. targetKcal >= effectiveMax olduğunda
+                  // (yani hedef hiçbir barı aşmadığı en yaygın durumda)
+                  // ham hesap `bottom`u Stack'in tam yüksekliğine, hatta
+                  // üstüne taşırıp çizgiyi Clip.hardEdge ile keserdi — bu
+                  // yüzden en fazla "üst kenara yaslı" konuma clamp'liyoruz.
+                  bottom: math.min(
+                    _labelRowHeight + _chartHeight - _TargetLine.height,
+                    _labelRowHeight +
+                        _chartHeight * (targetKcal! / effectiveMax),
+                  ),
                   child: IgnorePointer(
                     child: _TargetLine(color: colors.textSecondary),
                   ),
@@ -198,10 +209,12 @@ class _TargetLine extends StatelessWidget {
 
   const _TargetLine({required this.color});
 
+  static const double height = 4;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 4,
+      height: height,
       child: CustomPaint(
         size: Size.infinite,
         painter: _DashedLinePainter(color: color),

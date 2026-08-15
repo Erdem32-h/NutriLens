@@ -52,7 +52,12 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 4) {
           await m.createTable(userMetrics);
-          await m.addColumn(mealEntries, mealEntries.portionGrams);
+          // meal_entries created at the `from < 3` step above already
+          // carries portion_grams, because createTable emits the CURRENT
+          // schema. Only a table that genuinely predates v4 needs the ALTER.
+          if (from >= 3) {
+            await m.addColumn(mealEntries, mealEntries.portionGrams);
+          }
         }
       },
     );

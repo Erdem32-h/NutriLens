@@ -173,6 +173,12 @@ class ProfileScreen extends ConsumerWidget {
                 value: personalTarget != null
                     ? l10n.calorieTargetCardSubtitleSet(personalTarget)
                     : l10n.calorieTargetCardSubtitleUnset,
+                // Hedef gerçekten hesaplanmışsa (personalTarget != null)
+                // tıbbi tavsiye niteliğinde değil, tahmini bir sayı olduğu
+                // hatırlatılır. Hesaplanmamış davet metninde henüz bir
+                // hedef yok, o yüzden dipnot gereksiz.
+                footnote:
+                    personalTarget != null ? l10n.metricsMedicalDisclaimer : null,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const MetricsWizardScreen(),
@@ -791,12 +797,19 @@ class _SettingsTile extends StatelessWidget {
   final VoidCallback onTap;
   final Color? accentColor;
 
+  /// İsteğe bağlı, küçük/ikincil renkli tek satırlık dipnot — bir uyarı
+  /// afişi değil, bir niteleyici (örn. tıbbi tavsiye dipnotu). `null`
+  /// olduğunda (varsayılan, diğer tüm _SettingsTile kullanımları) render
+  /// öncekiyle bit bit aynı kalır.
+  final String? footnote;
+
   const _SettingsTile({
     required this.icon,
     required this.title,
     required this.value,
     required this.onTap,
     this.accentColor,
+    this.footnote,
   });
 
   @override
@@ -811,7 +824,33 @@ class _SettingsTile extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _tileRow(context),
+            if (footnote != null) ...[
+              const SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.only(left: 50),
+                child: Text(
+                  footnote!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: context.colors.textMuted,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tileRow(BuildContext context) {
+    return Row(
           children: [
             Container(
               width: 36,
@@ -871,8 +910,6 @@ class _SettingsTile extends StatelessWidget {
               size: 18,
             ),
           ],
-        ),
-      ),
-    );
+        );
   }
 }

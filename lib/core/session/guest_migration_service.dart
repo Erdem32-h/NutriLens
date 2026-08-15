@@ -17,9 +17,21 @@ class GuestDataSummary {
   final int scanCount;
   final int mealCount;
 
-  const GuestDataSummary({required this.scanCount, required this.mealCount});
+  /// Guest'in ölçü sihirbazını tamamlayıp tamamlamadığı. Tarama/öğün
+  /// sayısına dahil değil çünkü ayrı bir Drift tablosundan (`user_metrics`)
+  /// geliyor — ama `isEmpty`e dahil edilmezse "taşınacak/silinecek bir şey
+  /// yok" yanlış sonucuna varılır: hem yeni hesap sessizce 2000 kcal
+  /// varsayılanına düşer hem de misafir satırı silinmeyip cihazdaki bir
+  /// sonraki misafire sızar (sağlık verisi sızıntısı — bkz. discard()).
+  final bool hasMetrics;
 
-  bool get isEmpty => scanCount == 0 && mealCount == 0;
+  const GuestDataSummary({
+    required this.scanCount,
+    required this.mealCount,
+    required this.hasMetrics,
+  });
+
+  bool get isEmpty => scanCount == 0 && mealCount == 0 && !hasMetrics;
 }
 
 class GuestMigrationService {
@@ -44,7 +56,12 @@ class GuestMigrationService {
   Future<GuestDataSummary> inspectPending() async {
     final scans = await _scanDs.countByUser(kGuestUserId);
     final meals = await _mealDs.countByUser(kGuestUserId);
-    return GuestDataSummary(scanCount: scans, mealCount: meals);
+    final metrics = await _metricsDs.get(kGuestUserId);
+    return GuestDataSummary(
+      scanCount: scans,
+      mealCount: meals,
+      hasMetrics: metrics != null,
+    );
   }
 
   /// Performs the migration:
