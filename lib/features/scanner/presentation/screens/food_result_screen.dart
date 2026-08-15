@@ -442,7 +442,10 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
           ref
               .read(analyticsServiceProvider)
               .track(FunnelEvents.metricsPromptShown);
-          await Navigator.of(context).push(
+          // rootNavigator: same reason as the profile entry point — the
+          // wizard needs the whole screen, not what is left over above the
+          // shell's ad banner and nav bar.
+          await Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(builder: (_) => const MetricsWizardScreen()),
           );
         }

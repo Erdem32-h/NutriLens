@@ -179,7 +179,13 @@ class ProfileScreen extends ConsumerWidget {
                 // hedef yok, o yüzden dipnot gereksiz.
                 footnote:
                     personalTarget != null ? l10n.metricsMedicalDisclaimer : null,
-                onTap: () => Navigator.of(context).push(
+                // rootNavigator: the tabs live in a ShellRoute whose child
+                // sits above an ad banner and the nav bar. Pushing onto the
+                // nested navigator would keep both on screen and cost the
+                // wizard ~330px — enough that on a 720x1280 device only one
+                // of the three sex options fit, and the weight field became
+                // unreachable behind the keyboard.
+                onTap: () => Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     builder: (_) => const MetricsWizardScreen(),
                   ),
