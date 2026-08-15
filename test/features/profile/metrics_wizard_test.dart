@@ -60,9 +60,6 @@ class _FakeUserMetricsRemoteDataSource implements UserMetricsRemoteDataSource {
     upsertCallCount++;
     upserted = m;
   }
-
-  @override
-  Future<UserMetricsEntity?> fetch(String userId) async => null;
 }
 
 /// Her cagriyi patlatir — "uzak yazma basarisiz olursa kullaniciya hata
@@ -74,9 +71,6 @@ class _ThrowingUserMetricsRemoteDataSource
   Future<void> upsert(UserMetricsEntity m) async {
     throw Exception('network down');
   }
-
-  @override
-  Future<UserMetricsEntity?> fetch(String userId) async => null;
 }
 
 /// Bir alanin gorunen metnini okur. Key, alani saran `_NumberField`
