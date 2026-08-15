@@ -18,6 +18,8 @@ import '../../../meals/presentation/providers/meal_chart_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
 import '../providers/health_filters_provider.dart';
 import '../providers/user_data_deletion_provider.dart';
+import '../providers/user_metrics_provider.dart';
+import '../screens/metrics_wizard_screen.dart';
 import '../widgets/analytics_opt_out_tile.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 
@@ -150,6 +152,40 @@ class ProfileScreen extends ConsumerWidget {
             title: l10n.language,
             value: _getLanguageDisplayName(currentLocale.languageCode),
             onTap: () => _showLanguageDialog(context, ref, currentLocale),
+          ),
+
+          const SizedBox(height: 28),
+
+          // Kişisel kalori hedefi — hesaplanmışsa hedefi alt metinde
+          // gösterir, yoksa hesaplamaya davet eder. shouldPrompt() kontrolü
+          // BİLEREK burada yapılmaz: food_result_screen'deki otomatik
+          // tetikleyici yalnızca ilk-öğün-sonrası bir kez açılır ve
+          // reddedildikten sonra bir daha kendiliğinden açılmaz, ama profil
+          // her zaman bir giriş noktası olarak kalmalı. Mevcut kayıt varsa
+          // sihirbaz kendi initState'inde alanları doldurur (bkz.
+          // MetricsWizardScreen dokümantasyonu) — burada bir şey geçmiyoruz.
+          Consumer(
+            builder: (context, ref, _) {
+              final personalTarget = ref.watch(personalDailyCaloriesProvider);
+              return _SettingsTile(
+                icon: Icons.local_fire_department_rounded,
+                title: l10n.calorieTargetCardTitle,
+                value: personalTarget != null
+                    ? l10n.calorieTargetCardSubtitleSet(personalTarget)
+                    : l10n.calorieTargetCardSubtitleUnset,
+                // Hedef gerçekten hesaplanmışsa (personalTarget != null)
+                // tıbbi tavsiye niteliğinde değil, tahmini bir sayı olduğu
+                // hatırlatılır. Hesaplanmamış davet metninde henüz bir
+                // hedef yok, o yüzden dipnot gereksiz.
+                footnote:
+                    personalTarget != null ? l10n.metricsMedicalDisclaimer : null,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const MetricsWizardScreen(),
+                  ),
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 28),
@@ -320,6 +356,7 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(blacklistProvider);
       ref.invalidate(mealsProvider);
       ref.invalidate(calorieChartDataProvider);
+      ref.invalidate(todayCalorieTotalProvider);
       ref.invalidate(healthFiltersProvider);
 
       if (!context.mounted) return;
@@ -379,6 +416,7 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(blacklistProvider);
       ref.invalidate(mealsProvider);
       ref.invalidate(calorieChartDataProvider);
+      ref.invalidate(todayCalorieTotalProvider);
       ref.invalidate(healthFiltersProvider);
       ref.invalidate(authStateProvider);
 
@@ -759,12 +797,19 @@ class _SettingsTile extends StatelessWidget {
   final VoidCallback onTap;
   final Color? accentColor;
 
+  /// İsteğe bağlı, küçük/ikincil renkli tek satırlık dipnot — bir uyarı
+  /// afişi değil, bir niteleyici (örn. tıbbi tavsiye dipnotu). `null`
+  /// olduğunda (varsayılan, diğer tüm _SettingsTile kullanımları) render
+  /// öncekiyle bit bit aynı kalır.
+  final String? footnote;
+
   const _SettingsTile({
     required this.icon,
     required this.title,
     required this.value,
     required this.onTap,
     this.accentColor,
+    this.footnote,
   });
 
   @override
@@ -779,7 +824,33 @@ class _SettingsTile extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _tileRow(context),
+            if (footnote != null) ...[
+              const SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.only(left: 50),
+                child: Text(
+                  footnote!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: context.colors.textMuted,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tileRow(BuildContext context) {
+    return Row(
           children: [
             Container(
               width: 36,
@@ -839,8 +910,6 @@ class _SettingsTile extends StatelessWidget {
               size: 18,
             ),
           ],
-        ),
-      ),
-    );
+        );
   }
 }

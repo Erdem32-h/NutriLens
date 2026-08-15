@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/constants/score_constants.dart';
@@ -9,6 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../product/presentation/widgets/bento_nutrition_grid.dart';
 import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
 import '../../../product/presentation/widgets/health_score_bar.dart';
+import '../../../profile/presentation/providers/user_metrics_provider.dart';
 import '../../domain/entities/meal_entry_entity.dart';
 import '../meal_display.dart';
 
@@ -101,12 +103,27 @@ class MealDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  BentoNutritionGrid(nutriments: meal.nutriments),
-                  const SizedBox(height: 16),
-                  EditorialNutrientTable(nutriments: meal.nutriments),
-                ],
+              child: Consumer(
+                builder: (context, ref, _) {
+                  return Column(
+                    children: [
+                      BentoNutritionGrid(
+                        nutriments: meal.nutriments,
+                        dailyCalories: ref.watch(dailyCalorieTargetProvider),
+                      ),
+                      const SizedBox(height: 16),
+                      EditorialNutrientTable(
+                        nutriments: meal.nutriments,
+                        basisLabel: meal.portionGrams != null
+                            ? l10n.nutritionBasisGrams(meal.portionGrams!)
+                            : l10n.nutritionBasisPortion,
+                        personalDailyCalories: ref.watch(
+                          personalDailyCaloriesProvider,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
             if ((meal.ingredientsText ?? '').isNotEmpty) ...[

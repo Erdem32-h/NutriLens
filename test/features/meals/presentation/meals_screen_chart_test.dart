@@ -13,9 +13,16 @@ import 'package:nutrilens/features/meals/presentation/screens/meals_screen.dart'
 import 'package:nutrilens/features/meals/presentation/widgets/calorie_stacked_bar_chart.dart';
 import 'package:nutrilens/features/product/domain/entities/nutriments_entity.dart';
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
+import 'package:nutrilens/features/profile/presentation/providers/user_metrics_provider.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 
-Widget wrap(AppDatabase db) => ProviderScope(
+// `extraOverrides` bilerek tiplenmemis: `Override`, `riverpod` paketinden
+// gelir ve bu paket `flutter_riverpod` uzerinden yalnizca gecisli bir
+// bagimlilik — dogrudan import etmek yerine hedef tip zaten
+// `ProviderScope.overrides` parametresinden (List<Override>) cikarilabildigi
+// icin `.cast()` ile kullaniliyor (bkz. daily_target_summary_test.dart).
+Widget wrap(AppDatabase db, {List extraOverrides = const []}) =>
+    ProviderScope(
       overrides: [
         appDatabaseProvider.overrideWithValue(db),
         effectiveUserIdProvider.overrideWithValue('user-1'),
@@ -26,7 +33,8 @@ Widget wrap(AppDatabase db) => ProviderScope(
         // patlar — bu yüzden burada da kısa devre ediyoruz.
         currentUserProvider.overrideWithValue(null),
         isPremiumProvider.overrideWithValue(false),
-      ],
+        ...extraOverrides,
+      ].cast(),
       child: MaterialApp(
         // context.colors, AppColorsExtension olmayan bir temada debug
         // assert fırlatır (app_colors.dart:311-320) — Task 9'da aynı
@@ -92,5 +100,90 @@ void main() {
     // Gün görünümünde de var).
     await tester.pumpAndSettle();
     expect(find.byType(CalorieStackedBarChart), findsOneWidget);
+  });
+
+  testWidgets(
+      'metrics yokken (personalDailyCaloriesProvider null) grafiğe hedef '
+      'geçirilmez — ~607 canlı kullanıcının varsayılan görünümü budur',
+      (tester) async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(db.close);
+    await MealLocalDataSourceImpl(db).saveMeal(
+      MealEntryEntity(
+        id: 'today',
+        userId: 'user-1',
+        mealName: 'Kahvaltı',
+        brand: 'Ev yapımı',
+        mealType: MealType.breakfast,
+        capturedAt: DateTime.now(),
+        ingredientsText: 'Yumurta, peynir',
+        nutriments: const NutrimentsEntity(energyKcal: 400, proteins: 20),
+        calories: 400,
+        hpScore: 82,
+        confidence: 0.8,
+        aiRawJson: '{"food_name":"omelet"}',
+      ),
+    );
+
+    await tester.pumpWidget(wrap(db));
+    await tester.pumpAndSettle();
+
+    final chart = tester.widget<CalorieStackedBarChart>(
+      find.byType(CalorieStackedBarChart),
+    );
+    expect(chart.targetKcal, isNull);
+  });
+
+  testWidgets(
+      'metrics varken Hafta/Ay sekmesinde grafiğe hedef geçirilir, Gün '
+      'sekmesinde geçirilmez (kova birimi günlük değil)', (tester) async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(db.close);
+    await MealLocalDataSourceImpl(db).saveMeal(
+      MealEntryEntity(
+        id: 'today',
+        userId: 'user-1',
+        mealName: 'Kahvaltı',
+        brand: 'Ev yapımı',
+        mealType: MealType.breakfast,
+        capturedAt: DateTime.now(),
+        ingredientsText: 'Yumurta, peynir',
+        nutriments: const NutrimentsEntity(energyKcal: 400, proteins: 20),
+        calories: 400,
+        hpScore: 82,
+        confidence: 0.8,
+        aiRawJson: '{"food_name":"omelet"}',
+      ),
+    );
+
+    await tester.pumpWidget(
+      wrap(
+        db,
+        extraOverrides: [
+          personalDailyCaloriesProvider.overrideWithValue(1800),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Hafta = varsayılan sekme.
+    var chart = tester.widget<CalorieStackedBarChart>(
+      find.byType(CalorieStackedBarChart),
+    );
+    expect(chart.targetKcal, 1800);
+
+    await tester.tap(find.text('Gün'));
+    await tester.pumpAndSettle();
+
+    chart = tester.widget<CalorieStackedBarChart>(
+      find.byType(CalorieStackedBarChart),
+    );
+    expect(
+      chart.targetKcal,
+      isNull,
+      reason:
+          'Gün periyodu öğün tipine göre kovalanır — günlük hedef çizgisi '
+          'anlamsızdır',
+    );
   });
 }

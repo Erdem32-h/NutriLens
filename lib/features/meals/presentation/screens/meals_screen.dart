@@ -14,6 +14,8 @@ import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_tap_card.dart';
+import '../../../profile/presentation/providers/user_metrics_provider.dart';
+import '../../domain/entities/calorie_chart_data.dart';
 import '../../domain/entities/meal_entry_entity.dart';
 import '../meal_display.dart';
 import '../providers/meal_chart_provider.dart';
@@ -43,6 +45,7 @@ class MealsScreen extends ConsumerWidget {
         onRefresh: () async {
           ref.invalidate(mealsProvider);
           ref.invalidate(calorieChartDataProvider);
+          ref.invalidate(todayCalorieTotalProvider);
         },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -51,6 +54,12 @@ class MealsScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
                 child: _CalorieInsights(),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, 0, 16, 18),
+                child: _DailyTargetSummary(),
               ),
             ),
             mealsAsync.when(
@@ -217,6 +226,7 @@ class _MealTile extends ConsumerWidget {
     }
     ref.invalidate(mealsProvider);
     ref.invalidate(calorieChartDataProvider);
+    ref.invalidate(todayCalorieTotalProvider);
   }
 }
 
@@ -354,7 +364,20 @@ class _CalorieInsights extends ConsumerWidget {
             }
             return Column(
               children: [
-                CalorieStackedBarChart(data: data),
+                CalorieStackedBarChart(
+                  data: data,
+                  // Yalnızca günlük kova (hafta/ay) barlarında hedef çizgisi
+                  // anlamlıdır: gün görünümü öğün tipine göre, yıl görünümü
+                  // ay toplamına göre kovalar — ikisinde de günlük hedef
+                  // çizgisi anlamsız olur. Metrics yoksa null: hiçbir
+                  // no-metrics kullanıcı çizgi/rescale görmez (bkz. widget
+                  // dokstring'i).
+                  targetKcal:
+                      (data.period == CaloriePeriod.week ||
+                              data.period == CaloriePeriod.month)
+                          ? ref.watch(personalDailyCaloriesProvider)
+                          : null,
+                ),
                 const SizedBox(height: 14),
                 MacroBalanceCard(data: data),
               ],
@@ -362,6 +385,95 @@ class _CalorieInsights extends ConsumerWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+/// Günün toplam alınan kalorisi / günlük hedef özeti + ilerleme çubuğu.
+/// Öğün listesinin başlığının üstünde yaşar — [_CalorieInsights]'taki
+/// grafik hangi dönem sekmesinde olursa olsun (Gün/Hafta/Ay/Yıl) bu satır
+/// her zaman BUGÜNÜ gösterir; [todayCalorieTotalProvider] bilerek grafiğin
+/// caloriePeriodProvider/calorieOffsetProvider durumundan bağımsızdır.
+///
+/// Metrics kaydı yoksa [dailyCalorieTargetProvider] varsayılan 2000 kcal'e
+/// düşer — bu widget o durumda da çökmeden, aynı satırı 2000 hedefiyle
+/// gösterir (bkz. task brief'teki global kısıt).
+class _DailyTargetSummary extends ConsumerWidget {
+  const _DailyTargetSummary();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final l10n = context.l10n;
+    final totalAsync = ref.watch(todayCalorieTotalProvider);
+    final target = ref.watch(dailyCalorieTargetProvider);
+
+    return totalAsync.when(
+      data: (total) {
+        final consumed = total.round();
+        final over = consumed - target;
+        final progress = target <= 0 ? 0.0 : (total / target).clamp(0.0, 1.0);
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceCard,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: colors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.dailyCalorieSummary(consumed, target),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(999),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 8,
+                  backgroundColor: colors.border,
+                  color: over > 0 ? colors.error : colors.primary,
+                ),
+              ),
+              if (over > 0) ...[
+                const SizedBox(height: 6),
+                Text(
+                  l10n.dailyCalorieOver(over),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: colors.error,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 6),
+              // Metrics girilmemiş kullanıcılar için hedef sessizce
+              // varsayılan 2000 kcal'e düşer (bkz. sınıf dokstring'i) — bu
+              // satır her zaman görünür, çünkü gösterilen sayı ne olursa
+              // olsun (kişisel veya varsayılan) tıbbi tavsiye değil, tahmini
+              // bir referanstır. Sessiz/ikincil renk: bir uyarı değil, bir
+              // niteleyici.
+              Text(
+                l10n.metricsMedicalDisclaimer,
+                style: TextStyle(fontSize: 11, color: colors.textMuted),
+              ),
+            ],
+          ),
+        );
+      },
+      // İlk yüklemede/hata durumunda sessizce boş bırak — bu satırın kendi
+      // spinner'ı, üstündeki grafik bölümünün spinner'ıyla aynı anda çakışıp
+      // ekranı zıplatmasın (bkz. calorieChartDataProvider.skipLoadingOnReload
+      // yorumu, aynı gerekçe).
+      loading: () => const SizedBox.shrink(),
+      error: (error, stackTrace) => const SizedBox.shrink(),
     );
   }
 }

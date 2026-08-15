@@ -13,6 +13,7 @@ import '../../../counterfeit/presentation/widgets/counterfeit_warning_banner.dar
 import '../../../history/presentation/providers/history_provider.dart';
 import '../../../comparison/presentation/widgets/product_picker_sheet.dart';
 import '../../../profile/presentation/providers/health_filters_provider.dart';
+import '../../../profile/presentation/providers/user_metrics_provider.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/constants/app_links.dart';
@@ -543,9 +544,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
         ),
       ],
-      BentoNutritionGrid(nutriments: product.nutriments),
+      BentoNutritionGrid(
+        nutriments: product.nutriments,
+        dailyCalories: ref.watch(dailyCalorieTargetProvider),
+      ),
       const SizedBox(height: 16),
-      EditorialNutrientTable(nutriments: product.nutriments),
+      EditorialNutrientTable(
+        nutriments: product.nutriments,
+        personalDailyCalories: ref.watch(personalDailyCaloriesProvider),
+      ),
     ];
   }
 

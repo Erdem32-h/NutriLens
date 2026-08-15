@@ -1161,11 +1161,38 @@ void main() {
     expect(find.textContaining('40'), findsWidgets);
   });
 
-  test('metrics yoksa saglayici varsayilana duser', () {
-    final container = ProviderContainer();
+  test('metrics yoksa saglayici 2000 kcal doner', () {
+    final container = ProviderContainer(
+      overrides: [
+        userMetricsProvider.overrideWith((ref) async => null),
+      ],
+    );
     addTearDown(container.dispose);
-    // userMetricsProvider yuklenmeden valueOrNull null olur
-    expect(kDefaultDailyCalories, 2000);
+    expect(container.read(dailyCalorieTargetProvider), kDefaultDailyCalories);
+  });
+
+  test('metrics varsa saglayici hesaplanan hedefi doner', () async {
+    final metrics = UserMetricsEntity(
+      userId: 'guest',
+      sex: BiologicalSex.male,
+      birthYear: 1996,
+      heightCm: 180,
+      weightKg: 80,
+      activity: ActivityLevel.sedentary,
+      updatedAt: DateTime(2026, 8, 14),
+    );
+    final container = ProviderContainer(
+      overrides: [
+        userMetricsProvider.overrideWith((ref) async => metrics),
+      ],
+    );
+    addTearDown(container.dispose);
+    // Saglayici FutureProvider'a bagli: once cozulmesini bekle.
+    await container.read(userMetricsProvider.future);
+    final expected = calculateCalorieTarget(
+      metrics.toCalculatorInput(DateTime(2026, 8, 14)),
+    ).target;
+    expect(container.read(dailyCalorieTargetProvider), expected);
   });
 }
 ```
@@ -1489,7 +1516,18 @@ where table_name = 'user_profiles' and column_name in
 
 `user_metrics_remote_datasource.dart` — `MealRemoteDataSource` kalıbını izle. `upsert` yalnızca girişli kullanıcıda çağrılır; misafirde hiçbir ağ çağrısı yapılmaz.
 
-`meal_remote_datasource.dart` — öğün upsert payload'ına `'portion_grams': meal.portionGrams` ekle, okuma eşlemesine `portionGrams: row['portion_grams'] as int?`.
+`meal_remote_datasource.dart` — öğün upsert payload'ına `'portion_grams': meal.portionGrams` ekle, `rowToEntity` okuma eşlemesine `portionGrams: row['portion_grams'] as int?`.
+
+**Null-ezme koruması (Task 4 incelemesinden gelen zorunlu madde).** `meal_sync_service.dart`
+bulut satırını `_local.saveMeal(MealRemoteDataSource.rowToEntity(...))` ile yerel satırın
+üzerine yazıyor. Bu kolon eklendikten sonra bile **eski bulut satırlarında `portion_grams`
+null** olacak — yani senkron, cihazda doğru duran gramajı null'la ezebilir. Koruma:
+birleştirme sırasında uzaktan gelen `portionGrams` null ve yereldeki dolu ise, yereldeki
+değer korunur.
+
+Bunun testi zorunlu: yerelde `portionGrams: 350` olan bir öğün + uzaktan `portion_grams`
+null gelen aynı `id` → senkron sonrası yerel değer hâlâ 350 olmalı. RED kontrolü yap
+(korumayı kaldır → test kırmızı olmalı).
 
 - [ ] **Step 4: Kaydetme yolunu bağla**
 

@@ -519,6 +519,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get portion100g => '100g';
 
   @override
+  String get nutritionBasisPortion => 'portion';
+
+  @override
+  String nutritionBasisGrams(int grams) {
+    return '$grams g';
+  }
+
+  @override
+  String dailyValueNotePersonal(int kcal) {
+    return '* Percentages are based on your personal daily target of $kcal kcal.';
+  }
+
+  @override
   String get foodCategory => 'FOOD';
 
   @override
@@ -1184,6 +1197,16 @@ class AppLocalizationsAr extends AppLocalizations {
       'استخدم تحليل الذكاء الاصطناعي في شاشة المسح لالتقاط صورة لوجبتك وحفظها هنا.';
 
   @override
+  String dailyCalorieSummary(int consumed, int target) {
+    return '$consumed / $target kcal';
+  }
+
+  @override
+  String dailyCalorieOver(int over) {
+    return 'تجاوزت هدفك بمقدار $over سعرة حرارية';
+  }
+
+  @override
   String get ingredientsTitle => 'المكونات';
 
   @override
@@ -1780,4 +1803,115 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get historyLoadError => 'History could not be loaded.';
+
+  @override
+  String get metricsSexStepTitle => 'ما هو جنسك؟';
+
+  @override
+  String get metricsSexStepSubtitle =>
+      'يُعدَّل حساب السعرات الحرارية حسب الجنس البيولوجي.';
+
+  @override
+  String get metricsSexFemale => 'أنثى';
+
+  @override
+  String get metricsSexMale => 'ذكر';
+
+  @override
+  String get metricsSexUnspecified => 'أفضّل عدم القول';
+
+  @override
+  String get metricsBodyStepTitle => 'مقاييس جسمك';
+
+  @override
+  String get metricsBodyStepSubtitle =>
+      'تبقى هذه المعلومات على جهازك، وتُستخدم فقط لتقدير هدفك.';
+
+  @override
+  String get metricsAgeLabel => 'العمر';
+
+  @override
+  String get metricsHeightLabel => 'الطول (سم)';
+
+  @override
+  String get metricsWeightLabel => 'الوزن (كجم)';
+
+  @override
+  String metricsRangeError(int min, int max) {
+    return 'أدخل قيمة بين $min و $max';
+  }
+
+  @override
+  String get metricsTargetStepTitle => 'وزنك المستهدف';
+
+  @override
+  String get metricsTargetStepSubtitle =>
+      'نضبط هدفك اليومي من السعرات الحرارية وفق هدفك.';
+
+  @override
+  String get metricsTargetWeightLabel => 'الوزن المستهدف (كجم)';
+
+  @override
+  String get metricsMaintainWeightOption => 'أريد الحفاظ على وزني الحالي';
+
+  @override
+  String get metricsActivityStepTitle => 'مستوى نشاطك';
+
+  @override
+  String get metricsActivityStepSubtitle => 'اختر الأقرب إلى روتينك اليومي.';
+
+  @override
+  String get metricsActivitySedentary => 'خامل';
+
+  @override
+  String get metricsActivitySedentaryDesc => 'عمل مكتبي، بدون تمارين';
+
+  @override
+  String get metricsActivityLight => 'نشاط خفيف';
+
+  @override
+  String get metricsActivityLightDesc => 'تمارين خفيفة 1-3 أيام في الأسبوع';
+
+  @override
+  String get metricsActivityModerate => 'نشاط متوسط';
+
+  @override
+  String get metricsActivityModerateDesc => 'تمارين 3-5 أيام في الأسبوع';
+
+  @override
+  String get metricsActivityActive => 'نشاط عالٍ';
+
+  @override
+  String get metricsActivityActiveDesc => 'تمارين مكثفة 6-7 أيام في الأسبوع';
+
+  @override
+  String get metricsResultStepTitle => 'إليك هدفك اليومي التقديري';
+
+  @override
+  String get metricsResultKcalPerDay => 'سعرة حرارية / يوم';
+
+  @override
+  String get metricsMedicalDisclaimer =>
+      'هذه قيمة تقديرية ولا تُغني عن الاستشارة الطبية.';
+
+  @override
+  String get metricsSaveToAccountCta => 'حفظ في الحساب';
+
+  @override
+  String get metricsCloseTooltip => 'إغلاق';
+
+  @override
+  String get metricsBackTooltip => 'رجوع';
+
+  @override
+  String get calorieTargetCardTitle => 'هدف السعرات الحرارية الشخصي';
+
+  @override
+  String calorieTargetCardSubtitleSet(int target) {
+    return 'هدفك اليومي هو $target سعرة حرارية';
+  }
+
+  @override
+  String get calorieTargetCardSubtitleUnset =>
+      'احسب هدف السعرات الحرارية الشخصي';
 }

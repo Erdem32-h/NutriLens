@@ -3,13 +3,22 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/services/calorie_target_calculator.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/nutriments_entity.dart';
 
 class BentoNutritionGrid extends StatelessWidget {
   final NutrimentsEntity nutriments;
 
-  const BentoNutritionGrid({super.key, required this.nutriments});
+  /// Yüzdeliklerin hesaplandığı günlük kalori referansı. Kullanıcının
+  /// kişisel hedefi yoksa besin etiketi standardı olan 2000 kcal.
+  final int dailyCalories;
+
+  const BentoNutritionGrid({
+    super.key,
+    required this.nutriments,
+    this.dailyCalories = kDefaultDailyCalories,
+  });
 
   // Daily reference values (grams). Protein RDA is 0.8 g/kg body
   // weight × 70 kg adult ≈ 56 g — we round to 50 to match the kind
@@ -19,7 +28,6 @@ class BentoNutritionGrid extends StatelessWidget {
   static const _dailySugar = 50.0;
   static const _dailySatFat = 20.0;
   static const _dailySalt = 6.0;
-  static const _dailyCalories = 2000.0;
   static const _dailyCarbs = 260.0;
   static const _dailyProtein = 50.0;
 
@@ -61,7 +69,9 @@ class BentoNutritionGrid extends StatelessWidget {
     }
 
     final kcal = nutriments.energyKcal ?? 0;
-    final kcalPercent = (kcal / _dailyCalories * 100).clamp(0, 100).toDouble();
+    final kcalPercent = (kcal / dailyCalories.toDouble() * 100)
+        .clamp(0, 100)
+        .toDouble();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),

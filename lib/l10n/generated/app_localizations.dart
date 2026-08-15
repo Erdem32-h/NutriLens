@@ -1102,6 +1102,24 @@ abstract class AppLocalizations {
   /// **'100g'**
   String get portion100g;
 
+  /// No description provided for @nutritionBasisPortion.
+  ///
+  /// In tr, this message translates to:
+  /// **'porsiyon'**
+  String get nutritionBasisPortion;
+
+  /// No description provided for @nutritionBasisGrams.
+  ///
+  /// In tr, this message translates to:
+  /// **'{grams} g'**
+  String nutritionBasisGrams(int grams);
+
+  /// No description provided for @dailyValueNotePersonal.
+  ///
+  /// In tr, this message translates to:
+  /// **'* Yüzdelik değerler günlük {kcal} kcal\'lik kişisel hedefinize göre hesaplanmıştır.'**
+  String dailyValueNotePersonal(int kcal);
+
   /// No description provided for @foodCategory.
   ///
   /// In tr, this message translates to:
@@ -2332,6 +2350,18 @@ abstract class AppLocalizations {
   /// **'Tarama ekranındaki AI Analizi ile yemeğini fotoğraflayıp buraya kaydedebilirsin.'**
   String get noMealsHint;
 
+  /// No description provided for @dailyCalorieSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'{consumed} / {target} kcal'**
+  String dailyCalorieSummary(int consumed, int target);
+
+  /// No description provided for @dailyCalorieOver.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefin {over} kcal üzerindesin'**
+  String dailyCalorieOver(int over);
+
   /// No description provided for @ingredientsTitle.
   ///
   /// In tr, this message translates to:
@@ -3459,6 +3489,210 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Geçmiş yüklenemedi.'**
   String get historyLoadError;
+
+  /// No description provided for @metricsSexStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cinsiyetin nedir?'**
+  String get metricsSexStepTitle;
+
+  /// No description provided for @metricsSexStepSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kalori hesabı biyolojik cinsiyete göre ayarlanır.'**
+  String get metricsSexStepSubtitle;
+
+  /// No description provided for @metricsSexFemale.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kadın'**
+  String get metricsSexFemale;
+
+  /// No description provided for @metricsSexMale.
+  ///
+  /// In tr, this message translates to:
+  /// **'Erkek'**
+  String get metricsSexMale;
+
+  /// No description provided for @metricsSexUnspecified.
+  ///
+  /// In tr, this message translates to:
+  /// **'Belirtmek istemiyorum'**
+  String get metricsSexUnspecified;
+
+  /// No description provided for @metricsBodyStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vücut ölçülerin'**
+  String get metricsBodyStepTitle;
+
+  /// No description provided for @metricsBodyStepSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu bilgiler cihazında kalır, yalnızca hedefini tahmin etmek için kullanılır.'**
+  String get metricsBodyStepSubtitle;
+
+  /// No description provided for @metricsAgeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaş'**
+  String get metricsAgeLabel;
+
+  /// No description provided for @metricsHeightLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Boy (cm)'**
+  String get metricsHeightLabel;
+
+  /// No description provided for @metricsWeightLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kilo (kg)'**
+  String get metricsWeightLabel;
+
+  /// No description provided for @metricsRangeError.
+  ///
+  /// In tr, this message translates to:
+  /// **'{min}-{max} arasında bir değer gir'**
+  String metricsRangeError(int min, int max);
+
+  /// No description provided for @metricsTargetStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef kilon'**
+  String get metricsTargetStepTitle;
+
+  /// No description provided for @metricsTargetStepSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefine göre günlük kalori hedefini ayarlarız.'**
+  String get metricsTargetStepSubtitle;
+
+  /// No description provided for @metricsTargetWeightLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef kilo (kg)'**
+  String get metricsTargetWeightLabel;
+
+  /// No description provided for @metricsMaintainWeightOption.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şu anki kilomu korumak istiyorum'**
+  String get metricsMaintainWeightOption;
+
+  /// No description provided for @metricsActivityStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktivite seviyen'**
+  String get metricsActivityStepTitle;
+
+  /// No description provided for @metricsActivityStepSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük hareket düzeyine en yakın olanı seç.'**
+  String get metricsActivityStepSubtitle;
+
+  /// No description provided for @metricsActivitySedentary.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hareketsiz'**
+  String get metricsActivitySedentary;
+
+  /// No description provided for @metricsActivitySedentaryDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Masa başı iş, egzersiz yok'**
+  String get metricsActivitySedentaryDesc;
+
+  /// No description provided for @metricsActivityLight.
+  ///
+  /// In tr, this message translates to:
+  /// **'Az hareketli'**
+  String get metricsActivityLight;
+
+  /// No description provided for @metricsActivityLightDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftada 1-3 gün hafif egzersiz'**
+  String get metricsActivityLightDesc;
+
+  /// No description provided for @metricsActivityModerate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orta hareketli'**
+  String get metricsActivityModerate;
+
+  /// No description provided for @metricsActivityModerateDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftada 3-5 gün egzersiz'**
+  String get metricsActivityModerateDesc;
+
+  /// No description provided for @metricsActivityActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çok hareketli'**
+  String get metricsActivityActive;
+
+  /// No description provided for @metricsActivityActiveDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftada 6-7 gün yoğun egzersiz'**
+  String get metricsActivityActiveDesc;
+
+  /// No description provided for @metricsResultStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşte tahmini günlük hedefin'**
+  String get metricsResultStepTitle;
+
+  /// No description provided for @metricsResultKcalPerDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'kcal / gün'**
+  String get metricsResultKcalPerDay;
+
+  /// No description provided for @metricsMedicalDisclaimer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahmini değerdir, tıbbi tavsiye yerine geçmez.'**
+  String get metricsMedicalDisclaimer;
+
+  /// No description provided for @metricsSaveToAccountCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesaba Kaydet'**
+  String get metricsSaveToAccountCta;
+
+  /// No description provided for @metricsCloseTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kapat'**
+  String get metricsCloseTooltip;
+
+  /// No description provided for @metricsBackTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri'**
+  String get metricsBackTooltip;
+
+  /// No description provided for @calorieTargetCardTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kişisel kalori hedefi'**
+  String get calorieTargetCardTitle;
+
+  /// No description provided for @calorieTargetCardSubtitleSet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük hedefin {target} kcal'**
+  String calorieTargetCardSubtitleSet(int target);
+
+  /// No description provided for @calorieTargetCardSubtitleUnset.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kişisel kalori hedefini hesapla'**
+  String get calorieTargetCardSubtitleUnset;
 }
 
 class _AppLocalizationsDelegate

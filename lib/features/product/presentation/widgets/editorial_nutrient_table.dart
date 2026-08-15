@@ -19,7 +19,24 @@ import '../../domain/entities/nutriments_entity.dart';
 class EditorialNutrientTable extends StatelessWidget {
   final NutrimentsEntity nutriments;
 
-  const EditorialNutrientTable({super.key, required this.nutriments});
+  /// Tablodaki sayıların hangi miktara ait olduğu. Paketli ürünlerde
+  /// `'100g'` (etiket standardı), öğünlerde porsiyonun gerçek gramajı —
+  /// öğün değerleri 100 g için değil, porsiyon TOPLAMI için gelir.
+  final String? basisLabel;
+
+  /// Kullanıcının kişisel günlük kalori hedefi — dipnotta kullanılır.
+  /// null ise (metrics girilmemiş) mevcut 2000 kcal dipnotu korunur;
+  /// `dailyCalorieTargetProvider`'ın döndürdüğü sayı DEĞİL, metrics'in
+  /// gerçekten var olup olmadığı bu alanı besler — çağıran taraf ayrımı
+  /// yapmalı.
+  final int? personalDailyCalories;
+
+  const EditorialNutrientTable({
+    super.key,
+    required this.nutriments,
+    this.basisLabel,
+    this.personalDailyCalories,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +181,7 @@ class EditorialNutrientTable extends StatelessWidget {
                 children: [
                   Expanded(child: Text(l10n.detailedContent.isEmpty ? '' : '')),
                   Text(
-                    '100g',
+                    basisLabel ?? l10n.portion100g,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -202,7 +219,11 @@ class EditorialNutrientTable extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: Text(
-                context.l10n.dailyValueNote,
+                personalDailyCalories != null
+                    ? context.l10n.dailyValueNotePersonal(
+                        personalDailyCalories!,
+                      )
+                    : context.l10n.dailyValueNote,
                 style: TextStyle(
                   fontSize: 11,
                   color: colors.textMuted,

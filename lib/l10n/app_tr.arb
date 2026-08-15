@@ -166,6 +166,23 @@
   "noAdditives": "Bu üründe katkı maddesi bulunmuyor",
   "noNutrientData": "Besin değeri bilgisi mevcut değil",
   "portion100g": "100g",
+  "nutritionBasisPortion": "porsiyon",
+  "nutritionBasisGrams": "{grams} g",
+  "@nutritionBasisGrams": {
+    "placeholders": {
+      "grams": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyValueNotePersonal": "* Yüzdelik değerler günlük {kcal} kcal'lik kişisel hedefinize göre hesaplanmıştır.",
+  "@dailyValueNotePersonal": {
+    "placeholders": {
+      "kcal": {
+        "type": "int"
+      }
+    }
+  },
   "foodCategory": "GIDA",
   "delete": "Sil",
   "edit": "Düzenle",
@@ -423,6 +440,25 @@
   },
   "noMealsYet": "Henüz öğün yok",
   "noMealsHint": "Tarama ekranındaki AI Analizi ile yemeğini fotoğraflayıp buraya kaydedebilirsin.",
+  "dailyCalorieSummary": "{consumed} / {target} kcal",
+  "@dailyCalorieSummary": {
+    "placeholders": {
+      "consumed": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCalorieOver": "Hedefin {over} kcal üzerindesin",
+  "@dailyCalorieOver": {
+    "placeholders": {
+      "over": {
+        "type": "int"
+      }
+    }
+  },
   "ingredientsTitle": "İçerik",
   "confidenceSuffix": "güven",
   "aiConfidenceHint": "Yapay zekânın tespit ettiği yemek, porsiyon ve kalori tahmininden ne kadar emin olduğunu gösterir.",
@@ -661,5 +697,56 @@
   },
   "scanFood": "Yemek Tara",
   "noHistoryScanCta": "Barkod Tara",
-  "historyLoadError": "Geçmiş yüklenemedi."
+  "historyLoadError": "Geçmiş yüklenemedi.",
+  "metricsSexStepTitle": "Cinsiyetin nedir?",
+  "metricsSexStepSubtitle": "Kalori hesabı biyolojik cinsiyete göre ayarlanır.",
+  "metricsSexFemale": "Kadın",
+  "metricsSexMale": "Erkek",
+  "metricsSexUnspecified": "Belirtmek istemiyorum",
+  "metricsBodyStepTitle": "Vücut ölçülerin",
+  "metricsBodyStepSubtitle": "Bu bilgiler cihazında kalır, yalnızca hedefini tahmin etmek için kullanılır.",
+  "metricsAgeLabel": "Yaş",
+  "metricsHeightLabel": "Boy (cm)",
+  "metricsWeightLabel": "Kilo (kg)",
+  "metricsRangeError": "{min}-{max} arasında bir değer gir",
+  "@metricsRangeError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "metricsTargetStepTitle": "Hedef kilon",
+  "metricsTargetStepSubtitle": "Hedefine göre günlük kalori hedefini ayarlarız.",
+  "metricsTargetWeightLabel": "Hedef kilo (kg)",
+  "metricsMaintainWeightOption": "Şu anki kilomu korumak istiyorum",
+  "metricsActivityStepTitle": "Aktivite seviyen",
+  "metricsActivityStepSubtitle": "Günlük hareket düzeyine en yakın olanı seç.",
+  "metricsActivitySedentary": "Hareketsiz",
+  "metricsActivitySedentaryDesc": "Masa başı iş, egzersiz yok",
+  "metricsActivityLight": "Az hareketli",
+  "metricsActivityLightDesc": "Haftada 1-3 gün hafif egzersiz",
+  "metricsActivityModerate": "Orta hareketli",
+  "metricsActivityModerateDesc": "Haftada 3-5 gün egzersiz",
+  "metricsActivityActive": "Çok hareketli",
+  "metricsActivityActiveDesc": "Haftada 6-7 gün yoğun egzersiz",
+  "metricsResultStepTitle": "İşte tahmini günlük hedefin",
+  "metricsResultKcalPerDay": "kcal / gün",
+  "metricsMedicalDisclaimer": "Tahmini değerdir, tıbbi tavsiye yerine geçmez.",
+  "metricsSaveToAccountCta": "Hesaba Kaydet",
+  "metricsCloseTooltip": "Kapat",
+  "metricsBackTooltip": "Geri",
+  "calorieTargetCardTitle": "Kişisel kalori hedefi",
+  "calorieTargetCardSubtitleSet": "Günlük hedefin {target} kcal",
+  "@calorieTargetCardSubtitleSet": {
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "calorieTargetCardSubtitleUnset": "Kişisel kalori hedefini hesapla"
 }

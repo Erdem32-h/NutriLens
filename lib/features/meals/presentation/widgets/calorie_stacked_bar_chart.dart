@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,9 +13,16 @@ import '../meal_display.dart';
 class CalorieStackedBarChart extends StatelessWidget {
   final CalorieChartData data;
 
-  const CalorieStackedBarChart({super.key, required this.data});
+  /// Günlük kalori hedefi. Verilirse barların üstüne yatay kesikli bir
+  /// referans çizgisi çizilir. `null` geçildiğinde (varsayılan) grafik
+  /// bu parametre eklenmeden önceki haliyle bit bit aynı render olur —
+  /// hiçbir mevcut ekran bu parametreyi geçmeye zorlanmaz.
+  final int? targetKcal;
+
+  const CalorieStackedBarChart({super.key, required this.data, this.targetKcal});
 
   static const double _chartHeight = 160;
+  static const double _labelRowHeight = 24;
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +30,48 @@ class CalorieStackedBarChart extends StatelessWidget {
     final maxKcal = data.buckets
         .map((b) => b.kcal)
         .fold<double>(0, (max, v) => v > max ? v : max);
+    // Hedef, görünen en yüksek bardan büyükse ölçeği hedefe göre genişlet —
+    // aksi halde hedef çizgisi grafiğin üstünden taşar. targetKcal null
+    // olduğunda (varsayılan davranış) effectiveMax == maxKcal, yani mevcut
+    // render'da hiçbir değişiklik olmaz.
+    final effectiveMax = (targetKcal != null && targetKcal! > maxKcal)
+        ? targetKcal!.toDouble()
+        : maxKcal;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          height: _chartHeight + 24, // bar + etiket satırı
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          height: _chartHeight + _labelRowHeight,
+          child: Stack(
             children: [
-              for (var i = 0; i < data.buckets.length; i++)
-                Expanded(child: _bar(context, i, maxKcal)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  for (var i = 0; i < data.buckets.length; i++)
+                    Expanded(child: _bar(context, i, effectiveMax)),
+                ],
+              ),
+              if (targetKcal != null && effectiveMax > 0)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  // Kesikli çizginin taşan barları işaretlediği durum
+                  // (target < effectiveMax) zaten `bottom`u chartHeight'in
+                  // içinde tutar. targetKcal >= effectiveMax olduğunda
+                  // (yani hedef hiçbir barı aşmadığı en yaygın durumda)
+                  // ham hesap `bottom`u Stack'in tam yüksekliğine, hatta
+                  // üstüne taşırıp çizgiyi Clip.hardEdge ile keserdi — bu
+                  // yüzden en fazla "üst kenara yaslı" konuma clamp'liyoruz.
+                  bottom: math.min(
+                    _labelRowHeight + _chartHeight - _TargetLine.height,
+                    _labelRowHeight +
+                        _chartHeight * (targetKcal! / effectiveMax),
+                  ),
+                  child: IgnorePointer(
+                    child: _TargetLine(color: colors.textSecondary),
+                  ),
+                ),
             ],
           ),
         ),
@@ -158,4 +198,53 @@ class CalorieStackedBarChart extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Hedef kalorinin barlar üzerindeki konumunu işaretleyen ince yatay
+/// kesikli çizgi. Sabit renk çözünürlüğü/kalınlık — dolgu barları
+/// (ColoredBox segmentleri) ile karışmasın diye düz renk yerine kesikli
+/// çizilir.
+class _TargetLine extends StatelessWidget {
+  final Color color;
+
+  const _TargetLine({required this.color});
+
+  static const double height = 4;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      child: CustomPaint(
+        size: Size.infinite,
+        painter: _DashedLinePainter(color: color),
+      ),
+    );
+  }
+}
+
+class _DashedLinePainter extends CustomPainter {
+  final Color color;
+
+  const _DashedLinePainter({required this.color});
+
+  static const double _dashWidth = 6;
+  static const double _dashGap = 4;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5;
+    final y = size.height / 2;
+    var x = 0.0;
+    while (x < size.width) {
+      canvas.drawLine(Offset(x, y), Offset(x + _dashWidth, y), paint);
+      x += _dashWidth + _dashGap;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DashedLinePainter oldDelegate) =>
+      oldDelegate.color != color;
 }

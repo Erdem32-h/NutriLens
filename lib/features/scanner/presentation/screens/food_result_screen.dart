@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,6 +18,7 @@ import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart';
+import '../../../../core/services/metrics_prompt_store.dart';
 import '../../../../core/services/share_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -34,6 +36,8 @@ import '../../../product/presentation/providers/product_provider.dart';
 import '../../../product/presentation/widgets/bento_nutrition_grid.dart';
 import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
 import '../../../product/presentation/widgets/health_score_bar.dart';
+import '../../../profile/presentation/providers/user_metrics_provider.dart';
+import '../../../profile/presentation/screens/metrics_wizard_screen.dart';
 import '../../../share/domain/share_caption.dart';
 import '../../../share/presentation/widgets/meal_share_card.dart';
 import '../widgets/meal_save_bar.dart';
@@ -385,6 +389,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         calories: scaledNutriments.energyKcal ?? 0,
         hpScore: hpResult.hpScore,
         confidence: _result!.confidence,
+        portionGrams: (_result!.portionGrams * _portionMultiplier).round(),
         aiRawJson: _result!.rawJson,
       );
 
@@ -402,10 +407,48 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       }
       ref.invalidate(mealsProvider);
       ref.invalidate(calorieChartDataProvider);
+      ref.invalidate(todayCalorieTotalProvider);
       // Home-screen widget reflects today's kcal — refresh on save so the
       // user sees the new total without waiting for the OS scheduler.
       unawaited(ref.read(homeWidgetServiceProvider).refresh(userId: userId));
 
+      if (!mounted) return;
+
+      // İlk öğün kaydından sonra kişisel kalori hedefi sihirbazını sun —
+      // yalnızca metrics kaydı YOKSA ve MetricsPromptStore.shouldPrompt()
+      // true dönüyorsa (kullanıcı daha önce reddetmemiş/tamamlamamışsa).
+      // `await` sonrası her `context`/`ref` kullanımından önce `mounted`
+      // kontrolü şart (bkz. commit accf979: dispose sonrası ref erişimi
+      // hatası) — bu yüzden hem sihirbaz push'undan önce hem de sonrasında
+      // ayrı ayrı kontrol ediliyor.
+      //
+      // Kendi try/catch'inde: öğün bu noktada ZATEN kaydedildi ve
+      // meal_added gönderildi (yukarıda) — bu bloktaki bir hata (ör.
+      // Drift/SharedPreferences okuması) dışarıdaki catch'e sızıp
+      // kullanıcıya "kayıt başarısız" göstermemeli ve aşağıdaki
+      // context.pop()'u engellememeli. Aksi halde kullanıcı zaten
+      // kaydedilmiş bir öğünü tekrar kaydetmeye çalışır ve yinelenen kayıt
+      // oluşur (code review bulgusu — kaydın başarısı kayıt-sonrası bir yan
+      // etkinin başarısına bağlı olmamalı).
+      try {
+        final promptStore = ref.read(metricsPromptStoreProvider);
+        final metrics = await ref
+            .read(userMetricsLocalDataSourceProvider)
+            .get(userId);
+        if (!mounted) return;
+
+        if (metrics == null && await promptStore.shouldPrompt()) {
+          if (!mounted) return;
+          ref
+              .read(analyticsServiceProvider)
+              .track(FunnelEvents.metricsPromptShown);
+          await Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const MetricsWizardScreen()),
+          );
+        }
+      } catch (e) {
+        debugPrint('[FoodResult] metrics prompt trigger failed: $e');
+      }
       if (!mounted) return;
 
       final messenger = ScaffoldMessenger.of(context);
@@ -525,7 +568,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   /// Loading view: shows the captured photo with a scanning-line animation
   /// sweeping vertically — gives the user concrete visual feedback that
   /// the image is being processed instead of a generic spinner.
-  Widget _buildLoading(dynamic l10n, AppColorsExtension colors) {
+  Widget _buildLoading(AppLocalizations l10n, AppColorsExtension colors) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -557,7 +600,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     );
   }
 
-  Widget _buildError(dynamic l10n, AppColorsExtension colors) {
+  Widget _buildError(AppLocalizations l10n, AppColorsExtension colors) {
     final isServiceDown = _serviceUnavailable;
     final iconColor = isServiceDown ? colors.warning : colors.error;
     final icon = isServiceDown
@@ -603,7 +646,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     );
   }
 
-  Widget _buildResult(dynamic l10n, AppColorsExtension colors) {
+  Widget _buildResult(AppLocalizations l10n, AppColorsExtension colors) {
     final result = _result!;
     final confidencePercent = (result.confidence * 100).toInt();
     // All UI below renders the SCALED nutrients so the BentoGrid,
@@ -751,9 +794,16 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                BentoNutritionGrid(nutriments: nutriments),
+                BentoNutritionGrid(
+                  nutriments: nutriments,
+                  dailyCalories: ref.watch(dailyCalorieTargetProvider),
+                ),
                 const SizedBox(height: 16),
-                EditorialNutrientTable(nutriments: nutriments),
+                EditorialNutrientTable(
+                  nutriments: nutriments,
+                  basisLabel: l10n.nutritionBasisGrams(scaledPortion),
+                  personalDailyCalories: ref.watch(personalDailyCaloriesProvider),
+                ),
               ],
             ),
           ),

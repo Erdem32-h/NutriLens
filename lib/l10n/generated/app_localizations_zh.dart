@@ -510,6 +510,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get portion100g => '100g';
 
   @override
+  String get nutritionBasisPortion => 'portion';
+
+  @override
+  String nutritionBasisGrams(int grams) {
+    return '$grams g';
+  }
+
+  @override
+  String dailyValueNotePersonal(int kcal) {
+    return '* Percentages are based on your personal daily target of $kcal kcal.';
+  }
+
+  @override
   String get foodCategory => 'FOOD';
 
   @override
@@ -1166,6 +1179,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noMealsHint => '在扫描页面使用 AI 分析拍摄食物，即可保存记录到这里。';
 
   @override
+  String dailyCalorieSummary(int consumed, int target) {
+    return '$consumed / $target 千卡';
+  }
+
+  @override
+  String dailyCalorieOver(int over) {
+    return '超出目标 $over 千卡';
+  }
+
+  @override
   String get ingredientsTitle => '成分表';
 
   @override
@@ -1748,4 +1771,110 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get historyLoadError => 'History could not be loaded.';
+
+  @override
+  String get metricsSexStepTitle => '你的性别是？';
+
+  @override
+  String get metricsSexStepSubtitle => '热量计算会根据生理性别调整。';
+
+  @override
+  String get metricsSexFemale => '女';
+
+  @override
+  String get metricsSexMale => '男';
+
+  @override
+  String get metricsSexUnspecified => '不愿透露';
+
+  @override
+  String get metricsBodyStepTitle => '你的身体数据';
+
+  @override
+  String get metricsBodyStepSubtitle => '这些信息只保存在你的设备上，仅用于估算你的目标。';
+
+  @override
+  String get metricsAgeLabel => '年龄';
+
+  @override
+  String get metricsHeightLabel => '身高（厘米）';
+
+  @override
+  String get metricsWeightLabel => '体重（公斤）';
+
+  @override
+  String metricsRangeError(int min, int max) {
+    return '请输入 $min 到 $max 之间的数值';
+  }
+
+  @override
+  String get metricsTargetStepTitle => '目标体重';
+
+  @override
+  String get metricsTargetStepSubtitle => '我们会根据你的目标调整每日热量目标。';
+
+  @override
+  String get metricsTargetWeightLabel => '目标体重（公斤）';
+
+  @override
+  String get metricsMaintainWeightOption => '我想保持目前的体重';
+
+  @override
+  String get metricsActivityStepTitle => '你的活动水平';
+
+  @override
+  String get metricsActivityStepSubtitle => '选择最接近你日常状态的一项。';
+
+  @override
+  String get metricsActivitySedentary => '久坐';
+
+  @override
+  String get metricsActivitySedentaryDesc => '办公室工作，不运动';
+
+  @override
+  String get metricsActivityLight => '轻度活动';
+
+  @override
+  String get metricsActivityLightDesc => '每周1-3天轻度运动';
+
+  @override
+  String get metricsActivityModerate => '中度活动';
+
+  @override
+  String get metricsActivityModerateDesc => '每周3-5天运动';
+
+  @override
+  String get metricsActivityActive => '高度活动';
+
+  @override
+  String get metricsActivityActiveDesc => '每周6-7天高强度运动';
+
+  @override
+  String get metricsResultStepTitle => '这是你的每日预估目标';
+
+  @override
+  String get metricsResultKcalPerDay => '千卡 / 天';
+
+  @override
+  String get metricsMedicalDisclaimer => '这是一个估算值，不能替代医疗建议。';
+
+  @override
+  String get metricsSaveToAccountCta => '保存到账户';
+
+  @override
+  String get metricsCloseTooltip => '关闭';
+
+  @override
+  String get metricsBackTooltip => '返回';
+
+  @override
+  String get calorieTargetCardTitle => '个人卡路里目标';
+
+  @override
+  String calorieTargetCardSubtitleSet(int target) {
+    return '你的每日目标是 $target 千卡';
+  }
+
+  @override
+  String get calorieTargetCardSubtitleUnset => '计算你的个人卡路里目标';
 }

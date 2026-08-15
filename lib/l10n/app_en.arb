@@ -166,6 +166,23 @@
   "noAdditives": "No additives found in this product",
   "noNutrientData": "Nutritional information not available",
   "portion100g": "100g",
+  "nutritionBasisPortion": "portion",
+  "nutritionBasisGrams": "{grams} g",
+  "@nutritionBasisGrams": {
+    "placeholders": {
+      "grams": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyValueNotePersonal": "* Percentages are based on your personal daily target of {kcal} kcal.",
+  "@dailyValueNotePersonal": {
+    "placeholders": {
+      "kcal": {
+        "type": "int"
+      }
+    }
+  },
   "foodCategory": "FOOD",
   "delete": "Delete",
   "edit": "Edit",
@@ -423,6 +440,25 @@
   },
   "noMealsYet": "No meals yet",
   "noMealsHint": "Use AI Analysis on the scan screen to photograph your food and save it here.",
+  "dailyCalorieSummary": "{consumed} / {target} kcal",
+  "@dailyCalorieSummary": {
+    "placeholders": {
+      "consumed": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCalorieOver": "You are {over} kcal over your target",
+  "@dailyCalorieOver": {
+    "placeholders": {
+      "over": {
+        "type": "int"
+      }
+    }
+  },
   "ingredientsTitle": "Ingredients",
   "confidenceSuffix": "confidence",
   "aiConfidenceHint": "How sure the AI is about the detected food, portion size and calorie estimate.",
@@ -636,5 +672,56 @@
   },
   "scanFood": "Scan food",
   "noHistoryScanCta": "Scan barcode",
-  "historyLoadError": "History could not be loaded."
+  "historyLoadError": "History could not be loaded.",
+  "metricsSexStepTitle": "What's your sex?",
+  "metricsSexStepSubtitle": "The calorie estimate adjusts for biological sex.",
+  "metricsSexFemale": "Female",
+  "metricsSexMale": "Male",
+  "metricsSexUnspecified": "Prefer not to say",
+  "metricsBodyStepTitle": "Your body stats",
+  "metricsBodyStepSubtitle": "This stays on your device — used only to estimate your target.",
+  "metricsAgeLabel": "Age",
+  "metricsHeightLabel": "Height (cm)",
+  "metricsWeightLabel": "Weight (kg)",
+  "metricsRangeError": "Enter a value between {min} and {max}",
+  "@metricsRangeError": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "metricsTargetStepTitle": "Your target weight",
+  "metricsTargetStepSubtitle": "We adjust your daily calorie target to match your goal.",
+  "metricsTargetWeightLabel": "Target weight (kg)",
+  "metricsMaintainWeightOption": "I want to maintain my current weight",
+  "metricsActivityStepTitle": "Your activity level",
+  "metricsActivityStepSubtitle": "Pick the one closest to your daily routine.",
+  "metricsActivitySedentary": "Sedentary",
+  "metricsActivitySedentaryDesc": "Desk job, no exercise",
+  "metricsActivityLight": "Lightly active",
+  "metricsActivityLightDesc": "Light exercise 1-3 days a week",
+  "metricsActivityModerate": "Moderately active",
+  "metricsActivityModerateDesc": "Exercise 3-5 days a week",
+  "metricsActivityActive": "Very active",
+  "metricsActivityActiveDesc": "Intense exercise 6-7 days a week",
+  "metricsResultStepTitle": "Here's your estimated daily target",
+  "metricsResultKcalPerDay": "kcal / day",
+  "metricsMedicalDisclaimer": "This is an estimate, not medical advice.",
+  "metricsSaveToAccountCta": "Save to Account",
+  "metricsCloseTooltip": "Close",
+  "metricsBackTooltip": "Back",
+  "calorieTargetCardTitle": "Personal calorie target",
+  "calorieTargetCardSubtitleSet": "Your daily target is {target} kcal",
+  "@calorieTargetCardSubtitleSet": {
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "calorieTargetCardSubtitleUnset": "Calculate your personal calorie target"
 }

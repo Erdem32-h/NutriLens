@@ -521,6 +521,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get portion100g => '100g';
 
   @override
+  String get nutritionBasisPortion => 'portion';
+
+  @override
+  String nutritionBasisGrams(int grams) {
+    return '$grams g';
+  }
+
+  @override
+  String dailyValueNotePersonal(int kcal) {
+    return '* Percentages are based on your personal daily target of $kcal kcal.';
+  }
+
+  @override
   String get foodCategory => 'FOOD';
 
   @override
@@ -1187,6 +1200,16 @@ class AppLocalizationsPt extends AppLocalizations {
       'Use a Análise de IA na tela de escaneamento para fotografar sua refeição e salvá-la aqui.';
 
   @override
+  String dailyCalorieSummary(int consumed, int target) {
+    return '$consumed / $target kcal';
+  }
+
+  @override
+  String dailyCalorieOver(int over) {
+    return 'Você ultrapassou sua meta em $over kcal';
+  }
+
+  @override
   String get ingredientsTitle => 'Ingredientes';
 
   @override
@@ -1789,4 +1812,118 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get historyLoadError => 'History could not be loaded.';
+
+  @override
+  String get metricsSexStepTitle => 'Qual é o seu sexo?';
+
+  @override
+  String get metricsSexStepSubtitle =>
+      'O cálculo de calorias se ajusta ao sexo biológico.';
+
+  @override
+  String get metricsSexFemale => 'Feminino';
+
+  @override
+  String get metricsSexMale => 'Masculino';
+
+  @override
+  String get metricsSexUnspecified => 'Prefiro não dizer';
+
+  @override
+  String get metricsBodyStepTitle => 'Suas medidas corporais';
+
+  @override
+  String get metricsBodyStepSubtitle =>
+      'Isso fica no seu dispositivo, usado apenas para estimar sua meta.';
+
+  @override
+  String get metricsAgeLabel => 'Idade';
+
+  @override
+  String get metricsHeightLabel => 'Altura (cm)';
+
+  @override
+  String get metricsWeightLabel => 'Peso (kg)';
+
+  @override
+  String metricsRangeError(int min, int max) {
+    return 'Digite um valor entre $min e $max';
+  }
+
+  @override
+  String get metricsTargetStepTitle => 'Seu peso alvo';
+
+  @override
+  String get metricsTargetStepSubtitle =>
+      'Ajustamos sua meta calórica diária de acordo com seu objetivo.';
+
+  @override
+  String get metricsTargetWeightLabel => 'Peso alvo (kg)';
+
+  @override
+  String get metricsMaintainWeightOption => 'Quero manter meu peso atual';
+
+  @override
+  String get metricsActivityStepTitle => 'Seu nível de atividade';
+
+  @override
+  String get metricsActivityStepSubtitle =>
+      'Escolha o mais próximo da sua rotina diária.';
+
+  @override
+  String get metricsActivitySedentary => 'Sedentário';
+
+  @override
+  String get metricsActivitySedentaryDesc =>
+      'Trabalho de escritório, sem exercício';
+
+  @override
+  String get metricsActivityLight => 'Levemente ativo';
+
+  @override
+  String get metricsActivityLightDesc => 'Exercício leve 1-3 dias por semana';
+
+  @override
+  String get metricsActivityModerate => 'Moderadamente ativo';
+
+  @override
+  String get metricsActivityModerateDesc => 'Exercício 3-5 dias por semana';
+
+  @override
+  String get metricsActivityActive => 'Muito ativo';
+
+  @override
+  String get metricsActivityActiveDesc =>
+      'Exercício intenso 6-7 dias por semana';
+
+  @override
+  String get metricsResultStepTitle => 'Aqui está sua meta diária estimada';
+
+  @override
+  String get metricsResultKcalPerDay => 'kcal / dia';
+
+  @override
+  String get metricsMedicalDisclaimer =>
+      'É um valor estimado, não substitui aconselhamento médico.';
+
+  @override
+  String get metricsSaveToAccountCta => 'Salvar na Conta';
+
+  @override
+  String get metricsCloseTooltip => 'Fechar';
+
+  @override
+  String get metricsBackTooltip => 'Voltar';
+
+  @override
+  String get calorieTargetCardTitle => 'Meta calórica pessoal';
+
+  @override
+  String calorieTargetCardSubtitleSet(int target) {
+    return 'Sua meta diária é $target kcal';
+  }
+
+  @override
+  String get calorieTargetCardSubtitleUnset =>
+      'Calcule sua meta calórica pessoal';
 }

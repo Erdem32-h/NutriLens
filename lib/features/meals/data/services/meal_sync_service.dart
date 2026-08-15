@@ -110,9 +110,11 @@ class MealSyncService {
           }
         }
 
-        await _local.saveMeal(
-          MealRemoteDataSource.rowToEntity(row, thumbnailPath: thumbPath),
+        final cloudEntity = MealRemoteDataSource.rowToEntity(
+          row,
+          thumbnailPath: thumbPath,
         );
+        await _local.saveMeal(_guardPortionGrams(cloudEntity, local));
         await _local.markSynced(id);
         changed = true;
       }
@@ -133,4 +135,23 @@ class MealSyncService {
     final pulled = await pullAndMerge(userId);
     return uploaded || pulled;
   }
+}
+
+/// Null-override guard for the cloud→local merge in [MealSyncService.pullAndMerge].
+///
+/// `portion_grams` was added to `meal_entries` after the table already had
+/// live rows, so every cloud row written before this column existed comes
+/// back with `portion_grams: null` even though the device may hold the
+/// correct gramaj locally. Without this guard, `pullAndMerge` would use
+/// `cloudEntity` as-is and silently erase a value that was never wrong —
+/// only ever unsynced. If the cloud row *does* carry a portion (a genuine
+/// update from another device), it wins normally.
+MealEntryEntity _guardPortionGrams(
+  MealEntryEntity cloudEntity,
+  MealEntryEntity? local,
+) {
+  if (cloudEntity.portionGrams != null || local?.portionGrams == null) {
+    return cloudEntity;
+  }
+  return cloudEntity.copyWith(portionGrams: local!.portionGrams);
 }
