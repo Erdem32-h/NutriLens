@@ -23,6 +23,9 @@ import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/core/theme/app_colors.dart';
 import 'package:nutrilens/features/product/domain/entities/nutriments_entity.dart';
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
+import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
+import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.dart';
+import 'package:nutrilens/features/profile/presentation/providers/user_metrics_provider.dart';
 import 'package:nutrilens/features/profile/presentation/screens/metrics_wizard_screen.dart';
 import 'package:nutrilens/features/scanner/presentation/screens/food_result_screen.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
@@ -80,12 +83,37 @@ class _SucceedingGemini extends GeminiAiService {
   }
 }
 
+/// [UserMetricsLocalDataSource.get] her zaman firlar — code review bulgusu
+/// olan "tetikleyici hatasi kayit basarisi gibi gorunuyor" senaryosunu
+/// tetiklemek icin. `Override` tipi bilerek yazilmiyor (bkz.
+/// daily_target_summary_test.dart'taki ayni gerekce) — `extraOverrides`
+/// `.cast()` ile hedef tipe donusturuluyor.
+class _ThrowingUserMetricsDataSource implements UserMetricsLocalDataSource {
+  @override
+  Future<UserMetricsEntity?> get(String userId) async {
+    throw StateError('Drift sorgusu koptu (test)');
+  }
+
+  @override
+  Future<void> save(UserMetricsEntity metrics) async {}
+
+  @override
+  Future<void> reassignOwner({
+    required String fromUserId,
+    required String toUserId,
+  }) async {}
+
+  @override
+  Future<void> deleteFor(String userId) async {}
+}
+
 Widget _subject({
   required _RecordingAnalytics analytics,
   required SharedPreferences prefs,
   required AppDatabase db,
   required Uint8List image,
   required GoRouter router,
+  List extraOverrides = const [],
 }) {
   return ProviderScope(
     overrides: [
@@ -95,7 +123,8 @@ Widget _subject({
       appDatabaseProvider.overrideWithValue(db),
       effectiveUserIdProvider.overrideWithValue('trigger-test-user'),
       isPremiumProvider.overrideWithValue(false),
-    ],
+      ...extraOverrides,
+    ].cast(),
     child: MaterialApp.router(
       routerConfig: router,
       locale: const Locale('tr'),
@@ -256,6 +285,52 @@ void main() {
       expect(find.text('base'), findsOneWidget);
       expect(analytics.wasTracked(FunnelEvents.metricsPromptShown), isFalse);
       expect(analytics.wasTracked(FunnelEvents.mealAdded), isTrue);
+    });
+
+    testWidgets(
+        'tetikleyici (metrics get()) firlarsa oguen yine de kaydedilmis sayilir ve ekran kapanir',
+        (tester) async {
+      // Code review bulgusu: tetikleyici mantigi (Drift get() + shouldPrompt())
+      // eskiden _saveMeal'in ANA try/catch'ini paylasiyordu. Bu blokta bir
+      // hata firlarsa akis disaridaki catch'e dusuyor, "Kaydetme basarisiz"
+      // gosteriliyor ve context.pop() hic cagrilmiyordu — oysa oguen zaten
+      // basariyla Drift'e yazilmisti (meal_added da gonderilmisti). Kullanici
+      // "basarisiz" mesajini gorup tekrar denerse yeni bir uuid ile
+      // YINELENEN kayit olusuyordu. Bu test, tetikleyicinin kendi
+      // try/catch'ine alinip hatanin yutulmasini dogruluyor: ekran normal
+      // sekilde kapanmali, "basarisiz" mesaji GORUNMEMELI.
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      final analytics = _RecordingAnalytics();
+      final router = _routerFor(image);
+
+      await tester.pumpWidget(
+        _subject(
+          analytics: analytics,
+          prefs: prefs,
+          db: db,
+          image: image,
+          router: router,
+          extraOverrides: [
+            userMetricsLocalDataSourceProvider.overrideWithValue(
+              _ThrowingUserMetricsDataSource(),
+            ),
+          ],
+        ),
+      );
+
+      await _openAndSave(tester, router);
+
+      // Sihirbaz acilamadi (tetikleyici firladi) ama oguen kaydi ETKILENMEDI:
+      // ekran normal basari yoluyla kapandi, "basarisiz" mesaji yok.
+      expect(find.byType(MetricsWizardScreen), findsNothing);
+      expect(find.byType(FoodResultScreen), findsNothing);
+      expect(find.text('base'), findsOneWidget);
+      expect(find.text('Kaydetme başarısız'), findsNothing);
+      expect(analytics.wasTracked(FunnelEvents.mealAdded), isTrue);
+      expect(analytics.wasTracked(FunnelEvents.metricsPromptShown), isFalse);
     });
   });
 }

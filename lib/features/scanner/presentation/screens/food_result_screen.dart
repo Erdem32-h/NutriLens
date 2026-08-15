@@ -416,26 +416,37 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       // İlk öğün kaydından sonra kişisel kalori hedefi sihirbazını sun —
       // yalnızca metrics kaydı YOKSA ve MetricsPromptStore.shouldPrompt()
       // true dönüyorsa (kullanıcı daha önce reddetmemiş/tamamlamamışsa).
-      // Kayıt başarısız olsaydı buraya hiç ulaşılmazdı (yukarıdaki catch
-      // bloğu erken döner) — tetikleyici bilerek yalnızca başarılı kayıttan
-      // sonra çalışır. `await` sonrası her `context`/`ref` kullanımından
-      // önce `mounted` kontrolü şart (bkz. commit accf979: dispose sonrası
-      // ref erişimi hatası) — bu yüzden hem sihirbaz push'undan önce hem de
-      // sonrasında ayrı ayrı kontrol ediliyor.
-      final promptStore = ref.read(metricsPromptStoreProvider);
-      final metrics = await ref
-          .read(userMetricsLocalDataSourceProvider)
-          .get(userId);
-      if (!mounted) return;
-
-      if (metrics == null && await promptStore.shouldPrompt()) {
+      // `await` sonrası her `context`/`ref` kullanımından önce `mounted`
+      // kontrolü şart (bkz. commit accf979: dispose sonrası ref erişimi
+      // hatası) — bu yüzden hem sihirbaz push'undan önce hem de sonrasında
+      // ayrı ayrı kontrol ediliyor.
+      //
+      // Kendi try/catch'inde: öğün bu noktada ZATEN kaydedildi ve
+      // meal_added gönderildi (yukarıda) — bu bloktaki bir hata (ör.
+      // Drift/SharedPreferences okuması) dışarıdaki catch'e sızıp
+      // kullanıcıya "kayıt başarısız" göstermemeli ve aşağıdaki
+      // context.pop()'u engellememeli. Aksi halde kullanıcı zaten
+      // kaydedilmiş bir öğünü tekrar kaydetmeye çalışır ve yinelenen kayıt
+      // oluşur (code review bulgusu — kaydın başarısı kayıt-sonrası bir yan
+      // etkinin başarısına bağlı olmamalı).
+      try {
+        final promptStore = ref.read(metricsPromptStoreProvider);
+        final metrics = await ref
+            .read(userMetricsLocalDataSourceProvider)
+            .get(userId);
         if (!mounted) return;
-        ref
-            .read(analyticsServiceProvider)
-            .track(FunnelEvents.metricsPromptShown);
-        await Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const MetricsWizardScreen()),
-        );
+
+        if (metrics == null && await promptStore.shouldPrompt()) {
+          if (!mounted) return;
+          ref
+              .read(analyticsServiceProvider)
+              .track(FunnelEvents.metricsPromptShown);
+          await Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const MetricsWizardScreen()),
+          );
+        }
+      } catch (e) {
+        debugPrint('[FoodResult] metrics prompt trigger failed: $e');
       }
       if (!mounted) return;
 
