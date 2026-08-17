@@ -13,7 +13,12 @@ class MealRemoteDataSource {
   final SupabaseClient _client;
 
   static const _table = 'meal_entries';
-  static const _bucket = 'meal-photos';
+
+  /// Public because the account/data deletion path has to empty this bucket
+  /// too. If the name only lived here, a rename would silently leave every
+  /// deleted user's meal photos on the server — a deletion request we told the
+  /// stores we honour.
+  static const bucket = 'meal-photos';
 
   const MealRemoteDataSource(this._client);
 
@@ -64,7 +69,7 @@ class MealRemoteDataSource {
     try {
       final path = '$userId/$mealId.jpg';
       await _client.storage
-          .from(_bucket)
+          .from(bucket)
           .upload(
             path,
             file,
@@ -81,7 +86,7 @@ class MealRemoteDataSource {
 
   Future<Uint8List?> downloadPhoto(String path) async {
     try {
-      return await _client.storage.from(_bucket).download(path);
+      return await _client.storage.from(bucket).download(path);
     } catch (_) {
       return null;
     }
@@ -89,7 +94,7 @@ class MealRemoteDataSource {
 
   Future<void> deletePhoto(String path) async {
     try {
-      await _client.storage.from(_bucket).remove([path]);
+      await _client.storage.from(bucket).remove([path]);
     } catch (_) {
       // Best-effort; an orphaned object is harmless.
     }

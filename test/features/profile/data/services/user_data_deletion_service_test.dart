@@ -110,6 +110,7 @@ void main() {
         'favorites:user_id:user-1',
         'blacklist:user_id:user-1',
         'daily_scans:user_id:user-1',
+        'meal_entries:user_id:user-1',
       ]);
       expect(remote.resetProfiles, ['user-1']);
       expect(
@@ -120,11 +121,49 @@ void main() {
       );
     },
   );
+
+  test('empties the user photo folder in cloud storage', () async {
+    await service.deleteAllUserData('user-1');
+
+    expect(remote.photoFolders, ['user-1']);
+  });
+
+  test('a storage failure fails the whole deletion instead of passing', () async {
+    // The user is told their data is gone; if the photos survived, that claim
+    // is false. Better a visible error and a retry than a silent half-deletion.
+    remote.failPhotoDeletion = true;
+
+    await expectLater(service.deleteAllUserData('user-1'), throwsException);
+  });
+
+  group('SupabaseRemoteUserDataStore.clearedProfileColumns', () {
+    // Compliance test: the body measurements are declared as health data in
+    // both store privacy forms, so a deletion request has to reach them.
+    const bodyColumns = [
+      'sex',
+      'birth_year',
+      'height_cm',
+      'weight_kg',
+      'target_weight_kg',
+      'activity_level',
+    ];
+
+    for (final column in bodyColumns) {
+      test('clears $column', () {
+        expect(
+          SupabaseRemoteUserDataStore.clearedProfileColumns,
+          containsPair(column, isNull),
+        );
+      });
+    }
+  });
 }
 
 class _RecordingRemoteUserDataStore implements RemoteUserDataStore {
   final deletedTables = <String>[];
   final resetProfiles = <String>[];
+  final photoFolders = <String>[];
+  bool failPhotoDeletion = false;
 
   @override
   Future<void> deleteRows({
@@ -138,5 +177,11 @@ class _RecordingRemoteUserDataStore implements RemoteUserDataStore {
   @override
   Future<void> resetUserProfile(String userId) async {
     resetProfiles.add(userId);
+  }
+
+  @override
+  Future<void> deleteMealPhotos(String userId) async {
+    if (failPhotoDeletion) throw Exception('storage unavailable');
+    photoFolders.add(userId);
   }
 }

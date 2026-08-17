@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../config/drift/app_database.dart';
+import '../../../meals/data/datasources/meal_remote_datasource.dart';
 import 'account_deletion_service.dart';
 
 abstract interface class RemoteUserDataStore {
@@ -12,12 +13,48 @@ abstract interface class RemoteUserDataStore {
   });
 
   Future<void> resetUserProfile(String userId);
+
+  /// Empty the user's folder in the meal-photo bucket.
+  ///
+  /// Storage objects are not rows: deleting the auth user cascades through
+  /// every table but leaves uploaded files untouched, so this has to be an
+  /// explicit step in both the "delete my data" and "delete my account" paths.
+  Future<void> deleteMealPhotos(String userId);
 }
 
 class SupabaseRemoteUserDataStore implements RemoteUserDataStore {
   final SupabaseClient _client;
 
   const SupabaseRemoteUserDataStore(this._client);
+
+  /// Everything [resetUserProfile] wipes, minus the `updated_at` stamp.
+  ///
+  /// Exposed as data so a test can assert the body-measurement columns are in
+  /// here. They arrived with the personal calorie target and were missed by the
+  /// first version of this reset, which meant "delete all my data" left the
+  /// user's height, weight and birth year on the server.
+  static const clearedProfileColumns = <String, Object?>{
+    'selected_allergens': <String>[],
+    'diet_vegan': false,
+    'diet_vegetarian': false,
+    'diet_gluten_free': false,
+    'diet_halal': false,
+    'filter_palm_oil': false,
+    'filter_canola_oil': false,
+    'filter_cotton_oil': false,
+    'filter_soy_oil': false,
+    'filter_aspartame': false,
+    'filter_msg': false,
+    'filter_corn_syrup': false,
+    // Body measurements behind the personal calorie target. Health data — the
+    // App Store and Play declarations both name it, so deletion must reach it.
+    'sex': null,
+    'birth_year': null,
+    'height_cm': null,
+    'weight_kg': null,
+    'target_weight_kg': null,
+    'activity_level': null,
+  };
 
   @override
   Future<void> deleteRows({
@@ -33,21 +70,21 @@ class SupabaseRemoteUserDataStore implements RemoteUserDataStore {
     await _client
         .from('user_profiles')
         .update({
-          'selected_allergens': <String>[],
-          'diet_vegan': false,
-          'diet_vegetarian': false,
-          'diet_gluten_free': false,
-          'diet_halal': false,
-          'filter_palm_oil': false,
-          'filter_canola_oil': false,
-          'filter_cotton_oil': false,
-          'filter_soy_oil': false,
-          'filter_aspartame': false,
-          'filter_msg': false,
-          'filter_corn_syrup': false,
+          ...clearedProfileColumns,
           'updated_at': DateTime.now().toUtc().toIso8601String(),
         })
         .eq('id', userId);
+  }
+
+  @override
+  Future<void> deleteMealPhotos(String userId) async {
+    final objects = await _client.storage
+        .from(MealRemoteDataSource.bucket)
+        .list(path: userId);
+    if (objects.isEmpty) return;
+    await _client.storage
+        .from(MealRemoteDataSource.bucket)
+        .remove([for (final object in objects) '$userId/${object.name}']);
   }
 }
 
@@ -99,7 +136,19 @@ class UserDataDeletionService implements UserDataCleaner {
       userIdColumn: 'user_id',
       userId: userId,
     );
+    // Cloud meals are premium-only, but the row survives losing premium — so
+    // this runs for everyone, not just current subscribers.
+    await _remoteStore.deleteRows(
+      table: 'meal_entries',
+      userIdColumn: 'user_id',
+      userId: userId,
+    );
     await _remoteStore.resetUserProfile(userId);
+    // Last, and allowed to throw: a failure here surfaces as "deletion failed"
+    // and the user retries. Every step above is idempotent, so a retry is safe.
+    // Swallowing it would leave photos on the server while telling the user
+    // their data is gone.
+    await _remoteStore.deleteMealPhotos(userId);
   }
 
   Future<void> _deleteLocalUserData(String userId) async {
