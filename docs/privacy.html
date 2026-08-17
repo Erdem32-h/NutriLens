@@ -27,7 +27,7 @@
 <body>
 
 <h1>Gizlilik Politikası</h1>
-<p class="meta">Son güncelleme: 22 Temmuz 2026 · <a href="#en">English version below</a></p>
+<p class="meta">Son güncelleme: 17 Ağustos 2026 · <a href="#en">English version below</a></p>
 
 <nav class="toc">
   <strong>İçindekiler</strong>
@@ -63,6 +63,16 @@
     <td>Hayır</td>
   </tr>
   <tr>
+    <td><strong>Vücut ölçüleri</strong>: cinsiyet, doğum yılı, boy, kilo, hedef kilo, hareket düzeyi</td>
+    <td>Kişisel kalori hedefi sihirbazında siz girersiniz. Giriş yaptıysanız hesabınıza kaydedilir; misafir kullanımda yalnızca cihazınızda kalır</td>
+    <td>Hayır — sihirbazı kapatabilirsiniz, uygulama varsayılan hedefle çalışmaya devam eder</td>
+  </tr>
+  <tr>
+    <td>Öğün kayıtları (yediğiniz yemek, kalori, porsiyon, besin değerleri)</td>
+    <td>Öğün ekleme akışı</td>
+    <td>Hayır</td>
+  </tr>
+  <tr>
     <td>Tarama geçmişi (barkod + zaman damgası)</td>
     <td>Uygulama içi tarama</td>
     <td>Hayır (geçmiş kullanmak isterseniz)</td>
@@ -73,14 +83,24 @@
     <td>Hayır</td>
   </tr>
   <tr>
-    <td>Öğün fotoğrafları (geçici)</td>
-    <td>Kamera veya galeri seçimi</td>
+    <td>Öğün fotoğrafı — analiz için gönderilen kare (geçici)</td>
+    <td>Kamera veya galeri seçimi. Analiz sağlayıcısına gönderilir, sunucumuzda saklanmaz</td>
     <td>Hayır (AI analizi isterseniz)</td>
   </tr>
   <tr>
+    <td><strong>Öğün fotoğrafı küçük görseli (kalıcı)</strong></td>
+    <td>Yalnızca <strong>Premium</strong> kullanıcılarda, cihazlar arası yedekleme için sunucumuzda saklanır. Ücretsiz kullanımda fotoğraf cihazınızdan çıkmaz</td>
+    <td>Hayır (bulut yedekleme isterseniz)</td>
+  </tr>
+  <tr>
     <td>İçindekiler/besin etiketi fotoğrafı (geçici)</td>
-    <td>Kamera çekimi</td>
+    <td>Kamera çekimi. OCR sağlayıcısına gönderilir, sunucumuzda saklanmaz</td>
     <td>Hayır (OCR isterseniz)</td>
+  </tr>
+  <tr>
+    <td>Topluluk veritabanına eklediğiniz ürün bilgisi ve ürün fotoğrafı (kalıcı)</td>
+    <td>Ürün ekleme/düzenleme ekranı — diğer kullanıcılara açıktır</td>
+    <td>Hayır</td>
   </tr>
   <tr>
     <td>Abonelik durumu, satın alma geçmişi</td>
@@ -114,6 +134,7 @@
   <li>Hesap oluşturmak ve kimlik doğrulamak</li>
   <li>Kişisel tarama geçmişi, favoriler ve filtre tercihlerinizi cihazlar arası senkronize etmek</li>
   <li>Fotoğraflarınızı AI ile analiz ederek HP Score, içerik listesi ve besin değerleri üretmek</li>
+  <li>Girdiğiniz vücut ölçülerinden günlük kalori hedefinizi hesaplamak ve öğün özetlerinizi bu hedefe göre göstermek. <strong>Bu bir tıbbi tavsiye değildir</strong>; hesap yaygın kullanılan bir formüle dayanır ve yalnızca bilgilendirme amaçlıdır.</li>
   <li>Premium abonelik haklarını yönetmek</li>
   <li>Misafir (hesapsız) kullanımda ücretsiz tarama hakkını cihaz başına sınırlamak ve kötüye kullanımı önlemek — cihaz tanımlayıcısının geri döndürülemez hash'i ile; çapraz-uygulama takibi için kullanılmaz</li>
   <li>Reklam göstermek (yalnız ücretsiz kullanıcılarda)</li>
@@ -133,15 +154,21 @@
   </tr>
   <tr>
     <td>Supabase</td>
-    <td>E-posta, ad, tarama geçmişi, favoriler</td>
+    <td>E-posta, ad, vücut ölçüleri, öğün kayıtları, tarama geçmişi, favoriler, Premium'da öğün fotoğrafı küçük görselleri</td>
     <td>Hesap altyapısı, veri saklama</td>
     <td><a href="https://supabase.com/privacy">Link</a></td>
   </tr>
   <tr>
-    <td>Anthropic (Claude API)</td>
-    <td>Yüklediğiniz fotoğraflar (geçici)</td>
-    <td>İçerik/besin değeri OCR ve yemek analizi</td>
-    <td><a href="https://www.anthropic.com/legal/privacy">Link</a></td>
+    <td>OpenRouter</td>
+    <td>Analiz için gönderdiğiniz fotoğraflar (geçici)</td>
+    <td>İsteği model sağlayıcısına yönlendirmek</td>
+    <td><a href="https://openrouter.ai/privacy">Link</a></td>
+  </tr>
+  <tr>
+    <td>Google (Gemini modelleri)</td>
+    <td>Analiz için gönderdiğiniz fotoğraflar (geçici)</td>
+    <td>İçindekiler/besin değeri OCR ve yemek analizi</td>
+    <td><a href="https://policies.google.com/privacy">Link</a></td>
   </tr>
   <tr>
     <td>RevenueCat</td>
@@ -169,15 +196,17 @@
   </tr>
 </table>
 
-<p><strong>Anthropic Claude</strong>: yüklediğiniz fotoğraflar yalnız o anki analizi yapmak için gönderilir; modeli eğitmek için kullanılmaz (Anthropic API zero-retention politikası).</p>
+<p><strong>Fotoğraf analizi hakkında:</strong> gönderdiğiniz kare yalnızca o anki analizi üretmek için kullanılır ve sonucu döndükten sonra bizim tarafımızda saklanmaz. Sağlayıcıların kendi geçici işleme ve kayıt süreleri için yukarıdaki politikalarına bakın.</p>
 
 <h2 id="tr-saklama">4. Saklama ve Silme</h2>
 <ul>
   <li><strong>Hesap verileriniz</strong>: hesabınız aktif olduğu sürece saklanır.</li>
-  <li><strong>Tüm Verilerimi Sil</strong> (uygulama içi): tarama geçmişi, favoriler, kara liste ve kaydedilmiş öğünler silinir. Topluluk veritabanına eklediğiniz ürünler diğer kullanıcılara açık kalır.</li>
-  <li><strong>Hesabımı Sil</strong> (uygulama içi): tüm kişisel verileriniz silinir, hesap geri dönülmez şekilde kapatılır.</li>
+  <li><strong>Tüm Verilerimi Sil</strong> (Profil ekranında): tarama geçmişi, favoriler, kara liste, öğün kayıtları, vücut ölçüleriniz ve buluttaki öğün fotoğraflarınız silinir.</li>
+  <li><strong>Hesabımı Sil</strong> (Profil ekranında): yukarıdakilerin tamamı silinir ve hesabınız geri dönülmez şekilde kapatılır.</li>
+  <li>Her iki durumda da <strong>topluluk veritabanına eklediğiniz ürünler kalır</strong>. Bu kayıtlar diğer kullanıcıların gördüğü ortak ürün bilgisidir ve kimliğinize bağlı değildir.</li>
   <li>Çökme kayıtları en fazla 90 gün anonim olarak tutulur.</li>
 </ul>
+<p>Adım adım yönerge ve silinen/kalan verilerin tam listesi: <a href="data-deletion.html">Veri ve Hesap Silme</a>.</p>
 
 <h2 id="tr-cocuk">5. Çocuk Gizliliği</h2>
 <p>NutriLens 13 yaş altı kullanıcılara yönelik değildir. Bilerek 13 yaş altı kullanıcılardan veri toplamayız.</p>
@@ -194,12 +223,12 @@
 <p>haklarına sahipsiniz. Uygulamadaki <em>“Tüm Verilerimi Sil”</em> ve <em>“Hesabımı Sil”</em> butonları silme hakkınızı doğrudan kullanmanızı sağlar. <em>Profil &gt; Gizlilik &gt; “Kullanım verilerini paylaş”</em> anahtarı ise kullanım istatistiklerinin toplanmasını durdurur; kapattığınızda cihazınızda gönderilmeyi bekleyen olaylar da silinir. Diğer talepler için bizimle iletişime geçin.</p>
 
 <h2 id="tr-iletisim">7. İletişim</h2>
-<p>Sorular için: <a href="mailto:privacy@nutrilens.app">privacy@nutrilens.app</a></p>
+<p>Sorular için: <a href="mailto:EPOSTA-ADRESI-BURAYA">EPOSTA-ADRESI-BURAYA</a></p>
 
 <hr class="lang-divider" id="en">
 
 <h1>Privacy Policy</h1>
-<p class="meta">Last updated: 7 June 2026 · <a href="#">Türkçe versiyonu yukarıda</a></p>
+<p class="meta">Last updated: 17 August 2026 · <a href="#">Türkçe versiyonu yukarıda</a></p>
 
 <p>NutriLens (“we”) respects user privacy. This policy describes what data we collect when you use the app, why we process it, and your rights.</p>
 
@@ -208,10 +237,14 @@
   <tr><th>Data</th><th>Source</th><th>Required?</th></tr>
   <tr><td>Email address</td><td>You provide at sign-up</td><td>Yes (for account)</td></tr>
   <tr><td>Display name</td><td>You provide at sign-up</td><td>No</td></tr>
+  <tr><td><strong>Body measurements</strong>: sex, birth year, height, weight, target weight, activity level</td><td>You enter them in the personal calorie target wizard. Saved to your account if you are signed in; guest use keeps them on your device only</td><td>No — you can dismiss the wizard and the app keeps using a default target</td></tr>
+  <tr><td>Meal entries (what you ate, calories, portion, nutrition values)</td><td>Meal logging flow</td><td>No</td></tr>
   <tr><td>Scan history (barcode + timestamp)</td><td>In-app scanning</td><td>No</td></tr>
   <tr><td>Favorites / blacklist</td><td>Your tagging</td><td>No</td></tr>
-  <tr><td>Meal photos (transient)</td><td>Camera or gallery</td><td>No</td></tr>
-  <tr><td>Ingredient/nutrition label photos (transient)</td><td>Camera</td><td>No</td></tr>
+  <tr><td>Meal photo — the frame sent for analysis (transient)</td><td>Camera or gallery. Sent to the analysis provider, not stored on our server</td><td>No</td></tr>
+  <tr><td><strong>Meal photo thumbnail (stored)</strong></td><td><strong>Premium</strong> users only, for cross-device backup. On the free tier the photo never leaves your device</td><td>No</td></tr>
+  <tr><td>Ingredient/nutrition label photos (transient)</td><td>Camera. Sent to the OCR provider, not stored on our server</td><td>No</td></tr>
+  <tr><td>Product details and product photo you contribute to the community database (stored)</td><td>Add/edit product screen — visible to other users</td><td>No</td></tr>
   <tr><td>Subscription status, purchase history</td><td>App Store / Google Play</td><td>Premium only</td></tr>
   <tr><td>Anonymous device identifier</td><td>OS-provided</td><td>Yes (subscription tracking)</td></tr>
   <tr><td>Hashed device identifier (SHA-256 of ANDROID_ID / IDFV)</td><td>OS-provided — only the irreversible hash is sent to our server; the raw value never leaves the device</td><td>Yes (to enforce the guest free-scan limit and prevent abuse); also used for usage analytics, which you can turn off</td></tr>
@@ -224,6 +257,7 @@
   <li>Account creation and authentication</li>
   <li>Cross-device sync of personal scan history, favorites, filter preferences</li>
   <li>Photo analysis (via AI) to produce HP Score, ingredient list, nutrition values</li>
+  <li>Calculating your daily calorie target from the body measurements you enter, and showing your meal summaries against it. <strong>This is not medical advice</strong>; the calculation uses a widely used formula and is for information only.</li>
   <li>Premium subscription entitlement management</li>
   <li>Enforcing the guest (no-account) free-scan limit per device and preventing abuse — using an irreversible hash of the device identifier; not used for cross-app tracking</li>
   <li>Ad serving (free users only)</li>
@@ -235,23 +269,26 @@
 <p>Our data flow involves the providers below. Each has its own privacy policy.</p>
 <table>
   <tr><th>Service</th><th>Data Processed</th><th>Purpose</th><th>Policy</th></tr>
-  <tr><td>Supabase</td><td>Email, name, scan history, favorites, usage events</td><td>Backend storage, auth, usage analytics</td><td><a href="https://supabase.com/privacy">Link</a></td></tr>
-  <tr><td>Anthropic (Claude API)</td><td>Uploaded photos (transient)</td><td>OCR and meal analysis</td><td><a href="https://www.anthropic.com/legal/privacy">Link</a></td></tr>
+  <tr><td>Supabase</td><td>Email, name, body measurements, meal entries, scan history, favorites, usage events, meal photo thumbnails on Premium</td><td>Backend storage, auth, usage analytics</td><td><a href="https://supabase.com/privacy">Link</a></td></tr>
+  <tr><td>OpenRouter</td><td>Photos you submit for analysis (transient)</td><td>Routing the request to the model provider</td><td><a href="https://openrouter.ai/privacy">Link</a></td></tr>
+  <tr><td>Google (Gemini models)</td><td>Photos you submit for analysis (transient)</td><td>Ingredient/nutrition OCR and meal analysis</td><td><a href="https://policies.google.com/privacy">Link</a></td></tr>
   <tr><td>RevenueCat</td><td>Anonymous device ID, subscription state</td><td>Subscription management</td><td><a href="https://www.revenuecat.com/privacy/">Link</a></td></tr>
   <tr><td>Google AdMob</td><td>Device identifier, ad interactions</td><td>Ad serving (free users only)</td><td><a href="https://policies.google.com/privacy">Link</a></td></tr>
   <tr><td>Open Food Facts</td><td>Scanned barcode only</td><td>Product lookup (anonymous)</td><td><a href="https://world.openfoodfacts.org/terms-of-use">Link</a></td></tr>
   <tr><td>Apple App Store / Google Play</td><td>Purchase validation</td><td>Subscription billing</td><td>Platform policies</td></tr>
 </table>
 
-<p><strong>Anthropic Claude</strong>: photos you upload are sent only to perform that single analysis; they are not used to train the model (Anthropic API zero-retention).</p>
+<p><strong>About photo analysis:</strong> the frame you submit is used only to produce that single result and is not retained on our side once the result comes back. See the providers' own policies above for their transient processing and log retention.</p>
 
 <h2>4. Retention and Deletion</h2>
 <ul>
   <li><strong>Account data</strong>: retained while your account is active.</li>
-  <li><strong>“Delete all my data”</strong> (in app): scan history, favorites, blacklist, saved meals are removed. Products you contributed to the community database remain available to other users.</li>
-  <li><strong>“Delete my account”</strong> (in app): all personal data is removed and the account is permanently closed.</li>
+  <li><strong>“Delete all my data”</strong> (Profile screen): scan history, favorites, blacklist, meal entries, your body measurements and your meal photos in the cloud are removed.</li>
+  <li><strong>“Delete my account”</strong> (Profile screen): everything above is removed and the account is permanently closed.</li>
+  <li>In both cases, <strong>products you contributed to the community database remain</strong>. Those records are shared product information other users rely on, and are not tied to your identity.</li>
   <li>Crash logs are kept anonymously for up to 90 days.</li>
 </ul>
+<p>Step-by-step instructions and the full list of what is deleted or retained: <a href="data-deletion.html">Data and Account Deletion</a>.</p>
 
 <h2>5. Children's Privacy</h2>
 <p>NutriLens is not directed at users under 13. We do not knowingly collect data from children under 13.</p>
@@ -268,7 +305,7 @@
 <p>The in-app <em>“Delete all my data”</em> and <em>“Delete my account”</em> buttons let you exercise your deletion right directly. The <em>Profile &gt; Privacy &gt; “Share usage data”</em> switch stops usage analytics from being collected; turning it off also discards any events still queued on your device. For other requests, contact us.</p>
 
 <h2>7. Contact</h2>
-<p>Questions: <a href="mailto:privacy@nutrilens.app">privacy@nutrilens.app</a></p>
+<p>Questions: <a href="mailto:EPOSTA-ADRESI-BURAYA">EPOSTA-ADRESI-BURAYA</a></p>
 
 </body>
 </html>
