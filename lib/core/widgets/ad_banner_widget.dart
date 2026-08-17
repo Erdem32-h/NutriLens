@@ -35,7 +35,7 @@ class _AdBannerWidgetState extends ConsumerState<AdBannerWidget> {
     _bannerAd = BannerAd(
       adUnitId: AdConstants.bannerAdUnitId,
       size: adSize,
-      request: const AdRequest(),
+      request: AdConstants.adRequest,
       listener: BannerAdListener(
         onAdLoaded: (_) {
           if (mounted) setState(() => _isLoaded = true);

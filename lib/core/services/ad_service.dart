@@ -22,7 +22,7 @@ class AdService {
     if (!AdConstants.isAdMobEnabled) return;
     RewardedAd.load(
       adUnitId: AdConstants.rewardedAdUnitId,
-      request: const AdRequest(),
+      request: AdConstants.adRequest,
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
           _rewardedAd = ad;

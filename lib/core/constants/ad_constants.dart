@@ -1,8 +1,21 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 abstract final class AdConstants {
+  /// Every ad request in the app must go through this.
+  ///
+  /// `nonPersonalizedAds: true` is load-bearing for the App Store privacy
+  /// declaration: we answer "No" to Apple's tracking question, which is only
+  /// truthful while ads are not behaviourally targeted. There is no ATT prompt
+  /// (`NSUserTrackingUsageDescription` is deliberately absent from Info.plist),
+  /// so the app has no IDFA and no basis for personalization anyway.
+  ///
+  /// Flipping this to personalized ads is not a one-line change: it requires an
+  /// ATT prompt, a consent flow, and re-answering the tracking question as Yes.
+  static const adRequest = AdRequest(nonPersonalizedAds: true);
+
   // Google test ad unit IDs
   static const _testBannerAndroid = 'ca-app-pub-3940256099942544/6300978111';
   static const _testBannerIos = 'ca-app-pub-3940256099942544/2934735716';
