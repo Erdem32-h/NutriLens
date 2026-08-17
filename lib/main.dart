@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -136,6 +137,19 @@ void _bootApp() {
         print('[flutter-error] ${details.exceptionAsString()}');
         Sentry.captureException(details.exception, stackTrace: details.stack);
       };
+
+      // Plus Jakarta Sans ships inside the app (assets/fonts). Turning
+      // runtime fetching off makes that binding explicit instead of
+      // best-effort: without it google_fonts still reaches for
+      // fonts.gstatic.com whenever an asset lookup misses, and every device
+      // that could not reach it threw on a cold start — 222 errors across 47
+      // users in three weeks (Sentry NUTRILENS-5), each one a user reading
+      // the app in Roboto. Set before the first theme is built.
+      //
+      // The trade: a weight that is requested but not bundled now fails
+      // loudly instead of silently downloading. `bundled_fonts_test` guards
+      // the five weights AppTypography actually asks for.
+      GoogleFonts.config.allowRuntimeFetching = false;
 
       // Sadece debug modda aktif olması güvenli bir yaklaşımdır
       if (kDebugMode) FlutterSkillBinding.ensureInitialized();
