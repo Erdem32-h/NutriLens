@@ -145,6 +145,15 @@ class GeminiAiService {
 
   const GeminiAiService(this._client);
 
+  /// The transport succeeded but the model's answer was empty or unparseable.
+  ///
+  /// Not a real HTTP status — the proxy never sends one. It exists so a
+  /// content-level failure stops being indistinguishable from a dead socket:
+  /// both used to arrive as `status=null` in Sentry and as
+  /// `reason: 'service'` in the funnel, which made the two impossible to
+  /// count separately.
+  static const _unprocessableContent = 422;
+
   /// Improve OCR-extracted ingredients text using Gemini AI.
   ///
   /// Returns the cleaned text on success, `null` when Gemini ran but didn't
@@ -304,11 +313,17 @@ class GeminiAiService {
     }, requireAuth: false, timeout: _mealTimeout);
     final result = (response['result'] as String?)?.trim();
     if (result == null || result.isEmpty) {
-      throw const GeminiServiceException('AI returned empty meal result');
+      throw const GeminiServiceException(
+        'AI returned empty meal result',
+        statusCode: _unprocessableContent,
+      );
     }
     final parsed = AnthropicAiService.parseMealAnalysisResponseText(result);
     if (parsed == null) {
-      throw const GeminiServiceException('AI returned unparseable meal result');
+      throw const GeminiServiceException(
+        'AI returned unparseable meal result',
+        statusCode: _unprocessableContent,
+      );
     }
     return parsed;
   }
@@ -393,9 +408,30 @@ class GeminiAiService {
         }
         return await _invokeOnce(action, payload, timeout);
       }
+      // Single retry on a dropped connection. A null status means no HTTP
+      // response ever came back — the socket died, most often part-way
+      // through uploading the ~1 MB base64 frame on a weak cellular link
+      // (Sentry NUTRILENS-7: 43 failures, mostly low-end Android on mobile
+      // data). One immediate retry costs at most a second attempt on a
+      // request the server almost certainly never finished reading, and it
+      // is the difference between a retry button and a working scan.
+      //
+      // Deliberately excludes every status-carrying failure: a 429 must not
+      // be hammered, a 408 already waited out the full timeout, and a 422 is
+      // the model's answer, not the network's.
+      if (e.statusCode == null) {
+        debugPrint('[GeminiAI] $action transport failure — retrying once');
+        await Future<void>.delayed(_transportRetryDelay);
+        return await _invokeOnce(action, payload, timeout);
+      }
       rethrow;
     }
   }
+
+  /// Breathing room before the transport retry above. Long enough to ride out
+  /// a cell handover, short enough that the user is still watching the
+  /// spinner rather than deciding the app is broken.
+  static const _transportRetryDelay = Duration(seconds: 1);
 
   /// Upper bound on how long any single Gemini action can take before we
   /// fail loudly. Flash + dynamic thinking on dense ingredient labels comes
