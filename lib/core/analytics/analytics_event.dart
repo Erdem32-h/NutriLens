@@ -200,6 +200,13 @@ abstract final class FunnelEvents {
   /// from "nobody ever tried".
   static const favoriteBlocked = 'favorite_blocked';
   static const mealAdded = 'meal_added';
+
+  /// The local write after a successful analysis threw — distinct from the
+  /// user simply never tapping save, which looks identical downstream
+  /// without this (both are "succeeded but no meal_added"). props: `reason`
+  /// (see [authFailureReason], reused here for any error type via its
+  /// runtimeType fallback, not just auth).
+  static const mealSaveFailed = 'meal_save_failed';
   static const mealEdited = 'meal_edited';
   static const productShared = 'product_shared';
   static const mealShared = 'meal_shared';

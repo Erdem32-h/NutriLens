@@ -518,6 +518,12 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       );
     } catch (e) {
       debugPrint('[FoodResult] save error: $e');
+      ref
+          .read(analyticsServiceProvider)
+          .track(
+            FunnelEvents.mealSaveFailed,
+            props: {'reason': authFailureReason(e)},
+          );
       if (mounted) {
         ScaffoldMessenger.of(
           context,
