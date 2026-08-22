@@ -468,6 +468,8 @@
   "risk4": "Risky",
   "risk5": "Very risky",
   "mealSavedToast": "Meal saved",
+  "mealReminderTitle": "What did you eat today?",
+  "mealReminderBody": "Log a meal and keep your HP Score on track.",
   "mealNameLabel": "Meal name",
   "mealSourceLabel": "Source",
   "estimatedContent": "Estimated content",

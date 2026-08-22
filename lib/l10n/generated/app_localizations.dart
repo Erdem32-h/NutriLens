@@ -2416,6 +2416,18 @@ abstract class AppLocalizations {
   /// **'Öğün kaydedildi'**
   String get mealSavedToast;
 
+  /// No description provided for @mealReminderTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün ne yedin?'**
+  String get mealReminderTitle;
+
+  /// No description provided for @mealReminderBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğününü ekle, HP Skor\'unu takip et.'**
+  String get mealReminderBody;
+
   /// No description provided for @mealNameLabel.
   ///
   /// In tr, this message translates to:

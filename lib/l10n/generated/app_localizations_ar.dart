@@ -1235,6 +1235,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mealSavedToast => 'تم حفظ الوجبة';
 
   @override
+  String get mealReminderTitle => 'ماذا أكلت اليوم؟';
+
+  @override
+  String get mealReminderBody => 'سجّل وجبتك وتابع نتيجة HP الخاصة بك.';
+
+  @override
   String get mealNameLabel => 'اسم الوجبة';
 
   @override

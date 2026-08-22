@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/analytics/analytics_event.dart';
+import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -87,6 +89,7 @@ class ComparisonScreen extends ConsumerWidget {
         fileName: 'nutrilens_compare_${pair.a.barcode}_${pair.b.barcode}.png',
         caption: caption,
       );
+      ref.read(analyticsServiceProvider).track(FunnelEvents.comparisonShared);
     } catch (e) {
       if (context.mounted) {
         messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));

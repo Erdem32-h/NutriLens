@@ -201,6 +201,8 @@ abstract final class FunnelEvents {
   static const favoriteBlocked = 'favorite_blocked';
   static const mealAdded = 'meal_added';
   static const productShared = 'product_shared';
+  static const mealShared = 'meal_shared';
+  static const comparisonShared = 'comparison_shared';
 
   // --- Monetization ---------------------------------------------------
   /// props: `trigger` (scan_limit|profile|feature_gate)
@@ -209,6 +211,11 @@ abstract final class FunnelEvents {
   // --- Kişisel kalori hedefi ------------------------------------------
   /// İlk öğün kaydından sonra ölçü sihirbazı açıldı.
   static const metricsPromptShown = 'metrics_prompt_shown';
+
+  /// Fired when the OS in-app-review sheet is requested. The OS decides
+  /// whether it actually renders (both platforms throttle this
+  /// independently of the app), so this event measures asks, not shows.
+  static const reviewPromptRequested = 'review_prompt_requested';
 
   /// props: `step` (sex|body|target|activity)
   static const metricsStepCompleted = 'metrics_step_completed';

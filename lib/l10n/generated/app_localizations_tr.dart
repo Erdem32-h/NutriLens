@@ -1236,6 +1236,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mealSavedToast => 'Öğün kaydedildi';
 
   @override
+  String get mealReminderTitle => 'Bugün ne yedin?';
+
+  @override
+  String get mealReminderBody => 'Öğününü ekle, HP Skor\'unu takip et.';
+
+  @override
   String get mealNameLabel => 'Öğün adı';
 
   @override

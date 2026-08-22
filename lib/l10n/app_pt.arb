@@ -468,6 +468,8 @@
   "risk4": "Risco alto",
   "risk5": "Risco muito alto",
   "mealSavedToast": "Refeição salva",
+  "mealReminderTitle": "O que você comeu hoje?",
+  "mealReminderBody": "Registre uma refeição e acompanhe sua Pontuação HP.",
   "mealNameLabel": "Nome da refeição",
   "mealSourceLabel": "Origem",
   "estimatedContent": "Conteúdo estimado",

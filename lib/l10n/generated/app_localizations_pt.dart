@@ -1238,6 +1238,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mealSavedToast => 'Refeição salva';
 
   @override
+  String get mealReminderTitle => 'O que você comeu hoje?';
+
+  @override
+  String get mealReminderBody =>
+      'Registre uma refeição e acompanhe sua Pontuação HP.';
+
+  @override
   String get mealNameLabel => 'Nome da refeição';
 
   @override

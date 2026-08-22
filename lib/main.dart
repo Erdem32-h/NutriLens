@@ -23,6 +23,7 @@ import 'core/analytics/analytics_provider.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/providers/monetization_provider.dart';
 import 'core/providers/theme_provider.dart';
+import 'core/services/notification_service.dart';
 import 'core/session/app_session.dart';
 import 'core/theme/app_theme.dart';
 import 'features/product/presentation/providers/product_provider.dart';
@@ -330,6 +331,12 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   void initState() {
     super.initState();
     _router = createRouter(ref);
+
+    // One-time plugin setup for the daily meal reminder. Cheap and has no
+    // user-visible effect on its own (no permission dialog, no scheduling)
+    // — it just registers the native channel so later `zonedSchedule`
+    // calls have somewhere to land.
+    unawaited(ref.read(notificationServiceProvider).init());
 
     // Top of the activation funnel. Every later step is read as a fraction
     // of this, so it has to fire before anything can redirect or fail.

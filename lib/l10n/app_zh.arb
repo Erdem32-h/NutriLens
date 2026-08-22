@@ -468,6 +468,8 @@
   "risk4": "高风险",
   "risk5": "极高风险",
   "mealSavedToast": "打卡记录已保存",
+  "mealReminderTitle": "今天吃了什么？",
+  "mealReminderBody": "记录一餐，追踪你的 HP 评分。",
   "mealNameLabel": "食物名称",
   "mealSourceLabel": "来源",
   "estimatedContent": "预估成分",

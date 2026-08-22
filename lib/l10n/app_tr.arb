@@ -468,6 +468,8 @@
   "risk4": "Riskli",
   "risk5": "Çok riskli",
   "mealSavedToast": "Öğün kaydedildi",
+  "mealReminderTitle": "Bugün ne yedin?",
+  "mealReminderBody": "Öğününü ekle, HP Skor'unu takip et.",
   "mealNameLabel": "Öğün adı",
   "mealSourceLabel": "Kaynak",
   "estimatedContent": "Tahmini içerik",

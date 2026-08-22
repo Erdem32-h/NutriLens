@@ -468,6 +468,8 @@
   "risk4": "خطر مرتفع",
   "risk5": "خطر شديد",
   "mealSavedToast": "تم حفظ الوجبة",
+  "mealReminderTitle": "ماذا أكلت اليوم؟",
+  "mealReminderBody": "سجّل وجبتك وتابع نتيجة HP الخاصة بك.",
   "mealNameLabel": "اسم الوجبة",
   "mealSourceLabel": "المصدر",
   "estimatedContent": "المحتوى التقديري",

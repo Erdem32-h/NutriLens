@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -19,6 +20,9 @@ import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/services/metrics_prompt_store.dart';
+import '../../../../core/services/notification_prompt_store.dart';
+import '../../../../core/services/notification_service.dart';
+import '../../../../core/services/review_prompt_store.dart';
 import '../../../../core/services/share_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -452,6 +456,52 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       } catch (e) {
         debugPrint('[FoodResult] metrics prompt trigger failed: $e');
       }
+
+      // Store review ask — own try/catch for the same reason as the
+      // metrics prompt above: the meal is already saved, a failure here
+      // must never surface as a save error.
+      try {
+        final shouldPrompt = await ref
+            .read(reviewPromptStoreProvider)
+            .recordMealSavedAndShouldPrompt();
+        if (shouldPrompt) {
+          final inAppReview = InAppReview.instance;
+          // Only consume the one-shot flag when the ask actually went out —
+          // if the OS review API isn't available yet (e.g. no Play Store
+          // signed-in session), retry on the next meal save instead of
+          // forfeiting the request forever.
+          if (await inAppReview.isAvailable()) {
+            ref
+                .read(analyticsServiceProvider)
+                .track(FunnelEvents.reviewPromptRequested);
+            await inAppReview.requestReview();
+            await ref.read(reviewPromptStoreProvider).markRequested();
+          }
+        }
+      } catch (e) {
+        debugPrint('[FoodResult] review prompt trigger failed: $e');
+      }
+
+      // Daily meal reminder — own try/catch, same non-blocking contract.
+      // First meal ever: ask OS permission once. Every meal: skip today's
+      // reminder and arm tomorrow's (mealLoggedToday: true).
+      try {
+        final notifPromptStore = ref.read(notificationPromptStoreProvider);
+        if (await notifPromptStore.shouldPrompt()) {
+          await notifPromptStore.markAsked();
+          await ref.read(notificationServiceProvider).requestPermission();
+        }
+        if (!mounted) return;
+        await ref
+            .read(notificationServiceProvider)
+            .rescheduleDailyReminder(
+              mealLoggedToday: true,
+              title: context.l10n.mealReminderTitle,
+              body: context.l10n.mealReminderBody,
+            );
+      } catch (e) {
+        debugPrint('[FoodResult] daily reminder trigger failed: $e');
+      }
       if (!mounted) return;
 
       final messenger = ScaffoldMessenger.of(context);
@@ -518,6 +568,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                 'nutrilens_meal_${DateTime.now().millisecondsSinceEpoch}.png',
             caption: caption,
           );
+      ref.read(analyticsServiceProvider).track(FunnelEvents.mealShared);
     } catch (e) {
       if (mounted) {
         messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));

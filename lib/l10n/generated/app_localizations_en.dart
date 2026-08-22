@@ -1234,6 +1234,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mealSavedToast => 'Meal saved';
 
   @override
+  String get mealReminderTitle => 'What did you eat today?';
+
+  @override
+  String get mealReminderBody => 'Log a meal and keep your HP Score on track.';
+
+  @override
   String get mealNameLabel => 'Meal name';
 
   @override

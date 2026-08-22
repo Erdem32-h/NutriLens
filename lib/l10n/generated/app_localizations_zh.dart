@@ -1216,6 +1216,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mealSavedToast => '打卡记录已保存';
 
   @override
+  String get mealReminderTitle => '今天吃了什么？';
+
+  @override
+  String get mealReminderBody => '记录一餐，追踪你的 HP 评分。';
+
+  @override
   String get mealNameLabel => '食物名称';
 
   @override
