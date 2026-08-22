@@ -32,6 +32,7 @@ import '../widgets/pill_tab_bar.dart';
 import '../widgets/dietary_suitability_section.dart';
 import '../widgets/score_breakdown_card.dart';
 import '../../../../core/widgets/app_tap_card.dart';
+import '../../../../core/widgets/premium_blur_gate.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String barcode;
@@ -549,9 +550,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         dailyCalories: ref.watch(dailyCalorieTargetProvider),
       ),
       const SizedBox(height: 16),
-      EditorialNutrientTable(
-        nutriments: product.nutriments,
-        personalDailyCalories: ref.watch(personalDailyCaloriesProvider),
+      PremiumBlurGate(
+        feature: 'nutrient_detail',
+        child: EditorialNutrientTable(
+          nutriments: product.nutriments,
+          personalDailyCalories: ref.watch(personalDailyCaloriesProvider),
+        ),
       ),
     ];
   }

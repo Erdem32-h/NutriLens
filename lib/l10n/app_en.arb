@@ -354,12 +354,13 @@
   "createAccountBackupTitle": "Create an account, back up your data",
   "createAccountBackupSubtitle": "Scan history and meals on every device",
   "guestLastFreeScan": "Your last free scan. Sign up to keep your history.",
+  "guestLastDailyScan": "Your last scan for today. 2 more tomorrow.",
   "cameraRationaleTitle": "Camera access needed",
   "cameraRationaleBody": "We need the camera so you can photograph your plate or scan a product barcode. It is only used while you are scanning.",
   "cameraRationaleContinue": "Continue",
   "cameraRationaleNotNow": "Not now",
-  "guestScanLimitTitle": "5 free scans used",
-  "guestScanLimitMessage": "Creating an account refreshes your quota; your history and meals sync across devices.",
+  "guestScanLimitTitle": "Today's free scans used",
+  "guestScanLimitMessage": "You'll get 2 more free scans tomorrow. Creating an account syncs your history and meals across devices.",
   "guestFeatureLockedTitle": "{feature} requires an account",
   "@guestFeatureLockedTitle": {
     "placeholders": {
@@ -418,6 +419,14 @@
   "enterPasswordAgain": "Enter password again",
   "guestScanCounter": "{remaining}/5 free scans",
   "@guestScanCounter": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "guestScanCounterDaily": "{remaining}/2 scans today",
+  "@guestScanCounterDaily": {
     "placeholders": {
       "remaining": {
         "type": "int"
@@ -548,6 +557,7 @@
   "premiumTrialBadge": "{days}-day free trial",
   "premiumTrialCta": "Start {days}-day free trial",
   "premiumContinueCta": "Get Premium",
+  "premiumFeatureLockedTitle": "This feature is Premium",
   "premiumAutoRenewNote": "Subscription auto-renews. Cancel anytime.",
   "premiumTrialAutoRenewNote": "Converts to a paid subscription when the trial ends. Cancel anytime during the trial.",
   "premiumTrustCancelAnytime": "Cancel anytime",

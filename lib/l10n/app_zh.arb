@@ -354,12 +354,13 @@
   "createAccountBackupTitle": "创建账号，云端云备份数据",
   "createAccountBackupSubtitle": "在所有设备间同步扫描历史和饮食打卡",
   "guestLastFreeScan": "Your last free scan. Sign up to keep your history.",
+  "guestLastDailyScan": "今天的最后一次扫描！明天还有 2 次。",
   "cameraRationaleTitle": "Camera access needed",
   "cameraRationaleBody": "We need the camera so you can photograph your plate or scan a product barcode. It is only used while you are scanning.",
   "cameraRationaleContinue": "Continue",
   "cameraRationaleNotNow": "Not now",
-  "guestScanLimitTitle": "5 free scans used",
-  "guestScanLimitMessage": "Creating an account refreshes your quota; your history and meals sync across devices.",
+  "guestScanLimitTitle": "今天的免费扫描次数已用完",
+  "guestScanLimitMessage": "明天还会有 2 次免费扫描。创建账户后，你的记录和餐食可在各设备间同步。",
   "guestFeatureLockedTitle": "{feature} requires an account",
   "@guestFeatureLockedTitle": {
     "placeholders": {
@@ -418,6 +419,14 @@
   "enterPasswordAgain": "请再次输入密码",
   "guestScanCounter": "剩余 {remaining}/5 次免费扫描",
   "@guestScanCounter": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "guestScanCounterDaily": "今日剩余 {remaining}/2 次扫描",
+  "@guestScanCounterDaily": {
     "placeholders": {
       "remaining": {
         "type": "int"
@@ -548,6 +557,7 @@
   "premiumTrialBadge": "免费试用 {days} 天",
   "premiumTrialCta": "免费试用 {days} 天",
   "premiumContinueCta": "获取 Premium 特权",
+  "premiumFeatureLockedTitle": "该功能仅限 Premium",
   "premiumAutoRenewNote": "订阅将自动续订。您可随时取消。",
   "premiumTrialAutoRenewNote": "试用结束后转为付费订阅。试用期内可随时取消。",
   "premiumTrustCancelAnytime": "随时可取消",

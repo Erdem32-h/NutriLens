@@ -1047,6 +1047,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.';
 
   @override
+  String get guestLastDailyScan =>
+      'Bugünün son taraması! Yarın 2 hak daha kazanırsın.';
+
+  @override
   String get cameraRationaleTitle => 'Kamera izni gerekiyor';
 
   @override
@@ -1060,11 +1064,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get cameraRationaleNotNow => 'Şimdi değil';
 
   @override
-  String get guestScanLimitTitle => '5 ücretsiz tarama bitti';
+  String get guestScanLimitTitle => 'Bugünkü tarama hakkın bitti';
 
   @override
   String get guestScanLimitMessage =>
-      'Hesap açtığında tarama hakkın yenilenir, geçmişin ve öğünlerin her cihazda görünür.';
+      'Yarın 2 ücretsiz tarama daha kazanırsın. Hesap açarsan geçmişin ve öğünlerin her cihazda görünür.';
 
   @override
   String guestFeatureLockedTitle(String feature) {
@@ -1165,6 +1169,11 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String guestScanCounter(int remaining) {
     return '$remaining/5 ücretsiz tarama';
+  }
+
+  @override
+  String guestScanCounterDaily(int remaining) {
+    return 'Bugün $remaining/2 tarama hakkı';
   }
 
   @override
@@ -1480,6 +1489,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get premiumContinueCta => 'Premium\'a Geç';
+
+  @override
+  String get premiumFeatureLockedTitle => 'Bu özellik Premium\'da';
 
   @override
   String get premiumAutoRenewNote =>

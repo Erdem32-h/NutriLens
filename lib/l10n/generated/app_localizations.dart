@@ -2086,6 +2086,12 @@ abstract class AppLocalizations {
   /// **'Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.'**
   String get guestLastFreeScan;
 
+  /// No description provided for @guestLastDailyScan.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünün son taraması! Yarın 2 hak daha kazanırsın.'**
+  String get guestLastDailyScan;
+
   /// No description provided for @cameraRationaleTitle.
   ///
   /// In tr, this message translates to:
@@ -2113,13 +2119,13 @@ abstract class AppLocalizations {
   /// No description provided for @guestScanLimitTitle.
   ///
   /// In tr, this message translates to:
-  /// **'5 ücretsiz tarama bitti'**
+  /// **'Bugünkü tarama hakkın bitti'**
   String get guestScanLimitTitle;
 
   /// No description provided for @guestScanLimitMessage.
   ///
   /// In tr, this message translates to:
-  /// **'Hesap açtığında tarama hakkın yenilenir, geçmişin ve öğünlerin her cihazda görünür.'**
+  /// **'Yarın 2 ücretsiz tarama daha kazanırsın. Hesap açarsan geçmişin ve öğünlerin her cihazda görünür.'**
   String get guestScanLimitMessage;
 
   /// No description provided for @guestFeatureLockedTitle.
@@ -2295,6 +2301,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{remaining}/5 ücretsiz tarama'**
   String guestScanCounter(int remaining);
+
+  /// No description provided for @guestScanCounterDaily.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün {remaining}/2 tarama hakkı'**
+  String guestScanCounterDaily(int remaining);
 
   /// No description provided for @appVersion.
   ///
@@ -2865,6 +2877,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Premium\'a Geç'**
   String get premiumContinueCta;
+
+  /// No description provided for @premiumFeatureLockedTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu özellik Premium\'da'**
+  String get premiumFeatureLockedTitle;
 
   /// No description provided for @premiumAutoRenewNote.
   ///

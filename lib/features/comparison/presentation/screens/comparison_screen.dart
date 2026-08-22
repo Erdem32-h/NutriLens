@@ -6,6 +6,7 @@ import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/premium_blur_gate.dart';
 import '../../../product/domain/entities/product_entity.dart';
 import '../../../../core/constants/app_links.dart';
 import '../../../../core/services/share_service.dart';
@@ -142,10 +143,18 @@ class ComparisonScreen extends ConsumerWidget {
                 pinned: true,
                 delegate: _CompareHeaderDelegate(a: pair.a, b: pair.b),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (ctx, i) => _ComparisonRowTile(row: rows[i]),
-                  childCount: rows.length,
+              // Boxed (not a SliverList) so the whole metric breakdown can
+              // sit under a single PremiumBlurGate — the header above (photo,
+              // name, HP gauge) stays free as the teaser, the row-by-row
+              // comparison is the premium feature.
+              SliverToBoxAdapter(
+                child: PremiumBlurGate(
+                  feature: 'comparison',
+                  child: Column(
+                    children: [
+                      for (final row in rows) _ComparisonRowTile(row: row),
+                    ],
+                  ),
                 ),
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),

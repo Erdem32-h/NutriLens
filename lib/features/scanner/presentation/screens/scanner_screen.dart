@@ -81,6 +81,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   /// barcode scanning is the secondary flow.
   int _scanMode = 1;
 
+  /// Today's remaining guest scans once the lifetime-5 burst is spent, or
+  /// null while still in the lifetime phase (badge falls back to
+  /// [GuestScanCounter] in that case). Kept outside [GuestScanCounter]
+  /// on purpose — the daily bucket is server-only (fails closed offline,
+  /// see the guest_devices migration), so there is nothing to persist
+  /// locally between launches.
+  int? _guestDailyRemaining;
+
   /// Native camera handle used in AI mode for one-tap photo capture.
   /// mobile_scanner can't grab stills, so we swap to this controller
   /// whenever the user is in AI mode. Only one of the two cameras is
@@ -225,13 +233,24 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   /// non-guests or when offline.
   Future<void> _reconcileGuestBudget() async {
     if (!ref.read(isGuestProvider)) return;
-    final remaining = await ref
-        .read(guestScanLimitServiceProvider)
-        .peekRemaining();
-    if (remaining == null || !mounted) return;
-    await ref
-        .read(guestScanCounterProvider.notifier)
-        .syncFromServer(GuestScanCounter.lifetimeLimit - remaining);
+    final peek = await ref.read(guestScanLimitServiceProvider).peekRemaining();
+    if (peek == null || !mounted) return;
+    if (peek.phase == 'daily') {
+      // Lifetime burst is already spent — pin the local mirror at the cap
+      // (idempotent past the first time) instead of running it through
+      // lifetime-remaining math, which would fabricate a lower lifetime
+      // count from a daily number and reopen the offline fallback for a
+      // device that has none left. See GuestScanResult.phase doc.
+      await ref
+          .read(guestScanCounterProvider.notifier)
+          .syncFromServer(GuestScanCounter.lifetimeLimit);
+      setState(() => _guestDailyRemaining = peek.remaining);
+    } else {
+      setState(() => _guestDailyRemaining = null);
+      await ref
+          .read(guestScanCounterProvider.notifier)
+          .syncFromServer(GuestScanCounter.lifetimeLimit - peek.remaining);
+    }
   }
 
   /// Server-authoritative guest scan gate. Returns true if the scan may
@@ -293,15 +312,29 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     }
 
     int remaining;
+    final phase = server?.phase;
     if (server != null) {
-      // Server already incremented; mirror its count into the local fallback.
-      await counter.syncFromServer(
-        GuestScanCounter.lifetimeLimit - server.remaining,
-      );
+      if (phase == 'daily') {
+        // Same reasoning as _reconcileGuestBudget: pin, don't derive.
+        await counter.syncFromServer(GuestScanCounter.lifetimeLimit);
+      } else {
+        // Server already incremented; mirror its count into the local
+        // fallback.
+        await counter.syncFromServer(
+          GuestScanCounter.lifetimeLimit - server.remaining,
+        );
+      }
       remaining = server.remaining;
+      if (mounted) {
+        setState(
+          () => _guestDailyRemaining = phase == 'daily' ? remaining : null,
+        );
+      }
     } else {
       // Offline but previously synced: the local counter still carries the
-      // server's floor, so spending from it cannot manufacture budget.
+      // server's floor, so spending from it cannot manufacture budget. Only
+      // reachable in the lifetime phase — the daily phase has no offline
+      // mirror and fails closed via blockedByNetwork above.
       remaining = decision == GuestScanDecision.allowed
           ? GuestScanCounter.lifetimeLimit - (await counter.increment())
           : 0;
@@ -309,14 +342,20 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
     if (decision == GuestScanDecision.blockedByLimit) {
       if (!mounted) return false;
-      // Guest hit the lifetime scan cap → the register-upsell sheet is their
-      // paywall. Tracked here (shared by barcode + food paths) so "blocked by
-      // limit" stops looking like a plain drop-off.
+      // Once the lifetime burst is spent, this only ever means "today's 2
+      // are used" (the lifetime wall itself no longer hard-blocks — see the
+      // guest_daily_scan_refill migration). The register-upsell sheet still
+      // fires: registering is still worth it (cross-device sync, favorites,
+      // premium), it's just no longer the only way to keep scanning.
       ref
           .read(analyticsServiceProvider)
           .track(
             FunnelEvents.paywallShown,
-            props: {'trigger': 'scan_limit', 'guest': true},
+            props: {
+              'trigger': 'scan_limit',
+              'guest': true,
+              'phase': phase ?? 'lifetime',
+            },
           );
       final wantsRegister = await GuestRegisterSheet.showScanLimitReached(
         context,
@@ -328,7 +367,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     if (remaining == 0 && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.l10n.guestLastFreeScan),
+          content: Text(
+            phase == 'daily'
+                ? context.l10n.guestLastDailyScan
+                : context.l10n.guestLastFreeScan,
+          ),
           duration: const Duration(seconds: 4),
         ),
       );
@@ -1265,13 +1308,23 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: _GuestScanBadge(
-                        remaining:
-                            ((GuestScanCounter.lifetimeLimit -
-                                        ref.watch(guestScanCounterProvider))
-                                    .clamp(0, GuestScanCounter.lifetimeLimit))
-                                .toInt(),
-                      ),
+                      child: _guestDailyRemaining != null
+                          ? _GuestScanBadge(
+                              remaining: _guestDailyRemaining!,
+                              daily: true,
+                            )
+                          : _GuestScanBadge(
+                              remaining:
+                                  ((GuestScanCounter.lifetimeLimit -
+                                              ref.watch(
+                                                guestScanCounterProvider,
+                                              ))
+                                          .clamp(
+                                            0,
+                                            GuestScanCounter.lifetimeLimit,
+                                          ))
+                                      .toInt(),
+                            ),
                     ),
                   ),
                 ],
@@ -1561,13 +1614,16 @@ class _ManualBarcodeDialogState extends State<_ManualBarcodeDialog> {
 }
 
 /// Floating badge in the top-right of the scanner that shows how many
-/// scans the guest has left out of [GuestScanCounter.lifetimeLimit].
-/// Updates automatically because `guestScanCounterProvider` is a
-/// Notifier — every `increment()` call re-emits the count.
+/// scans the guest has left — out of [GuestScanCounter.lifetimeLimit] while
+/// [daily] is false, or out of today's 2-scan allowance once it's true (see
+/// GuestScanResult.phase). The lifetime count updates automatically because
+/// `guestScanCounterProvider` is a Notifier; the daily count is pushed in by
+/// the caller from the server response, since it has no local mirror.
 class _GuestScanBadge extends StatelessWidget {
   final int remaining;
+  final bool daily;
 
-  const _GuestScanBadge({required this.remaining});
+  const _GuestScanBadge({required this.remaining, this.daily = false});
 
   @override
   Widget build(BuildContext context) {
@@ -1595,7 +1651,9 @@ class _GuestScanBadge extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            context.l10n.guestScanCounter(remaining),
+            daily
+                ? context.l10n.guestScanCounterDaily(remaining)
+                : context.l10n.guestScanCounter(remaining),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 12,

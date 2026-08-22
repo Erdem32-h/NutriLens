@@ -354,12 +354,13 @@
   "createAccountBackupTitle": "Hesap aç, verilerini yedekle",
   "createAccountBackupSubtitle": "Tarama geçmişin, öğünlerin her cihazda",
   "guestLastFreeScan": "Son ücretsiz taraman. Kayıt olursan tüm geçmişin saklanır.",
+  "guestLastDailyScan": "Bugünün son taraması! Yarın 2 hak daha kazanırsın.",
   "cameraRationaleTitle": "Kamera izni gerekiyor",
   "cameraRationaleBody": "Tabağını ya da ürün barkodunu çekebilmemiz için kamera erişimi gerekiyor. Kamerayı yalnızca sen tarama yaparken kullanırız.",
   "cameraRationaleContinue": "Devam et",
   "cameraRationaleNotNow": "Şimdi değil",
-  "guestScanLimitTitle": "5 ücretsiz tarama bitti",
-  "guestScanLimitMessage": "Hesap açtığında tarama hakkın yenilenir, geçmişin ve öğünlerin her cihazda görünür.",
+  "guestScanLimitTitle": "Bugünkü tarama hakkın bitti",
+  "guestScanLimitMessage": "Yarın 2 ücretsiz tarama daha kazanırsın. Hesap açarsan geçmişin ve öğünlerin her cihazda görünür.",
   "guestFeatureLockedTitle": "{feature} için hesap gerekli",
   "@guestFeatureLockedTitle": {
     "placeholders": {
@@ -418,6 +419,14 @@
   "enterPasswordAgain": "Şifre tekrar girin",
   "guestScanCounter": "{remaining}/5 ücretsiz tarama",
   "@guestScanCounter": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "guestScanCounterDaily": "Bugün {remaining}/2 tarama hakkı",
+  "@guestScanCounterDaily": {
     "placeholders": {
       "remaining": {
         "type": "int"
@@ -573,6 +582,7 @@
     }
   },
   "premiumContinueCta": "Premium'a Geç",
+  "premiumFeatureLockedTitle": "Bu özellik Premium'da",
   "premiumAutoRenewNote": "Abonelik otomatik yenilenir. İstediğin zaman iptal edebilirsin.",
   "premiumTrialAutoRenewNote": "Deneme bittiğinde ücretli aboneliğe geçer. Deneme süresince istediğin zaman iptal edebilirsin.",
   "premiumTrustCancelAnytime": "İstediğin an iptal",

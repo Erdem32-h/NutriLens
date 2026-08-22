@@ -354,12 +354,13 @@
   "createAccountBackupTitle": "أنشئ حساباً وقم بنسخ بياناتك احتياطياً",
   "createAccountBackupSubtitle": "سجل المسح والوجبات على جميع الأجهزة",
   "guestLastFreeScan": "Your last free scan. Sign up to keep your history.",
+  "guestLastDailyScan": "آخر عملية مسح لليوم. عمليتان إضافيتان غدًا.",
   "cameraRationaleTitle": "Camera access needed",
   "cameraRationaleBody": "We need the camera so you can photograph your plate or scan a product barcode. It is only used while you are scanning.",
   "cameraRationaleContinue": "Continue",
   "cameraRationaleNotNow": "Not now",
-  "guestScanLimitTitle": "5 free scans used",
-  "guestScanLimitMessage": "Creating an account refreshes your quota; your history and meals sync across devices.",
+  "guestScanLimitTitle": "انتهت عمليات المسح المجانية اليوم",
+  "guestScanLimitMessage": "ستحصل على عمليتي مسح مجانيتين إضافيتين غدًا. عند إنشاء حساب تتم مزامنة سجلك ووجباتك عبر الأجهزة.",
   "guestFeatureLockedTitle": "{feature} requires an account",
   "@guestFeatureLockedTitle": {
     "placeholders": {
@@ -418,6 +419,14 @@
   "enterPasswordAgain": "أدخل كلمة المرور مرة أخرى",
   "guestScanCounter": "{remaining}/5 عمليات مسح مجانية",
   "@guestScanCounter": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "guestScanCounterDaily": "{remaining}/2 عمليات مسح اليوم",
+  "@guestScanCounterDaily": {
     "placeholders": {
       "remaining": {
         "type": "int"
@@ -548,6 +557,7 @@
   "premiumTrialBadge": "{days} أيام مجاناً",
   "premiumTrialCta": "تجربة {days} أيام مجاناً",
   "premiumContinueCta": "احصل على Premium",
+  "premiumFeatureLockedTitle": "هذه الميزة ضمن Premium",
   "premiumAutoRenewNote": "يتجدد الاشتراك تلقائياً. يمكنك الإلغاء في أي وقت.",
   "premiumTrialAutoRenewNote": "يتحول إلى اشتراك مدفوع بعد التجربة. يمكنك الإلغاء في أي وقت.",
   "premiumTrustCancelAnytime": "إلغاء في أي وقت",

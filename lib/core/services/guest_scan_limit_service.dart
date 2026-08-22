@@ -4,11 +4,31 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'device_id_service.dart';
 
 /// Outcome of a server-side guest scan check.
+///
+/// [phase] is `'lifetime'` while the original 5-scan burst still has budget,
+/// or `'daily'` once it's spent and the recurring 2/day allowance has taken
+/// over (see the `guest_daily_scan_refill` migration). Callers must branch
+/// on it before reusing [remaining] in [GuestScanCounter.lifetimeLimit]
+/// arithmetic — that math only makes sense in the lifetime phase.
 class GuestScanResult {
   final bool allowed;
   final int remaining;
+  final String phase;
 
-  const GuestScanResult({required this.allowed, required this.remaining});
+  const GuestScanResult({
+    required this.allowed,
+    required this.remaining,
+    required this.phase,
+  });
+}
+
+/// Read-only counterpart of [GuestScanResult] for [GuestScanLimitService.peekRemaining] —
+/// no `allowed`, since a peek never consumes a scan.
+class GuestScanBudget {
+  final int remaining;
+  final String phase;
+
+  const GuestScanBudget({required this.remaining, required this.phase});
 }
 
 /// Server-authoritative guest (un-registered) scan budget, keyed by a hashed
@@ -37,6 +57,7 @@ class GuestScanLimitService {
       return GuestScanResult(
         allowed: m['allowed'] as bool? ?? false,
         remaining: m['remaining'] as int? ?? 0,
+        phase: m['phase'] as String? ?? 'lifetime',
       );
     } catch (e) {
       debugPrint('[GuestScanLimit] check RPC error: $e');
@@ -45,14 +66,20 @@ class GuestScanLimitService {
   }
 
   /// Read-only remaining budget for the scanner badge. `null` on error.
-  Future<int?> peekRemaining() async {
+  Future<GuestScanBudget?> peekRemaining() async {
     try {
       final hash = await _deviceId.deviceHash();
       final resp = await _client.rpc(
         'peek_guest_scan',
         params: {'p_device_hash': hash},
       );
-      return (resp as Map<String, dynamic>)['remaining'] as int?;
+      final m = resp as Map<String, dynamic>;
+      final remaining = m['remaining'] as int?;
+      if (remaining == null) return null;
+      return GuestScanBudget(
+        remaining: remaining,
+        phase: m['phase'] as String? ?? 'lifetime',
+      );
     } catch (e) {
       debugPrint('[GuestScanLimit] peek RPC error: $e');
       return null;

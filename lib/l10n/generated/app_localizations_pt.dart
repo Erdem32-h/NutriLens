@@ -1049,6 +1049,10 @@ class AppLocalizationsPt extends AppLocalizations {
       'Your last free scan. Sign up to keep your history.';
 
   @override
+  String get guestLastDailyScan =>
+      'Seu último escaneamento de hoje. Mais 2 amanhã.';
+
+  @override
   String get cameraRationaleTitle => 'Camera access needed';
 
   @override
@@ -1062,11 +1066,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cameraRationaleNotNow => 'Not now';
 
   @override
-  String get guestScanLimitTitle => '5 free scans used';
+  String get guestScanLimitTitle => 'Escaneamentos gratuitos de hoje esgotados';
 
   @override
   String get guestScanLimitMessage =>
-      'Creating an account refreshes your quota; your history and meals sync across devices.';
+      'Amanhã você ganha mais 2 escaneamentos gratuitos. Ao criar uma conta, seu histórico e refeições sincronizam entre dispositivos.';
 
   @override
   String guestFeatureLockedTitle(String feature) {
@@ -1167,6 +1171,11 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String guestScanCounter(int remaining) {
     return '$remaining/5 escaneamentos gratuitos';
+  }
+
+  @override
+  String guestScanCounterDaily(int remaining) {
+    return '$remaining/2 escaneamentos hoje';
   }
 
   @override
@@ -1485,6 +1494,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get premiumContinueCta => 'Obter Premium';
+
+  @override
+  String get premiumFeatureLockedTitle => 'Este recurso é Premium';
 
   @override
   String get premiumAutoRenewNote =>

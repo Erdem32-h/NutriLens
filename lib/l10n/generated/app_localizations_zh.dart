@@ -1033,6 +1033,9 @@ class AppLocalizationsZh extends AppLocalizations {
       'Your last free scan. Sign up to keep your history.';
 
   @override
+  String get guestLastDailyScan => '今天的最后一次扫描！明天还有 2 次。';
+
+  @override
   String get cameraRationaleTitle => 'Camera access needed';
 
   @override
@@ -1046,11 +1049,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cameraRationaleNotNow => 'Not now';
 
   @override
-  String get guestScanLimitTitle => '5 free scans used';
+  String get guestScanLimitTitle => '今天的免费扫描次数已用完';
 
   @override
-  String get guestScanLimitMessage =>
-      'Creating an account refreshes your quota; your history and meals sync across devices.';
+  String get guestScanLimitMessage => '明天还会有 2 次免费扫描。创建账户后，你的记录和餐食可在各设备间同步。';
 
   @override
   String guestFeatureLockedTitle(String feature) {
@@ -1147,6 +1149,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String guestScanCounter(int remaining) {
     return '剩余 $remaining/5 次免费扫描';
+  }
+
+  @override
+  String guestScanCounterDaily(int remaining) {
+    return '今日剩余 $remaining/2 次扫描';
   }
 
   @override
@@ -1451,6 +1458,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get premiumContinueCta => '获取 Premium 特权';
+
+  @override
+  String get premiumFeatureLockedTitle => '该功能仅限 Premium';
 
   @override
   String get premiumAutoRenewNote => '订阅将自动续订。您可随时取消。';

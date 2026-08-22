@@ -27,6 +27,7 @@ import '../../../../core/services/share_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
+import '../../../../core/widgets/premium_blur_gate.dart';
 import '../../../../core/widgets/scanning_photo.dart';
 import '../providers/scanner_mode_provider.dart';
 import '../../../meals/data/services/meal_thumbnail_service.dart';
@@ -859,10 +860,15 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
                   dailyCalories: ref.watch(dailyCalorieTargetProvider),
                 ),
                 const SizedBox(height: 16),
-                EditorialNutrientTable(
-                  nutriments: nutriments,
-                  basisLabel: l10n.nutritionBasisGrams(scaledPortion),
-                  personalDailyCalories: ref.watch(personalDailyCaloriesProvider),
+                PremiumBlurGate(
+                  feature: 'nutrient_detail',
+                  child: EditorialNutrientTable(
+                    nutriments: nutriments,
+                    basisLabel: l10n.nutritionBasisGrams(scaledPortion),
+                    personalDailyCalories: ref.watch(
+                      personalDailyCaloriesProvider,
+                    ),
+                  ),
                 ),
               ],
             ),
