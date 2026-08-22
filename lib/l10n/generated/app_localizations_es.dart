@@ -1254,6 +1254,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mealSourceLabel => 'Origen';
 
   @override
+  String get editMeal => 'Editar comida';
+
+  @override
+  String get caloriesLabel => 'Calorías';
+
+  @override
+  String get mealUpdatedToast => 'Comida actualizada';
+
+  @override
   String get estimatedContent => 'Contenido estimado';
 
   @override

@@ -1248,6 +1248,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mealSourceLabel => 'Kaynak';
 
   @override
+  String get editMeal => 'Öğünü Düzenle';
+
+  @override
+  String get caloriesLabel => 'Kalori';
+
+  @override
+  String get mealUpdatedToast => 'Öğün güncellendi';
+
+  @override
   String get estimatedContent => 'Tahmini içerik';
 
   @override

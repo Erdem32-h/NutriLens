@@ -200,6 +200,7 @@ abstract final class FunnelEvents {
   /// from "nobody ever tried".
   static const favoriteBlocked = 'favorite_blocked';
   static const mealAdded = 'meal_added';
+  static const mealEdited = 'meal_edited';
   static const productShared = 'product_shared';
   static const mealShared = 'meal_shared';
   static const comparisonShared = 'comparison_shared';

@@ -1228,6 +1228,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mealSourceLabel => '来源';
 
   @override
+  String get editMeal => '编辑食物记录';
+
+  @override
+  String get caloriesLabel => '卡路里';
+
+  @override
+  String get mealUpdatedToast => '食物记录已更新';
+
+  @override
   String get estimatedContent => '预估成分';
 
   @override

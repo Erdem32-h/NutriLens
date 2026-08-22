@@ -1247,6 +1247,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mealSourceLabel => 'المصدر';
 
   @override
+  String get editMeal => 'تعديل الوجبة';
+
+  @override
+  String get caloriesLabel => 'السعرات الحرارية';
+
+  @override
+  String get mealUpdatedToast => 'تم تحديث الوجبة';
+
+  @override
   String get estimatedContent => 'المحتوى التقديري';
 
   @override

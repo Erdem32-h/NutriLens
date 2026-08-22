@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,14 +8,13 @@ import 'package:intl/intl.dart';
 import '../../../../config/router/route_names.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
-import '../../../../core/providers/monetization_provider.dart';
-import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 import '../../../profile/presentation/providers/user_metrics_provider.dart';
 import '../../domain/entities/calorie_chart_data.dart';
 import '../../domain/entities/meal_entry_entity.dart';
+import '../meal_actions.dart';
 import '../meal_display.dart';
 import '../providers/meal_chart_provider.dart';
 import '../providers/meal_provider.dart';
@@ -111,7 +109,8 @@ class _MealTile extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: AppTapCard(
         onTap: () => context.pushNamed(RouteNames.mealDetail, extra: meal),
-        onLongPress: () => _confirmDelete(context, ref),
+        onLongPress: () =>
+            confirmAndDeleteMeal(context: context, ref: ref, meal: meal),
         semanticLabel: displayMealName(l10n, meal),
         borderRadius: BorderRadius.circular(14),
         decoration: BoxDecoration(
@@ -190,44 +189,6 @@ class _MealTile extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
-    final l10n = context.l10n;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteMealTitle),
-        content: Text(l10n.deleteMealConfirm(displayMealName(l10n, meal))),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-    await ref.read(mealLocalDataSourceProvider).deleteMeal(meal.id);
-    // Premium: also remove the cloud copy (row + photo). Best-effort.
-    if (ref.read(isPremiumProvider)) {
-      final userId = ref.read(effectiveUserIdProvider);
-      if (userId != null) {
-        unawaited(
-          ref
-              .read(mealSyncServiceProvider)
-              .deleteMeal(id: meal.id, userId: userId),
-        );
-      }
-    }
-    ref.invalidate(mealsProvider);
-    ref.invalidate(calorieChartDataProvider);
-    ref.invalidate(todayCalorieTotalProvider);
-  }
 }
 
 class _Pill extends StatelessWidget {

@@ -2440,6 +2440,24 @@ abstract class AppLocalizations {
   /// **'Kaynak'**
   String get mealSourceLabel;
 
+  /// No description provided for @editMeal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğünü Düzenle'**
+  String get editMeal;
+
+  /// No description provided for @caloriesLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kalori'**
+  String get caloriesLabel;
+
+  /// No description provided for @mealUpdatedToast.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğün güncellendi'**
+  String get mealUpdatedToast;
+
   /// No description provided for @estimatedContent.
   ///
   /// In tr, this message translates to:

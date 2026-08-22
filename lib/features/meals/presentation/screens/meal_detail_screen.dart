@@ -12,12 +12,43 @@ import '../../../product/presentation/widgets/editorial_nutrient_table.dart';
 import '../../../product/presentation/widgets/health_score_bar.dart';
 import '../../../profile/presentation/providers/user_metrics_provider.dart';
 import '../../domain/entities/meal_entry_entity.dart';
+import '../meal_actions.dart';
 import '../meal_display.dart';
+import 'meal_edit_screen.dart';
 
-class MealDetailScreen extends StatelessWidget {
+class MealDetailScreen extends ConsumerStatefulWidget {
   final MealEntryEntity meal;
 
   const MealDetailScreen({super.key, required this.meal});
+
+  @override
+  ConsumerState<MealDetailScreen> createState() => _MealDetailScreenState();
+}
+
+class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
+  late MealEntryEntity meal;
+
+  @override
+  void initState() {
+    super.initState();
+    meal = widget.meal;
+  }
+
+  Future<void> _edit() async {
+    final updated = await Navigator.of(context).push<MealEntryEntity>(
+      MaterialPageRoute(builder: (_) => MealEditScreen(meal: meal)),
+    );
+    if (updated != null && mounted) setState(() => meal = updated);
+  }
+
+  Future<void> _delete() async {
+    final deleted = await confirmAndDeleteMeal(
+      context: context,
+      ref: ref,
+      meal: meal,
+    );
+    if (deleted && mounted) Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +63,18 @@ class MealDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(mealName),
         backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: l10n.edit,
+            onPressed: _edit,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: l10n.delete,
+            onPressed: _delete,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
