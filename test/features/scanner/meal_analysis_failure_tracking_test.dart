@@ -14,11 +14,13 @@ import 'package:nutrilens/core/analytics/analytics_event.dart';
 import 'package:nutrilens/core/analytics/analytics_provider.dart';
 import 'package:nutrilens/core/analytics/analytics_service.dart';
 import 'package:nutrilens/core/providers/locale_provider.dart';
+import 'package:nutrilens/core/providers/monetization_provider.dart';
 import 'package:nutrilens/core/services/anthropic_ai_service.dart';
 import 'package:nutrilens/core/services/gemini_ai_service.dart';
 import 'package:nutrilens/core/theme/app_colors.dart';
 import 'package:nutrilens/features/product/domain/entities/nutriments_entity.dart';
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
+import 'package:nutrilens/features/profile/presentation/providers/user_metrics_provider.dart';
 import 'package:nutrilens/features/scanner/presentation/screens/food_result_screen.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 
@@ -121,6 +123,12 @@ Widget _subject(_RecordingAnalytics analytics, GeminiAiService gemini,
       analyticsServiceProvider.overrideWithValue(analytics),
       geminiAiServiceProvider.overrideWithValue(gemini),
       sharedPreferencesProvider.overrideWithValue(prefs),
+      // The result screen's nutrient table reads the calorie target and the
+      // premium gate, both of which chain through session -> auth ->
+      // SupabaseClient. Cutting them here keeps the analysis-tracking
+      // assertions off that dependency.
+      userMetricsProvider.overrideWith((ref) async => null),
+      isPremiumProvider.overrideWithValue(false),
     ],
     child: MaterialApp(
       locale: const Locale('tr'),

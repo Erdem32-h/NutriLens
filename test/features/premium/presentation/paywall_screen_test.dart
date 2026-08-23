@@ -174,6 +174,9 @@ void main() {
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
 
+      // The feature list pushes the CTA below the 800x600 test viewport, so a
+      // bare tap() lands on empty space and the purchase never fires.
+      await tester.ensureVisible(find.text("Premium'a Geç"));
       await tester.tap(find.text("Premium'a Geç"));
       // pump() processes microtasks (future completion) without running the
       // SnackBar's 4-second auto-dismiss timer. pumpAndSettle() would run
@@ -196,6 +199,7 @@ void main() {
       await tester.pumpWidget(_buildSubject(service: mockService));
       await tester.pumpAndSettle();
 
+      await tester.ensureVisible(find.text("Premium'a Geç"));
       await tester.tap(find.text("Premium'a Geç"));
       await tester.pumpAndSettle();
 
