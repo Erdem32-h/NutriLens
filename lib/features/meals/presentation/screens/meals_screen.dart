@@ -11,6 +11,8 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_tap_card.dart';
+import '../../../../core/widgets/cozy_header.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../profile/presentation/providers/user_metrics_provider.dart';
 import '../../domain/entities/calorie_chart_data.dart';
 import '../../domain/entities/meal_entry_entity.dart';
@@ -36,10 +38,6 @@ class MealsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(context.l10n.myMeals),
-        backgroundColor: Colors.transparent,
-      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(mealsProvider);
@@ -49,15 +47,24 @@ class MealsScreen extends ConsumerWidget {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
+            // Scrolls with the content rather than pinning: this tab's
+            // payload is a chart plus a long list, and a fixed header would
+            // eat the top third of a short phone before the first meal.
+            SliverToBoxAdapter(
+              child: CozyHeader(
+                title: context.l10n.myMeals,
+                subtitle: context.l10n.mealsSubtitle,
+              ),
+            ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 18),
                 child: _CalorieInsights(),
               ),
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 0, 16, 18),
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 18),
                 child: _DailyTargetSummary(),
               ),
             ),
@@ -114,18 +121,14 @@ class _MealTile extends ConsumerWidget {
         : null;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: AppTapCard(
         onTap: () => context.pushNamed(RouteNames.mealDetail, extra: meal),
         onLongPress: () =>
             confirmAndDeleteMeal(context: context, ref: ref, meal: meal),
         semanticLabel: displayMealName(l10n, meal),
-        borderRadius: BorderRadius.circular(14),
-        decoration: BoxDecoration(
-          color: colors.surfaceCard,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: colors.border),
-        ),
+        borderRadius: BorderRadius.circular(24),
+        decoration: cozyCardDecoration(context),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -385,11 +388,9 @@ class _DailyTargetSummary extends ConsumerWidget {
 
         return Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colors.surfaceCard,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: colors.border),
-          ),
+          decoration: cozyCardDecoration(
+            context,
+          ).copyWith(color: colors.cozy.mint.surface),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

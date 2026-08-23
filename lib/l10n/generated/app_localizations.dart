@@ -3765,6 +3765,42 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kişisel kalori hedefini hesapla'**
   String get calorieTargetCardSubtitleUnset;
+
+  /// No description provided for @profileSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Deneyimini kişiselleştir, daha sağlıklı bir sen için'**
+  String get profileSubtitle;
+
+  /// No description provided for @themeSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulamanın görünümünü seç'**
+  String get themeSubtitle;
+
+  /// No description provided for @languageSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tercih ettiğin dili ayarla'**
+  String get languageSubtitle;
+
+  /// No description provided for @mealsSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünün öğünleri ve kalori dengen'**
+  String get mealsSubtitle;
+
+  /// No description provided for @historySubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taradığın tüm ürünler burada'**
+  String get historySubtitle;
+
+  /// No description provided for @favoritesSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar tekrar döndüğün ürünler'**
+  String get favoritesSubtitle;
 }
 
 class _AppLocalizationsDelegate

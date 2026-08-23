@@ -21,7 +21,9 @@ import '../providers/user_data_deletion_provider.dart';
 import '../providers/user_metrics_provider.dart';
 import '../screens/metrics_wizard_screen.dart';
 import '../widgets/analytics_opt_out_tile.dart';
-import '../../../../core/widgets/app_tap_card.dart';
+import '../../../../core/theme/cozy_tokens.dart';
+import '../../../../core/widgets/cozy_header.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -41,34 +43,35 @@ class ProfileScreen extends ConsumerWidget {
                   : user?.email[0] ?? '?')
               .toUpperCase();
 
+    final cozy = context.colors.cozy;
+
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        title: Text(l10n.profile),
-        backgroundColor: Colors.transparent,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout_rounded, color: context.colors.textMuted),
-            tooltip: l10n.signOut,
-            onPressed: () async {
-              await ref.read(authNotifierProvider.notifier).signOut();
-              if (context.mounted) {
-                context.go('/login');
-              }
-            },
-          ),
-        ],
-      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(bottom: 24),
         children: [
-          // User header card
+          CozyHeader(
+            title: l10n.profile,
+            subtitle: l10n.profileSubtitle,
+            action: CozyHeaderAction(
+              icon: Icons.logout_rounded,
+              tooltip: l10n.signOut,
+              onPressed: () async {
+                await ref.read(authNotifierProvider.notifier).signOut();
+                if (context.mounted) {
+                  context.go('/login');
+                }
+              },
+            ),
+          ),
+
+          // Identity card
           Container(
+            margin: const EdgeInsets.fromLTRB(20, 6, 20, 6),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: context.colors.surfaceCard,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: context.colors.border),
+              color: cozy.lilac.surface,
+              borderRadius: BorderRadius.circular(24),
             ),
             child: Row(
               children: [
@@ -109,7 +112,7 @@ class ProfileScreen extends ConsumerWidget {
                         isGuest ? l10n.guestDataLocal : (user?.email ?? ''),
                         style: TextStyle(
                           fontSize: 13,
-                          color: context.colors.textMuted,
+                          color: cozy.bodyOnTint,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -120,13 +123,12 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
 
-          if (isGuest) ...[const SizedBox(height: 16), _GuestRegisterBanner()],
+          if (isGuest) _GuestRegisterBanner(),
 
-          const SizedBox(height: 28),
+          const SizedBox(height: 18),
 
           // Settings section
-          _SectionLabel(l10n.settings),
-          const SizedBox(height: 10),
+          CozySectionLabel(l10n.settings),
 
           // Theme tile
           _SettingsTile(
@@ -136,6 +138,8 @@ class ProfileScreen extends ConsumerWidget {
                 ? Icons.light_mode_rounded
                 : Icons.brightness_auto_rounded,
             title: l10n.theme,
+            subtitle: l10n.themeSubtitle,
+            tint: cozy.lilac,
             value: currentThemeMode == ThemeMode.dark
                 ? l10n.darkMode
                 : currentThemeMode == ThemeMode.light
@@ -144,17 +148,16 @@ class ProfileScreen extends ConsumerWidget {
             onTap: () => _showThemeDialog(context, ref, currentThemeMode),
           ),
 
-          const SizedBox(height: 8),
-
           // Language tile
           _SettingsTile(
             icon: Icons.language_rounded,
             title: l10n.language,
+            subtitle: l10n.languageSubtitle,
+            tint: cozy.sky,
             value: _getLanguageDisplayName(currentLocale.languageCode),
             onTap: () => _showLanguageDialog(context, ref, currentLocale),
           ),
 
-          const SizedBox(height: 28),
 
           // Kişisel kalori hedefi — hesaplanmışsa hedefi alt metinde
           // gösterir, yoksa hesaplamaya davet eder. shouldPrompt() kontrolü
@@ -170,7 +173,8 @@ class ProfileScreen extends ConsumerWidget {
               return _SettingsTile(
                 icon: Icons.local_fire_department_rounded,
                 title: l10n.calorieTargetCardTitle,
-                value: personalTarget != null
+                tint: cozy.peach,
+                subtitle: personalTarget != null
                     ? l10n.calorieTargetCardSubtitleSet(personalTarget)
                     : l10n.calorieTargetCardSubtitleUnset,
                 // Hedef gerçekten hesaplanmışsa (personalTarget != null)
@@ -194,41 +198,41 @@ class ProfileScreen extends ConsumerWidget {
             },
           ),
 
-          const SizedBox(height: 28),
+          const SizedBox(height: 18),
 
           // Health filters section
-          _SectionLabel(l10n.healthFilters),
-          const SizedBox(height: 10),
+          CozySectionLabel(l10n.healthFilters),
 
           _SettingsTile(
             icon: Icons.warning_amber_rounded,
             title: l10n.allergens,
-            value: l10n.allergenTypes,
+            subtitle: l10n.allergenTypes,
+            tint: cozy.peach,
             onTap: () => context.goNamed(RouteNames.allergenSelection),
           ),
-          const SizedBox(height: 8),
           _SettingsTile(
             icon: Icons.restaurant_rounded,
             title: l10n.dietFilters,
-            value: l10n.dietOptions,
+            subtitle: l10n.dietOptions,
+            tint: cozy.mint,
             onTap: () => context.goNamed(RouteNames.dietFilter),
           ),
-          const SizedBox(height: 8),
           _SettingsTile(
             icon: Icons.opacity_rounded,
             title: l10n.oilFilters,
-            value: l10n.oilOptions,
+            subtitle: l10n.oilOptions,
+            tint: cozy.sky,
             onTap: () => context.goNamed(RouteNames.oilFilter),
           ),
-          const SizedBox(height: 8),
           _SettingsTile(
             icon: Icons.science_rounded,
             title: l10n.chemicalFilters,
-            value: l10n.chemicalOptions,
+            subtitle: l10n.chemicalOptions,
+            tint: cozy.rose,
             onTap: () => context.goNamed(RouteNames.chemicalFilter),
           ),
 
-          const SizedBox(height: 28),
+          const SizedBox(height: 18),
 
           // Subscription section. Visible to everyone:
           // - authenticated free user → routes to /paywall
@@ -236,8 +240,7 @@ class ProfileScreen extends ConsumerWidget {
           // - guest                  → tapping fires the register
           //   sheet (premium needs a RevenueCat identity, but the
           //   tile is still surfaced so guests see the upgrade path)
-          _SectionLabel(l10n.subscription),
-          const SizedBox(height: 10),
+          CozySectionLabel(l10n.subscription),
           Consumer(
             builder: (context, ref, _) {
               final isPremium = ref.watch(isPremiumProvider);
@@ -245,14 +248,17 @@ class ProfileScreen extends ConsumerWidget {
                 return _SettingsTile(
                   icon: Icons.star,
                   title: l10n.premiumActive,
+                  subtitle: l10n.premiumBenefits,
                   value: l10n.activeStatus,
+                  tint: cozy.lilac,
                   onTap: () {},
                 );
               }
               return _SettingsTile(
                 icon: Icons.star_outline,
                 title: l10n.premiumContinueCta,
-                value: context.l10n.premiumBenefits,
+                subtitle: context.l10n.premiumBenefits,
+                tint: cozy.lilac,
                 onTap: () async {
                   if (!await ref.requireAuthOr(
                     context,
@@ -266,35 +272,35 @@ class ProfileScreen extends ConsumerWidget {
             },
           ),
 
-          const SizedBox(height: 28),
+          const SizedBox(height: 18),
 
           // Privacy — shown to everyone, guests included. Funnel events are
           // keyed by a hashed device id and are recorded whether or not the
           // visitor ever signs up, so gating this behind an account would
           // hide the switch from most of the people it applies to.
-          _SectionLabel(l10n.privacy),
-          const SizedBox(height: 10),
-          const AnalyticsOptOutTile(),
+          CozySectionLabel(l10n.privacy),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: AnalyticsOptOutTile(),
+          ),
 
           // Data management — only meaningful for authenticated users.
           // Guests have no Supabase rows to delete and no account to
           // remove; their local data is wiped on uninstall.
           if (!isGuest) ...[
-            const SizedBox(height: 28),
-            _SectionLabel(l10n.dataManagement),
-            const SizedBox(height: 10),
+            const SizedBox(height: 18),
+            CozySectionLabel(l10n.dataManagement),
             _SettingsTile(
               icon: Icons.delete_sweep_rounded,
               title: l10n.deleteAllData,
-              value: l10n.userData,
+              subtitle: l10n.userData,
               accentColor: context.colors.error,
               onTap: () => _confirmDeleteAllData(context, ref),
             ),
-            const SizedBox(height: 8),
             _SettingsTile(
               icon: Icons.person_remove_rounded,
               title: l10n.deleteAccount,
-              value: l10n.permanent,
+              subtitle: l10n.permanent,
               accentColor: context.colors.error,
               onTap: () => _confirmDeleteAccount(context, ref),
             ),
@@ -713,209 +719,92 @@ class _GuestRegisterBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => context.go('/register'),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: context.colors.surfaceCard,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: context.colors.primary.withValues(alpha: 0.5),
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  gradient: context.colors.primaryGradient,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.cloud_upload_outlined,
-                  color: Colors.black,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.createAccountBackupTitle,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: context.colors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      l10n.createAccountBackupSubtitle,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: context.colors.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: context.colors.textMuted,
-              ),
-            ],
-          ),
-        ),
-      ),
+    return CozyBanner(
+      tint: context.colors.cozy.mint,
+      icon: Icons.cloud_upload_outlined,
+      title: l10n.createAccountBackupTitle,
+      subtitle: l10n.createAccountBackupSubtitle,
+      onTap: () => context.go('/register'),
     );
   }
 }
 
-class _SectionLabel extends StatelessWidget {
-  final String text;
-  const _SectionLabel(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        color: context.colors.textMuted,
-        letterSpacing: 0.8,
-      ),
-    );
-  }
-}
-
+/// A settings row in the cozy skin.
+///
+/// The old row squeezed the descriptive string ("Vegan, Vegetarian,
+/// Gluten-free, Halal") into a right-hand pill that ellipsised it away on
+/// every device. Those strings are descriptions, so they now sit under the
+/// title where they fit, and the pill is reserved for the short status a row
+/// actually reports — a theme name, "Active". Rows with no status show none.
 class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String value;
+
+  /// The descriptive line under the title.
+  final String subtitle;
+
+  /// Short status word for the pill. Null on rows that have no status.
+  final String? value;
+
   final VoidCallback onTap;
+
+  /// Which accent the row wears. Ignored when [accentColor] is set.
+  final CozyTint? tint;
+
+  /// Forces a one-off accent — used by the destructive rows, which have to
+  /// read as dangerous rather than as the next colour in the rotation.
   final Color? accentColor;
 
   /// İsteğe bağlı, küçük/ikincil renkli tek satırlık dipnot — bir uyarı
-  /// afişi değil, bir niteleyici (örn. tıbbi tavsiye dipnotu). `null`
-  /// olduğunda (varsayılan, diğer tüm _SettingsTile kullanımları) render
-  /// öncekiyle bit bit aynı kalır.
+  /// afişi değil, bir niteleyici (örn. tıbbi tavsiye dipnotu).
   final String? footnote;
 
   const _SettingsTile({
     required this.icon,
     required this.title,
-    required this.value,
+    required this.subtitle,
     required this.onTap,
+    this.value,
+    this.tint,
     this.accentColor,
     this.footnote,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AppTapCard(
-      onTap: onTap,
-      semanticLabel: title,
-      decoration: BoxDecoration(
-        color: context.colors.surfaceCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.colors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _tileRow(context),
-            if (footnote != null) ...[
-              const SizedBox(height: 6),
-              Padding(
-                padding: const EdgeInsets.only(left: 50),
-                child: Text(
-                  footnote!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: context.colors.textMuted,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
+    final colors = context.colors;
+    final resolved = accentColor != null
+        ? CozyTint(
+            surface: accentColor!.withValues(alpha: 0.10),
+            ink: accentColor!,
+          )
+        : (tint ?? colors.cozy.mint);
 
-  Widget _tileRow(BuildContext context) {
-    return Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: (accentColor ?? context.colors.primary).withValues(
-                  alpha: 0.12,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                icon,
-                size: 18,
-                color: accentColor ?? context.colors.primary,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              flex: 2,
-              child: Text(
-                title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: context.colors.textPrimary,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              flex: 3,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: context.colors.surfaceCard2,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: context.colors.border),
-                ),
-                child: Text(
-                  value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: context.colors.textSecondary,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: context.colors.textMuted,
-              size: 18,
-            ),
-          ],
-        );
+    final tile = CozyTile(
+      tint: resolved,
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      value: value,
+      onTap: onTap,
+    );
+
+    if (footnote == null) return tile;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        tile,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(40, 0, 40, 6),
+          child: Text(
+            footnote!,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 11, color: colors.textMuted),
+          ),
+        ),
+      ],
+    );
   }
 }

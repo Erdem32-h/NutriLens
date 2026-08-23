@@ -1954,4 +1954,22 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get calorieTargetCardSubtitleUnset =>
       'احسب هدف السعرات الحرارية الشخصي';
+
+  @override
+  String get profileSubtitle => 'خصّص تجربتك من أجل صحة أفضل';
+
+  @override
+  String get themeSubtitle => 'اختر مظهر التطبيق';
+
+  @override
+  String get languageSubtitle => 'اضبط لغتك المفضلة';
+
+  @override
+  String get mealsSubtitle => 'وجبات اليوم وتوازن السعرات لديك';
+
+  @override
+  String get historySubtitle => 'كل المنتجات التي مسحتها';
+
+  @override
+  String get favoritesSubtitle => 'المنتجات التي تعود إليها دائمًا';
 }

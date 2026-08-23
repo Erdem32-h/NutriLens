@@ -742,5 +742,11 @@
       }
     }
   },
-  "calorieTargetCardSubtitleUnset": "Calcule sua meta calórica pessoal"
+  "calorieTargetCardSubtitleUnset": "Calcule sua meta calórica pessoal",
+  "profileSubtitle": "Personalize sua experiência para uma versão mais saudável de você",
+  "themeSubtitle": "Escolha a aparência do app",
+  "languageSubtitle": "Defina seu idioma preferido",
+  "mealsSubtitle": "As refeições de hoje e seu balanço de calorias",
+  "historySubtitle": "Todos os produtos que você escaneou",
+  "favoritesSubtitle": "Os produtos aos quais você sempre volta"
 }

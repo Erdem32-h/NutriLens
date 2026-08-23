@@ -1914,4 +1914,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get calorieTargetCardSubtitleUnset => '计算你的个人卡路里目标';
+
+  @override
+  String get profileSubtitle => '个性化你的体验，成就更健康的自己';
+
+  @override
+  String get themeSubtitle => '选择应用外观';
+
+  @override
+  String get languageSubtitle => '设置你的首选语言';
+
+  @override
+  String get mealsSubtitle => '今天的饮食与你的热量平衡';
+
+  @override
+  String get historySubtitle => '你扫描过的所有产品';
+
+  @override
+  String get favoritesSubtitle => '你一再回访的产品';
 }

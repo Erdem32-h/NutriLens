@@ -742,5 +742,11 @@
       }
     }
   },
-  "calorieTargetCardSubtitleUnset": "计算你的个人卡路里目标"
+  "calorieTargetCardSubtitleUnset": "计算你的个人卡路里目标",
+  "profileSubtitle": "个性化你的体验，成就更健康的自己",
+  "themeSubtitle": "选择应用外观",
+  "languageSubtitle": "设置你的首选语言",
+  "mealsSubtitle": "今天的饮食与你的热量平衡",
+  "historySubtitle": "你扫描过的所有产品",
+  "favoritesSubtitle": "你一再回访的产品"
 }

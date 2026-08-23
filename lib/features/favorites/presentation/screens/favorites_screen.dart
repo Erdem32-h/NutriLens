@@ -9,6 +9,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../history/data/datasources/scan_history_local_datasource.dart';
 import '../../../history/presentation/providers/history_provider.dart';
 import '../../../../core/widgets/app_tap_card.dart';
+import '../../../../core/widgets/cozy_header.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 
 class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
@@ -76,31 +78,31 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen>
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(l10n.favorites),
-        backgroundColor: Colors.transparent,
-        actions: [
-          IconButton(
-            tooltip: l10n.compare,
-            icon: Icon(
-              _selectMode ? Icons.close : Icons.compare_arrows_rounded,
-            ),
-            onPressed: _toggleSelectMode,
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: colors.primary,
-          unselectedLabelColor: colors.textMuted,
-          indicatorColor: colors.primary,
-          tabs: [
-            Tab(text: l10n.favorites),
-            Tab(text: l10n.blacklist),
-          ],
-        ),
-      ),
       body: Column(
         children: [
+          CozyHeader(
+            title: l10n.favorites,
+            subtitle: l10n.favoritesSubtitle,
+            action: CozyHeaderAction(
+              icon: _selectMode ? Icons.close : Icons.compare_arrows_rounded,
+              tooltip: l10n.compare,
+              onPressed: _toggleSelectMode,
+            ),
+          ),
+          TabBar(
+            controller: _tabController,
+            labelColor: colors.primary,
+            unselectedLabelColor: colors.textMuted,
+            indicatorColor: colors.primary,
+            // The default 1px full-width divider under a TabBar is the one
+            // hard rule left on the screen; the tab labels already separate
+            // themselves from the list below by spacing alone.
+            dividerColor: Colors.transparent,
+            tabs: [
+              Tab(text: l10n.favorites),
+              Tab(text: l10n.blacklist),
+            ],
+          ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -214,9 +216,9 @@ class _FavoritesTab extends ConsumerWidget {
     List<ScanHistoryWithProduct> favorites,
   ) {
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
       itemCount: favorites.length,
-      separatorBuilder: (ctx, i) => const SizedBox(height: 8),
+      separatorBuilder: (ctx, i) => const SizedBox(height: 12),
       itemBuilder: (ctx, index) => _FavoriteTile(
         item: favorites[index],
         selectMode: selectMode,
@@ -248,9 +250,9 @@ class _BlacklistTab extends ConsumerWidget {
       data: (items) {
         if (items.isEmpty) return _buildEmpty(context, l10n);
         return ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
           itemCount: items.length,
-          separatorBuilder: (ctx, i) => const SizedBox(height: 8),
+          separatorBuilder: (ctx, i) => const SizedBox(height: 12),
           itemBuilder: (ctx, index) => _BlacklistTile(item: items[index]),
         );
       },
@@ -317,16 +319,14 @@ class _FavoriteTile extends ConsumerWidget {
           ? () => onToggleSelect(item.barcode)
           : () => context.push('/product/${item.barcode}'),
       semanticLabel: item.productName,
-      decoration: BoxDecoration(
-        color: context.colors.surfaceCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isSelected
-              ? context.colors.primary
-              : context.colors.border.withValues(alpha: 0.5),
-          width: isSelected ? 2 : 1,
-        ),
-      ),
+      borderRadius: BorderRadius.circular(24),
+      // Selection is the one state that still earns a border: without it,
+      // "picked for comparison" would be carried by the checkmark alone.
+      decoration: isSelected
+          ? cozyCardDecoration(context).copyWith(
+              border: Border.all(color: context.colors.primary, width: 2),
+            )
+          : cozyCardDecoration(context),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
@@ -530,11 +530,12 @@ class _BlacklistTile extends ConsumerWidget {
       onLongPress: () => _showRemoveDialog(context, ref),
       onTap: () => context.push('/product/${item.barcode}'),
       semanticLabel: item.productName,
-      decoration: BoxDecoration(
-        color: context.colors.surfaceCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-      ),
+      borderRadius: BorderRadius.circular(24),
+      // Blacklisted rows sit on the peach tint instead of the neutral card:
+      // the old orange hairline was doing that job at a tenth the strength.
+      decoration: cozyCardDecoration(
+        context,
+      ).copyWith(color: context.colors.cozy.peach.surface),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(

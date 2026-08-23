@@ -1968,4 +1968,23 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get calorieTargetCardSubtitleUnset =>
       'Kişisel kalori hedefini hesapla';
+
+  @override
+  String get profileSubtitle =>
+      'Deneyimini kişiselleştir, daha sağlıklı bir sen için';
+
+  @override
+  String get themeSubtitle => 'Uygulamanın görünümünü seç';
+
+  @override
+  String get languageSubtitle => 'Tercih ettiğin dili ayarla';
+
+  @override
+  String get mealsSubtitle => 'Bugünün öğünleri ve kalori dengen';
+
+  @override
+  String get historySubtitle => 'Taradığın tüm ürünler burada';
+
+  @override
+  String get favoritesSubtitle => 'Tekrar tekrar döndüğün ürünler';
 }

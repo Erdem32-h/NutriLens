@@ -742,5 +742,11 @@
       }
     }
   },
-  "calorieTargetCardSubtitleUnset": "Calcula tu objetivo calórico personal"
+  "calorieTargetCardSubtitleUnset": "Calcula tu objetivo calórico personal",
+  "profileSubtitle": "Personaliza tu experiencia para una versión más sana de ti",
+  "themeSubtitle": "Elige la apariencia de la app",
+  "languageSubtitle": "Configura tu idioma preferido",
+  "mealsSubtitle": "Las comidas de hoy y tu balance de calorías",
+  "historySubtitle": "Todos los productos que has escaneado",
+  "favoritesSubtitle": "Los productos a los que siempre vuelves"
 }

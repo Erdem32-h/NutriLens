@@ -1972,4 +1972,23 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get calorieTargetCardSubtitleUnset =>
       'Calcula tu objetivo calórico personal';
+
+  @override
+  String get profileSubtitle =>
+      'Personaliza tu experiencia para una versión más sana de ti';
+
+  @override
+  String get themeSubtitle => 'Elige la apariencia de la app';
+
+  @override
+  String get languageSubtitle => 'Configura tu idioma preferido';
+
+  @override
+  String get mealsSubtitle => 'Las comidas de hoy y tu balance de calorías';
+
+  @override
+  String get historySubtitle => 'Todos los productos que has escaneado';
+
+  @override
+  String get favoritesSubtitle => 'Los productos a los que siempre vuelves';
 }

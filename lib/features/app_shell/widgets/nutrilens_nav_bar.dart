@@ -37,68 +37,87 @@ class NutriLensNavBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: SizedBox(
-        height: 88,
+        height: 96,
         child: Stack(
           alignment: Alignment.bottomCenter,
           clipBehavior: Clip.none,
           children: [
-            // Background bar
-            Positioned.fill(
+            // The bar floats clear of the screen edges instead of sitting
+            // welded to them: it is what turns the chrome from a system
+            // fixture into a soft object the content scrolls underneath.
+            // A hairline border is deliberately absent — the shadow does the
+            // separating, and a border on top of it reads as a seam.
+            Positioned(
+              left: 12,
+              right: 12,
+              bottom: 8,
               top: 16,
               child: Container(
                 decoration: BoxDecoration(
-                  color: colors.surface,
-                  border: Border(
-                    top: BorderSide(color: colors.border, width: 0.5),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _SideTab(
-                        icon: Icons.restaurant_menu_outlined,
-                        selectedIcon: Icons.restaurant_menu,
-                        label: mealsLabel,
-                        selected: currentIndex == 0,
-                        onTap: () => onTap(0),
-                      ),
-                    ),
-                    Expanded(
-                      child: _SideTab(
-                        icon: Icons.history_outlined,
-                        selectedIcon: Icons.history,
-                        label: historyLabel,
-                        selected: currentIndex == 1,
-                        onTap: () => onTap(1),
-                      ),
-                    ),
-                    // Reserve space for the centered scanner button.
-                    const SizedBox(width: 80),
-                    Expanded(
-                      child: _SideTab(
-                        icon: Icons.favorite_outline,
-                        selectedIcon: Icons.favorite,
-                        label: favoritesLabel,
-                        selected: currentIndex == 3,
-                        onTap: () => onTap(3),
-                      ),
-                    ),
-                    Expanded(
-                      child: _SideTab(
-                        icon: Icons.person_outline,
-                        selectedIcon: Icons.person,
-                        label: profileLabel,
-                        selected: currentIndex == 4,
-                        onTap: () => onTap(4),
-                      ),
+                  color: colors.cozy.floating,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.textPrimary.withValues(alpha: 0.10),
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
                     ),
                   ],
+                ),
+                // Clip + transparent Material so a tab's ripple is both
+                // visible (the bar's own fill is opaque and would otherwise
+                // hide it) and contained by the rounded corners.
+                clipBehavior: Clip.antiAlias,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _SideTab(
+                          icon: Icons.restaurant_menu_outlined,
+                          selectedIcon: Icons.restaurant_menu,
+                          label: mealsLabel,
+                          selected: currentIndex == 0,
+                          onTap: () => onTap(0),
+                        ),
+                      ),
+                      Expanded(
+                        child: _SideTab(
+                          icon: Icons.history_outlined,
+                          selectedIcon: Icons.history,
+                          label: historyLabel,
+                          selected: currentIndex == 1,
+                          onTap: () => onTap(1),
+                        ),
+                      ),
+                      // Reserve space for the centered scanner button.
+                      const SizedBox(width: 80),
+                      Expanded(
+                        child: _SideTab(
+                          icon: Icons.favorite_outline,
+                          selectedIcon: Icons.favorite,
+                          label: favoritesLabel,
+                          selected: currentIndex == 3,
+                          onTap: () => onTap(3),
+                        ),
+                      ),
+                      Expanded(
+                        child: _SideTab(
+                          icon: Icons.person_outline,
+                          selectedIcon: Icons.person,
+                          label: profileLabel,
+                          selected: currentIndex == 4,
+                          onTap: () => onTap(4),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
             // Center scanner button (lifts above the bar)
             Positioned(
-              bottom: 24,
+              bottom: 30,
               child: _ScannerButton(
                 active: currentIndex == 2,
                 label: scannerLabel,

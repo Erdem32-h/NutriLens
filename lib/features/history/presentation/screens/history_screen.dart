@@ -12,6 +12,8 @@ import '../providers/history_provider.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 import '../../../../config/router/route_names.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/cozy_header.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../scanner/presentation/providers/scanner_mode_provider.dart';
 
 class HistoryScreen extends ConsumerWidget {
@@ -24,26 +26,32 @@ class HistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(
-        title: Text(l10n.scanHistory),
-        backgroundColor: Colors.transparent,
-      ),
-      body: historyAsync.when(
-        loading: () => Center(
-          child: CircularProgressIndicator(color: context.colors.primary),
-        ),
-        error: (error, _) => Center(
-          child: Text(
-            l10n.historyLoadError,
-            style: TextStyle(color: context.colors.textMuted),
+      // The header is part of the page rather than an AppBar so it can carry
+      // a subtitle and the colour wash; it sits above the async switch so
+      // the screen keeps its identity while the list is still loading.
+      body: Column(
+        children: [
+          CozyHeader(title: l10n.scanHistory, subtitle: l10n.historySubtitle),
+          Expanded(
+            child: historyAsync.when(
+              loading: () => Center(
+                child: CircularProgressIndicator(color: context.colors.primary),
+              ),
+              error: (error, _) => Center(
+                child: Text(
+                  l10n.historyLoadError,
+                  style: TextStyle(color: context.colors.textMuted),
+                ),
+              ),
+              data: (history) {
+                if (history.isEmpty) {
+                  return _buildEmpty(context, ref, l10n);
+                }
+                return _buildList(context, history);
+              },
+            ),
           ),
-        ),
-        data: (history) {
-          if (history.isEmpty) {
-            return _buildEmpty(context, ref, l10n);
-          }
-          return _buildList(context, history);
-        },
+        ],
       ),
     );
   }
@@ -105,9 +113,9 @@ class HistoryScreen extends ConsumerWidget {
     List<ScanHistoryWithProduct> history,
   ) {
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
       itemCount: history.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final item = history[index];
         return _HistoryTile(item: item);
@@ -134,11 +142,8 @@ class _HistoryTile extends ConsumerWidget {
       onLongPress: () => _showContextMenu(context, ref),
       onTap: () => context.push('/product/${item.barcode}'),
       semanticLabel: item.productName,
-      decoration: BoxDecoration(
-        color: context.colors.surfaceCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.colors.border.withValues(alpha: 0.5)),
-      ),
+      borderRadius: BorderRadius.circular(24),
+      decoration: cozyCardDecoration(context),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(

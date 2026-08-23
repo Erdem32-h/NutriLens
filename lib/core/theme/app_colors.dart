@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'cozy_tokens.dart';
+
 class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   // Brand
   final Color primary;
@@ -48,6 +50,11 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final LinearGradient primaryGradient;
   final LinearGradient backgroundGradient;
 
+  /// Soft accent tints + header wash used by the main tabs. Grouped rather
+  /// than flattened into a dozen more fields because a tint's fill and ink
+  /// are only meaningful as a pair — see [CozyPalette].
+  final CozyPalette cozy;
+
   const AppColorsExtension({
     required this.primary,
     required this.primaryDark,
@@ -80,6 +87,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.riskDangerous,
     required this.primaryGradient,
     required this.backgroundGradient,
+    required this.cozy,
   });
 
   @override
@@ -115,6 +123,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? riskDangerous,
     LinearGradient? primaryGradient,
     LinearGradient? backgroundGradient,
+    CozyPalette? cozy,
   }) {
     return AppColorsExtension(
       primary: primary ?? this.primary,
@@ -148,6 +157,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       riskDangerous: riskDangerous ?? this.riskDangerous,
       primaryGradient: primaryGradient ?? this.primaryGradient,
       backgroundGradient: backgroundGradient ?? this.backgroundGradient,
+      cozy: cozy ?? this.cozy,
     );
   }
 
@@ -197,6 +207,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
         other.backgroundGradient,
         t,
       )!,
+      cozy: CozyPalette.lerp(cozy, other.cozy, t),
     );
   }
 
@@ -263,6 +274,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     ),
+    cozy: CozyPalette.darkPalette,
   );
 
   static const light = AppColorsExtension(
@@ -305,6 +317,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     ),
+    cozy: CozyPalette.lightPalette,
   );
 }
 

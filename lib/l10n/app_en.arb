@@ -742,5 +742,11 @@
       }
     }
   },
-  "calorieTargetCardSubtitleUnset": "Calculate your personal calorie target"
+  "calorieTargetCardSubtitleUnset": "Calculate your personal calorie target",
+  "profileSubtitle": "Personalize your experience for a healthier you",
+  "themeSubtitle": "Choose your app appearance",
+  "languageSubtitle": "Set your preferred language",
+  "mealsSubtitle": "Today's meals and your calorie balance",
+  "historySubtitle": "Every product you have scanned",
+  "favoritesSubtitle": "The products you keep coming back to"
 }
