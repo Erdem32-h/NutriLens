@@ -67,11 +67,12 @@
       "Bash(adb -s emulator-5554 shell input text \"8690504048935\")",
       "Bash(git -C \"C:\\\\Users\\\\m_fat\\\\OneDrive\\\\Desktop\\\\Github\\\\NutriLens\" show --stat 67dab9f 65fe79c 6f11832)",
       "Bash(git -C \"C:\\\\Users\\\\m_fat\\\\OneDrive\\\\Desktop\\\\Github\\\\NutriLens\" show 65fe79c -- lib/features/product/presentation/screens/product_detail_screen.dart)",
-      "Bash(adb -s emulator-5554 logcat -d --pid=19335)"
+      "Bash(adb -s emulator-5554 logcat -d --pid=19335)",
+      "mcp__plugin_context-mode_context-mode__ctx_batch_execute"
     ]
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "flutter-skill"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }
