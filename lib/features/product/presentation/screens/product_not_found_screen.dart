@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../../core/widgets/app_button.dart';
 
 class ProductNotFoundScreen extends StatefulWidget {
@@ -75,11 +76,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
             Container(
               width: 80,
               height: 80,
-              decoration: BoxDecoration(
-                color: context.colors.surfaceCard,
-                shape: BoxShape.circle,
-                border: Border.all(color: context.colors.border),
-              ),
+              decoration: cozyCircleDecoration(context),
               child: Icon(
                 Icons.search_off_rounded,
                 size: 36,
@@ -113,11 +110,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
               child: Container(
                 width: double.infinity,
                 height: 160,
-                decoration: BoxDecoration(
-                  color: context.colors.surfaceCard,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: context.colors.border),
-                ),
+                decoration: cozyCardDecoration(context),
                 child: _frontPhotoPath != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(15),

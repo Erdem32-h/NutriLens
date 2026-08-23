@@ -10,6 +10,7 @@ import '../../../../core/providers/monetization_provider.dart'
     show deviceIdServiceProvider;
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../../core/utils/ocr_image_prep.dart';
 import '../providers/ocr_provider.dart';
 import '../providers/product_provider.dart';
@@ -311,10 +312,7 @@ class _IngredientsCameraScreenState
                     const SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: context.colors.surfaceCard,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      decoration: cozyCardDecoration(context),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

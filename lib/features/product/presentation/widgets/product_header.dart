@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 
@@ -15,11 +16,7 @@ class ProductHeader extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.colors.border),
-      ),
+      decoration: cozyCardDecoration(context),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

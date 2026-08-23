@@ -7,6 +7,7 @@ import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../providers/meal_sync_banner_provider.dart';
 
 /// Dismissible strip above the meal list telling a non-premium user their
@@ -30,10 +31,9 @@ class MealSyncBanner extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
       child: Container(
         padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 4, 4),
-        decoration: BoxDecoration(
-          color: colors.surfaceCard,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colors.border),
+        decoration: cozyCardDecoration(context).copyWith(
+          color: colors.cozy.lilac.surface,
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [

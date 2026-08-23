@@ -64,11 +64,7 @@ class HistoryScreen extends ConsumerWidget {
           Container(
             width: 96,
             height: 96,
-            decoration: BoxDecoration(
-              color: context.colors.surfaceCard,
-              shape: BoxShape.circle,
-              border: Border.all(color: context.colors.border),
-            ),
+            decoration: cozyCircleDecoration(context),
             child: Icon(
               Icons.history_rounded,
               size: 44,

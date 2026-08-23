@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../domain/entities/product_entity.dart';
 import '../providers/product_provider.dart';
 import 'additive_chip.dart';
@@ -29,11 +30,7 @@ class AdditiveClassification extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.colors.border),
-      ),
+      decoration: cozyCardDecoration(context),
       child: Center(
         child: CircularProgressIndicator(
           color: context.colors.primary,
@@ -68,11 +65,7 @@ class AdditiveClassification extends ConsumerWidget {
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: context.colors.surfaceCard,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: context.colors.border),
-        ),
+        decoration: cozyCardDecoration(context),
         child: Text(
           context.l10n.noAdditives,
           style: TextStyle(fontSize: 14, color: context.colors.textMuted),
@@ -103,11 +96,7 @@ class AdditiveClassification extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.colors.border),
-      ),
+      decoration: cozyCardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../providers/compare_hint_provider.dart';
 
 /// Tek seferlik keşfedilebilirlik şeridi: kıyaslama özelliğinin varlığını
@@ -20,11 +21,9 @@ class CompareHintStrip extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(24, 12, 24, 0),
       padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 4, 4),
-      decoration: BoxDecoration(
-        color: colors.surfaceCard,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.border),
-      ),
+      decoration: cozyCardDecoration(
+        context,
+      ).copyWith(borderRadius: BorderRadius.circular(20)),
       child: Row(
         children: [
           Icon(

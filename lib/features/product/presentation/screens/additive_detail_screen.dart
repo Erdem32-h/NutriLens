@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../../features/additive/domain/entities/additive_entity.dart';
 import '../../../../features/additive/presentation/providers/additive_provider.dart';
 
@@ -462,10 +463,7 @@ class _InfoTile extends StatelessWidget {
     final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colors.surfaceCard,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: cozyCardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

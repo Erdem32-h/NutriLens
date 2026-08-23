@@ -180,11 +180,7 @@ class _FavoritesTab extends ConsumerWidget {
           Container(
             width: 96,
             height: 96,
-            decoration: BoxDecoration(
-              color: context.colors.surfaceCard,
-              shape: BoxShape.circle,
-              border: Border.all(color: context.colors.border),
-            ),
+            decoration: cozyCircleDecoration(context),
             child: Icon(
               Icons.favorite_rounded,
               size: 44,
@@ -267,11 +263,7 @@ class _BlacklistTab extends ConsumerWidget {
           Container(
             width: 96,
             height: 96,
-            decoration: BoxDecoration(
-              color: context.colors.surfaceCard,
-              shape: BoxShape.circle,
-              border: Border.all(color: context.colors.border),
-            ),
+            decoration: cozyCircleDecoration(context),
             child: Icon(Icons.block, size: 44, color: context.colors.textMuted),
           ),
           const SizedBox(height: 24),

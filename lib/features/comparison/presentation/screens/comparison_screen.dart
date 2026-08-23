@@ -6,6 +6,7 @@ import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../../core/widgets/premium_blur_gate.dart';
 import '../../../product/domain/entities/product_entity.dart';
 import '../../../../core/constants/app_links.dart';
@@ -223,10 +224,9 @@ class _HeaderCard extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: colors.surfaceCard,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: cozyCardDecoration(
+        context,
+      ).copyWith(borderRadius: BorderRadius.circular(20)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

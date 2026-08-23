@@ -19,6 +19,7 @@ import '../../../../core/services/guest_scan_gate.dart';
 import '../../../../core/services/scan_limit_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../providers/scanner_mode_provider.dart';
 import '../widgets/camera_rationale_sheet.dart';
@@ -1460,11 +1461,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
             Container(
               width: 96,
               height: 96,
-              decoration: BoxDecoration(
-                color: context.colors.surfaceCard,
-                shape: BoxShape.circle,
-                border: Border.all(color: context.colors.border),
-              ),
+              decoration: cozyCircleDecoration(context),
               child: Icon(
                 isPermissionDenied
                     ? Icons.no_photography_outlined

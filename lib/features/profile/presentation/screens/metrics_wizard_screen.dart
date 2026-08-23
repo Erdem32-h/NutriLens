@@ -10,6 +10,7 @@ import '../../../../core/services/calorie_target_calculator.dart';
 import '../../../../core/services/metrics_prompt_store.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 import '../../domain/entities/user_metrics_entity.dart';
 import '../providers/user_metrics_provider.dart';
@@ -690,16 +691,15 @@ class _ChoiceCard extends StatelessWidget {
     return AppTapCard(
       onTap: onTap,
       semanticLabel: label,
-      borderRadius: BorderRadius.circular(20),
-      decoration: BoxDecoration(
-        color: isSelected
-            ? colors.primary.withValues(alpha: 0.1)
-            : colors.surfaceCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isSelected ? colors.primary : colors.border,
-        ),
-      ),
+      borderRadius: BorderRadius.circular(24),
+      // Matches the filter screens: selection is carried by the fill, with a
+      // ring only on the chosen row.
+      decoration: isSelected
+          ? cozyCardDecoration(context).copyWith(
+              color: colors.cozy.mint.surface,
+              border: Border.all(color: colors.primary, width: 2),
+            )
+          : cozyCardDecoration(context),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(

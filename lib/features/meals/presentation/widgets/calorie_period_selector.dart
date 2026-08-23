@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../domain/entities/calorie_chart_data.dart';
 import '../../domain/services/calorie_chart_aggregator.dart';
 import '../providers/meal_chart_provider.dart';
@@ -29,11 +30,9 @@ class CaloriePeriodSelector extends ConsumerWidget {
       children: [
         Container(
           padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: colors.surfaceCard,
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: colors.border),
-          ),
+          decoration: cozyCardDecoration(
+            context,
+          ).copyWith(borderRadius: BorderRadius.circular(999)),
           child: Row(
             children: [
               for (final p in CaloriePeriod.values)

@@ -55,3 +55,6 @@ nutrilens-release.jks
 
 # Superpowers brainstorming visual companion (local mockups)
 .superpowers/
+
+# Kotlin build cache introduced by AGP 8.11 / Gradle 8.13
+android/.kotlin/

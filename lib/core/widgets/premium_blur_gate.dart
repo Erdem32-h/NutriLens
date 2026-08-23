@@ -58,9 +58,8 @@ class PremiumBlurGate extends ConsumerWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             decoration: BoxDecoration(
-              color: colors.surfaceCard,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colors.border),
+              color: colors.cozy.floating,
+              borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.15),

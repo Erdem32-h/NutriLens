@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../domain/entities/nutriments_entity.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 
@@ -18,11 +19,7 @@ class NutrimentTable extends StatelessWidget {
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: context.colors.surfaceCard,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: context.colors.border),
-        ),
+        decoration: cozyCardDecoration(context),
         child: Text(
           context.l10n.noNutrientData,
           style: TextStyle(fontSize: 14, color: context.colors.textMuted),
@@ -32,11 +29,7 @@ class NutrimentTable extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.colors.border),
-      ),
+      decoration: cozyCardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

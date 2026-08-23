@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../history/data/datasources/scan_history_local_datasource.dart';
 import '../../../history/presentation/providers/history_provider.dart';
 
@@ -132,11 +133,9 @@ class _PickTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: colors.background,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.border.withValues(alpha: 0.5)),
-        ),
+        decoration: cozyCardDecoration(
+          context,
+        ).copyWith(borderRadius: BorderRadius.circular(20)),
         child: Row(
           children: [
             ClipRRect(

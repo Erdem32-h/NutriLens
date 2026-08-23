@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../../../../core/widgets/app_button.dart';
 
 /// Shared chrome for every page of `MetricsWizardScreen`: a close/back
@@ -114,11 +115,7 @@ class MetricsStepScaffold extends StatelessWidget {
                 Container(
                   width: 56,
                   height: 56,
-                  decoration: BoxDecoration(
-                    color: colors.surfaceCard,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: colors.border),
-                  ),
+                  decoration: cozyCircleDecoration(context),
                   alignment: Alignment.center,
                   child: Icon(icon, color: colors.primary, size: 26),
                 ),

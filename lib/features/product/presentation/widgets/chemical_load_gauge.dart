@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 
 class ChemicalLoadGauge extends StatelessWidget {
   final double chemicalLoad;
@@ -23,11 +24,7 @@ class ChemicalLoadGauge extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.colors.border),
-      ),
+      decoration: cozyCardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

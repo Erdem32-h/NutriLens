@@ -28,6 +28,24 @@ BoxDecoration cozyCardDecoration(BuildContext context) {
   );
 }
 
+/// The round counterpart of [cozyCardDecoration] — the big illustration
+/// circle an empty state puts its icon in, and the step badge on the metrics
+/// wizard. Same reasoning: a soft shadow instead of a hairline ring.
+BoxDecoration cozyCircleDecoration(BuildContext context) {
+  final colors = context.colors;
+  return BoxDecoration(
+    color: colors.cozy.floating,
+    shape: BoxShape.circle,
+    boxShadow: [
+      BoxShadow(
+        color: colors.textPrimary.withValues(alpha: 0.06),
+        blurRadius: 18,
+        offset: const Offset(0, 6),
+      ),
+    ],
+  );
+}
+
 /// A settings/navigation row on a tinted card, with a raised icon chip.
 ///
 /// Built on [AppTapCard] so the press feedback stays identical to every
