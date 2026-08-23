@@ -10,6 +10,7 @@ import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../providers/auth_provider.dart';
+import '../providers/social_auth_tracking.dart';
 import '../widgets/post_auth_flow.dart';
 import '../widgets/social_login_buttons.dart';
 import '../../../../core/providers/monetization_provider.dart';
@@ -43,12 +44,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) return;
     final analytics = ref.read(analyticsServiceProvider);
-    // Fires only after client-side validation passes, so the gap between
-    // auth_screen_shown and login_started measures people who could not get
-    // a valid form filled in at all.
-    analytics.track(FunnelEvents.loginStarted);
+    // Before the validation gate on purpose, same as the register screen:
+    // someone who taps and bounces off a red field used to produce no event
+    // whatsoever, leaving "never found the button" and "could not get past
+    // validation" as the same empty row, with opposite fixes.
+    analytics.track(
+      FunnelEvents.loginSubmitTapped,
+      props: {'method': AuthMethod.email},
+    );
+    if (!_formKey.currentState!.validate()) return;
+    // Fires only after validation passes; the gap against
+    // login_submit_tapped is exactly the population the form rejects.
+    analytics.track(
+      FunnelEvents.loginStarted,
+      props: {'method': AuthMethod.email},
+    );
     await ref
         .read(authNotifierProvider.notifier)
         .signInWithEmail(
@@ -60,13 +71,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (authState.hasError) {
         analytics.track(
           FunnelEvents.loginFailed,
-          props: {'reason': authFailureReason(authState.error)},
+          props: {
+            'method': AuthMethod.email,
+            'reason': authFailureReason(authState.error),
+          },
         );
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(authState.error.toString())));
       } else {
-        analytics.track(FunnelEvents.loginSucceeded);
+        analytics.track(
+          FunnelEvents.loginSucceeded,
+          props: {'method': AuthMethod.email},
+        );
       }
       // Success navigation is handled by the authStateProvider
       // listener in build() → runPostAuthFlow (covers migration).
@@ -78,6 +95,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.listen(authStateProvider, (previous, next) {
       if (next.hasValue && next.value != null) {
         final user = next.value!;
+        // A social sign-in finishes here, not at the button: the browser
+        // round trip means the outcome arrives on whichever auth screen the
+        // deep link lands on. `take()` makes sure only the first one
+        // reports it.
+        final method = ref.read(pendingSocialAuthProvider.notifier).take();
+        if (method != null) {
+          ref
+              .read(analyticsServiceProvider)
+              .track(FunnelEvents.loginSucceeded, props: {'method': method});
+        }
         ref.read(subscriptionServiceProvider).logIn(user.id);
         if (!mounted) return;
         runPostAuthFlow(ref, context, userId: user.id);

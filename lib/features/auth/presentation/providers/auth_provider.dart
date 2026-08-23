@@ -77,24 +77,32 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     return result.fold((failure) => failure, (_) => null);
   }
 
-  Future<void> signInWithGoogle() async {
+  /// Returns `null` once the browser flow has been handed off, or the
+  /// [Failure] if it never got that far.
+  ///
+  /// Success here means "launched", not "signed in" — the session itself
+  /// arrives later through a deep link, and the UI picks it up by listening
+  /// to [authStateProvider]. The return value exists so the caller can
+  /// report a failed launch against the provider that was attempted;
+  /// reading it back off `state` instead would misattribute a stale error
+  /// left behind by an earlier email attempt.
+  Future<Failure?> signInWithGoogle() async {
     final result = await ref.read(authRepositoryProvider).signInWithGoogle();
     result.fold(
       (failure) => state = AsyncError(failure.message, StackTrace.current),
-      (_) {
-        // UI will listen to authStateProvider for successful login
-      },
+      (_) {},
     );
+    return result.fold((failure) => failure, (_) => null);
   }
 
-  Future<void> signInWithApple() async {
+  /// See [signInWithGoogle] — same hand-off, same return contract.
+  Future<Failure?> signInWithApple() async {
     final result = await ref.read(authRepositoryProvider).signInWithApple();
     result.fold(
       (failure) => state = AsyncError(failure.message, StackTrace.current),
-      (_) {
-        // UI will listen to authStateProvider for successful login
-      },
+      (_) {},
     );
+    return result.fold((failure) => failure, (_) => null);
   }
 
   /// Returns `null` on success, or an error message on failure.

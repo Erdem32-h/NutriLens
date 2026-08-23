@@ -11,6 +11,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../providers/auth_provider.dart';
+import '../providers/social_auth_tracking.dart';
 import '../widgets/post_auth_flow.dart';
 import '../widgets/social_login_buttons.dart';
 import '../../../../core/providers/monetization_provider.dart';
@@ -55,10 +56,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _handleRegister() async {
+    final analytics = ref.read(analyticsServiceProvider);
+    // Before the validation gate on purpose. Everything downstream fires
+    // only once the form is clean, so a visitor who taps and bounces off a
+    // red field used to produce no event whatsoever — leaving "never found
+    // the button" and "could not get past validation" as the same empty
+    // row, with opposite fixes.
+    analytics.track(
+      FunnelEvents.registerSubmitTapped,
+      props: {'method': AuthMethod.email},
+    );
     if (!_formKey.currentState!.validate()) return;
     final email = _emailController.text.trim();
-    final analytics = ref.read(analyticsServiceProvider);
-    analytics.track(FunnelEvents.registerStarted);
+    analytics.track(
+      FunnelEvents.registerStarted,
+      props: {'method': AuthMethod.email},
+    );
 
     final failure = await ref
         .read(authNotifierProvider.notifier)
@@ -72,7 +85,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (failure != null) {
       analytics.track(
         FunnelEvents.registerFailed,
-        props: {'reason': authFailureReason(failure)},
+        props: {
+          'method': AuthMethod.email,
+          'reason': authFailureReason(failure),
+        },
       );
     }
     if (failure is AlreadyRegisteredFailure) {
@@ -119,7 +135,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // Without this flag those two very different outcomes are indistinguishable.
     analytics.track(
       FunnelEvents.registerSucceeded,
-      props: {'awaiting_confirmation': !hasSession},
+      props: {
+        'method': AuthMethod.email,
+        'awaiting_confirmation': !hasSession,
+      },
     );
     if (!hasSession) {
       setState(() => _pendingConfirmationEmail = email);
@@ -158,6 +177,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ref.listen(authStateProvider, (previous, next) {
       if (next.hasValue && next.value != null) {
         final user = next.value!;
+        // Social sign-in started on this screen comes back here. It reports
+        // as a login rather than a registration because the client cannot
+        // tell a new Google account from a returning one; the server can,
+        // by comparing `auth.users.created_at` with the event timestamp.
+        final method = ref.read(pendingSocialAuthProvider.notifier).take();
+        if (method != null) {
+          ref
+              .read(analyticsServiceProvider)
+              .track(FunnelEvents.loginSucceeded, props: {'method': method});
+        }
         ref.read(subscriptionServiceProvider).logIn(user.id);
         if (!mounted) return;
         runPostAuthFlow(ref, context, userId: user.id);

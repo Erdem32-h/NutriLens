@@ -89,17 +89,57 @@ abstract final class FunnelEvents {
   static const onboardingAbandoned = 'onboarding_abandoned';
 
   // --- Entering a session ---------------------------------------------
+  //
+  // Everything in this block carries `method` (email|google|apple). Without
+  // it the funnel only ever saw the email form: Google and Apple sign-in go
+  // through [SocialLoginButtons], which reported nothing at all, so 65 of
+  // the first 77 accounts existed in `auth.users` with no funnel event
+  // behind them and registration read as zero.
   static const authScreenShown = 'auth_screen_shown';
   static const guestStarted = 'guest_started';
+
+  /// The register button was pressed. Fires BEFORE client-side validation,
+  /// which is what separates it from [registerStarted]: the difference
+  /// between the two counts people who tapped and bounced off a red field.
+  /// Previously that population was invisible — 60 devices reached the form
+  /// and 2 produced any event, with no way to tell "never tapped" from
+  /// "tapped and could not get past validation".
+  ///
+  /// props: `method`
+  static const registerSubmitTapped = 'register_submit_tapped';
+
+  /// Client-side validation passed and the account request went out.
+  /// props: `method`
   static const registerStarted = 'register_started';
+
+  /// props: `method`, `awaiting_confirmation` (bool, email only)
   static const registerSucceeded = 'register_succeeded';
 
-  /// props: `reason` (short machine code, never the raw error text)
+  /// props: `method`, `reason` (short machine code, never the raw error text)
   static const registerFailed = 'register_failed';
+
+  /// The sign-in button was pressed. Fires BEFORE client-side validation,
+  /// mirroring [registerSubmitTapped] so the two funnels stay comparable:
+  /// the difference against [loginStarted] counts people who tapped and
+  /// bounced off a red field.
+  ///
+  /// props: `method`
+  static const loginSubmitTapped = 'login_submit_tapped';
+
+  /// Client-side validation passed and the sign-in request went out.
+  /// props: `method`
   static const loginStarted = 'login_started';
+
+  /// props: `method`
+  ///
+  /// Social sign-in reports success here rather than through
+  /// [registerSucceeded], because the client cannot tell a new account from
+  /// a returning one — [UserEntity] carries no creation timestamp. The
+  /// distinction is exact server-side: join `auth.users.created_at` against
+  /// the event timestamp.
   static const loginSucceeded = 'login_succeeded';
 
-  /// props: `reason`
+  /// props: `method`, `reason`
   static const loginFailed = 'login_failed';
 
   // --- Scanning -------------------------------------------------------
