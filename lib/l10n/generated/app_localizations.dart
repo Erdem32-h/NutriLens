@@ -1456,6 +1456,12 @@ abstract class AppLocalizations {
   /// **'Kapat'**
   String get compareHintDismiss;
 
+  /// No description provided for @mealSyncBannerText.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğünlerin sadece bu cihazda kayıtlı. Premium\'a geç, tüm cihazlarında senkronize olsun.'**
+  String get mealSyncBannerText;
+
   /// No description provided for @nutriScoreLabel.
   ///
   /// In tr, this message translates to:
@@ -2823,6 +2829,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Öncelikli destek'**
   String get premiumFeaturePrioritySupport;
+
+  /// No description provided for @premiumFeatureCloudSync.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğünler cihazlar arası senkronize olsun'**
+  String get premiumFeatureCloudSync;
+
+  /// No description provided for @premiumFeatureComparison.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ürünleri detaylı kıyasla'**
+  String get premiumFeatureComparison;
+
+  /// No description provided for @premiumFeatureDetailedNutrition.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayrıntılı besin değerleri tablosu'**
+  String get premiumFeatureDetailedNutrition;
 
   /// No description provided for @premiumPlanAnnual.
   ///

@@ -196,6 +196,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     icon: Icons.support_agent,
                     text: l10n.premiumFeaturePrioritySupport,
                   ),
+                  _FeatureTile(
+                    icon: Icons.cloud_sync_rounded,
+                    text: l10n.premiumFeatureCloudSync,
+                  ),
+                  _FeatureTile(
+                    icon: Icons.compare_arrows_rounded,
+                    text: l10n.premiumFeatureComparison,
+                  ),
+                  _FeatureTile(
+                    icon: Icons.table_chart_rounded,
+                    text: l10n.premiumFeatureDetailedNutrition,
+                  ),
                   const SizedBox(height: 32),
 
                   // Package cards

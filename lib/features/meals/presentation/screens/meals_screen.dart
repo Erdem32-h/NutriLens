@@ -21,6 +21,7 @@ import '../providers/meal_provider.dart';
 import '../widgets/calorie_period_selector.dart';
 import '../widgets/calorie_stacked_bar_chart.dart';
 import '../widgets/macro_balance_card.dart';
+import '../widgets/meal_sync_banner.dart';
 import '../../../scanner/presentation/providers/scanner_mode_provider.dart';
 
 class MealsScreen extends ConsumerWidget {
@@ -68,12 +69,19 @@ class MealsScreen extends ConsumerWidget {
                     child: _EmptyMeals(),
                   );
                 }
-                return SliverList.separated(
-                  itemCount: meals.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 10),
-                  itemBuilder: (context, index) =>
-                      _MealTile(meal: meals[index]),
+                // Shown once there's something worth losing to a lost/reset
+                // device — an empty list has nothing to sell sync on.
+                return SliverMainAxisGroup(
+                  slivers: [
+                    const SliverToBoxAdapter(child: MealSyncBanner()),
+                    SliverList.separated(
+                      itemCount: meals.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 10),
+                      itemBuilder: (context, index) =>
+                          _MealTile(meal: meals[index]),
+                    ),
+                  ],
                 );
               },
               loading: () => const SliverFillRemaining(

@@ -712,6 +712,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get compareHintDismiss => 'Kapat';
 
   @override
+  String get mealSyncBannerText =>
+      'Öğünlerin sadece bu cihazda kayıtlı. Premium\'a geç, tüm cihazlarında senkronize olsun.';
+
+  @override
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
@@ -1452,6 +1456,17 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get premiumFeaturePrioritySupport => 'Öncelikli destek';
+
+  @override
+  String get premiumFeatureCloudSync =>
+      'Öğünler cihazlar arası senkronize olsun';
+
+  @override
+  String get premiumFeatureComparison => 'Ürünleri detaylı kıyasla';
+
+  @override
+  String get premiumFeatureDetailedNutrition =>
+      'Ayrıntılı besin değerleri tablosu';
 
   @override
   String get premiumPlanAnnual => 'Yıllık';

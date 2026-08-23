@@ -700,6 +700,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get compareHintDismiss => '关闭';
 
   @override
+  String get mealSyncBannerText => '你的餐食记录仅保存在本设备。升级 Premium，在所有设备间同步。';
+
+  @override
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
@@ -1421,6 +1424,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get premiumFeaturePrioritySupport => 'Priority support';
+
+  @override
+  String get premiumFeatureCloudSync => '跨设备同步餐食记录';
+
+  @override
+  String get premiumFeatureComparison => '详细商品对比';
+
+  @override
+  String get premiumFeatureDetailedNutrition => '详细营养成分表';
 
   @override
   String get premiumPlanAnnual => 'Annual';

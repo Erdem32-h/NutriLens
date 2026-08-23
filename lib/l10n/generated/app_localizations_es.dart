@@ -718,6 +718,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get compareHintDismiss => 'Cerrar';
 
   @override
+  String get mealSyncBannerText =>
+      'Tus comidas solo se guardan en este dispositivo. Consigue Premium para sincronizarlas en todos tus dispositivos.';
+
+  @override
   String get nutriScoreLabel => 'Nutri-Score';
 
   @override
@@ -1460,6 +1464,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get premiumFeaturePrioritySupport => 'Priority support';
+
+  @override
+  String get premiumFeatureCloudSync =>
+      'Sincroniza tus comidas entre dispositivos';
+
+  @override
+  String get premiumFeatureComparison => 'Comparación detallada de productos';
+
+  @override
+  String get premiumFeatureDetailedNutrition =>
+      'Tabla detallada de valores nutricionales';
 
   @override
   String get premiumPlanAnnual => 'Annual';
