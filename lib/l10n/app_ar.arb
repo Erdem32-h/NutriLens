@@ -748,5 +748,6 @@
   "languageSubtitle": "اضبط لغتك المفضلة",
   "mealsSubtitle": "وجبات اليوم وتوازن السعرات لديك",
   "historySubtitle": "كل المنتجات التي مسحتها",
-  "favoritesSubtitle": "المنتجات التي تعود إليها دائمًا"
+  "favoritesSubtitle": "المنتجات التي تعود إليها دائمًا",
+  "filterSelectionSubtitle": "سيتم تنبيهك عندما يحتوي منتج تمسحه على ما اخترته"
 }

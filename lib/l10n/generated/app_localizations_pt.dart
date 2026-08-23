@@ -1988,4 +1988,8 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get favoritesSubtitle => 'Os produtos aos quais você sempre volta';
+
+  @override
+  String get filterSelectionSubtitle =>
+      'Você será avisado quando um produto que escanear contiver o que escolher';
 }

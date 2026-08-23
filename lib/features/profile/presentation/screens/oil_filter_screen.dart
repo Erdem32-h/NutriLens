@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/health_filter_options.dart';
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../providers/health_filters_provider.dart';
 import '../widgets/filter_selection_view.dart';
 
@@ -16,6 +17,8 @@ class OilFilterScreen extends ConsumerWidget {
 
     return FilterSelectionView(
       title: l10n.oilFilters,
+      subtitle: l10n.filterSelectionSubtitle,
+      tint: context.colors.cozy.sky,
       options: HealthFilterOptions.oils,
       selectedIds: state.oils,
       onToggle: (id) => ref.read(healthFiltersProvider.notifier).toggleOil(id),

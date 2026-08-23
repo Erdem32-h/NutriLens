@@ -1972,4 +1972,8 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get favoritesSubtitle => 'المنتجات التي تعود إليها دائمًا';
+
+  @override
+  String get filterSelectionSubtitle =>
+      'سيتم تنبيهك عندما يحتوي منتج تمسحه على ما اخترته';
 }

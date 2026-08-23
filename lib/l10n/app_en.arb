@@ -748,5 +748,6 @@
   "languageSubtitle": "Set your preferred language",
   "mealsSubtitle": "Today's meals and your calorie balance",
   "historySubtitle": "Every product you have scanned",
-  "favoritesSubtitle": "The products you keep coming back to"
+  "favoritesSubtitle": "The products you keep coming back to",
+  "filterSelectionSubtitle": "You'll be warned when a product you scan contains what you pick"
 }

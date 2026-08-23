@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:go_router/go_router.dart';
+
 import '../../../../core/constants/health_filter_options.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/cozy_tokens.dart';
+import '../../../../core/widgets/cozy_header.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 
 class FilterSelectionView extends ConsumerWidget {
   final String title;
+
+  /// One line under the title saying what checking things here does.
+  final String subtitle;
+
+  /// The accent this filter wears on the profile screen. Carried through so
+  /// the sub-screen looks like the row the user just tapped.
+  final CozyTint tint;
+
   final List<FilterOption> options;
   final List<String> selectedIds;
   final void Function(String id) onToggle;
@@ -14,6 +27,8 @@ class FilterSelectionView extends ConsumerWidget {
   const FilterSelectionView({
     super.key,
     required this.title,
+    required this.subtitle,
+    required this.tint,
     required this.options,
     required this.selectedIds,
     required this.onToggle,
@@ -23,22 +38,38 @@ class FilterSelectionView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: context.colors.background,
-      appBar: AppBar(title: Text(title), backgroundColor: Colors.transparent),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        itemCount: options.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final option = options[index];
-          final isSelected = selectedIds.contains(option.id);
+      body: Column(
+        children: [
+          CozyHeader(
+            title: title,
+            subtitle: subtitle,
+            tint: tint,
+            // These screens are pushed from the profile tab, so popping is
+            // the normal exit; the go() covers a deep link that landed here
+            // with nothing underneath.
+            onBack: () =>
+                context.canPop() ? context.pop() : context.go('/profile'),
+          ),
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+              itemCount: options.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final option = options[index];
+                final isSelected = selectedIds.contains(option.id);
 
-          return _FilterTile(
-            title: _getLocalizedOptionName(context, option.nameKey),
-            subtitle: _getLocalizedOptionDesc(context, option.descKey),
-            isSelected: isSelected,
-            onTap: () => onToggle(option.id),
-          );
-        },
+                return _FilterTile(
+                  title: _getLocalizedOptionName(context, option.nameKey),
+                  subtitle: _getLocalizedOptionDesc(context, option.descKey),
+                  isSelected: isSelected,
+                  tint: tint,
+                  onTap: () => onToggle(option.id),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -128,83 +159,99 @@ class FilterSelectionView extends ConsumerWidget {
   }
 }
 
+/// One selectable filter.
+///
+/// Selection is carried by the card's own fill — checked rows sit on the
+/// screen's tint, unchecked ones on the neutral floating card — so the state
+/// is legible from across the list, not just from a 24px circle.
 class _FilterTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool isSelected;
+  final CozyTint tint;
   final VoidCallback onTap;
 
   const _FilterTile({
     required this.title,
     required this.subtitle,
     required this.isSelected,
+    required this.tint,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? context.colors.primary.withValues(alpha: 0.1)
-              : context.colors.surfaceCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? context.colors.primary : context.colors.border,
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: context.colors.textPrimary,
-                    ),
+    final colors = context.colors;
+    final radius = BorderRadius.circular(24);
+
+    // Hand-rolled rather than an AppTapCard because the fill has to animate
+    // between the two states; AppTapCard paints a fixed decoration. The
+    // Material/InkWell arrangement below mirrors its ripple handling so the
+    // press feedback still matches the rest of the app.
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+      decoration: cozyCardDecoration(
+        context,
+      ).copyWith(color: isSelected ? tint.surface : colors.cozy.floating),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: radius,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.cozy.bodyOnTint,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: context.colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 16),
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected
-                      ? context.colors.primary
-                      : context.colors.textMuted,
-                  width: 2,
                 ),
-                color: isSelected ? context.colors.primary : Colors.transparent,
-              ),
-              child: isSelected
-                  ? const Icon(
-                      Icons.check_rounded,
-                      size: 16,
-                      color: Colors.white,
-                    )
-                  : null,
+                const SizedBox(width: 16),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? tint.ink : colors.textMuted,
+                      width: 2,
+                    ),
+                    color: isSelected ? tint.ink : Colors.transparent,
+                  ),
+                  child: isSelected
+                      ? Icon(
+                          Icons.check_rounded,
+                          size: 18,
+                          color: colors.cozy.floating,
+                        )
+                      : null,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

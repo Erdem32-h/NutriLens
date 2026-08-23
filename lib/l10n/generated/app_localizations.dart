@@ -3801,6 +3801,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Tekrar tekrar döndüğün ürünler'**
   String get favoritesSubtitle;
+
+  /// No description provided for @filterSelectionSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçtiklerin taradığın üründe bulunursa uyarılırsın'**
+  String get filterSelectionSubtitle;
 }
 
 class _AppLocalizationsDelegate

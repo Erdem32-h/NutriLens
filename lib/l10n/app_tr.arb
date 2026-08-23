@@ -773,5 +773,6 @@
   "languageSubtitle": "Tercih ettiğin dili ayarla",
   "mealsSubtitle": "Bugünün öğünleri ve kalori dengen",
   "historySubtitle": "Taradığın tüm ürünler burada",
-  "favoritesSubtitle": "Tekrar tekrar döndüğün ürünler"
+  "favoritesSubtitle": "Tekrar tekrar döndüğün ürünler",
+  "filterSelectionSubtitle": "Seçtiklerin taradığın üründe bulunursa uyarılırsın"
 }

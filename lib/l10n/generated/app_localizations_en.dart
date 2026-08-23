@@ -1981,4 +1981,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get favoritesSubtitle => 'The products you keep coming back to';
+
+  @override
+  String get filterSelectionSubtitle =>
+      'You\'ll be warned when a product you scan contains what you pick';
 }

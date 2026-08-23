@@ -1987,4 +1987,8 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get favoritesSubtitle => 'Tekrar tekrar döndüğün ürünler';
+
+  @override
+  String get filterSelectionSubtitle =>
+      'Seçtiklerin taradığın üründe bulunursa uyarılırsın';
 }

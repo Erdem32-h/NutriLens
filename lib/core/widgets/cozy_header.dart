@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/cozy_tokens.dart';
 
 /// The oversized, warm page opener used at the top of each main tab.
 ///
@@ -25,11 +26,25 @@ class CozyHeader extends StatelessWidget {
   /// the standard soft-chip look.
   final Widget? action;
 
+  /// Renders a back chip above the title when set. A pushed screen needs one
+  /// — this header replaces the AppBar that used to supply it for free.
+  final VoidCallback? onBack;
+
+  /// Colours the wash and the chips.
+  ///
+  /// A sub-screen passes the same tint its row wore on the screen that opened
+  /// it, so tapping "Allergens" on a peach row opens a peach screen: the two
+  /// read as one object expanding rather than as two unrelated pages. Null
+  /// (the tabs) uses the palette's own multi-hue glow.
+  final CozyTint? tint;
+
   const CozyHeader({
     super.key,
     required this.title,
     this.subtitle,
     this.action,
+    this.onBack,
+    this.tint,
   });
 
   @override
@@ -37,42 +52,75 @@ class CozyHeader extends StatelessWidget {
     final colors = context.colors;
     final textTheme = Theme.of(context).textTheme;
 
+    final gradient = tint == null
+        ? colors.cozy.headerGlow
+        : LinearGradient(
+            colors: [tint!.surface, tint!.surface.withValues(alpha: 0)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          );
+
+    final titleBlock = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: textTheme.displaySmall?.copyWith(
+            color: colors.textPrimary,
+            fontWeight: FontWeight.w800,
+            height: 1.1,
+          ),
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 10),
+          Text(
+            subtitle!,
+            style: textTheme.bodyLarge?.copyWith(
+              color: colors.cozy.bodyOnTint,
+              height: 1.35,
+            ),
+          ),
+        ],
+      ],
+    );
+
     return Container(
-      decoration: BoxDecoration(gradient: colors.cozy.headerGlow),
+      decoration: BoxDecoration(gradient: gradient),
       padding: const EdgeInsets.fromLTRB(24, 12, 20, 28),
       child: SafeArea(
         bottom: false,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
+        // With a back chip the title can no longer share its row — the chip
+        // belongs on the leading edge, and a 38px title beside it leaves the
+        // chip looking wedged in. It gets its own row above instead.
+        child: onBack != null
+            ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: textTheme.displaySmall?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                      height: 1.1,
-                    ),
-                  ),
-                  if (subtitle != null) ...[
-                    const SizedBox(height: 10),
-                    Text(
-                      subtitle!,
-                      style: textTheme.bodyLarge?.copyWith(
-                        color: colors.cozy.bodyOnTint,
-                        height: 1.35,
+                  Row(
+                    children: [
+                      CozyHeaderAction(
+                        icon: Icons.arrow_back_rounded,
+                        tooltip: MaterialLocalizations.of(
+                          context,
+                        ).backButtonTooltip,
+                        onPressed: onBack!,
+                        tint: tint,
                       ),
-                    ),
-                  ],
+                      const Spacer(),
+                      ?action,
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  titleBlock,
+                ],
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: titleBlock),
+                  if (action != null) ...[const SizedBox(width: 12), action!],
                 ],
               ),
-            ),
-            if (action != null) ...[const SizedBox(width: 12), action!],
-          ],
-        ),
       ),
     );
   }
@@ -86,23 +134,33 @@ class CozyHeaderAction extends StatelessWidget {
   /// Read aloud by screen readers and shown as the long-press tooltip.
   final String tooltip;
 
+  /// Defaults to lilac, which is what the tabs use. Sub-screens pass their
+  /// own so the chip matches the wash behind it.
+  final CozyTint? tint;
+
   const CozyHeaderAction({
     super.key,
     required this.icon,
     required this.onPressed,
     required this.tooltip,
+    this.tint,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final tint = colors.cozy.lilac;
+    final tint = this.tint ?? colors.cozy.lilac;
 
     return Tooltip(
       message: tooltip,
+      // Floating fill rather than the tint's own surface: on a sub-screen the
+      // wash behind this chip IS that surface, and a chip the same colour as
+      // its background is not a chip.
       child: Material(
-        color: tint.surface,
+        color: colors.cozy.floating,
         borderRadius: BorderRadius.circular(18),
+        elevation: 0,
+        shadowColor: Colors.transparent,
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(18),

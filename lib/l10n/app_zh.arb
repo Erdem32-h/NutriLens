@@ -748,5 +748,6 @@
   "languageSubtitle": "设置你的首选语言",
   "mealsSubtitle": "今天的饮食与你的热量平衡",
   "historySubtitle": "你扫描过的所有产品",
-  "favoritesSubtitle": "你一再回访的产品"
+  "favoritesSubtitle": "你一再回访的产品",
+  "filterSelectionSubtitle": "当你扫描的产品含有所选内容时，会收到提醒"
 }

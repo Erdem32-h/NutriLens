@@ -1932,4 +1932,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get favoritesSubtitle => '你一再回访的产品';
+
+  @override
+  String get filterSelectionSubtitle => '当你扫描的产品含有所选内容时，会收到提醒';
 }

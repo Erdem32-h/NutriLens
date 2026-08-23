@@ -748,5 +748,6 @@
   "languageSubtitle": "Defina seu idioma preferido",
   "mealsSubtitle": "As refeições de hoje e seu balanço de calorias",
   "historySubtitle": "Todos os produtos que você escaneou",
-  "favoritesSubtitle": "Os produtos aos quais você sempre volta"
+  "favoritesSubtitle": "Os produtos aos quais você sempre volta",
+  "filterSelectionSubtitle": "Você será avisado quando um produto que escanear contiver o que escolher"
 }
