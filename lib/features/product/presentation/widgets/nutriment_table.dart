@@ -30,6 +30,10 @@ class NutrimentTable extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: cozyCardDecoration(context),
+      // The header and the striped data rows paint their own background to
+      // the card's full width, so without this they square off the rounded
+      // corners.
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

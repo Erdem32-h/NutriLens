@@ -60,25 +60,33 @@ class CozyHeader extends StatelessWidget {
             end: Alignment.bottomCenter,
           );
 
+    // A 640dp-tall phone is still a large share of the Turkish market, and at
+    // full size this header plus the nav chrome left barely a card and a half
+    // of the meals list visible. Shrink the type and the padding there rather
+    // than pushing the content off the first screen.
+    final compact = MediaQuery.sizeOf(context).height < 700;
+
     final titleBlock = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: textTheme.displaySmall?.copyWith(
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w800,
-            height: 1.1,
-          ),
+          style: (compact ? textTheme.headlineMedium : textTheme.displaySmall)
+              ?.copyWith(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w800,
+                height: 1.1,
+              ),
         ),
         if (subtitle != null) ...[
-          const SizedBox(height: 10),
+          SizedBox(height: compact ? 6 : 10),
           Text(
             subtitle!,
-            style: textTheme.bodyLarge?.copyWith(
-              color: colors.cozy.bodyOnTint,
-              height: 1.35,
-            ),
+            style:
+                (compact ? textTheme.bodyMedium : textTheme.bodyLarge)?.copyWith(
+                  color: colors.cozy.bodyOnTint,
+                  height: 1.35,
+                ),
           ),
         ],
       ],
@@ -86,7 +94,9 @@ class CozyHeader extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(gradient: gradient),
-      padding: const EdgeInsets.fromLTRB(24, 12, 20, 28),
+      padding: compact
+          ? const EdgeInsets.fromLTRB(20, 8, 16, 16)
+          : const EdgeInsets.fromLTRB(24, 12, 20, 28),
       child: SafeArea(
         bottom: false,
         // With a back chip the title can no longer share its row — the chip
@@ -110,7 +120,7 @@ class CozyHeader extends StatelessWidget {
                       ?action,
                     ],
                   ),
-                  const SizedBox(height: 18),
+                  SizedBox(height: compact ? 10 : 18),
                   titleBlock,
                 ],
               )

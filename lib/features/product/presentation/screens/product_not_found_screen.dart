@@ -112,8 +112,10 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
                 height: 160,
                 decoration: cozyCardDecoration(context),
                 child: _frontPhotoPath != null
+                    // Matches the card's own radius — at 15 against a 24
+                    // card the photo's corners read as a mistake.
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(24),
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
