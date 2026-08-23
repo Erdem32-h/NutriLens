@@ -251,7 +251,7 @@ class ProfileScreen extends ConsumerWidget {
                   subtitle: l10n.premiumBenefits,
                   value: l10n.activeStatus,
                   tint: cozy.lilac,
-                  onTap: () {},
+                  onTap: () => context.push('/paywall'),
                 );
               }
               return _SettingsTile(

@@ -136,6 +136,38 @@ class CozyHeader extends StatelessWidget {
   }
 }
 
+/// The same warm wash [CozyHeader] paints, for screens that cannot use the
+/// header itself.
+///
+/// The auth flow is the case this exists for. Onboarding, login and register
+/// are full-bleed layouts with their own chrome — no scroll view to put a
+/// header at the top of — and each was painting its own circle of primary
+/// green at 12-15% opacity. That was the pre-cozy look, so the first three
+/// screens a new user ever sees were the last three that still wore it.
+///
+/// Sized as a fraction of the screen rather than a fixed height: the wash has
+/// to fade out before the content starts, and where that is depends on the
+/// device.
+class CozyGlowBackdrop extends StatelessWidget {
+  /// Share of the screen height the wash covers before it has fully faded.
+  final double heightFactor;
+
+  const CozyGlowBackdrop({super.key, this.heightFactor = 0.45});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: SizedBox(
+        width: double.infinity,
+        height: MediaQuery.sizeOf(context).height * heightFactor,
+        child: DecoratedBox(
+          decoration: BoxDecoration(gradient: context.colors.cozy.headerGlow),
+        ),
+      ),
+    );
+  }
+}
+
 /// The soft rounded-square chip that carries a header's single icon action.
 class CozyHeaderAction extends StatelessWidget {
   final IconData icon;

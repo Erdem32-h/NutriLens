@@ -9,6 +9,9 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/subscription_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/cozy_tokens.dart';
+import '../../../../core/widgets/cozy_header.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 
 class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key});
@@ -153,125 +156,177 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         ? null
         : _freeTrialDays(_selectedPackage!);
 
+    final showPackages = !_loading && !(_loadError != null && _packages.isEmpty);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.premiumTitle),
-        actions: [
-          TextButton(onPressed: _restore, child: Text(l10n.premiumRestore)),
-        ],
-      ),
+      backgroundColor: colors.background,
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _loadError != null && _packages.isEmpty
           ? _buildErrorState(colors)
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  // Hero
-                  Icon(Icons.star, size: 64, color: colors.warning),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.premiumTitle,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  CozyHeader(
+                    title: l10n.premiumTitle,
+                    onBack: () => Navigator.of(context).pop(),
+                    // Restore stays a labelled button rather than becoming an
+                    // icon chip: both stores require a visible, self-evident
+                    // way to restore a purchase, and a glyph the user has to
+                    // long-press to identify is not one.
+                    action: TextButton(
+                      onPressed: _restore,
+                      child: Text(l10n.premiumRestore),
                     ),
                   ),
-                  const SizedBox(height: 24),
-
-                  // Features
-                  _FeatureTile(
-                    icon: Icons.all_inclusive,
-                    text: l10n.premiumFeatureUnlimitedScans,
-                  ),
-                  _FeatureTile(
-                    icon: Icons.block,
-                    text: l10n.premiumFeatureNoAds,
-                  ),
-                  _FeatureTile(
-                    icon: Icons.smart_toy,
-                    text: l10n.premiumFeatureUnlimitedAi,
-                  ),
-                  _FeatureTile(
-                    icon: Icons.support_agent,
-                    text: l10n.premiumFeaturePrioritySupport,
-                  ),
-                  _FeatureTile(
-                    icon: Icons.cloud_sync_rounded,
-                    text: l10n.premiumFeatureCloudSync,
-                  ),
-                  _FeatureTile(
-                    icon: Icons.compare_arrows_rounded,
-                    text: l10n.premiumFeatureComparison,
-                  ),
-                  _FeatureTile(
-                    icon: Icons.table_chart_rounded,
-                    text: l10n.premiumFeatureDetailedNutrition,
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Package cards
-                  RadioGroup<int>(
-                    groupValue: _selectedIndex,
-                    onChanged: (v) => setState(() => _selectedIndex = v!),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                     child: Column(
-                      children: _packages.asMap().entries.map((entry) {
-                        return _buildPackageCard(
-                          colors,
-                          entry.key,
-                          entry.value,
-                        );
-                      }).toList(),
+                      children: [
+                        _buildFeatureCard(colors),
+                        const SizedBox(height: 24),
+
+                        // Package cards
+                        RadioGroup<int>(
+                          groupValue: _selectedIndex,
+                          onChanged: (v) => setState(() => _selectedIndex = v!),
+                          child: Column(
+                            children: _packages.asMap().entries.map((entry) {
+                              return _buildPackageCard(
+                                colors,
+                                entry.key,
+                                entry.value,
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Trust strip — honest, no fabricated metrics.
+                        _buildTrustStrip(colors),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 24),
-
-                  // Purchase button — trial-aware CTA.
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: _purchasing ? null : _purchase,
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: _purchasing
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(
-                              selectedTrialDays != null
-                                  ? l10n.premiumTrialCta(selectedTrialDays)
-                                  : l10n.premiumContinueCta,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Trust strip — honest, no fabricated metrics.
-                  _buildTrustStrip(colors),
-                  const SizedBox(height: 12),
-
-                  // Legal / renewal note
-                  Text(
-                    selectedTrialDays != null
-                        ? l10n.premiumTrialAutoRenewNote
-                        : l10n.premiumAutoRenewNote,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildLegalLinks(),
                 ],
               ),
             ),
+      // The CTA is pinned, not scrolled to.
+      //
+      // It used to be the ninth item of a single scroll column, under a hero,
+      // seven feature rows and the plan cards — roughly 900px down. On a
+      // 640dp phone the buy button was simply not on screen when the paywall
+      // opened, and nothing indicated it existed. On the revenue screen that
+      // is the whole funnel. The purchase decision now travels with the user
+      // no matter where they are in the page.
+      bottomNavigationBar: showPackages
+          ? _buildPurchaseBar(colors, selectedTrialDays)
+          : null,
+    );
+  }
+
+  /// The CTA, the renewal disclosure and the store links, pinned to the
+  /// bottom of the screen.
+  Widget _buildPurchaseBar(AppColorsExtension colors, int? selectedTrialDays) {
+    final l10n = context.l10n;
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.cozy.floating,
+        boxShadow: [
+          BoxShadow(
+            color: colors.textPrimary.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -6),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _purchasing ? null : _purchase,
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: _purchasing
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          selectedTrialDays != null
+                              ? l10n.premiumTrialCta(selectedTrialDays)
+                              : l10n.premiumContinueCta,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Legal / renewal note. Stays with the button on purpose — the
+              // disclosure has to be where the commitment is made.
+              Text(
+                selectedTrialDays != null
+                    ? l10n.premiumTrialAutoRenewNote
+                    : l10n.premiumAutoRenewNote,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: colors.cozy.bodyOnTint),
+                textAlign: TextAlign.center,
+              ),
+              _buildLegalLinks(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// All seven benefits in one cozy card.
+  ///
+  /// They were seven full-width rows with 12px of padding each. Grouping them
+  /// into a single card with a tighter rhythm is not only the cozy skin — it
+  /// is most of the vertical budget the plan cards needed.
+  Widget _buildFeatureCard(AppColorsExtension colors) {
+    final l10n = context.l10n;
+    final features = <(IconData, String)>[
+      (Icons.all_inclusive, l10n.premiumFeatureUnlimitedScans),
+      (Icons.block, l10n.premiumFeatureNoAds),
+      (Icons.smart_toy, l10n.premiumFeatureUnlimitedAi),
+      (Icons.support_agent, l10n.premiumFeaturePrioritySupport),
+      (Icons.cloud_sync_rounded, l10n.premiumFeatureCloudSync),
+      (Icons.compare_arrows_rounded, l10n.premiumFeatureComparison),
+      (Icons.table_chart_rounded, l10n.premiumFeatureDetailedNutrition),
+    ];
+
+    return Container(
+      width: double.infinity,
+      decoration: cozyCardDecoration(context),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+      child: Column(
+        children: [
+          for (final (index, feature) in features.indexed)
+            _FeatureRow(
+              icon: feature.$1,
+              text: feature.$2,
+              // Rotating tints, so the list reads as a set of distinct
+              // benefits rather than one block of green.
+              tint: colors.cozy.byIndex(index),
+            ),
+        ],
+      ),
     );
   }
 
@@ -284,24 +339,23 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     final perMonth =
         pkg.storeProduct.pricePerMonthString ?? pkg.storeProduct.priceString;
 
+    // Selection is carried by the tinted fill, not by a hairline that
+    // thickens from 1px to 2px — a difference nobody sees on a phone.
+    final tint = colors.cozy.mint;
+
     return GestureDetector(
       onTap: () => setState(() => _selectedIndex = i),
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isSelected
-                ? colors.primary
-                : colors.textSecondary.withValues(alpha: 0.2),
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(16),
-          color: isSelected
-              ? colors.primary.withValues(alpha: 0.04)
-              : Colors.transparent,
-        ),
+        decoration: isSelected
+            ? BoxDecoration(
+                color: tint.surface,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: tint.ink, width: 2),
+              )
+            : cozyCardDecoration(context),
         child: Row(
           children: [
             Radio<int>(value: i),
@@ -309,30 +363,31 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  // Wrap, not Row: the annual plan carries two pills beside
+                  // its name, and on a 360dp phone that trio overflowed the
+                  // card by 160px. The pills drop to a second line instead.
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    runSpacing: 6,
                     children: [
                       Text(
                         isAnnual
                             ? l10n.premiumPlanAnnual
                             : l10n.premiumPlanMonthly,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      if (isAnnual) ...[
-                        const SizedBox(width: 8),
+                      if (isAnnual)
                         _Pill(
                           text: l10n.premiumMostPopular,
                           color: colors.primary,
                         ),
-                      ],
-                      if (savings != null) ...[
-                        const SizedBox(width: 6),
+                      if (savings != null)
                         _Pill(
                           text: l10n.premiumSaveBadge(savings),
                           color: colors.success,
                         ),
-                      ],
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -348,7 +403,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     Text(
                       l10n.premiumBilledAnnually(pkg.storeProduct.priceString),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colors.textSecondary,
+                        color: colors.cozy.bodyOnTint,
                       ),
                     ),
                   ],
@@ -395,14 +450,14 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         return Flexible(
           child: Column(
             children: [
-              Icon(it.$1, size: 18, color: colors.textSecondary),
+              Icon(it.$1, size: 18, color: colors.cozy.bodyOnTint),
               const SizedBox(height: 4),
               Text(
                 it.$2,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: colors.textSecondary,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: colors.cozy.bodyOnTint),
               ),
             ],
           ),
@@ -411,19 +466,50 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     );
   }
 
+  /// Shown when RevenueCat returns nothing. Carries its own header: this
+  /// replaces the whole body, and without one the screen would have no way
+  /// back — the AppBar that used to supply the back arrow is gone.
   Widget _buildErrorState(AppColorsExtension colors) {
+    return Column(
+      children: [
+        CozyHeader(
+          title: context.l10n.premiumTitle,
+          onBack: () => Navigator.of(context).pop(),
+          action: TextButton(
+            onPressed: _restore,
+            child: Text(context.l10n.premiumRestore),
+          ),
+        ),
+        Expanded(child: _buildErrorBody(colors)),
+      ],
+    );
+  }
+
+  Widget _buildErrorBody(AppColorsExtension colors) {
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.cloud_off_rounded, size: 64, color: colors.textMuted),
-            const SizedBox(height: 16),
+            Container(
+              width: 112,
+              height: 112,
+              decoration: cozyCircleDecoration(context),
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.cloud_off_rounded,
+                size: 52,
+                color: colors.cozy.sky.ink,
+              ),
+            ),
+            const SizedBox(height: 20),
             Text(
               _loadError ?? context.l10n.premiumPackagesUnavailable,
               textAlign: TextAlign.center,
-              style: TextStyle(color: colors.textSecondary, fontSize: 15),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: colors.cozy.bodyOnTint),
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
@@ -554,21 +640,42 @@ class _Pill extends StatelessWidget {
   }
 }
 
-class _FeatureTile extends StatelessWidget {
+/// One benefit line inside the feature card.
+///
+/// The icon sits on its own tinted rounded square rather than being a bare
+/// primary-green glyph — the same chip language as [CozyIconChip], scaled
+/// down to a size that lets seven of them stack without pushing the plans off
+/// the screen.
+class _FeatureRow extends StatelessWidget {
   final IconData icon;
   final String text;
+  final CozyTint tint;
 
-  const _FeatureTile({required this.icon, required this.text});
+  const _FeatureRow({
+    required this.icon,
+    required this.text,
+    required this.tint,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 7),
       child: Row(
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 22),
-          const SizedBox(width: 12),
-          Text(text, style: Theme.of(context).textTheme.bodyLarge),
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: tint.surface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: tint.ink, size: 19),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
+          ),
         ],
       ),
     );

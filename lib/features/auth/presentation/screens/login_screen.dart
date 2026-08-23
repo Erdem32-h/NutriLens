@@ -9,6 +9,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/cozy_header.dart';
 import '../providers/auth_provider.dart';
 import '../providers/social_auth_tracking.dart';
 import '../widgets/post_auth_flow.dart';
@@ -114,30 +115,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
     final l10n = context.l10n;
-    final size = MediaQuery.of(context).size;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: context.colors.background,
       body: Stack(
         children: [
-          // Top glow
-          Positioned(
-            top: -60,
-            left: -60,
-            child: Container(
-              width: size.width * 0.6,
-              height: size.width * 0.6,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    context.colors.primary.withValues(alpha: 0.12),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
+          const CozyGlowBackdrop(),
 
           SafeArea(
             child: SingleChildScrollView(
@@ -179,24 +163,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     const SizedBox(height: 48),
 
-                    // Heading
+                    // Heading — same type ramp as CozyHeader, so the page
+                    // opener reads at the size every other screen uses.
                     Text(
                       l10n.welcomeBack,
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w800,
+                      style: textTheme.displaySmall?.copyWith(
                         color: context.colors.textPrimary,
-                        letterSpacing: -0.5,
+                        fontWeight: FontWeight.w800,
                         height: 1.1,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
                       l10n.appSlogan,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: context.colors.textMuted,
-                        height: 1.5,
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: context.colors.cozy.bodyOnTint,
+                        height: 1.35,
                       ),
                     ),
 

@@ -36,6 +36,22 @@ MockPackage _mockPackage({
   return package;
 }
 
+/// Shrinks the test viewport to a real phone and restores it afterwards.
+/// 360x640 is the small end of the Android install base this app actually
+/// ships to, and the size at which the paywall's buy button used to be off
+/// screen entirely.
+Future<void> _withScreen(
+  WidgetTester tester,
+  Size size,
+  Future<void> Function() body,
+) async {
+  tester.view.physicalSize = size;
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  await body();
+}
+
 Widget _buildSubject({required SubscriptionService service}) {
   return ProviderScope(
     overrides: [subscriptionServiceProvider.overrideWithValue(service)],
@@ -107,6 +123,41 @@ void main() {
       // No free trial configured → continue CTA.
       expect(find.text("Premium'a Geç"), findsOneWidget);
     });
+
+    for (final size in const [Size(360, 640), Size(412, 732), Size(800, 600)]) {
+      testWidgets('the buy button is on screen without scrolling at '
+          '${size.width.toInt()}x${size.height.toInt()}', (tester) async {
+        await _withScreen(tester, size, () async {
+          when(() => mockService.getOfferings()).thenAnswer(
+            (_) async => [
+              _mockPackage(),
+              _mockPackage(
+                type: PackageType.annual,
+                priceString: '₺359,99',
+                pricePerMonth: '₺30,00',
+                price: 359.99,
+              ),
+            ],
+          );
+
+          await tester.pumpWidget(_buildSubject(service: mockService));
+          await tester.pumpAndSettle();
+
+          // The CTA is pinned to the bottom rather than sitting ninth in a
+          // scroll column. Before that it opened roughly 900px down: on this
+          // viewport the revenue screen showed no way to buy anything, and
+          // nothing hinted that scrolling would reveal one.
+          final cta = tester.getRect(find.text("Premium'a Geç"));
+          expect(
+            cta.bottom,
+            lessThanOrEqualTo(size.height),
+            reason: 'CTA bottom ${cta.bottom} falls past the ${size.height}px '
+                'viewport — it is below the fold again.',
+          );
+          expect(cta.top, greaterThanOrEqualTo(0));
+        });
+      });
+    }
 
     testWidgets('shows Geri Yükle button in app bar', (tester) async {
       when(() => mockService.getOfferings()).thenAnswer((_) async => []);

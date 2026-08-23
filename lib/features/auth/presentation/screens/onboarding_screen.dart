@@ -8,6 +8,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/cozy_header.dart';
 import '../widgets/onboarding_previews.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -151,7 +152,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final size = MediaQuery.of(context).size;
 
     final pages = [
       _PageData(
@@ -175,24 +175,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       backgroundColor: context.colors.background,
       body: Stack(
         children: [
-          // Background gradient blob
-          Positioned(
-            top: -size.height * 0.1,
-            right: -size.width * 0.2,
-            child: Container(
-              width: size.width * 0.7,
-              height: size.width * 0.7,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    context.colors.primary.withValues(alpha: 0.15),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
+          const CozyGlowBackdrop(),
 
           SafeArea(
             child: Column(
@@ -321,7 +304,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                                           style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w400,
-                                            color: context.colors.textMuted,
+                                            // Body-on-wash, not textMuted:
+                                            // muted is mint-tinted in dark
+                                            // mode and clashes with the
+                                            // lilac/rose wash behind it.
+                                            color:
+                                                context.colors.cozy.bodyOnTint,
                                             height: 1.5,
                                           ),
                                           textAlign: TextAlign.center,

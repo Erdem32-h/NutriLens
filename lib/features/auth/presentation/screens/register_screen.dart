@@ -10,6 +10,8 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/cozy_header.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 import '../providers/auth_provider.dart';
 import '../providers/social_auth_tracking.dart';
 import '../widgets/post_auth_flow.dart';
@@ -196,30 +198,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
     final l10n = context.l10n;
-    final size = MediaQuery.of(context).size;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: context.colors.background,
       body: Stack(
         children: [
-          // Top glow
-          Positioned(
-            top: -60,
-            right: -60,
-            child: Container(
-              width: size.width * 0.6,
-              height: size.width * 0.6,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    context.colors.primary.withValues(alpha: 0.12),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
+          const CozyGlowBackdrop(),
 
           SafeArea(
             child: SingleChildScrollView(
@@ -235,39 +220,35 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
-                    // Back button
-                    IconButton(
+                    // The same back chip every pushed cozy screen wears,
+                    // rather than a bare IconButton.
+                    CozyHeaderAction(
+                      icon: Icons.arrow_back_rounded,
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).backButtonTooltip,
                       onPressed: () => context.go('/login'),
-                      icon: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: context.colors.textPrimary,
-                        size: 20,
-                      ),
-                      padding: EdgeInsets.zero,
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
 
                     // Heading
                     Text(
                       l10n.createAccount,
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w800,
+                      style: textTheme.displaySmall?.copyWith(
                         color: context.colors.textPrimary,
-                        letterSpacing: -0.5,
+                        fontWeight: FontWeight.w800,
                         height: 1.1,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
                       l10n.startHealthyJourney,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: context.colors.textMuted,
-                        height: 1.5,
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: context.colors.cozy.bodyOnTint,
+                        height: 1.35,
                       ),
                     ),
 
@@ -468,41 +449,37 @@ class _ConfirmationSentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.colors;
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 24),
-        IconButton(
+        const SizedBox(height: 16),
+        CozyHeaderAction(
+          icon: Icons.arrow_back_rounded,
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: () => context.go('/login'),
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: context.colors.textPrimary,
-          ),
-          padding: EdgeInsets.zero,
-          alignment: Alignment.centerLeft,
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 28),
+        // A cozy illustration circle rather than the brand gradient square:
+        // this glyph stands for "check your inbox", not for NutriLens.
         Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            gradient: context.colors.primaryGradient,
-            borderRadius: BorderRadius.circular(20),
-          ),
+          width: 84,
+          height: 84,
+          decoration: cozyCircleDecoration(context),
           alignment: Alignment.center,
-          child: const Icon(
+          child: Icon(
             Icons.mark_email_read_outlined,
-            color: Colors.black,
-            size: 36,
+            color: colors.cozy.mint.ink,
+            size: 38,
           ),
         ),
         const SizedBox(height: 28),
         Text(
           l10n.verifyYourEmail,
-          style: TextStyle(
-            fontSize: 28,
+          style: textTheme.headlineMedium?.copyWith(
+            color: colors.textPrimary,
             fontWeight: FontWeight.w800,
-            color: context.colors.textPrimary,
             height: 1.1,
           ),
         ),
@@ -511,7 +488,7 @@ class _ConfirmationSentView extends StatelessWidget {
           text: TextSpan(
             style: TextStyle(
               fontSize: 15,
-              color: context.colors.textMuted,
+              color: colors.cozy.bodyOnTint,
               height: 1.5,
             ),
             children: [
@@ -528,30 +505,28 @@ class _ConfirmationSentView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
+        // Peach is the app's warning/heads-up tint. Hairline box replaced by
+        // the tinted card the rest of the app uses for the same job.
         Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: context.colors.surfaceCard,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: context.colors.border,
-            ),
+            color: colors.cozy.peach.surface,
+            borderRadius: BorderRadius.circular(24),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
                 Icons.info_outline_rounded,
-                size: 18,
-                color: context.colors.textMuted,
+                size: 20,
+                color: colors.cozy.peach.ink,
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.checkSpamFolder,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: context.colors.textMuted,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colors.cozy.bodyOnTint,
                     height: 1.4,
                   ),
                 ),
