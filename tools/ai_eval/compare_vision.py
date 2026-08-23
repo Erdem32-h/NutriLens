@@ -11,9 +11,14 @@ Usage:
     python tools/ai_eval/compare_vision.py <image_dir> [tr|en]
 
 Requirements:
-    - OPENROUTER_API_KEY in .env   (free at openrouter.ai)
-    - ANTHROPIC_API_KEY in .env    (the Claude baseline; optional)
+    - OPENROUTER_API_KEY in tools/ai_eval/.env   (free at openrouter.ai)
+    - ANTHROPIC_API_KEY in tools/ai_eval/.env    (the Claude baseline; optional)
     Stdlib only, no pip installs.
+
+    Deliberately NOT the project-root .env: pubspec.yaml bundles that file as
+    a Flutter asset (for SUPABASE_URL/ANON_KEY etc., which are meant to ship),
+    so anything added there ends up readable inside the built APK/IPA. These
+    two keys are eval-only and must never live in a bundled asset.
 """
 
 import base64
@@ -87,7 +92,7 @@ Sert kurallar:
 }}"""
 
 
-def load_env(path: str = ".env") -> dict:
+def load_env(path: str = "tools/ai_eval/.env") -> dict:
     env = {}
     if not os.path.exists(path):
         return env

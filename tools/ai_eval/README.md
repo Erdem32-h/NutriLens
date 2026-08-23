@@ -6,11 +6,13 @@ meal-analysis use case, using the **same prompt as production**
 
 ## Setup
 
-Add to the project-root `.env`:
+Add to `tools/ai_eval/.env` (NOT the project-root `.env` — that one is bundled
+into the app as a Flutter asset via `pubspec.yaml`, so anything added there
+ships inside the APK/IPA):
 
 ```
 OPENROUTER_API_KEY=sk-or-...
-ANTHROPIC_API_KEY=sk-ant-...   # already present; used as the quality baseline
+ANTHROPIC_API_KEY=sk-ant-...   # the Claude baseline; optional
 ```
 
 ## Run
