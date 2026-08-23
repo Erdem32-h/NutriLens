@@ -24,17 +24,25 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
+    // flutter_local_notifications 22.x refuses to link without core library
+    // desugaring — its scheduled-notification path uses java.time on API
+    // levels that predate it. Without this the Android build fails outright
+    // at :app:checkDebugAarMetadata, which is what it had been doing since
+    // the daily meal reminder landed. Java 17 and multiDex are part of the
+    // same requirement set, not separate opinions.
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     defaultConfig {
         applicationId = "com.nutrilensapp.android"
+        multiDexEnabled = true
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -71,4 +79,16 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
+    // Pulled in on the plugin's own advice: with desugaring enabled, Flutter
+    // apps can crash on Android 12L+ unless WindowManager is on the class
+    // path. We are enabling desugaring on an app that is already live, so the
+    // documented mitigation ships with it rather than after the first crash
+    // report.
+    implementation("androidx.window:window:1.4.0")
+    implementation("androidx.window:window-java:1.4.0")
 }
