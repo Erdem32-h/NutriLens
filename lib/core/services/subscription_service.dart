@@ -21,12 +21,32 @@ enum SubscriptionPurchaseResult {
 class SubscriptionStatus {
   final SubscriptionTier tier;
   final DateTime? expiresAt;
+
+  /// Deep link to the store's own subscription page — the only place a
+  /// subscription can actually be cancelled. Neither Play nor the App Store
+  /// lets an app cancel on the user's behalf, so "cancel" in our UI can only
+  /// ever mean "take me there".
+  ///
+  /// Null when the entitlement has no store subscription behind it (a
+  /// RevenueCat promotional grant, or one of our own Supabase comp grants).
   final String? managementUrl;
+
+  /// The product backing the entitlement, e.g. the monthly or the annual
+  /// subscription. Lets the UI tell which plan the user is already on instead
+  /// of offering it to them a second time.
+  final String? productId;
+
+  /// False once the store reports an unsubscribe. Access continues until
+  /// [expiresAt] either way, so this is the difference between "renews on
+  /// the 12th" and "ends on the 12th" — opposite messages to the user.
+  final bool willRenew;
 
   const SubscriptionStatus({
     required this.tier,
     this.expiresAt,
     this.managementUrl,
+    this.productId,
+    this.willRenew = false,
   });
 
   bool get isPremium => tier == SubscriptionTier.premium;
@@ -40,7 +60,15 @@ abstract interface class SubscriptionService {
   Future<void> logOut();
   Future<SubscriptionStatus> getStatus();
   Future<List<Package>> getOfferings();
-  Future<SubscriptionPurchaseResult> purchase(Package package);
+
+  /// Buys [package]. Pass [replacingProductId] when the user already holds a
+  /// subscription and is moving to a different plan — Play rejects a plain
+  /// purchase inside a subscription group the user is already in, and needs to
+  /// be told which product is being replaced.
+  Future<SubscriptionPurchaseResult> purchase(
+    Package package, {
+    String? replacingProductId,
+  });
   Future<bool> restorePurchases();
   Stream<SubscriptionStatus> get statusStream;
 }
@@ -124,9 +152,32 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
   }
 
   @override
-  Future<SubscriptionPurchaseResult> purchase(Package package) async {
+  Future<SubscriptionPurchaseResult> purchase(
+    Package package, {
+    String? replacingProductId,
+  }) async {
     try {
-      final result = await Purchases.purchase(PurchaseParams.package(package));
+      // Product-change info is a Play concept. StoreKit resolves a move
+      // inside a subscription group by itself, and passing the field there
+      // would be describing a flow the platform does not have.
+      final isPlanChange =
+          replacingProductId != null &&
+          defaultTargetPlatform == TargetPlatform.android;
+      final params = isPlanChange
+          ? PurchaseParams.package(
+              package,
+              googleProductChangeInfo: GoogleProductChangeInfo(
+                replacingProductId,
+                // Credit the unused remainder of the old plan against the new
+                // one. The SDK's default here is `immediateWithoutProration`,
+                // which would charge for a year while the month the user has
+                // already paid for is still running — an upgrade that reads
+                // as a double charge, and a refund request.
+                prorationMode: GoogleProrationMode.immediateWithTimeProration,
+              ),
+            )
+          : PurchaseParams.package(package);
+      final result = await Purchases.purchase(params);
       final status = _mapCustomerInfo(result.customerInfo);
       _statusController?.add(status);
       final isActive = status.isPremium;
@@ -186,6 +237,8 @@ final class RevenueCatSubscriptionService implements SubscriptionService {
             ? DateTime.tryParse(entitlement.expirationDate!)
             : null,
         managementUrl: info.managementURL,
+        productId: entitlement.productIdentifier,
+        willRenew: entitlement.willRenew,
       );
     }
     return SubscriptionStatus.free;

@@ -705,6 +705,28 @@
   "subscription": "Abonelik",
   "premiumActive": "Premium Aktif",
   "activeStatus": "Aktif",
+  "subscriptionMineTitle": "Aboneliğim",
+  "subscriptionCurrentPlan": "Mevcut planın",
+  "subscriptionRenewsOn": "{date} tarihinde yenilenir",
+  "@subscriptionRenewsOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "subscriptionEndsOn": "{date} tarihinde sona erecek",
+  "@subscriptionEndsOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "subscriptionLifetime": "Süresiz erişim",
+  "subscriptionCancelledBadge": "İptal edildi",
+  "subscriptionManage": "Aboneliği yönet",
+  "subscriptionManageNote": "İptal ve plan değişikliği mağaza üzerinden yapılır.",
+  "subscriptionManageFailed": "Mağaza sayfası açılamadı.",
+  "subscriptionUpgradeSection": "Daha uygun plan",
+  "subscriptionUpgradeCta": "Yıllık plana geç",
+  "subscriptionGrantNote": "Premium erişimin hesabına doğrudan tanımlı. Mağazada iptal edilecek bir abonelik yok.",
   "sentryTestEventSent": "Sentry test olayı gönderildi ✓",
   "sentryTestFailed": "Sentry testi başarısız: {error}",
   "@sentryTestFailed": {

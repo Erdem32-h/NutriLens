@@ -42,4 +42,5 @@ abstract final class RouteNames {
 
   // Premium
   static const String paywall = 'paywall';
+  static const String subscription = 'subscription';
 }

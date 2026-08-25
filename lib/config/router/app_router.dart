@@ -27,6 +27,7 @@ import '../../features/meals/presentation/screens/meals_screen.dart';
 import '../../features/meals/presentation/screens/meal_detail_screen.dart';
 import '../../features/meals/domain/entities/meal_entry_entity.dart';
 import '../../features/premium/presentation/screens/paywall_screen.dart';
+import '../../features/premium/presentation/screens/subscription_screen.dart';
 import '../../features/profile/presentation/screens/allergen_selection_screen.dart';
 import '../../features/profile/presentation/screens/diet_filter_screen.dart';
 import '../../features/profile/presentation/screens/oil_filter_screen.dart';
@@ -291,6 +292,12 @@ GoRouter createRouter(WidgetRef ref) {
         name: RouteNames.paywall,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: '/subscription',
+        name: RouteNames.subscription,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SubscriptionScreen(),
       ),
       GoRoute(
         path: '/compare',

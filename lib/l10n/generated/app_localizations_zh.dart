@@ -1793,6 +1793,46 @@ class AppLocalizationsZh extends AppLocalizations {
   String get activeStatus => '已激活';
 
   @override
+  String get subscriptionMineTitle => '我的订阅';
+
+  @override
+  String get subscriptionCurrentPlan => '当前方案';
+
+  @override
+  String subscriptionRenewsOn(Object date) {
+    return '将于 $date 续订';
+  }
+
+  @override
+  String subscriptionEndsOn(Object date) {
+    return '将于 $date 到期';
+  }
+
+  @override
+  String get subscriptionLifetime => '永久访问';
+
+  @override
+  String get subscriptionCancelledBadge => '已取消';
+
+  @override
+  String get subscriptionManage => '管理订阅';
+
+  @override
+  String get subscriptionManageNote => '取消订阅和更换方案均在应用商店中完成。';
+
+  @override
+  String get subscriptionManageFailed => '无法打开商店页面。';
+
+  @override
+  String get subscriptionUpgradeSection => '更划算的方案';
+
+  @override
+  String get subscriptionUpgradeCta => '切换到年度方案';
+
+  @override
+  String get subscriptionGrantNote => '你的高级权限已直接授予此账号，商店中没有需要取消的订阅。';
+
+  @override
   String get sentryTestEventSent => 'Sentry 测试事件已发送 ✓';
 
   @override

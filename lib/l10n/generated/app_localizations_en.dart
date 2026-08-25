@@ -1834,6 +1834,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activeStatus => 'Active';
 
   @override
+  String get subscriptionMineTitle => 'My subscription';
+
+  @override
+  String get subscriptionCurrentPlan => 'Your current plan';
+
+  @override
+  String subscriptionRenewsOn(Object date) {
+    return 'Renews on $date';
+  }
+
+  @override
+  String subscriptionEndsOn(Object date) {
+    return 'Ends on $date';
+  }
+
+  @override
+  String get subscriptionLifetime => 'Lifetime access';
+
+  @override
+  String get subscriptionCancelledBadge => 'Cancelled';
+
+  @override
+  String get subscriptionManage => 'Manage subscription';
+
+  @override
+  String get subscriptionManageNote =>
+      'Cancelling and changing plans is handled by the store.';
+
+  @override
+  String get subscriptionManageFailed => 'Could not open the store page.';
+
+  @override
+  String get subscriptionUpgradeSection => 'A better-value plan';
+
+  @override
+  String get subscriptionUpgradeCta => 'Switch to annual';
+
+  @override
+  String get subscriptionGrantNote =>
+      'Your premium access is granted directly on your account. There is no store subscription to cancel.';
+
+  @override
   String get sentryTestEventSent => 'Sentry test event sent ✓';
 
   @override

@@ -3532,6 +3532,78 @@ abstract class AppLocalizations {
   /// **'Aktif'**
   String get activeStatus;
 
+  /// No description provided for @subscriptionMineTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aboneliğim'**
+  String get subscriptionMineTitle;
+
+  /// No description provided for @subscriptionCurrentPlan.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mevcut planın'**
+  String get subscriptionCurrentPlan;
+
+  /// No description provided for @subscriptionRenewsOn.
+  ///
+  /// In tr, this message translates to:
+  /// **'{date} tarihinde yenilenir'**
+  String subscriptionRenewsOn(Object date);
+
+  /// No description provided for @subscriptionEndsOn.
+  ///
+  /// In tr, this message translates to:
+  /// **'{date} tarihinde sona erecek'**
+  String subscriptionEndsOn(Object date);
+
+  /// No description provided for @subscriptionLifetime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süresiz erişim'**
+  String get subscriptionLifetime;
+
+  /// No description provided for @subscriptionCancelledBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal edildi'**
+  String get subscriptionCancelledBadge;
+
+  /// No description provided for @subscriptionManage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aboneliği yönet'**
+  String get subscriptionManage;
+
+  /// No description provided for @subscriptionManageNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal ve plan değişikliği mağaza üzerinden yapılır.'**
+  String get subscriptionManageNote;
+
+  /// No description provided for @subscriptionManageFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mağaza sayfası açılamadı.'**
+  String get subscriptionManageFailed;
+
+  /// No description provided for @subscriptionUpgradeSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha uygun plan'**
+  String get subscriptionUpgradeSection;
+
+  /// No description provided for @subscriptionUpgradeCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıllık plana geç'**
+  String get subscriptionUpgradeCta;
+
+  /// No description provided for @subscriptionGrantNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium erişimin hesabına doğrudan tanımlı. Mağazada iptal edilecek bir abonelik yok.'**
+  String get subscriptionGrantNote;
+
   /// No description provided for @sentryTestEventSent.
   ///
   /// In tr, this message translates to:

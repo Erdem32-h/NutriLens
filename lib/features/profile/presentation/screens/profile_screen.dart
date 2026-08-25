@@ -251,7 +251,11 @@ class ProfileScreen extends ConsumerWidget {
                   subtitle: l10n.premiumBenefits,
                   value: l10n.activeStatus,
                   tint: cozy.lilac,
-                  onTap: () => context.push('/paywall'),
+                  // Subscribers get the management screen, not the paywall.
+                  // This row used to carry a chevron and an empty callback:
+                  // it advertised somewhere to go and went nowhere, which is
+                  // also where the cancel option was missing from.
+                  onTap: () => context.push('/subscription'),
                 );
               }
               return _SettingsTile(

@@ -12,6 +12,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/cozy_tokens.dart';
 import '../../../../core/widgets/cozy_header.dart';
 import '../../../../core/widgets/cozy_tile.dart';
+import '../../domain/package_pricing.dart';
 
 class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key});
@@ -154,7 +155,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     final colors = Theme.of(context).extension<AppColorsExtension>()!;
     final selectedTrialDays = _selectedPackage == null
         ? null
-        : _freeTrialDays(_selectedPackage!);
+        : freeTrialDays(_selectedPackage!);
 
     final showPackages = !_loading && !(_loadError != null && _packages.isEmpty);
 
@@ -334,8 +335,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     final l10n = context.l10n;
     final isSelected = i == _selectedIndex;
     final isAnnual = pkg.packageType == PackageType.annual;
-    final savings = isAnnual ? _annualSavingsPercent(_packages) : null;
-    final trialDays = _freeTrialDays(pkg);
+    final savings = isAnnual ? annualSavingsPercent(_packages) : null;
+    final trialDays = freeTrialDays(pkg);
     final perMonth =
         pkg.storeProduct.pricePerMonthString ?? pkg.storeProduct.priceString;
 
@@ -556,63 +557,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       await launchUrl(uri, mode: LaunchMode.platformDefault);
     }
   }
-}
-
-/// Free-trial length (whole days) for a package, or null when there is no
-/// free trial. Covers both the cross-platform `introductoryPrice` (a zero
-/// price is a free trial) and the Google Play `defaultOption.freePhase`,
-/// so the paywall lights up automatically once a trial is configured in
-/// Play Console + RevenueCat — no app release required.
-int? _freeTrialDays(Package pkg) {
-  final product = pkg.storeProduct;
-
-  final intro = product.introductoryPrice;
-  if (intro != null && intro.price == 0) {
-    return _periodToDays(intro.periodUnit, intro.periodNumberOfUnits);
-  }
-
-  final freePeriod = product.defaultOption?.freePhase?.billingPeriod;
-  if (freePeriod != null) {
-    return _periodToDays(freePeriod.unit, freePeriod.value);
-  }
-
-  return null;
-}
-
-int _periodToDays(PeriodUnit unit, int value) {
-  switch (unit) {
-    case PeriodUnit.day:
-      return value;
-    case PeriodUnit.week:
-      return value * 7;
-    case PeriodUnit.month:
-      return value * 30;
-    case PeriodUnit.year:
-      return value * 365;
-    case PeriodUnit.unknown:
-      return value;
-  }
-}
-
-/// Real annual savings vs paying the monthly plan for a year, rounded to a
-/// whole percent. Null when either plan is missing or there's no saving —
-/// so we never show a fabricated discount.
-int? _annualSavingsPercent(List<Package> packages) {
-  final monthly = _firstOfType(packages, PackageType.monthly);
-  final annual = _firstOfType(packages, PackageType.annual);
-  if (monthly == null || annual == null) return null;
-
-  final monthlyForYear = monthly.storeProduct.price * 12;
-  if (monthlyForYear <= 0) return null;
-
-  final percent = ((1 - annual.storeProduct.price / monthlyForYear) * 100)
-      .round();
-  return percent > 0 ? percent : null;
-}
-
-Package? _firstOfType(List<Package> packages, PackageType type) {
-  final i = packages.indexWhere((p) => p.packageType == type);
-  return i >= 0 ? packages[i] : null;
 }
 
 class _Pill extends StatelessWidget {

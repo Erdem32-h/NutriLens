@@ -1841,6 +1841,48 @@ class AppLocalizationsTr extends AppLocalizations {
   String get activeStatus => 'Aktif';
 
   @override
+  String get subscriptionMineTitle => 'Aboneliğim';
+
+  @override
+  String get subscriptionCurrentPlan => 'Mevcut planın';
+
+  @override
+  String subscriptionRenewsOn(Object date) {
+    return '$date tarihinde yenilenir';
+  }
+
+  @override
+  String subscriptionEndsOn(Object date) {
+    return '$date tarihinde sona erecek';
+  }
+
+  @override
+  String get subscriptionLifetime => 'Süresiz erişim';
+
+  @override
+  String get subscriptionCancelledBadge => 'İptal edildi';
+
+  @override
+  String get subscriptionManage => 'Aboneliği yönet';
+
+  @override
+  String get subscriptionManageNote =>
+      'İptal ve plan değişikliği mağaza üzerinden yapılır.';
+
+  @override
+  String get subscriptionManageFailed => 'Mağaza sayfası açılamadı.';
+
+  @override
+  String get subscriptionUpgradeSection => 'Daha uygun plan';
+
+  @override
+  String get subscriptionUpgradeCta => 'Yıllık plana geç';
+
+  @override
+  String get subscriptionGrantNote =>
+      'Premium erişimin hesabına doğrudan tanımlı. Mağazada iptal edilecek bir abonelik yok.';
+
+  @override
   String get sentryTestEventSent => 'Sentry test olayı gönderildi ✓';
 
   @override

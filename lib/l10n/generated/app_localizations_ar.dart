@@ -1828,6 +1828,48 @@ class AppLocalizationsAr extends AppLocalizations {
   String get activeStatus => 'نشط';
 
   @override
+  String get subscriptionMineTitle => 'اشتراكي';
+
+  @override
+  String get subscriptionCurrentPlan => 'خطتك الحالية';
+
+  @override
+  String subscriptionRenewsOn(Object date) {
+    return 'يتجدد في $date';
+  }
+
+  @override
+  String subscriptionEndsOn(Object date) {
+    return 'ينتهي في $date';
+  }
+
+  @override
+  String get subscriptionLifetime => 'وصول دائم';
+
+  @override
+  String get subscriptionCancelledBadge => 'ملغى';
+
+  @override
+  String get subscriptionManage => 'إدارة الاشتراك';
+
+  @override
+  String get subscriptionManageNote =>
+      'يتم الإلغاء وتغيير الخطة من خلال المتجر.';
+
+  @override
+  String get subscriptionManageFailed => 'تعذّر فتح صفحة المتجر.';
+
+  @override
+  String get subscriptionUpgradeSection => 'خطة أوفر';
+
+  @override
+  String get subscriptionUpgradeCta => 'التبديل إلى الخطة السنوية';
+
+  @override
+  String get subscriptionGrantNote =>
+      'تم منح وصولك المميز مباشرةً لحسابك. لا يوجد اشتراك يمكن إلغاؤه في المتجر.';
+
+  @override
   String get sentryTestEventSent => 'تم إرسال حدث اختبار Sentry ✓';
 
   @override
