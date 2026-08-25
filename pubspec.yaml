@@ -119,6 +119,11 @@ dev_dependencies:
   # only re-exports the NativeDatabase wrapper, not the underlying sqlite3
   # API, so this needs to be a real (not merely transitive) dependency.
   sqlite3: ^2.9.0
+  # Used directly in test/features/premium/presentation/subscription_screen_test.dart
+  # to swap in a fake launcher platform. "Aboneliği yönet" is the app's only
+  # route to cancelling a subscription, and a widget test cannot otherwise see
+  # whether launchUrl succeeded, fell back, or threw.
+  url_launcher_platform_interface: any
 
   # Linting
   flutter_lints: ^6.0.0

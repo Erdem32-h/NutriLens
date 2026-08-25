@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -8,8 +9,35 @@ import 'package:nutrilens/core/theme/app_colors.dart';
 import 'package:nutrilens/features/premium/presentation/screens/subscription_screen.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+// LinkDelegate lives in its own entrypoint, not the package barrel.
+import 'package:url_launcher_platform_interface/link.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 class MockSubscriptionService extends Mock implements SubscriptionService {}
+
+/// Stands in for the real launcher so the test can see which modes were tried
+/// and how each one failed. `launchUrl` documents two different failures —
+/// "either returns false or throws a [PlatformException] depending on the
+/// failure" — and the screen has to survive both.
+class _FakeUrlLauncher extends UrlLauncherPlatform {
+  _FakeUrlLauncher({this.results = const {}, this.throws = false});
+
+  final Map<PreferredLaunchMode, bool> results;
+  final bool throws;
+  final attempted = <PreferredLaunchMode>[];
+
+  @override
+  LinkDelegate? get linkDelegate => null;
+
+  @override
+  Future<bool> launchUrl(String url, LaunchOptions options) async {
+    attempted.add(options.mode);
+    if (throws) {
+      throw PlatformException(code: 'ACTIVITY_NOT_FOUND');
+    }
+    return results[options.mode] ?? false;
+  }
+}
 
 class MockPackage extends Mock implements Package {}
 
@@ -75,10 +103,14 @@ void main() {
     registerFallbackValue(MockPackage());
   });
 
+  final realLauncher = UrlLauncherPlatform.instance;
+
   setUp(() {
     service = MockSubscriptionService();
     when(() => service.statusStream).thenAnswer((_) => const Stream.empty());
   });
+
+  tearDown(() => UrlLauncherPlatform.instance = realLauncher);
 
   void givenStatus(SubscriptionStatus status, {List<Package>? packages}) {
     when(() => service.getStatus()).thenAnswer((_) async => status);
@@ -128,6 +160,49 @@ void main() {
       // cancel a subscription, so the only honest cancel is a way out to
       // the store. Previously there was none anywhere in the app.
       expect(find.text('Aboneliği yönet'), findsOneWidget);
+    });
+
+    testWidgets('falls back to a browser when no store app takes the link', (
+      tester,
+    ) async {
+      givenStatus(status);
+      final launcher = _FakeUrlLauncher(
+        results: const {PreferredLaunchMode.platformDefault: true},
+      );
+      UrlLauncherPlatform.instance = launcher;
+
+      await tester.pumpWidget(_subject(service: service, isPremium: true));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Aboneliği yönet'));
+      await tester.tap(find.text('Aboneliği yönet'));
+      await tester.pump();
+
+      // The Play app is the right destination, but the same URL in a browser
+      // still reaches the subscription page. Giving up after the first
+      // attempt would leave the user with no way to cancel at all.
+      expect(launcher.attempted, [
+        PreferredLaunchMode.externalApplication,
+        PreferredLaunchMode.platformDefault,
+      ]);
+      expect(find.text('Mağaza sayfası açılamadı.'), findsNothing);
+    });
+
+    testWidgets('says so when the link cannot be opened at all', (
+      tester,
+    ) async {
+      givenStatus(status);
+      // A throwing platform used to escape as an unhandled async error: the
+      // button did nothing and said nothing.
+      UrlLauncherPlatform.instance = _FakeUrlLauncher(throws: true);
+
+      await tester.pumpWidget(_subject(service: service, isPremium: true));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Aboneliği yönet'));
+      await tester.tap(find.text('Aboneliği yönet'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 750));
+
+      expect(find.text('Mağaza sayfası açılamadı.'), findsOneWidget);
     });
 
     testWidgets('is offered the annual plan as the one upgrade', (

@@ -55,11 +55,30 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         status.managementUrl ??
         StoreLinks.subscriptionsFor(Theme.of(context).platform);
     final uri = Uri.parse(url);
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    // This one button is the entire reason the screen exists — it is the only
+    // route to cancelling — so it gets both attempts. The store app is the
+    // right destination, but the same URL in a browser still reaches the
+    // subscription page, which beats a dead button.
+    final opened =
+        await _tryLaunch(uri, LaunchMode.externalApplication) ||
+        await _tryLaunch(uri, LaunchMode.platformDefault);
     if (opened || !mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(context.l10n.subscriptionManageFailed)));
+  }
+
+  /// `launchUrl` fails two different ways: it returns false when nothing takes
+  /// the intent, and throws a [PlatformException] when the platform channel
+  /// rejects it. Only the first was handled, so the throwing case escaped as
+  /// an unhandled async error and the user saw a button that did nothing.
+  Future<bool> _tryLaunch(Uri uri, LaunchMode mode) async {
+    try {
+      return await launchUrl(uri, mode: mode);
+    } catch (e) {
+      debugPrint('[Subscription] manage link ($mode) failed: $e');
+      return false;
+    }
   }
 
   Future<void> _switchTo(Package package, SubscriptionStatus status) async {
