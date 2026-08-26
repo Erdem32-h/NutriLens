@@ -6,10 +6,14 @@ HP Score (0-100) üretir. Türkiye pazarı odaklı.
 
 **Stack:** Flutter, Riverpod, Drift, GoRouter, fpdart, Supabase, Clean Architecture
 
-**HP Score (v3):**
+**HP Score (v4):**
 ```
-HP Score = 100 − (Chemical Load × 0.45) − (Risk Factor × 0.40) + (Nutri Factor × 0.15) − ingredientQualityPenalty
+raw = 100 − (Chemical Load × 0.45) − (Risk Factor × 0.40) + (Nutri Factor × 0.15) − ingredientQualityPenalty
+
+HP Score = 10 (kritik içerik) | min(raw, 54.9) (etkin NOVA = 4) | raw
 ```
+Etkin NOVA = kaynak `nova_group` ?? içindekilerden türetilen (yalnızca grup 4).
+Formülün ikinci kopyası Postgres trigger'ında — Dart'ı değiştirirsen migration da yaz.
 Detay → `wiki/architecture/02-hp-score.md`
 
 **Barkod zinciri:** Kendi DB → Open Food Facts → 3. parti API → OCR → Topluluk DB
