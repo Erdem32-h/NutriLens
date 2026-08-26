@@ -126,6 +126,7 @@
   "nova3Label": "Processed food",
   "nova4Label": "Ultra-processed",
   "novaUnknownLabel": "Unknown",
+  "novaEstimated": "estimado",
   "worstIsBad": "(100 é o melhor)",
   "bestScore": "BEST",
   "worstScore": "WORST",

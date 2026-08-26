@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/hp_score_calculator.dart';
+import '../../../../core/services/nova_derivation.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/product_entity.dart';
 
@@ -134,8 +135,19 @@ class ScoreBreakdownCard extends StatelessWidget {
     );
   }
 
+  /// Most products arrive with no NOVA group at all, so what the score used is
+  /// usually a value read off the ingredient list. Printing that as a plain
+  /// "NOVA 4" would lend a guess the same authority as a source-supplied
+  /// classification — hence the marker.
   String _novaSubLabel(dynamic l10n) {
-    final n = product.novaGroup;
+    final sourced = product.novaGroup;
+    final derived = sourced == null
+        ? NovaDerivation.deriveNovaGroup(
+            ingredientsText: product.ingredientsText,
+            additivesTags: product.additivesTags,
+          )
+        : null;
+    final n = sourced ?? derived;
     final label = switch (n) {
       1 => l10n.nova1Label,
       2 => l10n.nova2Label,
@@ -143,7 +155,9 @@ class ScoreBreakdownCard extends StatelessWidget {
       4 => l10n.nova4Label,
       _ => l10n.novaUnknownLabel,
     };
-    return n == null ? 'NOVA — $label' : 'NOVA $n — $label';
+    if (n == null) return 'NOVA — $label';
+    final marker = derived != null ? ' (${l10n.novaEstimated})' : '';
+    return 'NOVA $n$marker — $label';
   }
 
   Widget _criticalCallout(AppColorsExtension colors, dynamic l10n) {

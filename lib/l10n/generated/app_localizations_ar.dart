@@ -397,6 +397,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get novaUnknownLabel => 'Unknown';
 
   @override
+  String get novaEstimated => 'تقديري';
+
+  @override
   String get worstIsBad => '(100 هو الأفضل)';
 
   @override

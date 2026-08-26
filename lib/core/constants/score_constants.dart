@@ -1,5 +1,5 @@
 abstract final class ScoreConstants {
-  static const int hpScoreAlgorithmVersion = 3;
+  static const int hpScoreAlgorithmVersion = 4;
 
   // ── HP Formula Weights ──────────────────────────────────────────────
   // These weights define how much each component contributes to the
@@ -83,6 +83,17 @@ abstract final class ScoreConstants {
 
   // Default naturalness when NOVA group is unknown
   static const double novaUnknownNaturalness = 15.0;
+
+  /// Highest score an ultra-processed (NOVA 4) product may reach — the top of
+  /// gauge 3, so such a product can never read as "İyi" or "Çok İyi".
+  ///
+  /// NOVA otherwise reaches the score only through `naturalness`, worth
+  /// `0.15 × 0.40` of the total: the entire NOVA range moves a score by 6
+  /// points and unknown→4 by 0.9. That is invisible next to the gauge bands,
+  /// which is how a tomato sauce with sweetener sat at gauge 1 and a gum with
+  /// six sweeteners at gauge 2. The cap is the part with teeth; the derived
+  /// group ([NovaDerivation]) is what gives it something to bite.
+  static const double ultraProcessedCeiling = 54.9;
 
   // ── Gauge Mapping ───────────────────────────────────────────────────
   // Single 1-5 gauge: 1 = best, 5 = worst

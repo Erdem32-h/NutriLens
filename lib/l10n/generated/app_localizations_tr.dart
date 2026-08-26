@@ -396,6 +396,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get novaUnknownLabel => 'Bilinmiyor';
 
   @override
+  String get novaEstimated => 'tahmini';
+
+  @override
   String get worstIsBad => '(5 EN KÖTÜ)';
 
   @override

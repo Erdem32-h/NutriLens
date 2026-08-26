@@ -3,6 +3,7 @@ import 'dart:math';
 import '../../config/drift/app_database.dart';
 import '../constants/score_constants.dart';
 import '../../features/product/domain/entities/nutriments_entity.dart';
+import 'nova_derivation.dart';
 
 class HpScoreResult {
   final double hpScore;
@@ -73,21 +74,39 @@ class HpScoreCalculator {
     // Merge explicit additive tags with E-codes found in text
     final allAdditives = await _mergeAdditives(additivesTags, ingredientsText);
 
+    // A source-supplied group always wins; derivation only fills the gap left
+    // by the two thirds of products that arrive without one.
+    final effectiveNova =
+        novaGroup ??
+        NovaDerivation.deriveNovaGroup(
+          ingredientsText: ingredientsText,
+          additivesTags: additivesTags,
+        );
+
     final chemicalLoad = await _calculateChemicalLoad(allAdditives);
     final riskFactor = _calculateRiskFactor(nutriments);
-    final nutriFactor = _calculateNutriFactor(nutriments, novaGroup);
+    final nutriFactor = _calculateNutriFactor(nutriments, effectiveNova);
     final ingredientQualityPenalty = _calculateIngredientQualityPenalty(
       ingredientsText,
       nutriments,
     );
 
-    final hpScore =
+    final rawScore =
         (100 -
                 (chemicalLoad * ScoreConstants.chemicalWeight) -
                 (riskFactor * ScoreConstants.riskWeight) +
                 (nutriFactor * ScoreConstants.nutriWeight) -
                 ingredientQualityPenalty)
             .clamp(0.0, 100.0);
+
+    // ── Ultra-processed ceiling ──
+    // Nutrition alone cannot rescue an ultra-processed product into "İyi".
+    // Sugar-free gum reads as harmless on the panel — no sugar, no fat, no
+    // salt — and used to land on gauge 2 on the strength of the things it
+    // does not contain.
+    final hpScore = effectiveNova == 4
+        ? min(rawScore, ScoreConstants.ultraProcessedCeiling)
+        : rawScore;
 
     // ── Critical ingredient blacklist ──
     // If ANY of these are found → instant worst score (10.0 → gauge 5)

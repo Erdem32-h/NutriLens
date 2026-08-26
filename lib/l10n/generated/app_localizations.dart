@@ -862,6 +862,12 @@ abstract class AppLocalizations {
   /// **'Bilinmiyor'**
   String get novaUnknownLabel;
 
+  /// No description provided for @novaEstimated.
+  ///
+  /// In tr, this message translates to:
+  /// **'tahmini'**
+  String get novaEstimated;
+
   /// No description provided for @worstIsBad.
   ///
   /// In tr, this message translates to:

@@ -287,15 +287,125 @@ void main() {
     );
   });
 
+  // ── Ultra-processed ceiling (v4) ──────────────────────────────────
+
+  group('ultra-processed ceiling (v4)', () {
+    // A tomato sauce whose panel is genuinely clean — no added sugar, no fat,
+    // little salt — but whose label is a formulation. Scored 89.15 in
+    // production, i.e. gauge 1, the same band as plain water.
+    const cleanPanel = NutrimentsEntity(
+      energyKcal: 30,
+      sugars: 4.8,
+      saturatedFat: 0,
+      salt: 0.5,
+      fiber: 1,
+      proteins: 1,
+    );
+    const formulatedLabel =
+        'Tomatoes and less than 2% of: sea salt, dehydrated onions, '
+        'dehydrated garlic, spices, natural flavorings, sweetener';
+
+    test('a source-supplied NOVA 4 cannot reach gauge 1', () async {
+      final result = await calculator.calculateFull(
+        additivesTags: const [],
+        nutriments: cleanPanel,
+        novaGroup: 4,
+        ingredientsText: formulatedLabel,
+      );
+      expect(result.hpScore, lessThanOrEqualTo(54.9));
+      expect(result.gaugeLevel, greaterThanOrEqualTo(3));
+    });
+
+    test('a derived NOVA 4 caps the score just the same', () async {
+      // Same product, except nobody filled in nova_group — which is the case
+      // for two thirds of what we see. Without derivation this scores 89.
+      final result = await calculator.calculateFull(
+        additivesTags: const [],
+        nutriments: cleanPanel,
+        ingredientsText: formulatedLabel,
+      );
+      expect(result.hpScore, lessThanOrEqualTo(54.9));
+      expect(result.gaugeLevel, greaterThanOrEqualTo(3));
+    });
+
+    test('sugar-free gum stops reading as "İyi"', () async {
+      // Falim: nothing on the panel at all, which is exactly how it used to
+      // earn gauge 2 — on the strength of what it does not contain.
+      final result = await calculator.calculateFull(
+        additivesTags: const ['en:e171'],
+        nutriments: const NutrimentsEntity(
+          energyKcal: 0,
+          sugars: 0,
+          saturatedFat: 0,
+          salt: 0,
+        ),
+        ingredientsText:
+            'Kaumasse, Säureregulator (E500), Aromen, Farbstoff (E171), '
+            'Süßungsmittel (Acesulfam K)',
+      );
+      expect(result.gaugeLevel, greaterThanOrEqualTo(3));
+    });
+
+    test('processed but not ultra-processed is untouched', () async {
+      // Ayran is NOVA 3 and scores 97.75 in production. Capping group 3 would
+      // punish yoghurt, tinned fish and cheese, which is why the rule stops
+      // at group 4.
+      final result = await calculator.calculateFull(
+        additivesTags: const [],
+        nutriments: const NutrimentsEntity(
+          energyKcal: 37,
+          sugars: 0.15,
+          saturatedFat: 0.9,
+          salt: 0.4,
+          proteins: 1.5,
+        ),
+        novaGroup: 3,
+        ingredientsText:
+            'Yoğurt (pastorize inek sütü, yoğurt mayası), tuz, su.',
+      );
+      expect(result.gaugeLevel, 1);
+    });
+
+    test('the ceiling never lifts a worse score', () async {
+      // It is a maximum, not an assignment: a NOVA 4 product already below
+      // the cap keeps the score it earned.
+      final result = await calculator.calculateFull(
+        additivesTags: const ['en:e322'],
+        nutriments: const NutrimentsEntity(
+          energyKcal: 540,
+          sugars: 54,
+          saturatedFat: 7.4,
+          fiber: 2,
+          proteins: 6,
+        ),
+        novaGroup: 4,
+        ingredientsText: 'Şeker, bitkisel yağ, fındık, yağsız süt tozu',
+      );
+      expect(result.hpScore, lessThan(54.9));
+    });
+
+    test('a critical ingredient still beats the ceiling', () async {
+      final result = await calculator.calculateFull(
+        additivesTags: const [],
+        nutriments: cleanPanel,
+        novaGroup: 4,
+        ingredientsText: 'Buğday unu, palm yağı, şeker, aroma verici',
+      );
+      expect(result.hpScore, 10.0);
+      expect(result.gaugeLevel, 5);
+    });
+  });
+
   // ── Algorithm version pin ─────────────────────────────────────────
 
   group('versioning', () {
-    test('current version constant is 3', () {
-      // Tripwire: if you bump the version without updating the sweet-
-      // treat Supabase trigger and the local-cache invalidation path,
-      // history scores will silently disagree across server/client.
-      // Bump this expected value in lockstep with the migration.
-      expect(ScoreConstants.hpScoreAlgorithmVersion, 3);
+    test('current version constant is 4', () {
+      // Tripwire: if you bump the version without updating the Supabase
+      // trigger and the local-cache invalidation path, history scores will
+      // silently disagree across server/client. Bump this expected value in
+      // lockstep with the migration — v4 is
+      // supabase/migrations/20260825120000_hp_score_v4_nova_ceiling.sql.
+      expect(ScoreConstants.hpScoreAlgorithmVersion, 4);
     });
   });
 

@@ -388,6 +388,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get novaUnknownLabel => 'Unknown';
 
   @override
+  String get novaEstimated => '推测';
+
+  @override
   String get worstIsBad => '(100 分为最佳)';
 
   @override
