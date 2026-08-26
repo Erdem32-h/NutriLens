@@ -404,7 +404,7 @@ void main() {
       // trigger and the local-cache invalidation path, history scores will
       // silently disagree across server/client. Bump this expected value in
       // lockstep with the migration — v4 is
-      // supabase/migrations/20260825120000_hp_score_v4_nova_ceiling.sql.
+      // supabase/migrations/20260826193810_hp_score_v4_nova_ceiling.sql.
       expect(ScoreConstants.hpScoreAlgorithmVersion, 4);
     });
   });
