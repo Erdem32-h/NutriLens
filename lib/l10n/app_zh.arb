@@ -202,6 +202,14 @@
   "cancel": "取消",
   "saving": "Saving...",
   "savedSuccessfully": "Saved successfully",
+  "contributionCreditsEarned": "已保存 — 感谢贡献，获得 {count} 次扫描",
+  "@contributionCreditsEarned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "saveFailed": "Save failed",
   "privacy": "隐私",
   "analyticsSharing": "共享使用数据",

@@ -580,6 +580,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get savedSuccessfully => 'Saved successfully';
 
   @override
+  String contributionCreditsEarned(int count) {
+    return '已保存 — 感谢贡献，获得 $count 次扫描';
+  }
+
+  @override
   String get saveFailed => 'Save failed';
 
   @override

@@ -589,6 +589,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get savedSuccessfully => 'Saved successfully';
 
   @override
+  String contributionCreditsEarned(int count) {
+    return 'تم الحفظ — حصلت على $count عملية مسح إضافية مقابل مساهمتك';
+  }
+
+  @override
   String get saveFailed => 'Save failed';
 
   @override

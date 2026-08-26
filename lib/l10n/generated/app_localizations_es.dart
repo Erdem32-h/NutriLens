@@ -595,6 +595,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get savedSuccessfully => 'Saved successfully';
 
   @override
+  String contributionCreditsEarned(int count) {
+    return 'Guardado: ganaste +$count escaneos por tu contribución';
+  }
+
+  @override
   String get saveFailed => 'Save failed';
 
   @override

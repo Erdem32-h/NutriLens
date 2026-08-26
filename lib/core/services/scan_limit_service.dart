@@ -186,4 +186,29 @@ class ScanLimitService {
       return const BonusScanResult(granted: false, reason: 'network_error');
     }
   }
+
+  /// Permanent scan credits earned by contributing new products.
+  ///
+  /// Read-only: credits are granted by a trigger on `community_products` and
+  /// spent inside `check_and_increment_scan`, never by the client. Callers use
+  /// this to *observe* a grant — read before a contribution, read after, and
+  /// the difference is what the server decided the contribution was worth.
+  /// Returns 0 when signed out or unreachable, so a failed read never claims
+  /// the user earned something.
+  Future<int> creditBalance() async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return 0;
+
+    try {
+      final row = await _client
+          .from('user_profiles')
+          .select('scan_credits')
+          .eq('id', userId)
+          .maybeSingle();
+      return (row?['scan_credits'] as int?) ?? 0;
+    } catch (e) {
+      debugPrint('[ScanLimit] credit balance error: $e');
+      return 0;
+    }
+  }
 }

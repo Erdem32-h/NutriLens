@@ -1234,6 +1234,12 @@ abstract class AppLocalizations {
   /// **'Başarıyla kaydedildi'**
   String get savedSuccessfully;
 
+  /// No description provided for @contributionCreditsEarned.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydedildi — katkın için +{count} tarama hakkı kazandın'**
+  String contributionCreditsEarned(int count);
+
   /// No description provided for @saveFailed.
   ///
   /// In tr, this message translates to:

@@ -589,6 +589,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get savedSuccessfully => 'Başarıyla kaydedildi';
 
   @override
+  String contributionCreditsEarned(int count) {
+    return 'Kaydedildi — katkın için +$count tarama hakkı kazandın';
+  }
+
+  @override
   String get saveFailed => 'Kaydetme başarısız';
 
   @override

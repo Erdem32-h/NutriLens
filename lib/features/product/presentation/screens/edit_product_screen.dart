@@ -11,7 +11,7 @@ import '../../../../core/constants/product_categories.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/providers/monetization_provider.dart'
-    show deviceIdServiceProvider;
+    show deviceIdServiceProvider, scanLimitServiceProvider;
 import '../../../../core/services/gemini_ai_service.dart'
     show GeminiServiceException, NutritionOcrResult;
 import '../../../../core/theme/app_colors.dart';
@@ -1194,6 +1194,13 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         hpNutriFactor: hpResult.nutriFactor,
       );
 
+      // A genuinely new product earns permanent scan credits, but the server
+      // decides whether this row qualifies — an incomplete one earns nothing.
+      // Read the balance either side of the write instead of assuming, so the
+      // message we show is what actually happened.
+      final scanLimits = ref.read(scanLimitServiceProvider);
+      final creditsBefore = _isNewProduct ? await scanLimits.creditBalance() : 0;
+
       // Step 4: Save to Supabase community_products
       try {
         final communitySource = ref.read(communityProductSourceProvider);
@@ -1219,6 +1226,10 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
         // Cache write failed — proceed without it
       }
 
+      final creditsEarned = _isNewProduct
+          ? (await scanLimits.creditBalance()) - creditsBefore
+          : 0;
+
       // Step 6: Invalidate and navigate
       ref.invalidate(productByBarcodeProvider(widget.barcode));
 
@@ -1233,7 +1244,11 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
       // Show success message on the NEW screen's scaffold via root messenger
       messenger.showSnackBar(
         SnackBar(
-          content: Text(l10n.savedSuccessfully),
+          content: Text(
+            creditsEarned > 0
+                ? l10n.contributionCreditsEarned(creditsEarned)
+                : l10n.savedSuccessfully,
+          ),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

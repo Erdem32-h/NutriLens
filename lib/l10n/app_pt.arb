@@ -202,6 +202,14 @@
   "cancel": "Cancelar",
   "saving": "Saving...",
   "savedSuccessfully": "Saved successfully",
+  "contributionCreditsEarned": "Salvo — você ganhou +{count} leituras pela sua contribuição",
+  "@contributionCreditsEarned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "saveFailed": "Save failed",
   "privacy": "Privacidade",
   "analyticsSharing": "Compartilhar dados de uso",

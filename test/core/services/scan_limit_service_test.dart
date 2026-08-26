@@ -283,5 +283,34 @@ void main() {
         expect(result.reason, 'network_error');
       });
     });
+
+    group('creditBalance', () {
+      test('returns 0 without touching the database when signed out', () async {
+        when(() => mockAuth.currentUser).thenReturn(null);
+
+        // Silence matters here: the balance is read either side of a
+        // contribution and the difference is what the user is told they
+        // earned. A read that fails must never look like a grant.
+        expect(await service.creditBalance(), 0);
+        verifyNever(() => mockClient.from(any()));
+      });
+    });
+  });
+
+  group('ScanCheckResult with a spent credit', () {
+    test('used_credit does not break parsing and remaining is the balance', () {
+      // check_and_increment_scan adds `used_credit` when it falls back to the
+      // permanent wallet; `remaining` then means credits left, not scans left
+      // today. Older clients ignore the extra field.
+      final result = ScanCheckResult.fromJson({
+        'allowed': true,
+        'remaining': 4,
+        'is_premium': false,
+        'used_credit': true,
+      });
+      expect(result.allowed, isTrue);
+      expect(result.remaining, 4);
+      expect(result.isPremium, isFalse);
+    });
   });
 }

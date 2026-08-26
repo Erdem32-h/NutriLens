@@ -202,6 +202,14 @@
   "cancel": "إلغاء",
   "saving": "Saving...",
   "savedSuccessfully": "Saved successfully",
+  "contributionCreditsEarned": "تم الحفظ — حصلت على {count} عملية مسح إضافية مقابل مساهمتك",
+  "@contributionCreditsEarned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "saveFailed": "Save failed",
   "privacy": "الخصوصية",
   "analyticsSharing": "مشاركة بيانات الاستخدام",
