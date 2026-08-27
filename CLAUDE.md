@@ -21,6 +21,41 @@ Detay → `wiki/architecture/03-barkod-zinciri.md`
 
 ---
 
+## Sürüm Çıkarma (ÖNEMLİ)
+
+**Android AAB'yi asla düz `flutter build appbundle` ile üretme.**
+
+```
+pwsh scripts/build_android_release.ps1
+```
+
+AdMob reklam birimi ID'leri ve `SENTRY_DSN` derleme zamanı
+`String.fromEnvironment` değerleri. `--dart-define` geçmezsen uygulama Google'ın
+**test reklam birimleriyle** yayınlanır (sıfır gelir + AdMob politika riski) ve
+crash raporlaması olmaz — Android 90 gün boyunca tam olarak bu yüzden Sentry'ye
+tek olay göndermedi. Script değerleri `.env`'den okur, eksikse build'i durdurur.
+Çıktı: `build/app/outputs/bundle/release/app-release.aab`
+
+**Sürüm numaraları iki platformda farklı kaynaktan geliyor:**
+
+| | Sürüm adı (1.3.0) | Build numarası |
+|---|---|---|
+| Android (yerel script) | `pubspec.yaml` | `pubspec.yaml`'daki `+N` |
+| iOS (Codemagic) | `pubspec.yaml` | Codemagic'in dahili `$BUILD_NUMBER` sayacı |
+
+`codemagic.yaml` her iki workflow'da da `--build-number=$BUILD_NUMBER` geçiyor ve
+bu değişken yaml'da tanımlı değil — Codemagic'in kendi build sayacı. Yani
+`pubspec`'teki `+N`'i artırmak iOS build numarasını **etkilemiyor**; iOS sayacı
+44'lerdeyken Android 17'de.
+
+> [!warning] Tuzak
+> `android-internal` Codemagic workflow'u da `$BUILD_NUMBER` kullanıyor. Android'i
+> bir kez Codemagic'te derlersen Play versionCode'u Codemagic sayacına sıçrar ve
+> sonraki her yerel build (18, 19...) "daha düşük versionCode" diye reddedilir.
+> Android'i yerel script'te tut, ya da iki tarafı tek şemaya bağla.
+
+---
+
 ## Geliştirici Profili
 - Teknik seviye yüksek — temel şeyleri açıklama, stratejik seviyede konuş
 - Kısa ve eyleme dönük yanıtlar ver
