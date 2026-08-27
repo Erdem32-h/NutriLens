@@ -138,7 +138,9 @@ class ScoreBreakdownCard extends StatelessWidget {
   /// Most products arrive with no NOVA group at all, so what the score used is
   /// usually a value read off the ingredient list. Printing that as a plain
   /// "NOVA 4" would lend a guess the same authority as a source-supplied
-  /// classification — hence the marker.
+  /// classification. The group number is dropped entirely — it carries no
+  /// meaning for a shopper — leaving the plain-language label, with a derived
+  /// value marked as an estimate.
   String _novaSubLabel(dynamic l10n) {
     final sourced = product.novaGroup;
     final derived = sourced == null
@@ -155,9 +157,9 @@ class ScoreBreakdownCard extends StatelessWidget {
       4 => l10n.nova4Label,
       _ => l10n.novaUnknownLabel,
     };
-    if (n == null) return 'NOVA — $label';
+    if (n == null) return label;
     final marker = derived != null ? ' (${l10n.novaEstimated})' : '';
-    return 'NOVA $n$marker — $label';
+    return '$label$marker';
   }
 
   Widget _criticalCallout(AppColorsExtension colors, dynamic l10n) {
