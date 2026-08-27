@@ -50,7 +50,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
     };
   }
 
-  void _goToOcr() {
+  void _goToEdit() {
     context.go('/product/${widget.barcode}/edit', extra: _buildProductInfo());
   }
 
@@ -222,7 +222,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
             AppButton(
               label: l10n.completeWithPhoto,
               icon: Icons.camera_alt_rounded,
-              onPressed: _goToOcr,
+              onPressed: _goToEdit,
             ),
             const SizedBox(height: 12),
 
