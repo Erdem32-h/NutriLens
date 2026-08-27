@@ -403,7 +403,6 @@ class _ComparisonRowTile extends StatelessWidget {
       ComparisonMetric.salt => l10n.saltLabel,
       ComparisonMetric.protein => l10n.proteinLabel,
       ComparisonMetric.fiber => l10n.fiberLabel,
-      ComparisonMetric.nova => l10n.novaGroup,
       ComparisonMetric.additives => l10n.additives,
       ComparisonMetric.nutriScore => l10n.nutriScoreLabel,
     };

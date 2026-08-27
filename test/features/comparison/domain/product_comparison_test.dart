@@ -7,7 +7,6 @@ ProductEntity _p({
   required String barcode,
   double? hp,
   NutrimentsEntity nutriments = const NutrimentsEntity(),
-  int? nova,
   String? nutriscore,
   List<String> additives = const [],
 }) {
@@ -15,7 +14,6 @@ ProductEntity _p({
     barcode: barcode,
     productName: barcode,
     nutriments: nutriments,
-    novaGroup: nova,
     nutriscoreGrade: nutriscore,
     additivesTags: additives,
     hpScore: hp,
@@ -38,7 +36,6 @@ void main() {
         ComparisonMetric.salt,
         ComparisonMetric.protein,
         ComparisonMetric.fiber,
-        ComparisonMetric.nova,
         ComparisonMetric.additives,
         ComparisonMetric.nutriScore,
       ]);
@@ -75,14 +72,6 @@ void main() {
       expect(p.displayA, '12');
       expect(p.displayB, '3.2');
       expect(p.betterSide, BetterSide.a);
-    });
-
-    test('nova: lower group wins', () {
-      final rows = comparisonMetrics(
-        _p(barcode: 'a', nova: 4),
-        _p(barcode: 'b', nova: 1),
-      );
-      expect(_row(rows, ComparisonMetric.nova).betterSide, BetterSide.b);
     });
 
     test('additive count: fewer wins, never dashed', () {

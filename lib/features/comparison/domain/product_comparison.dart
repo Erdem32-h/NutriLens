@@ -10,7 +10,6 @@ enum ComparisonMetric {
   salt,
   protein,
   fiber,
-  nova,
   additives,
   nutriScore,
 }
@@ -58,8 +57,6 @@ List<ComparisonRow> comparisonMetrics(ProductEntity a, ProductEntity b) {
         higherBetter: true, format: _fmtG),
     _numRow(ComparisonMetric.fiber, na.fiber, nb.fiber,
         higherBetter: true, format: _fmtG),
-    _numRow(ComparisonMetric.nova, a.novaGroup?.toDouble(),
-        b.novaGroup?.toDouble(), higherBetter: false, format: _fmtInt),
     _numRow(
         ComparisonMetric.additives,
         a.additivesTags.length.toDouble(),
