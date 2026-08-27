@@ -17,7 +17,6 @@
   "noAccount": "¿No tienes una cuenta?",
   "haveAccount": "¿Ya tienes una cuenta?",
   "scanBarcode": "Escanear código de barras",
-  "productNotFound": "Producto no encontrado",
   "healthScore": "Puntuación de Salud",
   "chemicalLoad": "Carga Química",
   "riskFactor": "Factor de Riesgo",
@@ -80,7 +79,6 @@
   "enableCameraPermission": "Activa el permiso de la cámara en los ajustes para escanear códigos de barras.",
   "productDetail": "Detalle del Producto",
   "productLoadFailed": "Error al cargar el producto",
-  "productNotFoundDetail": "No se encontró información de producto para este código de barras.",
   "barcode": "Código de Barras",
   "noHistoryYet": "Aún no hay historial de escaneo",
   "productsWillAppearHere": "Los productos que escanees aparecerán aquí",
@@ -331,7 +329,6 @@
   "aiServiceUnavailableNoFallback": "AI service is currently unavailable. Please try again in a few minutes.",
   "aiServiceDownTitle": "AI Service Unavailable",
   "aiServiceDownBody": "The ingredient reading service isn't responding right now. Please try again in a few minutes or enter the ingredients manually.",
-  "manualEntry": "Enter Manually",
   "tryAgain": "Try Again",
   "aiLowConfidence": "Low confidence — results are estimates",
   "aiEstimate": "AI Estimate",
@@ -385,7 +382,6 @@
   "featureFavorites": "Favoritos",
   "featureBlacklist": "Lista negra",
   "featurePremium": "Función Premium",
-  "featureAddProduct": "Añadir producto",
   "migrationTitle": "Tienes datos de invitado",
   "migrationMessage": "Este dispositivo tiene {dataLine}. ¿Deseas moverlos a tu nueva cuenta?",
   "@migrationMessage": {
@@ -600,19 +596,6 @@
   "search": "Buscar",
   "startFree": "Start free",
   "alreadyHaveAccountSignIn": "I already have an account",
-  "addProductIntro": "Este producto aún no está en nuestra base de datos. Regístralo una sola vez: los próximos escaneos lo abrirán al instante y otros usuarios también se beneficiarán.",
-  "productPhotoOptional": "Product Photo (optional)",
-  "productNameHint": "e.g. Cadbury Dairy Milk",
-  "brandHint": "e.g. Cadbury",
-  "completeWithPhoto": "Complete Details with a Photo",
-  "invalidECodeFormat": "Invalid E number format (e.g. E471)",
-  "productAddedToDb": "You've added this product to our database!",
-  "manualEntryTitle": "Manual Entry",
-  "ingredientsTextOptional": "Ingredients Text (optional)",
-  "ingredientsPasteHint": "Paste the ingredients list here...",
-  "additivesECodes": "Additives (E Numbers)",
-  "tapToRemove": "Tap to remove",
-  "saveAction": "Save",
   "verifyIngredientsTitle": "Verify Ingredients",
   "ocrIngredientsHint": "Ingredients text read by OCR...",
   "hideRawOcr": "Hide raw OCR text",
@@ -640,14 +623,6 @@
   "tipCenterIngredients": "Centre the \"Ingredients\" section",
   "tipAvoidGlare": "Avoid glare and reflections",
   "tipZoomIn": "Move closer so the text is sharp",
-  "genericErrorWith": "Error: {error}",
-  "@genericErrorWith": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
   "welcomeBack": "Bienvenido de nuevo",
   "nutritionFacts100g": "Información Nutricional (100g)",
   "energyLabel": "Energía",

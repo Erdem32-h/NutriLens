@@ -60,9 +60,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get scanBarcode => 'Escanear código de barras';
 
   @override
-  String get productNotFound => 'Produto não encontrado';
-
-  @override
   String get healthScore => 'Pontuação de Saúde';
 
   @override
@@ -253,10 +250,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get productLoadFailed => 'Falha ao carregar o produto';
-
-  @override
-  String get productNotFoundDetail =>
-      'Nenhuma informação de produto encontrada para este código de barras.';
 
   @override
   String get barcode => 'Código de Barras';
@@ -956,9 +949,6 @@ class AppLocalizationsPt extends AppLocalizations {
       'The ingredient reading service isn\'t responding right now. Please try again in a few minutes or enter the ingredients manually.';
 
   @override
-  String get manualEntry => 'Enter Manually';
-
-  @override
   String get tryAgain => 'Try Again';
 
   @override
@@ -1107,9 +1097,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get featurePremium => 'Recurso Premium';
-
-  @override
-  String get featureAddProduct => 'Adicionar produto';
 
   @override
   String get migrationTitle => 'Você tem dados de convidado';
@@ -1615,46 +1602,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get alreadyHaveAccountSignIn => 'I already have an account';
 
   @override
-  String get addProductIntro =>
-      'Este produto ainda não está no nosso banco de dados. Cadastre-o uma única vez — as próximas leituras o abrirão na hora e outros usuários também se beneficiam.';
-
-  @override
-  String get productPhotoOptional => 'Product Photo (optional)';
-
-  @override
-  String get productNameHint => 'e.g. Cadbury Dairy Milk';
-
-  @override
-  String get brandHint => 'e.g. Cadbury';
-
-  @override
-  String get completeWithPhoto => 'Complete Details with a Photo';
-
-  @override
-  String get invalidECodeFormat => 'Invalid E number format (e.g. E471)';
-
-  @override
-  String get productAddedToDb => 'You\'ve added this product to our database!';
-
-  @override
-  String get manualEntryTitle => 'Manual Entry';
-
-  @override
-  String get ingredientsTextOptional => 'Ingredients Text (optional)';
-
-  @override
-  String get ingredientsPasteHint => 'Paste the ingredients list here...';
-
-  @override
-  String get additivesECodes => 'Additives (E Numbers)';
-
-  @override
-  String get tapToRemove => 'Tap to remove';
-
-  @override
-  String get saveAction => 'Save';
-
-  @override
   String get verifyIngredientsTitle => 'Verify Ingredients';
 
   @override
@@ -1717,11 +1664,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get tipZoomIn => 'Move closer so the text is sharp';
-
-  @override
-  String genericErrorWith(Object error) {
-    return 'Error: $error';
-  }
 
   @override
   String get welcomeBack => 'Bem-vindo de volta';

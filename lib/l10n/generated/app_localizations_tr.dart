@@ -60,9 +60,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get scanBarcode => 'Barkod tarayın';
 
   @override
-  String get productNotFound => 'Ürün bulunamadı';
-
-  @override
   String get healthScore => 'Sağlık Puanı';
 
   @override
@@ -253,9 +250,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get productLoadFailed => 'Ürün yüklenemedi';
-
-  @override
-  String get productNotFoundDetail => 'Bu barkoda ait ürün bilgisi bulunamadı.';
 
   @override
   String get barcode => 'Barkod';
@@ -956,9 +950,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'İçindekiler okuma servisi şu an yanıt vermiyor. Birkaç dakika sonra tekrar deneyin ya da içindekileri elle girin.';
 
   @override
-  String get manualEntry => 'Elle Gir';
-
-  @override
   String get tryAgain => 'Tekrar Dene';
 
   @override
@@ -1105,9 +1096,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get featurePremium => 'Premium';
-
-  @override
-  String get featureAddProduct => 'Ürün ekleme';
 
   @override
   String get migrationTitle => 'Misafir verilerin var';
@@ -1614,47 +1602,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get alreadyHaveAccountSignIn => 'Zaten hesabım var';
 
   @override
-  String get addProductIntro =>
-      'Bu ürün henüz veritabanımızda yok. Bir kez kaydetmen yeterli — sonraki taramalarda anında açılır, diğer kullanıcılar da yararlanır.';
-
-  @override
-  String get productPhotoOptional => 'Ürün Fotoğrafı (opsiyonel)';
-
-  @override
-  String get productNameHint => 'örn: Ülker Çikolatalı Gofret';
-
-  @override
-  String get brandHint => 'örn: Ülker';
-
-  @override
-  String get completeWithPhoto => 'Bilgileri Fotoğrafla Tamamla';
-
-  @override
-  String get invalidECodeFormat => 'Geçersiz E kodu formatı (örn: E471)';
-
-  @override
-  String get productAddedToDb => 'Bu ürünü veritabanımıza eklediniz!';
-
-  @override
-  String get manualEntryTitle => 'Manuel Giriş';
-
-  @override
-  String get ingredientsTextOptional => 'İçindekiler Metni (opsiyonel)';
-
-  @override
-  String get ingredientsPasteHint =>
-      'İçindekiler listesini buraya yapıştırın...';
-
-  @override
-  String get additivesECodes => 'Katkı Maddeleri (E Kodları)';
-
-  @override
-  String get tapToRemove => 'Kaldırmak için dokunun';
-
-  @override
-  String get saveAction => 'Kaydet';
-
-  @override
   String get verifyIngredientsTitle => 'İçerik Doğrulama';
 
   @override
@@ -1718,11 +1665,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get tipZoomIn => 'Yazılar net okunabilsin — yakınlaşın';
-
-  @override
-  String genericErrorWith(Object error) {
-    return 'Hata: $error';
-  }
 
   @override
   String get welcomeBack => 'Hoş geldin';

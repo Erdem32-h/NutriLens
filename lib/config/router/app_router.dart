@@ -17,9 +17,7 @@ import '../../features/history/presentation/screens/history_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/product/presentation/screens/product_detail_screen.dart';
-import '../../features/product/presentation/screens/product_not_found_screen.dart';
 import '../../features/product/presentation/screens/edit_product_screen.dart';
-import '../../features/product/presentation/screens/manual_ingredients_screen.dart';
 import '../../features/scanner/presentation/screens/food_result_screen.dart';
 import '../../features/meals/presentation/screens/meals_screen.dart';
 import '../../features/meals/presentation/screens/meal_detail_screen.dart';
@@ -207,31 +205,12 @@ GoRouter createRouter(WidgetRef ref) {
         },
       ),
       GoRoute(
-        path: '/product/:barcode/not-found',
-        name: RouteNames.productNotFound,
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) {
-          final barcode = state.pathParameters['barcode']!;
-          return ProductNotFoundScreen(barcode: barcode);
-        },
-      ),
-      GoRoute(
         path: '/additive/:eCode',
         name: RouteNames.additiveDetail,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final eCode = state.pathParameters['eCode']!;
           return AdditiveDetailScreen(eCode: eCode);
-        },
-      ),
-      GoRoute(
-        path: '/product/:barcode/manual',
-        name: RouteNames.manualIngredients,
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) {
-          final barcode = state.pathParameters['barcode']!;
-          final extra = state.extra as Map<String, dynamic>?;
-          return ManualIngredientsScreen(barcode: barcode, productInfo: extra);
         },
       ),
       GoRoute(

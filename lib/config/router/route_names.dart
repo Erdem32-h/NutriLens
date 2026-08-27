@@ -16,8 +16,6 @@ abstract final class RouteNames {
   // Product
   static const String productDetail = 'productDetail';
   static const String additiveDetail = 'additiveDetail';
-  static const String productNotFound = 'productNotFound';
-  static const String manualIngredients = 'manualIngredients';
   static const String editProduct = 'editProduct';
 
   // Comparison

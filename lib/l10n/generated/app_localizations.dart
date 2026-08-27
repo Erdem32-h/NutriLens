@@ -208,12 +208,6 @@ abstract class AppLocalizations {
   /// **'Barkod tarayın'**
   String get scanBarcode;
 
-  /// No description provided for @productNotFound.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ürün bulunamadı'**
-  String get productNotFound;
-
   /// No description provided for @healthScore.
   ///
   /// In tr, this message translates to:
@@ -585,12 +579,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Ürün yüklenemedi'**
   String get productLoadFailed;
-
-  /// No description provided for @productNotFoundDetail.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bu barkoda ait ürün bilgisi bulunamadı.'**
-  String get productNotFoundDetail;
 
   /// No description provided for @barcode.
   ///
@@ -1906,12 +1894,6 @@ abstract class AppLocalizations {
   /// **'İçindekiler okuma servisi şu an yanıt vermiyor. Birkaç dakika sonra tekrar deneyin ya da içindekileri elle girin.'**
   String get aiServiceDownBody;
 
-  /// No description provided for @manualEntry.
-  ///
-  /// In tr, this message translates to:
-  /// **'Elle Gir'**
-  String get manualEntry;
-
   /// No description provided for @tryAgain.
   ///
   /// In tr, this message translates to:
@@ -2187,12 +2169,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Premium'**
   String get featurePremium;
-
-  /// No description provided for @featureAddProduct.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ürün ekleme'**
-  String get featureAddProduct;
 
   /// No description provided for @migrationTitle.
   ///
@@ -3094,84 +3070,6 @@ abstract class AppLocalizations {
   /// **'Zaten hesabım var'**
   String get alreadyHaveAccountSignIn;
 
-  /// No description provided for @addProductIntro.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bu ürün henüz veritabanımızda yok. Bir kez kaydetmen yeterli — sonraki taramalarda anında açılır, diğer kullanıcılar da yararlanır.'**
-  String get addProductIntro;
-
-  /// No description provided for @productPhotoOptional.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ürün Fotoğrafı (opsiyonel)'**
-  String get productPhotoOptional;
-
-  /// No description provided for @productNameHint.
-  ///
-  /// In tr, this message translates to:
-  /// **'örn: Ülker Çikolatalı Gofret'**
-  String get productNameHint;
-
-  /// No description provided for @brandHint.
-  ///
-  /// In tr, this message translates to:
-  /// **'örn: Ülker'**
-  String get brandHint;
-
-  /// No description provided for @completeWithPhoto.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bilgileri Fotoğrafla Tamamla'**
-  String get completeWithPhoto;
-
-  /// No description provided for @invalidECodeFormat.
-  ///
-  /// In tr, this message translates to:
-  /// **'Geçersiz E kodu formatı (örn: E471)'**
-  String get invalidECodeFormat;
-
-  /// No description provided for @productAddedToDb.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bu ürünü veritabanımıza eklediniz!'**
-  String get productAddedToDb;
-
-  /// No description provided for @manualEntryTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Manuel Giriş'**
-  String get manualEntryTitle;
-
-  /// No description provided for @ingredientsTextOptional.
-  ///
-  /// In tr, this message translates to:
-  /// **'İçindekiler Metni (opsiyonel)'**
-  String get ingredientsTextOptional;
-
-  /// No description provided for @ingredientsPasteHint.
-  ///
-  /// In tr, this message translates to:
-  /// **'İçindekiler listesini buraya yapıştırın...'**
-  String get ingredientsPasteHint;
-
-  /// No description provided for @additivesECodes.
-  ///
-  /// In tr, this message translates to:
-  /// **'Katkı Maddeleri (E Kodları)'**
-  String get additivesECodes;
-
-  /// No description provided for @tapToRemove.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kaldırmak için dokunun'**
-  String get tapToRemove;
-
-  /// No description provided for @saveAction.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kaydet'**
-  String get saveAction;
-
   /// No description provided for @verifyIngredientsTitle.
   ///
   /// In tr, this message translates to:
@@ -3291,12 +3189,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Yazılar net okunabilsin — yakınlaşın'**
   String get tipZoomIn;
-
-  /// No description provided for @genericErrorWith.
-  ///
-  /// In tr, this message translates to:
-  /// **'Hata: {error}'**
-  String genericErrorWith(Object error);
 
   /// No description provided for @welcomeBack.
   ///

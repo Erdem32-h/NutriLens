@@ -17,7 +17,6 @@
   "noAccount": "Don't have an account?",
   "haveAccount": "Already have an account?",
   "scanBarcode": "Scan a barcode",
-  "productNotFound": "Product not found",
   "healthScore": "Health Score",
   "chemicalLoad": "Chemical Load",
   "riskFactor": "Risk Factor",
@@ -80,7 +79,6 @@
   "enableCameraPermission": "Enable camera permission from settings to scan barcodes.",
   "productDetail": "Product Detail",
   "productLoadFailed": "Failed to load product",
-  "productNotFoundDetail": "No product information found for this barcode.",
   "barcode": "Barcode",
   "noHistoryYet": "No scan history yet",
   "productsWillAppearHere": "Products will appear here when you scan them",
@@ -331,7 +329,6 @@
   "aiServiceUnavailableNoFallback": "AI service is currently unavailable. Please try again in a few minutes.",
   "aiServiceDownTitle": "AI Service Unavailable",
   "aiServiceDownBody": "The ingredient reading service isn't responding right now. Please try again in a few minutes or enter the ingredients manually.",
-  "manualEntry": "Enter Manually",
   "tryAgain": "Try Again",
   "aiLowConfidence": "Low confidence — results are estimates",
   "aiEstimate": "AI Estimate",
@@ -385,7 +382,6 @@
   "featureFavorites": "Favorites",
   "featureBlacklist": "Blocklist",
   "featurePremium": "Premium",
-  "featureAddProduct": "Adding a product",
   "migrationTitle": "You have guest data",
   "migrationMessage": "This device has {dataLine}. Move it to your new account?",
   "@migrationMessage": {
@@ -600,19 +596,6 @@
   "search": "Search",
   "startFree": "Start free",
   "alreadyHaveAccountSignIn": "I already have an account",
-  "addProductIntro": "This product isn't in our database yet. Add it once and you're done — future scans open it instantly, and other users benefit too.",
-  "productPhotoOptional": "Product Photo (optional)",
-  "productNameHint": "e.g. Cadbury Dairy Milk",
-  "brandHint": "e.g. Cadbury",
-  "completeWithPhoto": "Complete Details with a Photo",
-  "invalidECodeFormat": "Invalid E number format (e.g. E471)",
-  "productAddedToDb": "You've added this product to our database!",
-  "manualEntryTitle": "Manual Entry",
-  "ingredientsTextOptional": "Ingredients Text (optional)",
-  "ingredientsPasteHint": "Paste the ingredients list here...",
-  "additivesECodes": "Additives (E Numbers)",
-  "tapToRemove": "Tap to remove",
-  "saveAction": "Save",
   "verifyIngredientsTitle": "Verify Ingredients",
   "ocrIngredientsHint": "Ingredients text read by OCR...",
   "hideRawOcr": "Hide raw OCR text",
@@ -640,14 +623,6 @@
   "tipCenterIngredients": "Centre the \"Ingredients\" section",
   "tipAvoidGlare": "Avoid glare and reflections",
   "tipZoomIn": "Move closer so the text is sharp",
-  "genericErrorWith": "Error: {error}",
-  "@genericErrorWith": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
   "welcomeBack": "Welcome back",
   "nutritionFacts100g": "Nutrition Facts (100g)",
   "energyLabel": "Energy",

@@ -25,7 +25,6 @@ import '../../../../core/error/failures.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../domain/usecases/get_product_usecase.dart';
-import '../../domain/usecases/submit_community_product_usecase.dart';
 
 // Database provider — overridden in main.dart
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -212,15 +211,6 @@ Future<void> _autoImportToCommunity(Ref ref, ProductEntity product) async {
     debugPrint('[auto-import] ${product.barcode} failed: $e');
   }
 }
-
-// --- Submit Community Product ---
-
-final submitCommunityProductUseCaseProvider =
-    Provider<SubmitCommunityProductUseCase>((ref) {
-      return SubmitCommunityProductUseCase(
-        ref.watch(productRepositoryProvider),
-      );
-    });
 
 // --- Alternatives ---
 

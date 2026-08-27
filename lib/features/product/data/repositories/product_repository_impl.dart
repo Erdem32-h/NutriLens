@@ -75,31 +75,6 @@ final class ProductRepositoryImpl implements ProductRepository {
     }
   }
 
-  @override
-  Future<Either<Failure, void>> submitCommunityProduct({
-    required ProductEntity product,
-    required String userId,
-    String? ingredientsPhotoUrl,
-    String source = 'ocr',
-  }) async {
-    try {
-      await _communitySource.addProduct(
-        product: product,
-        ingredientsPhotoUrl: ingredientsPhotoUrl,
-        userId: userId,
-        source: source,
-      );
-      try {
-        await _localDataSource.cacheProduct(product);
-      } on CacheException catch (_) {
-        // Cache failure should not block successful submission
-      }
-      return const Right(null);
-    } catch (e) {
-      return Left(ServerFailure('Failed to submit product: $e'));
-    }
-  }
-
   Future<Either<Failure, ProductEntity>> _resolveWithFallback(
     String barcode, {
     required ProductEntity staleCached,

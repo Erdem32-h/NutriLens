@@ -60,9 +60,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scanBarcode => '扫描条形码';
 
   @override
-  String get productNotFound => '未找到产品';
-
-  @override
   String get healthScore => '健康评分';
 
   @override
@@ -247,9 +244,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get productLoadFailed => '产品加载失败';
-
-  @override
-  String get productNotFoundDetail => '未找到与此条形码相关的产品信息。';
 
   @override
   String get barcode => '条形码';
@@ -941,9 +935,6 @@ class AppLocalizationsZh extends AppLocalizations {
       'The ingredient reading service isn\'t responding right now. Please try again in a few minutes or enter the ingredients manually.';
 
   @override
-  String get manualEntry => 'Enter Manually';
-
-  @override
   String get tryAgain => 'Try Again';
 
   @override
@@ -1087,9 +1078,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get featurePremium => 'Premium 特权';
-
-  @override
-  String get featureAddProduct => '添加产品';
 
   @override
   String get migrationTitle => '发现游客数据';
@@ -1570,45 +1558,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get alreadyHaveAccountSignIn => 'I already have an account';
 
   @override
-  String get addProductIntro => '该产品尚未收录到我们的数据库。只需登记一次——之后扫描即可立即打开，其他用户也能受益。';
-
-  @override
-  String get productPhotoOptional => 'Product Photo (optional)';
-
-  @override
-  String get productNameHint => 'e.g. Cadbury Dairy Milk';
-
-  @override
-  String get brandHint => 'e.g. Cadbury';
-
-  @override
-  String get completeWithPhoto => 'Complete Details with a Photo';
-
-  @override
-  String get invalidECodeFormat => 'Invalid E number format (e.g. E471)';
-
-  @override
-  String get productAddedToDb => 'You\'ve added this product to our database!';
-
-  @override
-  String get manualEntryTitle => 'Manual Entry';
-
-  @override
-  String get ingredientsTextOptional => 'Ingredients Text (optional)';
-
-  @override
-  String get ingredientsPasteHint => 'Paste the ingredients list here...';
-
-  @override
-  String get additivesECodes => 'Additives (E Numbers)';
-
-  @override
-  String get tapToRemove => 'Tap to remove';
-
-  @override
-  String get saveAction => 'Save';
-
-  @override
   String get verifyIngredientsTitle => 'Verify Ingredients';
 
   @override
@@ -1671,11 +1620,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tipZoomIn => 'Move closer so the text is sharp';
-
-  @override
-  String genericErrorWith(Object error) {
-    return 'Error: $error';
-  }
 
   @override
   String get welcomeBack => '欢迎回来';

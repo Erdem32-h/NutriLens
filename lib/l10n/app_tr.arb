@@ -17,7 +17,6 @@
   "noAccount": "Hesabınız yok mu?",
   "haveAccount": "Zaten hesabınız var mı?",
   "scanBarcode": "Barkod tarayın",
-  "productNotFound": "Ürün bulunamadı",
   "healthScore": "Sağlık Puanı",
   "chemicalLoad": "Kimyasal Yük",
   "riskFactor": "Risk Faktörü",
@@ -80,7 +79,6 @@
   "enableCameraPermission": "Barkod taramak için kamera iznini ayarlardan açın.",
   "productDetail": "Ürün Detayı",
   "productLoadFailed": "Ürün yüklenemedi",
-  "productNotFoundDetail": "Bu barkoda ait ürün bilgisi bulunamadı.",
   "barcode": "Barkod",
   "noHistoryYet": "Henüz tarama geçmişi yok",
   "productsWillAppearHere": "Ürünleri taradığınızda burada görünecek",
@@ -331,7 +329,6 @@
   "aiServiceUnavailableNoFallback": "AI servisi şu an çalışmıyor. Lütfen birkaç dakika sonra tekrar deneyin.",
   "aiServiceDownTitle": "AI Servisi Çalışmıyor",
   "aiServiceDownBody": "İçindekiler okuma servisi şu an yanıt vermiyor. Birkaç dakika sonra tekrar deneyin ya da içindekileri elle girin.",
-  "manualEntry": "Elle Gir",
   "tryAgain": "Tekrar Dene",
   "aiLowConfidence": "Düşük güven — sonuçlar tahminidir",
   "aiEstimate": "AI Tahmin",
@@ -385,7 +382,6 @@
   "featureFavorites": "Favoriler",
   "featureBlacklist": "Kara liste",
   "featurePremium": "Premium",
-  "featureAddProduct": "Ürün ekleme",
   "migrationTitle": "Misafir verilerin var",
   "migrationMessage": "Bu cihazda {dataLine} bulunuyor. Bunları yeni hesabına yükleyelim mi?",
   "@migrationMessage": {
@@ -625,19 +621,6 @@
   "search": "Ara",
   "startFree": "Ücretsiz başla",
   "alreadyHaveAccountSignIn": "Zaten hesabım var",
-  "addProductIntro": "Bu ürün henüz veritabanımızda yok. Bir kez kaydetmen yeterli — sonraki taramalarda anında açılır, diğer kullanıcılar da yararlanır.",
-  "productPhotoOptional": "Ürün Fotoğrafı (opsiyonel)",
-  "productNameHint": "örn: Ülker Çikolatalı Gofret",
-  "brandHint": "örn: Ülker",
-  "completeWithPhoto": "Bilgileri Fotoğrafla Tamamla",
-  "invalidECodeFormat": "Geçersiz E kodu formatı (örn: E471)",
-  "productAddedToDb": "Bu ürünü veritabanımıza eklediniz!",
-  "manualEntryTitle": "Manuel Giriş",
-  "ingredientsTextOptional": "İçindekiler Metni (opsiyonel)",
-  "ingredientsPasteHint": "İçindekiler listesini buraya yapıştırın...",
-  "additivesECodes": "Katkı Maddeleri (E Kodları)",
-  "tapToRemove": "Kaldırmak için dokunun",
-  "saveAction": "Kaydet",
   "verifyIngredientsTitle": "İçerik Doğrulama",
   "ocrIngredientsHint": "OCR ile okunan içindekiler metni...",
   "hideRawOcr": "Ham OCR metnini gizle",
@@ -665,14 +648,6 @@
   "tipCenterIngredients": "\"İçindekiler\" yazan bölümü ortalayın",
   "tipAvoidGlare": "Parlama/yansımadan kaçının",
   "tipZoomIn": "Yazılar net okunabilsin — yakınlaşın",
-  "genericErrorWith": "Hata: {error}",
-  "@genericErrorWith": {
-    "placeholders": {
-      "error": {
-        "type": "Object"
-      }
-    }
-  },
   "welcomeBack": "Hoş geldin",
   "nutritionFacts100g": "Besin Değerleri (100g)",
   "energyLabel": "Enerji",
