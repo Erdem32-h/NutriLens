@@ -1,157 +1,42 @@
-# NutriLens — Claude Code Bağlam Dosyası
+﻿# NutriLens — Claude Code Context
 
 ## Proje Özeti
-Flutter mobil uygulama. Barkod tarayarak ürün içeriklerini analiz eder,
-HP Score (0-100) üretir. Türkiye pazarı odaklı.
-
-**Stack:** Flutter, Riverpod, Drift, GoRouter, fpdart, Supabase, Clean Architecture
-
-**HP Score (v4):**
-```
-raw = 100 − (Chemical Load × 0.45) − (Risk Factor × 0.40) + (Nutri Factor × 0.15) − ingredientQualityPenalty
-
-HP Score = 10 (kritik içerik) | min(raw, 54.9) (etkin NOVA = 4) | raw
-```
-Etkin NOVA = kaynak `nova_group` ?? içindekilerden türetilen (yalnızca grup 4).
-Formülün ikinci kopyası Postgres trigger'ında — Dart'ı değiştirirsen migration da yaz.
-Detay → `wiki/architecture/02-hp-score.md`
-
-**Barkod zinciri:** Kendi DB → Open Food Facts → 3. parti API → OCR → Topluluk DB
-Detay → `wiki/architecture/03-barkod-zinciri.md`
+Flutter mobil uygulama. Barkod tarama & AI yemek analizi ile HP Score (0-100) üretimi.
+**Stack:** Flutter, Riverpod, Drift, GoRouter, fpdart, Supabase, Clean Architecture.
+**HP Score (v4):** Detay -> `wiki/architecture/02-hp-score.md` (Postgres trigger ile senkron tut).
 
 ---
 
-## Sürüm Çıkarma (ÖNEMLİ)
-
-**Android AAB'yi asla düz `flutter build appbundle` ile üretme.**
-
-```
-pwsh scripts/build_android_release.ps1
-```
-
-AdMob reklam birimi ID'leri ve `SENTRY_DSN` derleme zamanı
-`String.fromEnvironment` değerleri. `--dart-define` geçmezsen uygulama Google'ın
-**test reklam birimleriyle** yayınlanır (sıfır gelir + AdMob politika riski) ve
-crash raporlaması olmaz — Android 90 gün boyunca tam olarak bu yüzden Sentry'ye
-tek olay göndermedi. Script değerleri `.env`'den okur, eksikse build'i durdurur.
-Çıktı: `build/app/outputs/bundle/release/app-release.aab`
-
-**Sürüm numaraları iki platformda farklı kaynaktan geliyor:**
-
-| | Sürüm adı (1.3.0) | Build numarası |
-|---|---|---|
-| Android (yerel script) | `pubspec.yaml` | `pubspec.yaml`'daki `+N` |
-| iOS (Codemagic) | `pubspec.yaml` | Codemagic'in dahili `$BUILD_NUMBER` sayacı |
-
-`codemagic.yaml` her iki workflow'da da `--build-number=$BUILD_NUMBER` geçiyor ve
-bu değişken yaml'da tanımlı değil — Codemagic'in kendi build sayacı. Yani
-`pubspec`'teki `+N`'i artırmak iOS build numarasını **etkilemiyor**; iOS sayacı
-44'lerdeyken Android 17'de.
-
-> [!warning] Tuzak
-> `android-internal` Codemagic workflow'u da `$BUILD_NUMBER` kullanıyor. Android'i
-> bir kez Codemagic'te derlersen Play versionCode'u Codemagic sayacına sıçrar ve
-> sonraki her yerel build (18, 19...) "daha düşük versionCode" diye reddedilir.
-> Android'i yerel script'te tut, ya da iki tarafı tek şemaya bağla.
+## Sürüm & Build
+- **Android Release:** `pwsh scripts/build_android_release.ps1` (asla çıplak `flutter build appbundle` yapma; Sentry DSN ve AdMob env'den geçer).
+- **Detaylı release & sürüm kuralları:** `wiki/release/store-release-checklist.md`
 
 ---
 
-## Geliştirici Profili
-- Teknik seviye yüksek — temel şeyleri açıklama, stratejik seviyede konuş
-- Kısa ve eyleme dönük yanıtlar ver
-- Her önerinin sonunda somut bir sonraki adım belirt
-- Yeni özellik öncesi: varsayımları yüzeye çıkar, önce sor
+## Kodlama Prensipleri (Karpathy)
+1. **Varsayım gizleme:** Belirsizlik varsa önce sor.
+2. **Minimum kod:** İstenen kadar yaz, gereksiz soyutlama yapma.
+3. **Cerrahi değişiklik:** Sadece hedefe dokun, komşu kodu bozma.
+4. **Doğrulanabilir hedef:** Başarı kriterini netleştir.
 
 ---
 
-## Kodlama Prensipleri (Karpathy Guidelines)
-
-1. **Varsayım gizleme** — Belirsizlik varsa önce sor, sonra yaz.
-   Birden fazla yorum varsa hepsini sun, sessizce seçme.
-
-2. **Minimum kod** — İstenen kadar, fazlası değil.
-   Tek kullanımlık kod için soyutlama yapma.
-   200 satır yazıp 50'ye düşürebiliyorsan, düşür.
-
-3. **Cerrahi değişiklik** — Sadece istenen yere dokun.
-   Komşu kodu "iyileştirme" adına değiştirme.
-
-4. **Doğrulanabilir hedef** — Her görev için başarı kriteri tanımla.
+## Hafıza & Bağlam (Obsidian)
+**Vault:** `C:\Users\m_fat\OneDrive\Belgeler\Obsidian Vault\NutriLens\wiki\`
+- **Başlangıç:** Yalnızca `wiki/05-ai-handoff.md` oku.
+- **On-Demand:** `wiki/03-current-sprint.md` (sprint), `wiki/04-problems-open.md` (blokajlar), `wiki/02-decisions-log.md` (kararlar).
+- **Formatlar & Kurallar:** `schema/_schema.md`
 
 ---
 
-## Hafıza Sistemi (Obsidian Vault)
-
-**Vault yolu:**
-```
-C:\Users\m_fat\OneDrive\Belgeler\Obsidian Vault\NutriLens\
-```
-
-### Vault Yapısı
-```
-wiki/
-  00-project-overview.md   ← Proje özeti
-  01-tech-stack.md         ← Stack özeti
-  02-decisions-log.md      ← Kararlar
-  03-current-sprint.md     ← Aktif görevler
-  04-problems-open.md      ← Açık sorunlar
-  05-ai-handoff.md         ← AI oturum özeti
-  architecture/
-    00-sistem-mimarisi.md
-    01-veritabani-semasi.md
-    02-hp-score.md         ← HP Score detayı (GÜNCEL KAYNAK)
-    03-barkod-zinciri.md
-  features/
-    barkod-tarama.md
-    gecmis-favoriler.md
-    katki-maddesi.md
-    ogünlerim.md
-    premium.md
-    sahte-urun.md
-  release/
-    store-release-checklist.md
-raw/                       ← Ham notlar (AI'a verilmez)
-schema/
-  _schema.md               ← Vault kuralları
-```
-
-### Oturum başında oku:
-- `wiki/03-current-sprint.md`       → Aktif görevler
-- `wiki/04-problems-open.md`        → Açık sorunlar
-- `wiki/05-ai-handoff.md`           → Genel bağlam
-
-### Oturum boyunca güncelle:
-
-| Durum | Dosya |
-|---|---|
-| Teknik/ürün kararı | `wiki/02-decisions-log.md` |
-| Sprint görevi tamamlandı | `wiki/03-current-sprint.md` |
-| Yeni sorun | `wiki/04-problems-open.md` |
-| Sorun çözüldü | `wiki/04-problems-open.md`'den sil + `wiki/02-decisions-log.md`'ye ekle |
-| Mimari değişti | `wiki/architecture/` altındaki ilgili dosyayı güncelle |
-| Yeni özellik tasarlandı | `wiki/features/` altına yeni dosya ekle |
-
-### ⚠️ Önemli
-`wiki/architecture/02-hp-score.md` HP Score için **tek ve güncel kaynak.**
-`wiki/01-tech-stack.md` içindeki HP Score özeti eskimiş olabilir —
-çelişki varsa `architecture/02-hp-score.md`'yi esas al.
+## Token Disiplini
+- `wiki/02-decisions-log.md` (128KB): **asla tam okuma** — grep ile ilgili kararı bul, sadece o bölümü oku.
+- `docs/plans/` + `docs/superpowers/`: yalnızca aktif feature'ın planını oku; bitmiş planlar vault `archive/`'de.
+- `graphify-out/GRAPH_REPORT.md`: yalnızca açıkça istenirse oku; aksi halde harcanmaz.
+- Büyük dosya gerekirse offset/limit ile parça parça oku.
 
 ---
 
-## Master Bağlam
-```
-C:\Users\m_fat\OneDrive\Belgeler\Obsidian Vault\Proje Prensipleri\wiki\02-ai-handoff.md
-```
-
-## graphify
-
-This project has a graphify knowledge graph at graphify-out/.
-
-Rules:
-- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
-- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
-- For cross-module "how does X relate to Y" questions, prefer `graphify query "<question>"`, `graphify path "<A>" "<B>"`, or `graphify explain "<concept>"` over grep — these traverse the graph's EXTRACTED + INFERRED edges instead of scanning files
-- After modifying code files in this session, run `graphify update .` to keep the graph current (AST-only, no API cost)
-
-## Task Observer
-Bu oturumda task-observer skill'i aktif olsun. Session boyunca calisma kaliplarini, duzeltmeleri ve skill bosluklarini gozlemle; oturum sonunda "Any observations logged?" sorusuna hazir ol.
+## Araçlar
+- **Graphify:** Kod yapısı için `graphify-out/GRAPH_REPORT.md`. Kod değişiminden sonra: `graphify update .`
+- **Task Observer:** Oturum boyu çalışma kalıplarını ve gözlemleri izle.
