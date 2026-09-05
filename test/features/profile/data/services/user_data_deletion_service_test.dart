@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -126,6 +128,60 @@ void main() {
     await service.deleteAllUserData('user-1');
 
     expect(remote.photoFolders, ['user-1']);
+  });
+
+  test('local cleanup clears health metrics without any remote call', () async {
+    for (final id in ['user-1', 'user-2']) {
+      await db
+          .into(db.userMetrics)
+          .insert(
+            UserMetricsCompanion.insert(
+              userId: id,
+              sex: 'unspecified',
+              birthYear: 1990,
+              heightCm: 170,
+              weightKg: 70,
+              activityLevel: 'sedentary',
+              updatedAt: DateTime(2026),
+            ),
+          );
+    }
+    await service.deleteLocalUserData('user-1');
+    expect((await db.select(db.userMetrics).get()).single.userId, 'user-2');
+    expect(remote.deletedTables, isEmpty);
+    expect(remote.photoFolders, isEmpty);
+    expect(remote.resetProfiles, isEmpty);
+    expect(prefs.getStringList('health_filters_allergens'), isNull);
+  });
+
+  test('removes own thumbnail but preserves another user photo', () async {
+    final dir = await Directory.systemTemp.createTemp('nutrilens-deletion-');
+    addTearDown(() => dir.delete(recursive: true));
+    final own = await File('${dir.path}/own.jpg').writeAsString('own');
+    final shared = await File('${dir.path}/shared.jpg').writeAsString('shared');
+    for (final item in [
+      ('own', 'user-1', own.path),
+      ('shared-1', 'user-1', shared.path),
+      ('shared-2', 'user-2', shared.path),
+    ]) {
+      await db
+          .into(db.mealEntries)
+          .insert(
+            MealEntriesCompanion.insert(
+              id: item.$1,
+              userId: item.$2,
+              mealName: 'Meal',
+              mealType: 'lunch',
+              capturedAt: DateTime(2026),
+              photoThumbnailPath: Value(item.$3),
+            ),
+          );
+    }
+    await service.deleteLocalUserData('user-1');
+    expect(await own.exists(), isFalse);
+    expect(await shared.exists(), isTrue);
+    expect((await db.select(db.mealEntries).get()).single.userId, 'user-2');
+    await service.deleteLocalUserData('user-1'); // Retry is safe.
   });
 
   test('a storage failure fails the whole deletion instead of passing', () async {

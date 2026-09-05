@@ -306,11 +306,16 @@ class GeminiAiService {
     String languageCode = 'tr',
     required String deviceHash,
   }) async {
-    final response = await _invoke('meal_analysis', {
-      'image_base64': base64Image,
-      'language_code': languageCode,
-      'device_hash': deviceHash,
-    }, requireAuth: false, timeout: _mealTimeout);
+    final response = await _invoke(
+      'meal_analysis',
+      {
+        'image_base64': base64Image,
+        'language_code': languageCode,
+        'device_hash': deviceHash,
+      },
+      requireAuth: false,
+      timeout: _mealTimeout,
+    );
     final result = (response['result'] as String?)?.trim();
     if (result == null || result.isEmpty) {
       throw const GeminiServiceException(
@@ -398,7 +403,7 @@ class GeminiAiService {
     } on GeminiServiceException catch (e) {
       // Single retry on auth failure: refresh the session and try once more.
       // Only meaningful for authed actions — guests have no session to refresh.
-      if (requireAuth && e.statusCode == 401) {
+      if (e.statusCode == 401 && _client.auth.currentSession != null) {
         debugPrint('[GeminiAI] $action 401 — refreshing session and retrying');
         try {
           await _client.auth.refreshSession();

@@ -110,10 +110,7 @@ class ProfileScreen extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Text(
                         isGuest ? l10n.guestDataLocal : (user?.email ?? ''),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: cozy.bodyOnTint,
-                        ),
+                        style: TextStyle(fontSize: 13, color: cozy.bodyOnTint),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -158,7 +155,6 @@ class ProfileScreen extends ConsumerWidget {
             onTap: () => _showLanguageDialog(context, ref, currentLocale),
           ),
 
-
           // Kişisel kalori hedefi — hesaplanmışsa hedefi alt metinde
           // gösterir, yoksa hesaplamaya davet eder. shouldPrompt() kontrolü
           // BİLEREK burada yapılmaz: food_result_screen'deki otomatik
@@ -181,8 +177,9 @@ class ProfileScreen extends ConsumerWidget {
                 // tıbbi tavsiye niteliğinde değil, tahmini bir sayı olduğu
                 // hatırlatılır. Hesaplanmamış davet metninde henüz bir
                 // hedef yok, o yüzden dipnot gereksiz.
-                footnote:
-                    personalTarget != null ? l10n.metricsMedicalDisclaimer : null,
+                footnote: personalTarget != null
+                    ? l10n.metricsMedicalDisclaimer
+                    : null,
                 // rootNavigator: the tabs live in a ShellRoute whose child
                 // sits above an ad banner and the nav bar. Pushing onto the
                 // nested navigator would keep both on screen and cost the
@@ -374,6 +371,7 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(calorieChartDataProvider);
       ref.invalidate(todayCalorieTotalProvider);
       ref.invalidate(healthFiltersProvider);
+      ref.invalidate(userMetricsProvider);
 
       if (!context.mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.userDataDeleted)));
@@ -435,6 +433,7 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(todayCalorieTotalProvider);
       ref.invalidate(healthFiltersProvider);
       ref.invalidate(authStateProvider);
+      ref.invalidate(userMetricsProvider);
 
       if (!context.mounted) return;
       context.go('/login');

@@ -21,5 +21,6 @@ final accountDeletionServiceProvider = Provider<AccountDeletionService>((ref) {
     userDataCleaner: ref.watch(userDataDeletionServiceProvider),
     accountStore: SupabaseRemoteAccountDeletionStore(client),
     authSession: SupabaseAuthSessionTerminator(client),
+    preferences: ref.watch(sharedPreferencesProvider),
   );
 });

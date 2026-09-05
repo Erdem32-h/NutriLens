@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { authorizeAndConsume, readBody, RequestError, validateBody } from "./request_guard.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 const GEMINI_API_BASE =
@@ -286,11 +287,6 @@ async function callOpenRouter(
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-// Rate limiting: simple in-memory store (resets on cold start)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 30; // requests per hour per user
-const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-
 interface RequestBody {
   action:
     | "ocr_ingredients"
@@ -319,8 +315,8 @@ interface RequestBody {
 
 /// Handles the anon-allowed OpenRouter actions: meal analysis, recalc, and
 /// (since the direct-Gemini key started 502ing) ingredients + nutrition image
-/// OCR. Gated by a per-device-hash rate limit instead of user auth; the real
-/// cost ceiling is the OpenRouter spend cap. Returns the proxied result or an error.
+/// OCR. The request guard has already authenticated the caller and consumed
+/// the persistent subject/global quota before entering this provider path.
 async function handleOpenRouterAction(
   action:
     | "meal_analysis"
@@ -337,20 +333,6 @@ async function handleOpenRouterAction(
     return new Response(
       JSON.stringify({ error: "OpenRouter API key not configured" }),
       { status: 500, headers: jsonHeaders },
-    );
-  }
-
-  const deviceHash = payload.device_hash;
-  if (!deviceHash || deviceHash.length < 16) {
-    return new Response(JSON.stringify({ error: "Missing device_hash" }), {
-      status: 400,
-      headers: jsonHeaders,
-    });
-  }
-  if (!checkRateLimit(`dev:${deviceHash}`)) {
-    return new Response(
-      JSON.stringify({ error: "Rate limit exceeded. Try again later." }),
-      { status: 429, headers: jsonHeaders },
     );
   }
 
@@ -494,23 +476,6 @@ async function handleOpenRouterAction(
     }),
     { status: 200, headers: jsonHeaders },
   );
-}
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(userId);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_WINDOW_MS });
-    return true;
-  }
-
-  if (entry.count >= RATE_LIMIT) {
-    return false;
-  }
-
-  entry.count++;
-  return true;
 }
 
 function buildPrompt(action: string, payload: RequestBody["payload"]): object {
@@ -816,99 +781,36 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    // Verify auth
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing authorization" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+    if (req.method !== "POST") throw new RequestError(405, "Method not allowed");
+    const parsed = validateBody(await readBody(req));
+    const limit = Number(Deno.env.get("AI_GLOBAL_DAILY_LIMIT"));
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100000) {
+      throw new RequestError(503, "AI quota is not configured");
     }
-
-    // Parse early so anon-allowed actions route before the user-auth checks.
-    const body: RequestBody = await req.json();
-    const { action, payload } = body;
-    if (!action || !payload) {
-      return new Response(
-        JSON.stringify({ error: "Missing action or payload" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
-    // Public (anon-allowed) actions. Guests have no user JWT, so these are
-    // gated by a per-device-hash rate limit (+ the OpenRouter spend cap)
-    // instead of user auth. Image OCR joined this set after the direct-Gemini
-    // key started returning 502s. The remaining Gemini actions below still
-    // require a signed-in user.
-    if (
-      action === "meal_analysis" ||
-      action === "recalc_nutrition" ||
-      action === "ocr_ingredients_image" ||
-      action === "ocr_nutrition_image"
-    ) {
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!serviceKey) throw new RequestError(503, "AI quota is not configured");
+    const admin = createClient(SUPABASE_URL, serviceKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    await authorizeAndConsume(req.headers.get("Authorization"), parsed, {
+      anonKey: SUPABASE_ANON_KEY,
+      async getUser(token) {
+        const { data, error } = await admin.auth.getUser(token);
+        return error ? null : data.user?.id ?? null;
+      },
+      async consume(subject) {
+        const { data, error } = await admin.rpc("consume_ai_quota", {
+          p_subject: subject, p_global_daily_limit: limit,
+        });
+        if (error) throw new RequestError(503, "AI quota temporarily unavailable");
+        return data === true;
+      },
+    });
+    const { action, payload } = parsed;
+    if (action === "meal_analysis" || action === "recalc_nutrition" ||
+        action === "ocr_ingredients_image" || action === "ocr_nutrition_image") {
       return await handleOpenRouterAction(action, payload);
     }
-
-    // Reject when the caller is sending the anon key instead of a user JWT.
-    // We compare the raw bearer token against the project's anon key so we
-    // can return a precise message ("you're not signed in") instead of the
-    // misleading "Unauthorized" — and so the client can prompt re-login.
-    const bearer = authHeader.replace(/^Bearer\s+/i, "").trim();
-    if (bearer === SUPABASE_ANON_KEY) {
-      console.warn("[auth] anon key sent — user is not signed in");
-      return new Response(
-        JSON.stringify({
-          error: "Not signed in",
-          code: "anon_key_used",
-        }),
-        {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData?.user) {
-      console.warn(
-        "[auth] getUser failed — bearer prefix=" +
-          bearer.slice(0, 12) +
-          "... err=" +
-          (userError?.message ?? "no user")
-      );
-      return new Response(
-        JSON.stringify({
-          error: "Session expired",
-          code: "invalid_jwt",
-          details: userError?.message ?? "no user for token",
-        }),
-        {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-    const user = userData.user;
-
-    // Rate limit
-    if (!checkRateLimit(user.id)) {
-      return new Response(
-        JSON.stringify({ error: "Rate limit exceeded. Try again later." }),
-        {
-          status: 429,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    // `action` + `payload` were parsed and the public OpenRouter actions
-    // already handled above (before user auth). Everything below requires a
-    // signed-in user and goes to Gemini.
-
     // Validate API key
     if (!GEMINI_API_KEY) {
       return new Response(
@@ -918,15 +820,6 @@ Deno.serve(async (req: Request) => {
           headers: { "Content-Type": "application/json" },
         }
       );
-    }
-
-    if (action === "list_models") {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`);
-      const data = await response.json();
-      return new Response(JSON.stringify(data), {
-        status: 200,
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-      });
     }
 
     // Build and send Gemini request
@@ -978,7 +871,12 @@ Deno.serve(async (req: Request) => {
       },
     });
   } catch (error) {
-    console.error("Edge function error:", error);
+    if (error instanceof RequestError) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: error.status, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      });
+    }
+    console.error("Edge function request failed");
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
       {

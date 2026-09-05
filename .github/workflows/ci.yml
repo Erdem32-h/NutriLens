@@ -29,6 +29,23 @@ env:
   FLUTTER_VERSION: '3.41.5'
 
 jobs:
+  edge-tests:
+    name: Edge security regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check changed Edge entrypoints
+        run: deno check supabase/functions/delete-account/index.ts supabase/functions/gemini-proxy/index.ts
+      - name: Run isolated handler tests
+        run: deno test supabase/functions/delete-account/handler_test.ts supabase/functions/gemini-proxy/request_guard_test.ts
+      - name: Test migrations on isolated PostgreSQL
+        shell: pwsh
+        run: ./scripts/test_p0_database.ps1
+
   analyze-and-test:
     name: Analyze + test
     runs-on: ubuntu-latest

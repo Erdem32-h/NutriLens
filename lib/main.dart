@@ -27,6 +27,7 @@ import 'core/services/notification_service.dart';
 import 'core/session/app_session.dart';
 import 'core/theme/app_theme.dart';
 import 'features/product/presentation/providers/product_provider.dart';
+import 'features/profile/presentation/providers/user_data_deletion_provider.dart';
 
 Future<void> main() async {
   // Sentry — Crash + error reporting. DSN is injected at build time via
@@ -58,55 +59,52 @@ Future<void> main() async {
   // ignore: avoid_print
   print('[sentry] enabled — crash reporting active');
 
-  await SentryFlutter.init(
-    (options) {
-      options.dsn = sentryDsn;
-      // Performance sampling — 10% in prod is enough to spot regressions
-      // without blowing through the free tier (5K events/month).
-      options.tracesSampleRate = 0.1;
-      options.environment = kReleaseMode ? 'production' : 'debug';
-      // Don't ship PII (email, IP) by default. We tag user id manually
-      // post-login (see auth listener) without exposing email.
-      options.sendDefaultPii = false;
-      options.attachStacktrace = true;
+  await SentryFlutter.init((options) {
+    options.dsn = sentryDsn;
+    // Performance sampling — 10% in prod is enough to spot regressions
+    // without blowing through the free tier (5K events/month).
+    options.tracesSampleRate = 0.1;
+    options.environment = kReleaseMode ? 'production' : 'debug';
+    // Don't ship PII (email, IP) by default. We tag user id manually
+    // post-login (see auth listener) without exposing email.
+    options.sendDefaultPii = false;
+    options.attachStacktrace = true;
 
-      // Session Replay — records every tap/scroll/screen change so we
-      // can play back exactly what a user did before a crash or stuck
-      // state. The app is past beta (~450 aktif cihaz/hafta): at 1.0
-      // the healthy-session recordings would burn the replay quota in
-      // days and crowd out the recordings that matter. The on-error
-      // rate stays at 1.0 because those are the most valuable ones.
-      options.replay.sessionSampleRate = 0.1;
-      options.replay.onErrorSampleRate = 1.0;
-      // Default-on aggressive privacy: every text field and image is
-      // masked in the replay (these are default-true in 9.20+, set
-      // explicitly so future SDK changes can't silently flip them).
-      // Profile email, allergens, scan history would otherwise be
-      // visible to Sentry viewers.
-      options.privacy.maskAllText = true;
-      options.privacy.maskAllImages = true;
+    // Session Replay — records every tap/scroll/screen change so we
+    // can play back exactly what a user did before a crash or stuck
+    // state. The app is past beta (~450 aktif cihaz/hafta): at 1.0
+    // the healthy-session recordings would burn the replay quota in
+    // days and crowd out the recordings that matter. The on-error
+    // rate stays at 1.0 because those are the most valuable ones.
+    options.replay.sessionSampleRate = 0.1;
+    options.replay.onErrorSampleRate = 1.0;
+    // Default-on aggressive privacy: every text field and image is
+    // masked in the replay (these are default-true in 9.20+, set
+    // explicitly so future SDK changes can't silently flip them).
+    // Profile email, allergens, scan history would otherwise be
+    // visible to Sentry viewers.
+    options.privacy.maskAllText = true;
+    options.privacy.maskAllImages = true;
 
-      // Drop known-benign noise so real bugs don't get buried.
-      options.beforeSend = (event, hint) {
-        final ex = event.throwable;
-        // Supabase fires AuthApiException on cold launch when no
-        // saved session exists or the refresh token has rotated.
-        // The app already handles this gracefully (falls through to
-        // the login screen) — no developer action is ever needed.
-        if (ex is AuthApiException) {
-          final code = ex.code;
-          if (code == 'refresh_token_not_found' ||
-              code == 'session_not_found' ||
-              code == 'invalid_refresh_token' ||
-              code == 'refresh_token_already_used') {
-            return null;
-          }
+    // Drop known-benign noise so real bugs don't get buried.
+    options.beforeSend = (event, hint) {
+      final ex = event.throwable;
+      // Supabase fires AuthApiException on cold launch when no
+      // saved session exists or the refresh token has rotated.
+      // The app already handles this gracefully (falls through to
+      // the login screen) — no developer action is ever needed.
+      if (ex is AuthApiException) {
+        final code = ex.code;
+        if (code == 'refresh_token_not_found' ||
+            code == 'session_not_found' ||
+            code == 'invalid_refresh_token' ||
+            code == 'refresh_token_already_used') {
+          return null;
         }
-        return event;
-      };
-    },
-    appRunner: _bootApp,
-  );
+      }
+      return event;
+    };
+  }, appRunner: _bootApp);
 }
 
 void _bootApp() {
@@ -331,6 +329,7 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   void initState() {
     super.initState();
     _router = createRouter(ref);
+    unawaited(_resumeAccountCleanup());
 
     // One-time plugin setup for the daily meal reminder. Cheap and has no
     // user-visible effect on its own (no permission dialog, no scheduling)
@@ -408,6 +407,15 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
     _authSub?.cancel();
     _router.dispose();
     super.dispose();
+  }
+
+  Future<void> _resumeAccountCleanup() async {
+    try {
+      await ref.read(accountDeletionServiceProvider).resumePendingCleanup();
+    } catch (e, st) {
+      // Keep the persisted marker so the next launch retries local cleanup.
+      await Sentry.captureException(e, stackTrace: st);
+    }
   }
 
   @override

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:drift/drift.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -78,13 +81,19 @@ class SupabaseRemoteUserDataStore implements RemoteUserDataStore {
 
   @override
   Future<void> deleteMealPhotos(String userId) async {
-    final objects = await _client.storage
-        .from(MealRemoteDataSource.bucket)
-        .list(path: userId);
-    if (objects.isEmpty) return;
-    await _client.storage
-        .from(MealRemoteDataSource.bucket)
-        .remove([for (final object in objects) '$userId/${object.name}']);
+    final bucket = _client.storage.from(MealRemoteDataSource.bucket);
+    // Delete from the first page repeatedly: incrementing offset after each
+    // delete skips objects as the remaining list shifts left.
+    while (true) {
+      final objects = await bucket.list(
+        path: userId,
+        searchOptions: const SearchOptions(limit: 100),
+      );
+      if (objects.isEmpty) return;
+      await bucket.remove([
+        for (final object in objects) '$userId/${object.name}',
+      ]);
+    }
   }
 }
 
@@ -111,8 +120,7 @@ class UserDataDeletionService implements UserDataCleaner {
   @override
   Future<void> deleteAllUserData(String userId) async {
     await _deleteRemoteUserData(userId);
-    await _deleteLocalUserData(userId);
-    await _clearLocalProfilePreferences();
+    await deleteLocalUserData(userId);
   }
 
   Future<void> _deleteRemoteUserData(String userId) async {
@@ -151,7 +159,27 @@ class UserDataDeletionService implements UserDataCleaner {
     await _remoteStore.deleteMealPhotos(userId);
   }
 
-  Future<void> _deleteLocalUserData(String userId) async {
+  @override
+  Future<void> deleteLocalUserData(String userId) async {
+    final meals = await (_db.select(
+      _db.mealEntries,
+    )..where((table) => table.userId.equals(userId))).get();
+    // Remove files before their rows so a failed delete remains retryable.
+    // Never delete a thumbnail still referenced by another user's meal.
+    for (final meal in meals) {
+      final path = meal.photoThumbnailPath;
+      if (path == null) continue;
+      final otherOwners =
+          await (_db.select(_db.mealEntries)..where(
+                (table) =>
+                    table.photoThumbnailPath.equals(path) &
+                    table.userId.equals(userId).not(),
+              ))
+              .get();
+      if (otherOwners.isNotEmpty) continue;
+      final file = File(path);
+      if (await file.exists()) await file.delete();
+    }
     await _db.transaction(() async {
       await (_db.delete(
         _db.scanHistory,
@@ -165,7 +193,11 @@ class UserDataDeletionService implements UserDataCleaner {
       await (_db.delete(
         _db.mealEntries,
       )..where((table) => table.userId.equals(userId))).go();
+      await (_db.delete(
+        _db.userMetrics,
+      )..where((table) => table.userId.equals(userId))).go();
     });
+    await _clearLocalProfilePreferences();
   }
 
   Future<void> _clearLocalProfilePreferences() async {

@@ -9,6 +9,10 @@ class MockSupabaseClient extends Mock implements SupabaseClient {}
 
 class MockFunctionsClient extends Mock implements FunctionsClient {}
 
+class MockAuthClient extends Mock implements GoTrueClient {}
+
+class MockSession extends Mock implements Session {}
+
 /// A meal payload the shared parser accepts, so the only thing a test can
 /// fail on is the retry/status behaviour under test.
 const _validMealJson =
@@ -20,21 +24,22 @@ void main() {
   late MockSupabaseClient client;
   late MockFunctionsClient functions;
   late GeminiAiService service;
+  late MockAuthClient auth;
 
   setUp(() {
     client = MockSupabaseClient();
     functions = MockFunctionsClient();
+    auth = MockAuthClient();
+    when(() => client.auth).thenReturn(auth);
+    when(() => auth.currentSession).thenReturn(null);
     when(() => client.functions).thenReturn(functions);
     service = GeminiAiService(client);
   });
 
-  Future<MealAnalysisResult> analyze() => service.analyzeMeal(
-    'ZmFrZQ==',
-    deviceHash: 'device-1',
-  );
+  Future<MealAnalysisResult> analyze() =>
+      service.analyzeMeal('ZmFrZQ==', deviceHash: 'device-1');
 
-  /// Every `analyzeMeal` call goes through `meal_analysis`, which passes
-  /// `requireAuth: false`, so no session needs to be stubbed.
+  /// Meal actions also refresh stale JWTs for signed-in callers.
   void stubInvoke(List<Future<FunctionResponse> Function()> responses) {
     var call = 0;
     when(
@@ -92,10 +97,35 @@ void main() {
     await expectLater(
       analyze(),
       throwsA(
-        isA<GeminiServiceException>().having((e) => e.statusCode, 'status', 429),
+        isA<GeminiServiceException>().having(
+          (e) => e.statusCode,
+          'status',
+          429,
+        ),
       ),
     );
     expect(attempts, 1);
+  });
+
+  test('public meal action refreshes a signed-in session on 401', () async {
+    when(() => auth.currentSession).thenReturn(MockSession());
+    when(() => auth.refreshSession()).thenAnswer((_) async => AuthResponse());
+    stubInvoke([
+      () async => FunctionResponse(data: {'error': 'expired'}, status: 401),
+      () async =>
+          FunctionResponse(data: {'result': _validMealJson}, status: 200),
+    ]);
+    expect((await analyze()).foodName, 'Mercimek Corbasi');
+    verify(() => auth.refreshSession()).called(1);
+  });
+
+  test('guest 401 never attempts session refresh', () async {
+    stubInvoke([
+      () async =>
+          FunctionResponse(data: {'error': 'unauthorized'}, status: 401),
+    ]);
+    await expectLater(analyze(), throwsA(isA<GeminiServiceException>()));
+    verifyNever(() => auth.refreshSession());
   });
 
   group('content failures are not transport failures', () {
@@ -142,7 +172,10 @@ void main() {
         _,
       ) async {
         attempts++;
-        return FunctionResponse(data: {'result': 'sorry, no idea'}, status: 200);
+        return FunctionResponse(
+          data: {'result': 'sorry, no idea'},
+          status: 200,
+        );
       });
 
       await expectLater(analyze(), throwsA(isA<GeminiServiceException>()));
