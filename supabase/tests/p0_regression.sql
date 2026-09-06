@@ -26,6 +26,21 @@ begin
   if not public.consume_ai_quota(s, 100) then raise exception 'Daily refill failed'; end if;
 
   insert into auth.users(id) values (u), (other_u);
+  perform public.begin_account_deletion_receipt(u, repeat('a',64));
+  if exists(select 1 from public.account_deletion_receipts where user_id=u and completed_at is not null) then
+    raise exception 'Receipt completed before account deletion';
+  end if;
+  begin
+    delete from auth.users where id=u;
+    -- Simulate a later failure in the Auth transaction after the trigger ran.
+    raise exception using errcode = 'ZX001', message = 'simulated rollback';
+  exception when sqlstate 'ZX001' then
+    null;
+  end;
+  if not exists(select 1 from auth.users where id=u)
+    or exists(select 1 from public.account_deletion_receipts where user_id=u and completed_at is not null) then
+    raise exception 'Rolled-back account deletion left a successful receipt';
+  end if;
   insert into public.community_products values (1,u), (2,other_u);
   insert into public.product_reports values (1,u), (2,other_u);
   insert into public.analytics_events values (1,u), (2,other_u);
@@ -40,6 +55,13 @@ begin
   perform public.prepare_account_deletion(u);
   perform public.prepare_account_deletion(u);
   delete from auth.users where id=u;
+  if not exists(select 1 from public.account_deletion_receipts where user_id=u and completed_at is not null) then
+    raise exception 'Receipt missing after account deletion';
+  end if;
+  if has_table_privilege('anon', 'public.account_deletion_receipts', 'select')
+    or has_function_privilege('authenticated', 'public.begin_account_deletion_receipt(uuid,text)', 'execute') then
+    raise exception 'Client can forge or read receipts';
+  end if;
   if (select added_by from public.community_products where id=1) is not null
     or (select count(*) from public.community_products) <> 2 then
     raise exception 'Shared contributions lost or not detached';

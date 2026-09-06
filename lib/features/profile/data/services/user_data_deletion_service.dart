@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../config/drift/app_database.dart';
 import '../../../meals/data/datasources/meal_remote_datasource.dart';
 import 'account_deletion_service.dart';
+import 'storage_folder_cleaner.dart';
 
 abstract interface class RemoteUserDataStore {
   Future<void> deleteRows({
@@ -82,18 +83,21 @@ class SupabaseRemoteUserDataStore implements RemoteUserDataStore {
   @override
   Future<void> deleteMealPhotos(String userId) async {
     final bucket = _client.storage.from(MealRemoteDataSource.bucket);
-    // Delete from the first page repeatedly: incrementing offset after each
-    // delete skips objects as the remaining list shifts left.
-    while (true) {
-      final objects = await bucket.list(
-        path: userId,
-        searchOptions: const SearchOptions(limit: 100),
-      );
-      if (objects.isEmpty) return;
-      await bucket.remove([
-        for (final object in objects) '$userId/${object.name}',
-      ]);
-    }
+    await StorageFolderCleaner(
+      list: (path) async {
+        final objects = await bucket.list(
+          path: path,
+          searchOptions: const SearchOptions(limit: 100),
+        );
+        return [
+          for (final object in objects)
+            StorageCleanupEntry(object.name, isFolder: object.id == null),
+        ];
+      },
+      remove: (paths) async {
+        await bucket.remove(paths);
+      },
+    ).clean(userId);
   }
 }
 
@@ -108,14 +112,17 @@ class UserDataDeletionService implements UserDataCleaner {
   final AppDatabase _db;
   final RemoteUserDataStore _remoteStore;
   final SharedPreferences _preferences;
+  final String? Function()? _currentUserId;
 
   const UserDataDeletionService({
     required AppDatabase db,
     required RemoteUserDataStore remoteStore,
     required SharedPreferences preferences,
+    String? Function()? currentUserId,
   }) : _db = db,
        _remoteStore = remoteStore,
-       _preferences = preferences;
+       _preferences = preferences,
+       _currentUserId = currentUserId;
 
   @override
   Future<void> deleteAllUserData(String userId) async {
@@ -197,7 +204,12 @@ class UserDataDeletionService implements UserDataCleaner {
         _db.userMetrics,
       )..where((table) => table.userId.equals(userId))).go();
     });
-    await _clearLocalProfilePreferences();
+    // Preferences are device-global, unlike rows. A resumed deletion of A
+    // must not clear health filters now belonging to signed-in user B.
+    final currentId = _currentUserId?.call();
+    if (currentId == null || currentId == userId) {
+      await _clearLocalProfilePreferences();
+    }
   }
 
   Future<void> _clearLocalProfilePreferences() async {

@@ -8,10 +8,12 @@ import '../../data/services/user_data_deletion_service.dart';
 final userDataDeletionServiceProvider = Provider<UserDataDeletionService>((
   ref,
 ) {
+  final client = ref.watch(supabaseClientProvider);
   return UserDataDeletionService(
     db: ref.watch(appDatabaseProvider),
-    remoteStore: SupabaseRemoteUserDataStore(ref.watch(supabaseClientProvider)),
+    remoteStore: SupabaseRemoteUserDataStore(client),
     preferences: ref.watch(sharedPreferencesProvider),
+    currentUserId: () => client.auth.currentUser?.id,
   );
 });
 
@@ -19,7 +21,10 @@ final accountDeletionServiceProvider = Provider<AccountDeletionService>((ref) {
   final client = ref.watch(supabaseClientProvider);
   return AccountDeletionService(
     userDataCleaner: ref.watch(userDataDeletionServiceProvider),
-    accountStore: SupabaseRemoteAccountDeletionStore(client),
+    accountStore: SupabaseRemoteAccountDeletionStore(
+      client,
+      ref.watch(sharedPreferencesProvider),
+    ),
     authSession: SupabaseAuthSessionTerminator(client),
     preferences: ref.watch(sharedPreferencesProvider),
   );

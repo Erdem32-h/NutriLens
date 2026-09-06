@@ -1,4 +1,6 @@
 export interface DeletionDependencies {
+  receiptCompleted(userId: string, hash: string): Promise<boolean>;
+  beginReceipt(userId: string, hash: string): Promise<void>;
   getUser(token: string): Promise<string | null>;
   listPhotos(userId: string): Promise<string[]>;
   removePhotos(paths: string[]): Promise<void>;
@@ -36,12 +38,41 @@ export function createDeletionHandler(deps: DeletionDependencies) {
     ) {
       return json({ error: "Invalid user_id" }, 400);
     }
+    const secret = "request_token" in body ? body.request_token : undefined;
+    if (
+      secret !== undefined && (typeof secret !== "string" ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+          .test(secret))
+    ) {
+      return json({ error: "Invalid request_token" }, 400);
+    }
     try {
+      const hash = typeof secret === "string"
+        ? Array.from(
+          new Uint8Array(
+            await crypto.subtle.digest(
+              "SHA-256",
+              new TextEncoder().encode(secret),
+            ),
+          ),
+        )
+          .map((b) => b.toString(16).padStart(2, "0")).join("")
+        : null;
+      // A receipt is a narrow capability: it can only confirm this already
+      // completed deletion, never authorize a new one. It survives expired
+      // access tokens and a lost HTTP success response.
+      if (hash && await deps.receiptCompleted(body.user_id, hash)) {
+        return json({ status: "ok" }, 200);
+      }
+      if ("receipt_only" in body && body.receipt_only === true) {
+        return json({ status: "unconfirmed" }, 200);
+      }
       const userId = await deps.getUser(token);
       if (!userId) return json({ error: "Unauthorized" }, 401);
       if (userId !== body.user_id) {
         return json({ error: "Cannot delete another user" }, 403);
       }
+      if (hash) await deps.beginReceipt(userId, hash);
       // Read page zero after each removal, including nested/orphan photos.
       for (let page = 0; page < 100; page++) {
         const paths = await deps.listPhotos(userId);

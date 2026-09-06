@@ -8,6 +8,20 @@ const admin = createClient(
 );
 
 Deno.serve(createDeletionHandler({
+  async receiptCompleted(userId, hash) {
+    const { data, error } = await admin.from("account_deletion_receipts")
+      .select("completed_at").eq("user_id", userId).eq("request_hash", hash)
+      .gt("expires_at", new Date().toISOString()).maybeSingle();
+    if (error) throw error;
+    return data?.completed_at != null;
+  },
+  async beginReceipt(userId, hash) {
+    const { error } = await admin.rpc("begin_account_deletion_receipt", {
+      p_user_id: userId,
+      p_request_hash: hash,
+    });
+    if (error) throw error;
+  },
   async getUser(token) {
     const { data, error } = await admin.auth.getUser(token);
     if (error) return null;

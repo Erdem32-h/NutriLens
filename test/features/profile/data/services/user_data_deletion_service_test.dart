@@ -130,6 +130,21 @@ void main() {
     expect(remote.photoFolders, ['user-1']);
   });
 
+  test(
+    'resumed cleanup preserves another signed-in account preferences',
+    () async {
+      final cleaner = UserDataDeletionService(
+        db: db,
+        remoteStore: remote,
+        preferences: prefs,
+        currentUserId: () => 'user-2',
+      );
+      await cleaner.deleteLocalUserData('user-1');
+      expect(prefs.getStringList('health_filters_allergens'), ['milk']);
+      expect(prefs.getStringList('health_filters_diets'), ['vegan']);
+    },
+  );
+
   test('local cleanup clears health metrics without any remote call', () async {
     for (final id in ['user-1', 'user-2']) {
       await db

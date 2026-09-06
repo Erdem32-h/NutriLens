@@ -18,8 +18,17 @@ Status: implemented locally, NOT deployed. No production user was deleted.
   Ownership removal is not full filename anonymization; a separate copy/URL
   migration is needed before claiming complete anonymization of public images.
 - Cross-service Storage/Auth deletion is not atomic. If photo cleanup succeeds
-  and Auth fails, retry resumes remaining work. Lost success responses remain
-  an edge case: server-side deletion receipts are not implemented in this patch.
+  and Auth fails, retry resumes remaining work. Lost success responses are
+  recoverable within the receipt lifetime: the follow-up adds a random client request capability,
+  SHA-256-only server receipt and Auth deletion trigger. Receipt completion
+  commits atomically with user deletion. Startup uses a read-only receipt check,
+  never silently initiates deletion. Recovery after seven days is not guaranteed.
+  Receipts are valid for seven days; expired
+  rows are pruned on subsequent deletion requests (scheduled pruning still TBD).
+- Follow-up: local session termination is conditional on the deleted account
+  still being current. Another signed-in account's device-global health filters
+  survive resumed cleanup. Photo cleanup traverses virtual folders, rejects
+  unchanged pages/unsafe names, and caps listing count.
 
 ## AI admission
 
@@ -40,10 +49,11 @@ Status: implemented locally, NOT deployed. No production user was deleted.
 
 ## Validation
 
-Local validation completed: 661 Flutter tests passed; Flutter analyze clean;
-23 Deno handler/guard tests passed; both Edge entrypoints type-check; changed
+Local validation completed (2026-09-06): 677 Flutter tests passed; Flutter analyze clean;
+25 Deno handler/guard tests passed; both Edge entrypoints type-check; changed
 Dart files pass format check; SQL regression and both concurrent admission
 scenarios passed (60 same-subject requests, 30 rotating-subject requests).
+Receipt tests also verify completion rolls back if the Auth transaction fails.
 Disposable test containers were removed. No hosted deployment was performed.
 
 Run from repository root:
@@ -66,7 +76,9 @@ integration and real-device account deletion still require a dedicated test user
 
 1. Review migrations independently; do NOT blindly push old migration history
    (repository has legacy numbering and production schema drift).
-2. Apply account preparation migration, then deploy delete-account only.
+2. Apply account preparation AND `20260906090000_account_deletion_receipts.sql`
+   migrations, then deploy delete-account only. Release mobile receipt support
+   after the server; older clients keep their existing authenticated deletion API.
 3. With a dedicated test account, verify >100 photos, a community contribution,
    product report, deletion, no cross-user changes and no orphan private photos.
 4. Confirm global daily AI budget; configure AI_GLOBAL_DAILY_LIMIT, apply quota
@@ -79,3 +91,21 @@ integration and real-device account deletion still require a dedicated test user
 Never validate deletion against real customer accounts. Never log secrets or
 provider error bodies with user data. Webhook, camera/navigation and conversion
 work from the audit remain separate subsequent tasks.
+
+## 2026-09-06 camera follow-up (not yet device-verified)
+
+User reproduction: barcode -> product detail -> back -> black camera; changing
+tabs restores it. Existing route-return restart was already present, so adding
+another start call alone is not a fix. Follow-up serializes barcode native calls,
+detaches/recreates the preview subtree between stop/start, awaits the frame after
+reattachment, and prevents background/covered-route starts. Existing HAL workaround
+is retained for now. Added a real ScannerScreen/MobileScannerController/GoRouter
+regression with fake hardware and ShellRoute + root product route: three scans,
+product/back cycles, fresh preview state each time, and a backgrounded return
+that must not restart until resumed. This test passed. Queue tests also passed.
+Neither proves a live native camera image. Debug APK built and installed on
+Samsung SM-A528B; debugger lost connection and reattachment timed out. Visual
+verification on the user's exact barcode/back flow remains required.
+
+AI business scan tickets, device attestation, public product-image filename
+anonymization, meal/metrics navigation, webhook and conversion work remain open.

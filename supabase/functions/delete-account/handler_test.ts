@@ -10,6 +10,8 @@ function fixture() {
   const calls: string[] = [];
   let photos = Array.from({ length: 205 }, (_, i) => `${uid}/${i}.jpg`);
   const deps: DeletionDependencies = {
+    receiptCompleted: () => Promise.resolve(false),
+    beginReceipt: () => Promise.resolve(),
     getUser: () => Promise.resolve(uid),
     listPhotos: () => Promise.resolve(photos.slice(0, 100)),
     removePhotos: (paths) => {
@@ -96,5 +98,59 @@ Deno.test("malformed JSON and wrong method rejected", async () => {
     )).status,
     400,
   );
+  equal(f.calls, []);
+});
+
+Deno.test("lost response can be confirmed without a valid session", async () => {
+  const f = fixture();
+  const secret = "33333333-3333-4333-8333-333333333333";
+  let storedHash = "";
+  let completed = false;
+  f.deps.beginReceipt = (_, hash) => {
+    storedHash = hash;
+    return Promise.resolve();
+  };
+  f.deps.receiptCompleted = (userId, hash) =>
+    Promise.resolve(userId === uid && completed && hash === storedHash);
+  f.deps.deleteUser = () => {
+    completed = true;
+    return Promise.resolve();
+  };
+  const req = (requestToken = secret, receiptOnly = false) =>
+    new Request("http://local", {
+      method: "POST",
+      headers: { Authorization: "Bearer token" },
+      body: JSON.stringify({
+        user_id: uid,
+        request_token: requestToken,
+        receipt_only: receiptOnly,
+      }),
+    });
+  const handler = createDeletionHandler(f.deps);
+  equal((await handler(req())).status, 200);
+  equal(storedHash.length, 64);
+  equal(storedHash === secret, false);
+  f.deps.getUser = () => Promise.resolve(null);
+  equal((await handler(req())).status, 200);
+  equal(
+    (await handler(req("44444444-4444-4444-8444-444444444444"))).status,
+    401,
+  );
+});
+
+Deno.test("receipt-only request can never start deletion", async () => {
+  const f = fixture();
+  const response = await createDeletionHandler(f.deps)(
+    new Request("http://local", {
+      method: "POST",
+      headers: { Authorization: "Bearer valid" },
+      body: JSON.stringify({
+        user_id: uid,
+        request_token: "33333333-3333-4333-8333-333333333333",
+        receipt_only: true,
+      }),
+    }),
+  );
+  equal(await response.json(), { status: "unconfirmed" });
   equal(f.calls, []);
 });
