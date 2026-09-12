@@ -284,8 +284,96 @@ async function callOpenRouter(
   };
 }
 
+// ── Direct-Gemini fallback for the OpenRouter actions ─────────────────
+// OpenRouter is a single point of failure: one dead key or a spent balance
+// takes meal analysis AND label OCR down together (2026-09-12 outage — every
+// call came back 401 "User not found", both features dark until the secret
+// was replaced). On an OpenRouter failure we retry the identical prompt once
+// against the direct Gemini key: a separate vendor account with separate
+// billing, so the two are unlikely to die at the same moment. This is not
+// load balancing — one extra call, only after a failure. Returns null when
+// the fallback is unconfigured or also fails, and the caller then keeps its
+// existing error response.
+async function callGeminiFallback(
+  action: string,
+  promptText: string,
+  imageBase64: string | undefined,
+  opts: { json: boolean; maxTokens: number; temperature: number },
+): Promise<string | null> {
+  if (!GEMINI_API_KEY) return null;
+  const parts: Record<string, unknown>[] = [{ text: promptText }];
+  if (imageBase64) {
+    parts.push({ inlineData: { mimeType: "image/jpeg", data: imageBase64 } });
+  }
+  const generationConfig: Record<string, unknown> = {
+    maxOutputTokens: opts.maxTokens,
+    temperature: opts.temperature,
+  };
+  // Mirrors OpenRouter's response_format:json_object. Deliberately no
+  // responseSchema — the nullable schema tried in v30 is what produced the
+  // all-null nutrition results; plain JSON mode does not have that failure.
+  if (opts.json) generationConfig.responseMimeType = "application/json";
+  const model = modelFor(action);
+  const startedAt = Date.now();
+  // Two attempts, not one. Measured on 2026-09-12: gemini-flash-latest
+  // returns 503 UNAVAILABLE ("currently experiencing high demand") on a large
+  // share of calls — a capacity blip on Google's side, not our quota or key,
+  // and the immediate retry succeeds. Retrying only the transient statuses
+  // keeps a hard failure (401/400) from costing a second round trip.
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const resp = await fetch(
+        `${GEMINI_API_BASE}/${model}:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts }], generationConfig }),
+        },
+      );
+      if (!resp.ok) {
+        const retriable = resp.status === 503 || resp.status === 429 ||
+          resp.status === 500;
+        console.error(
+          `[gemini-fallback ${action}] model=${model} attempt=${attempt} ` +
+            `status=${resp.status} body=${(await resp.text()).slice(0, 300)}`,
+        );
+        if (retriable && attempt === 1) {
+          await new Promise((r) => setTimeout(r, 600));
+          continue;
+        }
+        return null;
+      }
+      const data = await resp.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (typeof text !== "string" || !text.trim()) {
+        console.error(
+          `[gemini-fallback ${action}] model=${model} attempt=${attempt} ` +
+            `empty response`,
+        );
+        return null;
+      }
+      console.log(
+        `[gemini-fallback ${action}] model=${model} ok attempt=${attempt} ` +
+          `elapsed_ms=${Date.now() - startedAt}`,
+      );
+      return text;
+    } catch (e) {
+      console.error(
+        `[gemini-fallback ${action}] model=${model} attempt=${attempt} threw=${e}`,
+      );
+      if (attempt === 1) continue;
+      return null;
+    }
+  }
+  return null;
+}
+
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+// The legacy anon JWT that shipped app builds still send. See the
+// legacyAnonKey note in request_guard.ts — without this, every guest scan
+// 401s the moment the project starts injecting the publishable key.
+const LEGACY_ANON_KEY = Deno.env.get("AI_LEGACY_ANON_KEY");
 
 interface RequestBody {
   action:
@@ -355,7 +443,10 @@ async function handleOpenRouterAction(
       headers: jsonHeaders,
     });
 
-  let messages: unknown[];
+  // The prompt is kept as plain text (not pre-wrapped in OpenRouter message
+  // shape) so the Gemini fallback below can re-send the exact same prompt.
+  let promptText: string;
+  let useImage = true;
   let maxTokens: number;
   let model = OPENROUTER_MEAL_MODEL;
   let json = true;
@@ -364,7 +455,7 @@ async function handleOpenRouterAction(
 
   if (action === "meal_analysis") {
     if (!payload.image_base64) return missingImage();
-    messages = imageMessage(mealAnalysisPrompt(payload.language_code));
+    promptText = mealAnalysisPrompt(payload.language_code);
     maxTokens = 1000;
   } else if (action === "recalc_nutrition") {
     if (!payload.ingredients_text) {
@@ -373,15 +464,11 @@ async function handleOpenRouterAction(
         { status: 400, headers: jsonHeaders },
       );
     }
-    messages = [
-      {
-        role: "user",
-        content: recalcNutritionPrompt(
-          payload.ingredients_text,
-          payload.portion_note,
-        ),
-      },
-    ];
+    promptText = recalcNutritionPrompt(
+      payload.ingredients_text,
+      payload.portion_note,
+    );
+    useImage = false;
     maxTokens = 700;
   } else {
     // ocr_ingredients_image | ocr_nutrition_image — reuse the exact Gemini
@@ -391,8 +478,7 @@ async function handleOpenRouterAction(
     const built = buildPrompt(action, payload) as {
       contents: { parts: { text?: string }[] }[];
     };
-    const promptText = built.contents?.[0]?.parts?.[0]?.text ?? "";
-    messages = imageMessage(promptText);
+    promptText = built.contents?.[0]?.parts?.[0]?.text ?? "";
     model = OPENROUTER_OCR_MODEL;
     // Allowlisted per-request override — see AB_TEST_OCR_MODELS. Unknown
     // values fall through to the default silently rather than erroring, so
@@ -437,6 +523,10 @@ async function handleOpenRouterAction(
     }
   }
 
+  const messages = useImage
+    ? imageMessage(promptText)
+    : [{ role: "user", content: promptText }];
+
   const or = await callOpenRouter(messages, maxTokens, {
     model,
     json,
@@ -448,6 +538,25 @@ async function handleOpenRouterAction(
       `[openrouter ${action}] model=${model} ` +
         `status=${or.status} body=${or.errBody}`,
     );
+    const fallbackText = await callGeminiFallback(
+      action,
+      promptText,
+      useImage ? payload.image_base64 : undefined,
+      { json, maxTokens, temperature },
+    );
+    if (fallbackText) {
+      return new Response(
+        JSON.stringify({
+          result: fallbackText,
+          action,
+          // Tells a log reader (and any future client-side banner) that this
+          // answer did not come from the primary provider.
+          provider: "gemini-fallback",
+          openrouter_status: or.status,
+        }),
+        { status: 200, headers: jsonHeaders },
+      );
+    }
     const clientStatus = or.status === 402 || or.status === 429 ? 429 : 502;
     return new Response(
       JSON.stringify({ error: "AI service error", openrouter_status: or.status }),
@@ -794,6 +903,7 @@ Deno.serve(async (req: Request) => {
     });
     await authorizeAndConsume(req.headers.get("Authorization"), parsed, {
       anonKey: SUPABASE_ANON_KEY,
+      legacyAnonKey: LEGACY_ANON_KEY,
       async getUser(token) {
         const { data, error } = await admin.auth.getUser(token);
         return error ? null : data.user?.id ?? null;

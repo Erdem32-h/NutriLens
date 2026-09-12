@@ -124,3 +124,19 @@ Deno.test("oversized content-length rejected before body read", async () => {
       }),
     ), 413);
 });
+
+Deno.test("legacy anon key from shipped builds is still accepted", async () => {
+  let subject = "";
+  await authorizeAndConsume("Bearer legacy-jwt", body(), {
+    anonKey: "sb_publishable_new",
+    legacyAnonKey: "legacy-jwt",
+    getUser: () => {
+      throw new Error("guest needs no auth fetch");
+    },
+    consume: (s) => {
+      subject = s;
+      return Promise.resolve(true);
+    },
+  });
+  equal(subject, `dev:${device}`);
+});

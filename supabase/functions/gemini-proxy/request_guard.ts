@@ -112,6 +112,12 @@ export async function authorizeAndConsume(
   body: { action: string; payload: Record<string, string> },
   deps: {
     anonKey: string;
+    /// Second accepted anon key. The runtime injects SUPABASE_ANON_KEY as the
+    /// project's *publishable* key (sb_publishable_...), but every shipped app
+    /// build sends the legacy anon JWT — matching on one value alone 401s
+    /// every guest. Both are public by design; accepting both is what keeps
+    /// old and new builds working through an API-key rotation.
+    legacyAnonKey?: string;
     getUser(token: string): Promise<string | null>;
     consume(subject: string): Promise<boolean>;
   },
@@ -119,7 +125,10 @@ export async function authorizeAndConsume(
   const token = /^Bearer\s+(\S+)$/i.exec(authorization ?? "")?.[1];
   if (!token) throw new RequestError(401, "Missing bearer token");
   let subject: string;
-  if (deps.anonKey && token === deps.anonKey) {
+  if (
+    (deps.anonKey && token === deps.anonKey) ||
+    (deps.legacyAnonKey && token === deps.legacyAnonKey)
+  ) {
     if (!publicActions.has(body.action)) {
       throw new RequestError(401, "Not signed in");
     }
