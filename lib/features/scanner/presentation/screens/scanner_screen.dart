@@ -53,20 +53,26 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   // exclusively EAN/UPC, plus QR for the occasional smart-label. Not
   // accepting PDF417/Aztec/Data Matrix/etc. saves the decoder a bunch of
   // per-frame work.
-  final MobileScannerController _controller = MobileScannerController(
-    autoStart: false,
-    detectionSpeed: DetectionSpeed.noDuplicates,
-    facing: CameraFacing.back,
-    formats: const [
-      BarcodeFormat.ean13,
-      BarcodeFormat.ean8,
-      BarcodeFormat.upcA,
-      BarcodeFormat.upcE,
-      BarcodeFormat.code128,
-      BarcodeFormat.code39,
-      BarcodeFormat.qrCode,
-    ],
-  );
+  //
+  // Not final: [_restartBarcodeScanner] replaces it after a covered route or
+  // a background trip. See the note there.
+  MobileScannerController _controller = _newBarcodeController();
+
+  static MobileScannerController _newBarcodeController() =>
+      MobileScannerController(
+        autoStart: false,
+        detectionSpeed: DetectionSpeed.noDuplicates,
+        facing: CameraFacing.back,
+        formats: const [
+          BarcodeFormat.ean13,
+          BarcodeFormat.ean8,
+          BarcodeFormat.upcA,
+          BarcodeFormat.upcE,
+          BarcodeFormat.code128,
+          BarcodeFormat.code39,
+          BarcodeFormat.qrCode,
+        ],
+      );
 
   StreamSubscription<BarcodeCapture>? _subscription;
 
@@ -77,6 +83,15 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
   /// Serializes native operations across navigation and app lifecycle changes.
   final _barcodeLifecycle = BarcodeCameraLifecycle();
   bool _barcodePreviewAttached = true;
+
+  /// True once a barcode camera has actually started in this State.
+  ///
+  /// [_restartBarcodeScanner] swaps in a fresh controller, and a fresh one
+  /// reports no camera permission until its own start() completes. Going to
+  /// the background inside that window would otherwise make the lifecycle
+  /// guard skip the resume restart and leave exactly the black preview the
+  /// swap exists to fix.
+  bool _barcodeCameraStarted = false;
   bool _appInForeground = true;
 
   /// 0 = Barcode mode, 1 = AI Analysis mode.
@@ -649,6 +664,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
             }
             _subscription ??= _controller.barcodes.listen(_handleBarcode);
             await _controller.start();
+            _barcodeCameraStarted = true;
             _trackCameraOutcome(ready: true);
           })
           .catchError(
@@ -757,6 +773,23 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
           return;
         }
 
+        // ...and a tab switch also builds a brand-new controller, which is
+        // the half that remounting alone never copied. Field report
+        // 2026-09-12: back from product detail left the preview black, while
+        // leaving the tab and returning through the center button always
+        // worked. stop() followed by start() on the same instance does not
+        // re-acquire the camera on real devices, so match the working path.
+        // The preview is detached at this point, so nothing is still bound to
+        // the old instance when it is disposed.
+        final stale = _controller;
+        setState(() => _controller = _newBarcodeController());
+        try {
+          await stale.dispose();
+        } catch (_) {}
+        if (!mounted || !_appInForeground || _scanMode != 0 || _isNavigating) {
+          return;
+        }
+
         // Cycle the `camera` plugin to force CameraX to rebind — same effect
         // as the AI↔barcode toggle. _initAiCamera/_disposeAiCamera are the
         // exact calls that toggle makes, so behaviour is identical.
@@ -774,6 +807,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
 
         _subscription = _controller.barcodes.listen(_handleBarcode);
         await _controller.start();
+        _barcodeCameraStarted = true;
         if (mounted) setState(() {});
       } catch (e) {
         debugPrint('[Scanner] barcode restart failed: $e');
@@ -800,7 +834,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     // ImageReader frame then reached an already-detached engine and killed
     // the process with "Cannot execute operation because FlutterJNI is not
     // attached to native".
-    if (_scanMode == 0 && !_controller.value.hasCameraPermission) return;
+    if (_scanMode == 0 &&
+        !_barcodeCameraStarted &&
+        !_controller.value.hasCameraPermission) {
+      return;
+    }
 
     switch (state) {
       case AppLifecycleState.resumed:

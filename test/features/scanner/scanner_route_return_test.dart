@@ -139,6 +139,9 @@ void main() {
     expect(hardware.running, isTrue);
     for (final code in ['8695077002334', '8000500310427', '5449000000996']) {
       final previewState = tester.state(find.byType(MobileScanner));
+      final previewController = tester
+          .widget<MobileScanner>(find.byType(MobileScanner))
+          .controller;
       hardware.captures.add(
         BarcodeCapture(barcodes: [Barcode(rawValue: code)]),
       );
@@ -177,6 +180,16 @@ void main() {
       expect(
         tester.state(find.byType(MobileScanner)),
         isNot(same(previewState)),
+      );
+      // Field report 2026-09-12: back from product detail left a black
+      // preview, while leaving the tab and returning worked. The tab path
+      // builds a brand-new controller; restarting the old one after stop()
+      // does not re-acquire the camera on real devices (the fake hardware
+      // here cannot show that, so pin the working behaviour instead).
+      expect(
+        tester.widget<MobileScanner>(find.byType(MobileScanner)).controller,
+        isNot(same(previewController)),
+        reason: 'Returning from a covered route must bind a fresh controller',
       );
       expect(tester.takeException(), isNull);
     }
