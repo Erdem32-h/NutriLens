@@ -284,6 +284,68 @@ async function callOpenRouter(
   };
 }
 
+// ── Provider-auth alerting ────────────────────────────────────────────
+// The failure class that silently kills every AI feature at once: OpenRouter
+// refusing our credentials — key disabled or deleted (401), balance spent
+// (402), key forbidden (403). On 2026-09-12 a disabled key went unnoticed for
+// two days because the only place it surfaced was the user's own error
+// screen. Transient statuses (429, 5xx) are deliberately NOT alerted: they
+// recover by themselves and would bury the signal that needs a human.
+//
+// Reported to Sentry with a plain fetch — the store endpoint is a single POST,
+// so pulling in an SDK would cost a cold-start for nothing. Sentry groups by
+// fingerprint, so a multi-day outage stays one issue however many calls hit it.
+const SENTRY_DSN = Deno.env.get("SENTRY_DSN");
+
+async function alertProviderAuthFailure(
+  action: string,
+  status: number,
+  errBody: string,
+): Promise<void> {
+  if (!SENTRY_DSN || (status !== 401 && status !== 402 && status !== 403)) {
+    return;
+  }
+  // DSN shape: https://<publicKey>@<host>/<projectId>
+  const m = /^https:\/\/([^@]+)@([^/]+)\/(.+)$/.exec(SENTRY_DSN);
+  if (!m) {
+    console.error("[alert] SENTRY_DSN is malformed; no alert sent");
+    return;
+  }
+  const [, publicKey, host, projectId] = m;
+  const reason = status === 402 ? "balance spent" : "key rejected";
+  try {
+    const resp = await fetch(`https://${host}/api/${projectId}/store/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Sentry-Auth":
+          `Sentry sentry_version=7, sentry_client=gemini-proxy/1, ` +
+          `sentry_key=${publicKey}`,
+      },
+      body: JSON.stringify({
+        event_id: crypto.randomUUID().replaceAll("-", ""),
+        timestamp: new Date().toISOString(),
+        platform: "other",
+        level: "error",
+        logger: "gemini-proxy",
+        server_name: "supabase-edge",
+        // One issue for the whole outage regardless of which action tripped it.
+        fingerprint: ["openrouter-auth-failure"],
+        message: `OpenRouter ${status} (${reason}) — every AI action is down ` +
+          `until OPENROUTER_API_KEY is fixed`,
+        tags: { provider: "openrouter", status: String(status), action },
+        extra: { body: errBody.slice(0, 300) },
+      }),
+    });
+    if (!resp.ok) {
+      console.error(`[alert] sentry store status=${resp.status}`);
+    }
+  } catch (e) {
+    // Alerting must never turn a provider outage into a 500.
+    console.error(`[alert] sentry threw=${e}`);
+  }
+}
+
 // ── Direct-Gemini fallback for the OpenRouter actions ─────────────────
 // OpenRouter is a single point of failure: one dead key or a spent balance
 // takes meal analysis AND label OCR down together (2026-09-12 outage — every
@@ -538,6 +600,7 @@ async function handleOpenRouterAction(
       `[openrouter ${action}] model=${model} ` +
         `status=${or.status} body=${or.errBody}`,
     );
+    await alertProviderAuthFailure(action, or.status, or.errBody);
     const fallbackText = await callGeminiFallback(
       action,
       promptText,
