@@ -201,6 +201,7 @@ abstract final class AppTheme {
       snackBarTheme: SnackBarThemeData(
         backgroundColor: colors.surfaceCard2,
         contentTextStyle: TextStyle(color: colors.textPrimary),
+        actionTextColor: colors.primary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
       ),

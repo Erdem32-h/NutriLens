@@ -64,10 +64,9 @@ class WaterScreen extends ConsumerWidget {
                 icon: const Icon(Icons.remove_rounded),
               ),
               const SizedBox(width: 16),
-              FilledButton.icon(
+              FilledButton(
                 onPressed: () => addWaterGlass(context, ref),
-                icon: const Icon(Icons.add_rounded),
-                label: Text(l10n.waterAddGlass),
+                child: Text(l10n.waterAddGlass),
               ),
             ],
           ),
