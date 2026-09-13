@@ -23,13 +23,16 @@ void main() {
     expect(day.lastGlassAt, morning);
   });
 
-  test('sonraki bardak sayar ve lastGlassAt gunceller, hedef degismez', () async {
-    await ds.addGlass(userId: 'u1', now: morning, goal: 10);
-    final day = await ds.addGlass(userId: 'u1', now: noon, goal: 12);
-    expect(day.glasses, 2);
-    expect(day.goalGlasses, 10);
-    expect(day.lastGlassAt, noon);
-  });
+  test(
+    'sonraki bardak sayar ve lastGlassAt gunceller, hedef degismez',
+    () async {
+      await ds.addGlass(userId: 'u1', now: morning, goal: 10);
+      final day = await ds.addGlass(userId: 'u1', now: noon, goal: 12);
+      expect(day.glasses, 2);
+      expect(day.goalGlasses, 10);
+      expect(day.lastGlassAt, noon);
+    },
+  );
 
   test('cikarma sifirin altina inmez ve lastGlassAt degismez', () async {
     await ds.addGlass(userId: 'u1', now: morning, goal: 10);
@@ -72,20 +75,27 @@ void main() {
     expect(await ds.countDays('u1'), 3);
   });
 
-  test('reassignOwner cakisan gunde hesabinkini korur, misafiri siler', () async {
-    await ds.addGlass(userId: 'guest', now: DateTime(2026, 9, 12, 10), goal: 10);
-    await ds.addGlass(userId: 'guest', now: morning, goal: 10);
-    await ds.addGlass(userId: 'guest', now: noon, goal: 10);
-    await ds.addGlass(userId: 'u1', now: morning, goal: 6);
+  test(
+    'reassignOwner cakisan gunde hesabinkini korur, misafiri siler',
+    () async {
+      await ds.addGlass(
+        userId: 'guest',
+        now: DateTime(2026, 9, 12, 10),
+        goal: 10,
+      );
+      await ds.addGlass(userId: 'guest', now: morning, goal: 10);
+      await ds.addGlass(userId: 'guest', now: noon, goal: 10);
+      await ds.addGlass(userId: 'u1', now: morning, goal: 6);
 
-    await ds.reassignOwner(fromUserId: 'guest', toUserId: 'u1');
+      await ds.reassignOwner(fromUserId: 'guest', toUserId: 'u1');
 
-    expect(await ds.countDays('guest'), 0);
-    expect((await ds.getDay('u1', '2026-09-12'))!.glasses, 1);
-    final conflict = (await ds.getDay('u1', '2026-09-13'))!;
-    expect(conflict.glasses, 1);
-    expect(conflict.goalGlasses, 6);
-  });
+      expect(await ds.countDays('guest'), 0);
+      expect((await ds.getDay('u1', '2026-09-12'))!.glasses, 1);
+      final conflict = (await ds.getDay('u1', '2026-09-13'))!;
+      expect(conflict.glasses, 1);
+      expect(conflict.goalGlasses, 6);
+    },
+  );
 
   test('deleteFor yalniz o kullaniciyi siler', () async {
     await ds.addGlass(userId: 'u1', now: morning, goal: 10);

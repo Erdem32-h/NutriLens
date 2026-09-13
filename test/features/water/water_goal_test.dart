@@ -29,7 +29,13 @@ void main() {
   });
 
   test('goalMet hedefe esit veya ustunde', () {
-    expect(const WaterDay(day: 'd', glasses: 9, goalGlasses: 10).goalMet, false);
-    expect(const WaterDay(day: 'd', glasses: 10, goalGlasses: 10).goalMet, true);
+    expect(
+      const WaterDay(day: 'd', glasses: 9, goalGlasses: 10).goalMet,
+      false,
+    );
+    expect(
+      const WaterDay(day: 'd', glasses: 10, goalGlasses: 10).goalMet,
+      true,
+    );
   });
 }
