@@ -252,6 +252,11 @@ abstract final class FunnelEvents {
   static const mealShared = 'meal_shared';
   static const comparisonShared = 'comparison_shared';
 
+  // --- Water ----------------------------------------------------------
+  /// Not funnel steps — engagement signal for the water counter.
+  static const waterGlassAdded = 'water_glass_added';
+  static const waterReminderEnabled = 'water_reminder_enabled';
+
   // --- Monetization ---------------------------------------------------
   /// props: `trigger` (scan_limit|profile|feature_gate)
   static const paywallShown = 'paywall_shown';
