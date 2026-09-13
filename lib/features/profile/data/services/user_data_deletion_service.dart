@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -216,7 +217,15 @@ class UserDataDeletionService implements UserDataCleaner {
     final currentId = _currentUserId?.call();
     if (currentId == null || currentId == userId) {
       await _clearLocalProfilePreferences();
-      await _cancelWaterReminders?.call();
+      // Best-effort: a missing/throwing notification plugin must not fail
+      // deletion — that would leave the pending-cleanup marker set forever,
+      // with every resume re-hitting the same throwing call (rows and
+      // preferences are already gone by this point, so retrying buys nothing).
+      try {
+        await _cancelWaterReminders?.call();
+      } catch (e) {
+        debugPrint('[UserDataDeletion] water reminder cancel failed: $e');
+      }
     }
   }
 

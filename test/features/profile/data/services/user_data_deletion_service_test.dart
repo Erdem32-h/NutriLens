@@ -252,6 +252,29 @@ void main() {
     },
   );
 
+  test('a throwing notification plugin does not fail local cleanup', () async {
+    final flaky = UserDataDeletionService(
+      db: db,
+      remoteStore: remote,
+      preferences: prefs,
+      cancelWaterReminders: () async => throw StateError('no plugin'),
+    );
+    await db
+        .into(db.waterLogs)
+        .insert(
+          WaterLogsCompanion.insert(
+            userId: 'user-1',
+            day: '2026-09-13',
+            goalGlasses: 10,
+          ),
+        );
+
+    await flaky.deleteLocalUserData('user-1');
+
+    expect(await db.select(db.waterLogs).get(), isEmpty);
+    expect(prefs.getBool('water_reminder_enabled'), isNull);
+  });
+
   group('SupabaseRemoteUserDataStore.clearedProfileColumns', () {
     // Compliance test: the body measurements are declared as health data in
     // both store privacy forms, so a deletion request has to reach them.
