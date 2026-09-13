@@ -9,6 +9,8 @@ import '../../core/session/app_session.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/ad_banner_widget.dart';
 import '../meals/presentation/providers/meal_provider.dart';
+import '../water/presentation/providers/water_provider.dart';
+import '../water/presentation/water_actions.dart';
 import 'widgets/nutrilens_nav_bar.dart';
 
 class AppShellScreen extends ConsumerStatefulWidget {
@@ -34,7 +36,10 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
     // saves handle the "already logged today" side themselves, this is
     // just the catch-up path. Deferred to the first frame so
     // `context.l10n` is guaranteed resolvable.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _ensureDailyReminder());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _ensureDailyReminder();
+      _ensureWaterReminders();
+    });
   }
 
   Future<void> _ensureDailyReminder() async {
@@ -57,6 +62,15 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
     } catch (e) {
       debugPrint('[AppShell] daily reminder re-arm failed: $e');
     }
+  }
+
+  /// Tomorrow's water slots are the only ones armed ahead, so every launch
+  /// re-arms them. Disabled or signed-out → cancels. Never throws.
+  Future<void> _ensureWaterReminders() async {
+    if (!mounted) return;
+    await ref
+        .read(waterControllerProvider)
+        .rescheduleReminders(waterReminderCopy(context.l10n));
   }
 
   // Tab order: 0 meals · 1 history · 2 scanner (center) · 3 favorites · 4 profile
