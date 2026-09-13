@@ -127,7 +127,7 @@ class _MealDetailScreenState extends ConsumerState<MealDetailScreen> {
                   if (meal.hpScore != null)
                     _Chip(
                       text:
-                          '${l10n.scoreLabel} ${ScoreConstants.hpToGauge(meal.hpScore!)}',
+                          '${l10n.scoreLabel} ${ScoreConstants.displayHp(meal.hpScore!)}/100',
                       colors: colors,
                     ),
                   if (meal.confidence != null)

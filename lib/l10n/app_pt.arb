@@ -125,7 +125,7 @@
   "nova4Label": "Ultra-processed",
   "novaUnknownLabel": "Unknown",
   "novaEstimated": "estimado",
-  "worstIsBad": "(100 é o melhor)",
+  "hundredIsBest": "(100 É O MELHOR)",
   "bestScore": "BEST",
   "worstScore": "WORST",
   "contentAnalysis": "Content Analysis",

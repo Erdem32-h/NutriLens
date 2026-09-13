@@ -116,8 +116,8 @@ class _MealTile extends ConsumerWidget {
     final colors = context.colors;
     final l10n = context.l10n;
     final time = DateFormat('dd MMM HH:mm').format(meal.capturedAt);
-    final gauge = meal.hpScore != null
-        ? ScoreConstants.hpToGauge(meal.hpScore!)
+    final shownHp = meal.hpScore != null
+        ? ScoreConstants.displayHp(meal.hpScore!)
         : null;
 
     return Padding(
@@ -176,8 +176,10 @@ class _MealTile extends ConsumerWidget {
                       runSpacing: 6,
                       children: [
                         _Pill(text: '${meal.calories.round()} kcal'),
-                        if (gauge != null)
-                          _Pill(text: '${context.l10n.scoreLabel} $gauge'),
+                        if (shownHp != null)
+                          _Pill(
+                            text: '${context.l10n.scoreLabel} $shownHp/100',
+                          ),
                         if (meal.confidence != null)
                           _Pill(text: '%${(meal.confidence! * 100).round()}'),
                       ],
@@ -199,7 +201,6 @@ class _MealTile extends ConsumerWidget {
       child: Icon(Icons.restaurant_rounded, color: colors.textMuted),
     );
   }
-
 }
 
 class _Pill extends StatelessWidget {
@@ -346,9 +347,9 @@ class _CalorieInsights extends ConsumerWidget {
                   // dokstring'i).
                   targetKcal:
                       (data.period == CaloriePeriod.week ||
-                              data.period == CaloriePeriod.month)
-                          ? ref.watch(personalDailyCaloriesProvider)
-                          : null,
+                          data.period == CaloriePeriod.month)
+                      ? ref.watch(personalDailyCaloriesProvider)
+                      : null,
                 ),
                 const SizedBox(height: 14),
                 MacroBalanceCard(data: data),

@@ -422,7 +422,7 @@ class _FavoriteTile extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      '$gauge/5',
+                      '${ScoreConstants.displayHp(item.effectiveHpScore!)}/100',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,

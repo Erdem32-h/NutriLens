@@ -83,14 +83,17 @@ class ComparisonScreen extends ConsumerWidget {
         storeUrl: AppLinks.shareStoreUrl,
       );
 
-      await ref.read(shareServiceProvider).captureAndShare(
-        context: context,
-        card: card,
-        logicalSize: const Size(360, 360),
-        pixelRatio: 3.0,
-        fileName: 'nutrilens_compare_${pair.a.barcode}_${pair.b.barcode}.png',
-        caption: caption,
-      );
+      await ref
+          .read(shareServiceProvider)
+          .captureAndShare(
+            context: context,
+            card: card,
+            logicalSize: const Size(360, 360),
+            pixelRatio: 3.0,
+            fileName:
+                'nutrilens_compare_${pair.a.barcode}_${pair.b.barcode}.png',
+            caption: caption,
+          );
       ref.read(analyticsServiceProvider).track(FunnelEvents.comparisonShared);
     } catch (e) {
       if (context.mounted) {
@@ -272,7 +275,9 @@ class _HeaderCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              '$gauge/5',
+              product.calculatedHpScore == null
+                  ? '—'
+                  : '${ScoreConstants.displayHp(product.calculatedHpScore!)}/100',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w800,

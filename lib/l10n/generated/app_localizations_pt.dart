@@ -395,7 +395,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get novaEstimated => 'estimado';
 
   @override
-  String get worstIsBad => '(100 é o melhor)';
+  String get hundredIsBest => '(100 É O MELHOR)';
 
   @override
   String get bestScore => 'BEST';

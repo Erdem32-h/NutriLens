@@ -392,7 +392,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get novaEstimated => 'estimated';
 
   @override
-  String get worstIsBad => '(5 IS WORST)';
+  String get hundredIsBest => '(100 IS BEST)';
 
   @override
   String get bestScore => 'BEST';

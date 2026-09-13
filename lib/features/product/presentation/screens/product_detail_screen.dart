@@ -743,7 +743,9 @@ class _AlternativeCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  '$gauge',
+                  product.calculatedHpScore == null
+                      ? '—'
+                      : '${ScoreConstants.displayHp(product.calculatedHpScore!)}',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,

@@ -7,7 +7,7 @@ import '../../../../core/services/nova_derivation.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/product_entity.dart';
 
-/// Transparency card for the Health tab: "Why N/5?".
+/// Transparency card for the Health tab: "Why N/100?".
 ///
 /// Reconstructs the HP Score (v3) component contributions from the stored
 /// raw factors on [ProductEntity] so the user can see *why* a product
@@ -65,15 +65,13 @@ class ScoreBreakdownCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Theme(
           // Strip the default ExpansionTile dividers for a cleaner card.
-          data: Theme.of(
-            context,
-          ).copyWith(dividerColor: Colors.transparent),
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
             tilePadding: const EdgeInsets.symmetric(horizontal: 20),
             childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
             leading: Icon(Icons.insights_rounded, color: gaugeColor),
             title: Text(
-              '${l10n.scoreBreakdownWhy} $gauge/5?',
+              '${l10n.scoreBreakdownWhy} ${_scoreText(score)}?',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w800,
@@ -127,7 +125,7 @@ class ScoreBreakdownCard extends StatelessWidget {
               const SizedBox(height: 8),
               Divider(color: colors.border, height: 1),
               const SizedBox(height: 8),
-              _resultRow(colors, l10n, gauge, gaugeColor, score),
+              _resultRow(colors, l10n, gaugeColor, score),
             ],
           ),
         ),
@@ -275,7 +273,6 @@ class ScoreBreakdownCard extends StatelessWidget {
   Widget _resultRow(
     AppColorsExtension colors,
     dynamic l10n,
-    int gauge,
     Color gaugeColor,
     double? score,
   ) {
@@ -298,7 +295,7 @@ class ScoreBreakdownCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            '$gauge/5',
+            _scoreText(score),
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
@@ -309,6 +306,9 @@ class ScoreBreakdownCard extends StatelessWidget {
       ],
     );
   }
+
+  static String _scoreText(double? score) =>
+      score == null ? '—/100' : '${ScoreConstants.displayHp(score)}/100';
 
   static bool _hasCriticalIngredient(String? ingredientsText) {
     if (ingredientsText == null) return false;

@@ -13,13 +13,13 @@ import '../../../product/presentation/widgets/health_score_bar.dart';
 /// makul seçildiler (≈320 g kıymalı makarna). Ekranda "hesaplandı" iddiası
 /// yok; amaç ürünün ne ürettiğini göstermek.
 abstract final class _Sample {
-  /// 62 → ScoreConstants.hpToGauge → 2. Bilinçli olarak "iyi ama mükemmel
-  /// değil": 1/5 ürünü işlevsiz gösterir, 5/5 ilk ekranda suçlayıcı durur.
+  /// 62 → "İyi" bandı. Bilinçli olarak "iyi ama mükemmel değil": 100'e yakın
+  /// ürünü işlevsiz gösterir, çok düşük puan ilk ekranda suçlayıcı durur.
   static const double mealHp = 62.0;
   static const int kcal = 486;
   static const int proteinG = 24;
 
-  /// 26 → gauge 4. Paketli ürünün skorun işe yaradığını göstermesi için
+  /// 26 → "Zayıf" bandı. Paketli ürünün skorun işe yaradığını göstermesi için
   /// kötümser tarafta.
   static const double productHp = 26.0;
   static const int sugarG = 21;
@@ -81,7 +81,7 @@ class MealPreview extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: _StatCell(
-                value: '${ScoreConstants.hpToGauge(_Sample.mealHp)}/5',
+                value: '${ScoreConstants.displayHp(_Sample.mealHp)}/100',
                 label: l10n.healthScoreLabel,
                 valueColor: colors.gaugeColor(
                   ScoreConstants.hpToGauge(_Sample.mealHp),

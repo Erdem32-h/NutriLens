@@ -393,7 +393,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get novaEstimated => 'تقديري';
 
   @override
-  String get worstIsBad => '(100 هو الأفضل)';
+  String get hundredIsBest => '(100 هو الأفضل)';
 
   @override
   String get bestScore => 'BEST';

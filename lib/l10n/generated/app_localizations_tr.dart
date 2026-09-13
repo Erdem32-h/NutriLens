@@ -393,7 +393,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get novaEstimated => 'tahmini';
 
   @override
-  String get worstIsBad => '(5 EN KÖTÜ)';
+  String get hundredIsBest => '(100 EN İYİ)';
 
   @override
   String get bestScore => 'EN İYİ';

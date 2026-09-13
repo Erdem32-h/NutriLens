@@ -38,19 +38,18 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('ScorePreview gauge 4 gosterir', (tester) async {
+  testWidgets('ScorePreview 100 uzerinden puani gosterir', (tester) async {
     await _pump(tester, const ScorePreview());
 
-    // hpScore 26 -> ScoreConstants.hpToGauge -> 4. Katki sayisi da 4
-    // oldugu icin duz find.text('4') iki eslesme bulur; gauge'i
-    // HealthScoreBar'in icinde arayarak daraltiyoruz.
     expect(
       find.descendant(
         of: find.byType(HealthScoreBar),
-        matching: find.text('4'),
+        matching: find.text('26'),
       ),
       findsOneWidget,
     );
+    expect(find.text('/100'), findsOneWidget);
+    expect(find.textContaining('/5'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

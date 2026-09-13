@@ -112,6 +112,14 @@ abstract final class ScoreConstants {
     return 5;
   }
 
+  /// User-facing score: 0–100, higher = better. The gauge above stays for
+  /// band colour and label only.
+  ///
+  /// Floors rather than rounds so the number never lands in a band its colour
+  /// disagrees with — the ultra-processed ceiling 54.9 must read 54, not 55.
+  /// Holds because every gauge threshold is a whole number.
+  static int displayHp(double hp) => hp.clamp(0.0, 100.0).floor();
+
   /// Normalizes Turkish characters and handles case conversion for reliable string matching.
   static String normalizeTurkish(String text) {
     return text

@@ -133,6 +133,29 @@ void main() {
       });
     });
 
+    group('displayHp', () {
+      test('clamps to 0-100', () {
+        expect(ScoreConstants.displayHp(-5), 0);
+        expect(ScoreConstants.displayHp(130), 100);
+      });
+
+      test('shown number never leaves the gauge band of the raw score', () {
+        // Rounding would print the NOVA-4 ceiling (54.9, gauge 3) as 55,
+        // the number that opens gauge 2.
+        for (var hp = 0.0; hp <= 100.0; hp += 0.1) {
+          expect(
+            ScoreConstants.hpToGauge(ScoreConstants.displayHp(hp).toDouble()),
+            ScoreConstants.hpToGauge(hp),
+            reason: 'hp=$hp',
+          );
+        }
+        expect(
+          ScoreConstants.displayHp(ScoreConstants.ultraProcessedCeiling),
+          54,
+        );
+      });
+    });
+
     group('reference values', () {
       test('sugar max ref is positive', () {
         expect(ScoreConstants.sugarMaxRef, greaterThan(0));

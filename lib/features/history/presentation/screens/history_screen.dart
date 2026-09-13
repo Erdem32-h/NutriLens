@@ -214,7 +214,7 @@ class _HistoryTile extends ConsumerWidget {
               ),
             ),
 
-            // HP Score badge (1-5 gauge)
+            // HP Score badge (0-100)
             if (item.effectiveHpScore != null) ...[
               const SizedBox(width: 8),
               Builder(
@@ -233,7 +233,7 @@ class _HistoryTile extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      '$gauge/5',
+                      '${ScoreConstants.displayHp(item.effectiveHpScore!)}/100',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,

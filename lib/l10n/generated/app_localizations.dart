@@ -856,11 +856,11 @@ abstract class AppLocalizations {
   /// **'tahmini'**
   String get novaEstimated;
 
-  /// No description provided for @worstIsBad.
+  /// No description provided for @hundredIsBest.
   ///
   /// In tr, this message translates to:
-  /// **'(5 EN KÖTÜ)'**
-  String get worstIsBad;
+  /// **'(100 EN İYİ)'**
+  String get hundredIsBest;
 
   /// No description provided for @bestScore.
   ///

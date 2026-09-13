@@ -167,14 +167,13 @@ class _PickTile extends StatelessWidget {
             if (item.effectiveHpScore != null) ...[
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: gaugeColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '$gauge/5',
+                  '${ScoreConstants.displayHp(item.effectiveHpScore!)}/100',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,

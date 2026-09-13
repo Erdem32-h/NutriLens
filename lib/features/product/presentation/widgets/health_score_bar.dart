@@ -5,6 +5,21 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class HealthScoreBar extends StatelessWidget {
+  /// (gauge level, width in score points) from 0 upward.
+  static final _bands = () {
+    const edges = [
+      0.0,
+      ScoreConstants.gauge4Threshold,
+      ScoreConstants.gauge3Threshold,
+      ScoreConstants.gauge2Threshold,
+      ScoreConstants.gauge1Threshold,
+      100.0,
+    ];
+    return [
+      for (var i = 0; i < 5; i++) (5 - i, (edges[i + 1] - edges[i]).round()),
+    ];
+  }();
+
   final double? hpScore;
 
   /// Dış boşluk. Varsayılan, mevcut ekranlardaki (ürün detayı, öğün detayı,
@@ -27,6 +42,7 @@ class HealthScoreBar extends StatelessWidget {
     final l10n = context.l10n;
     final gaugeLevel = ScoreConstants.hpToGauge(hpScore!);
     final gaugeColor = colors.gaugeColor(gaugeLevel);
+    final shown = ScoreConstants.displayHp(hpScore!);
 
     return Padding(
       padding: padding,
@@ -41,7 +57,7 @@ class HealthScoreBar extends StatelessWidget {
           children: [
             // Label
             Text(
-              '${l10n.healthScoreLabel} ${l10n.worstIsBad}',
+              '${l10n.healthScoreLabel} ${l10n.hundredIsBest}',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -58,7 +74,7 @@ class HealthScoreBar extends StatelessWidget {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 Text(
-                  '$gaugeLevel',
+                  '$shown',
                   style: TextStyle(
                     fontSize: 42,
                     fontWeight: FontWeight.w800,
@@ -67,7 +83,7 @@ class HealthScoreBar extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '/5',
+                  '/100',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -79,52 +95,47 @@ class HealthScoreBar extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // 5-segment bar
+            // Arrow over the exact score, 0 at the start edge.
+            Align(
+              alignment: AlignmentDirectional(shown / 50 - 1, 0),
+              child: Icon(
+                Icons.arrow_drop_down_rounded,
+                size: 16,
+                color: gaugeColor,
+              ),
+            ),
+
+            // Band bar, worst → best; segment widths follow the thresholds.
             SizedBox(
-              height: 28,
+              height: 12,
               child: Row(
-                children: List.generate(5, (index) {
-                  final segmentLevel = index + 1;
-                  final isActive = segmentLevel == gaugeLevel;
-                  final segmentColor = colors.gaugeColor(segmentLevel);
+                children: List.generate(_bands.length, (index) {
+                  final (level, width) = _bands[index];
+                  final segmentColor = colors.gaugeColor(level);
+                  final isFirst = index == 0;
+                  final isLast = index == _bands.length - 1;
 
                   return Expanded(
+                    flex: width,
                     child: Padding(
-                      padding: EdgeInsets.only(
-                        left: index == 0 ? 0 : 3,
-                        right: index == 4 ? 0 : 3,
+                      padding: EdgeInsetsDirectional.only(
+                        start: isFirst ? 0 : 1.5,
+                        end: isLast ? 0 : 1.5,
                       ),
-                      child: Column(
-                        children: [
-                          // Arrow indicator
-                          if (isActive)
-                            Icon(
-                              Icons.arrow_drop_down_rounded,
-                              size: 16,
-                              color: gaugeColor,
-                            )
-                          else
-                            const SizedBox(height: 16),
-
-                          // Segment
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: isActive
-                                    ? segmentColor
-                                    : segmentColor.withValues(alpha: 0.25),
-                                borderRadius: BorderRadius.horizontal(
-                                  left: index == 0
-                                      ? const Radius.circular(6)
-                                      : Radius.zero,
-                                  right: index == 4
-                                      ? const Radius.circular(6)
-                                      : Radius.zero,
-                                ),
-                              ),
-                            ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: level == gaugeLevel
+                              ? segmentColor
+                              : segmentColor.withValues(alpha: 0.25),
+                          borderRadius: BorderRadiusDirectional.horizontal(
+                            start: isFirst
+                                ? const Radius.circular(6)
+                                : Radius.zero,
+                            end: isLast
+                                ? const Radius.circular(6)
+                                : Radius.zero,
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   );
@@ -134,12 +145,12 @@ class HealthScoreBar extends StatelessWidget {
 
             const SizedBox(height: 6),
 
-            // Best / Worst labels
+            // Worst / Best labels
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  l10n.bestScore,
+                  l10n.worstScore,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
@@ -147,7 +158,7 @@ class HealthScoreBar extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  l10n.worstScore,
+                  l10n.bestScore,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
