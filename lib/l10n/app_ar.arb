@@ -745,5 +745,41 @@
   "mealsSubtitle": "وجبات اليوم وتوازن السعرات لديك",
   "historySubtitle": "كل المنتجات التي مسحتها",
   "favoritesSubtitle": "المنتجات التي تعود إليها دائمًا",
-  "filterSelectionSubtitle": "سيتم تنبيهك عندما يحتوي منتج تمسحه على ما اخترته"
+  "filterSelectionSubtitle": "سيتم تنبيهك عندما يحتوي منتج تمسحه على ما اخترته",
+  "waterTitle": "الماء",
+  "waterGlassesProgress": "{count} / {goal} أكواب",
+  "waterAddGlass": "+1 كوب",
+  "waterRemoveGlass": "إزالة كوب",
+  "waterGoalReached": "تم بلوغ الهدف اليومي",
+  "waterLast7Days": "آخر 7 أيام",
+  "waterDailyGoal": "الهدف اليومي",
+  "waterGoalValue": "{glasses} أكواب ({liters} لتر)",
+  "waterDecreaseGoal": "خفض الهدف",
+  "waterIncreaseGoal": "رفع الهدف",
+  "waterGoalFromWeight": "اضبط حسب وزني",
+  "waterReminderSwitch": "تذكيرات شرب الماء",
+  "waterReminderSchedule": "كل ساعتين، 09:00–21:00",
+  "waterReminderPrompt": "هل أذكّرك كل ساعتين؟",
+  "waterReminderEnable": "تفعيل",
+  "waterPermissionDenied": "الإشعارات متوقفة. يمكنك السماح بها من الإعدادات.",
+  "waterReminderTitle": "حان وقت شرب الماء",
+  "waterReminderBody": "اشرب كوب ماء واقترب من هدف اليوم.",
+  "waterDayCountUnit": "سجل ماء لـ {count} يوم",
+  "@waterGlassesProgress": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "goal": { "type": "int" }
+    }
+  },
+  "@waterGoalValue": {
+    "placeholders": {
+      "glasses": { "type": "int" },
+      "liters": { "type": "String" }
+    }
+  },
+  "@waterDayCountUnit": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

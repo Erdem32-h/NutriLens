@@ -780,5 +780,41 @@
   "mealsSubtitle": "Bugünün öğünleri ve kalori dengen",
   "historySubtitle": "Taradığın tüm ürünler burada",
   "favoritesSubtitle": "Tekrar tekrar döndüğün ürünler",
-  "filterSelectionSubtitle": "Seçtiklerin taradığın üründe bulunursa uyarılırsın"
+  "filterSelectionSubtitle": "Seçtiklerin taradığın üründe bulunursa uyarılırsın",
+  "waterTitle": "Su",
+  "waterGlassesProgress": "{count} / {goal} bardak",
+  "waterAddGlass": "+1 bardak",
+  "waterRemoveGlass": "Bir bardak çıkar",
+  "waterGoalReached": "Günlük hedefe ulaştın",
+  "waterLast7Days": "Son 7 gün",
+  "waterDailyGoal": "Günlük hedef",
+  "waterGoalValue": "{glasses} bardak ({liters} L)",
+  "waterDecreaseGoal": "Hedefi azalt",
+  "waterIncreaseGoal": "Hedefi artır",
+  "waterGoalFromWeight": "Kiloma göre ayarla",
+  "waterReminderSwitch": "Su hatırlatıcısı",
+  "waterReminderSchedule": "09:00–21:00 arası, 2 saatte bir",
+  "waterReminderPrompt": "2 saatte bir hatırlatayım mı?",
+  "waterReminderEnable": "Aç",
+  "waterPermissionDenied": "Bildirim izni verilmedi. Ayarlardan açabilirsin.",
+  "waterReminderTitle": "Su içme zamanı",
+  "waterReminderBody": "Bir bardak su iç, bugünkü hedefine yaklaş.",
+  "waterDayCountUnit": "{count} günlük su kaydı",
+  "@waterGlassesProgress": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "goal": { "type": "int" }
+    }
+  },
+  "@waterGoalValue": {
+    "placeholders": {
+      "glasses": { "type": "int" },
+      "liters": { "type": "String" }
+    }
+  },
+  "@waterDayCountUnit": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

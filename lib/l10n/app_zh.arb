@@ -745,5 +745,41 @@
   "mealsSubtitle": "今天的饮食与你的热量平衡",
   "historySubtitle": "你扫描过的所有产品",
   "favoritesSubtitle": "你一再回访的产品",
-  "filterSelectionSubtitle": "当你扫描的产品含有所选内容时，会收到提醒"
+  "filterSelectionSubtitle": "当你扫描的产品含有所选内容时，会收到提醒",
+  "waterTitle": "喝水",
+  "waterGlassesProgress": "{count} / {goal} 杯",
+  "waterAddGlass": "+1 杯",
+  "waterRemoveGlass": "减少一杯",
+  "waterGoalReached": "已达成今日目标",
+  "waterLast7Days": "最近 7 天",
+  "waterDailyGoal": "每日目标",
+  "waterGoalValue": "{glasses} 杯（{liters} 升）",
+  "waterDecreaseGoal": "降低目标",
+  "waterIncreaseGoal": "提高目标",
+  "waterGoalFromWeight": "按体重设置",
+  "waterReminderSwitch": "喝水提醒",
+  "waterReminderSchedule": "09:00–21:00，每 2 小时",
+  "waterReminderPrompt": "每 2 小时提醒你？",
+  "waterReminderEnable": "开启",
+  "waterPermissionDenied": "通知已关闭，可在设置中开启。",
+  "waterReminderTitle": "该喝水了",
+  "waterReminderBody": "喝一杯水，离今天的目标更近一步。",
+  "waterDayCountUnit": "{count} 天饮水记录",
+  "@waterGlassesProgress": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "goal": { "type": "int" }
+    }
+  },
+  "@waterGoalValue": {
+    "placeholders": {
+      "glasses": { "type": "int" },
+      "liters": { "type": "String" }
+    }
+  },
+  "@waterDayCountUnit": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

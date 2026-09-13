@@ -745,5 +745,41 @@
   "mealsSubtitle": "As refeições de hoje e seu balanço de calorias",
   "historySubtitle": "Todos os produtos que você escaneou",
   "favoritesSubtitle": "Os produtos aos quais você sempre volta",
-  "filterSelectionSubtitle": "Você será avisado quando um produto que escanear contiver o que escolher"
+  "filterSelectionSubtitle": "Você será avisado quando um produto que escanear contiver o que escolher",
+  "waterTitle": "Água",
+  "waterGlassesProgress": "{count} / {goal} copos",
+  "waterAddGlass": "+1 copo",
+  "waterRemoveGlass": "Remover um copo",
+  "waterGoalReached": "Meta diária atingida",
+  "waterLast7Days": "Últimos 7 dias",
+  "waterDailyGoal": "Meta diária",
+  "waterGoalValue": "{glasses} copos ({liters} L)",
+  "waterDecreaseGoal": "Diminuir meta",
+  "waterIncreaseGoal": "Aumentar meta",
+  "waterGoalFromWeight": "Ajustar pelo meu peso",
+  "waterReminderSwitch": "Lembretes de água",
+  "waterReminderSchedule": "A cada 2 horas, 09:00–21:00",
+  "waterReminderPrompt": "Quer um lembrete a cada 2 horas?",
+  "waterReminderEnable": "Ativar",
+  "waterPermissionDenied": "As notificações estão desativadas. Você pode permitir nos Ajustes.",
+  "waterReminderTitle": "Hora de beber água",
+  "waterReminderBody": "Beba um copo de água e chegue mais perto da meta de hoje.",
+  "waterDayCountUnit": "{count} dias de registro de água",
+  "@waterGlassesProgress": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "goal": { "type": "int" }
+    }
+  },
+  "@waterGoalValue": {
+    "placeholders": {
+      "glasses": { "type": "int" },
+      "liters": { "type": "String" }
+    }
+  },
+  "@waterDayCountUnit": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

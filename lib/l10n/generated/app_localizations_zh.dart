@@ -1927,4 +1927,67 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get filterSelectionSubtitle => '当你扫描的产品含有所选内容时，会收到提醒';
+
+  @override
+  String get waterTitle => '喝水';
+
+  @override
+  String waterGlassesProgress(int count, int goal) {
+    return '$count / $goal 杯';
+  }
+
+  @override
+  String get waterAddGlass => '+1 杯';
+
+  @override
+  String get waterRemoveGlass => '减少一杯';
+
+  @override
+  String get waterGoalReached => '已达成今日目标';
+
+  @override
+  String get waterLast7Days => '最近 7 天';
+
+  @override
+  String get waterDailyGoal => '每日目标';
+
+  @override
+  String waterGoalValue(int glasses, String liters) {
+    return '$glasses 杯（$liters 升）';
+  }
+
+  @override
+  String get waterDecreaseGoal => '降低目标';
+
+  @override
+  String get waterIncreaseGoal => '提高目标';
+
+  @override
+  String get waterGoalFromWeight => '按体重设置';
+
+  @override
+  String get waterReminderSwitch => '喝水提醒';
+
+  @override
+  String get waterReminderSchedule => '09:00–21:00，每 2 小时';
+
+  @override
+  String get waterReminderPrompt => '每 2 小时提醒你？';
+
+  @override
+  String get waterReminderEnable => '开启';
+
+  @override
+  String get waterPermissionDenied => '通知已关闭，可在设置中开启。';
+
+  @override
+  String get waterReminderTitle => '该喝水了';
+
+  @override
+  String get waterReminderBody => '喝一杯水，离今天的目标更近一步。';
+
+  @override
+  String waterDayCountUnit(int count) {
+    return '$count 天饮水记录';
+  }
 }

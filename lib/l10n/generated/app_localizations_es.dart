@@ -1988,4 +1988,69 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get filterSelectionSubtitle =>
       'Te avisaremos cuando un producto que escanees contenga lo que elijas';
+
+  @override
+  String get waterTitle => 'Agua';
+
+  @override
+  String waterGlassesProgress(int count, int goal) {
+    return '$count / $goal vasos';
+  }
+
+  @override
+  String get waterAddGlass => '+1 vaso';
+
+  @override
+  String get waterRemoveGlass => 'Quitar un vaso';
+
+  @override
+  String get waterGoalReached => 'Meta diaria alcanzada';
+
+  @override
+  String get waterLast7Days => 'Últimos 7 días';
+
+  @override
+  String get waterDailyGoal => 'Meta diaria';
+
+  @override
+  String waterGoalValue(int glasses, String liters) {
+    return '$glasses vasos ($liters L)';
+  }
+
+  @override
+  String get waterDecreaseGoal => 'Reducir meta';
+
+  @override
+  String get waterIncreaseGoal => 'Aumentar meta';
+
+  @override
+  String get waterGoalFromWeight => 'Ajustar según mi peso';
+
+  @override
+  String get waterReminderSwitch => 'Recordatorios de agua';
+
+  @override
+  String get waterReminderSchedule => 'Cada 2 horas, 09:00–21:00';
+
+  @override
+  String get waterReminderPrompt => '¿Te lo recuerdo cada 2 horas?';
+
+  @override
+  String get waterReminderEnable => 'Activar';
+
+  @override
+  String get waterPermissionDenied =>
+      'Las notificaciones están desactivadas. Puedes permitirlas en Ajustes.';
+
+  @override
+  String get waterReminderTitle => 'Hora de beber agua';
+
+  @override
+  String get waterReminderBody =>
+      'Bebe un vaso de agua y acércate a tu meta de hoy.';
+
+  @override
+  String waterDayCountUnit(int count) {
+    return '$count días de registro de agua';
+  }
 }

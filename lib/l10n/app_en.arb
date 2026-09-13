@@ -745,5 +745,41 @@
   "mealsSubtitle": "Today's meals and your calorie balance",
   "historySubtitle": "Every product you have scanned",
   "favoritesSubtitle": "The products you keep coming back to",
-  "filterSelectionSubtitle": "You'll be warned when a product you scan contains what you pick"
+  "filterSelectionSubtitle": "You'll be warned when a product you scan contains what you pick",
+  "waterTitle": "Water",
+  "waterGlassesProgress": "{count} / {goal} glasses",
+  "waterAddGlass": "+1 glass",
+  "waterRemoveGlass": "Remove a glass",
+  "waterGoalReached": "Daily goal reached",
+  "waterLast7Days": "Last 7 days",
+  "waterDailyGoal": "Daily goal",
+  "waterGoalValue": "{glasses} glasses ({liters} L)",
+  "waterDecreaseGoal": "Decrease goal",
+  "waterIncreaseGoal": "Increase goal",
+  "waterGoalFromWeight": "Set from my weight",
+  "waterReminderSwitch": "Water reminders",
+  "waterReminderSchedule": "Every 2 hours, 09:00–21:00",
+  "waterReminderPrompt": "Remind you every 2 hours?",
+  "waterReminderEnable": "Turn on",
+  "waterPermissionDenied": "Notifications are off. You can allow them in Settings.",
+  "waterReminderTitle": "Time for water",
+  "waterReminderBody": "Have a glass of water and get closer to today's goal.",
+  "waterDayCountUnit": "{count} days of water logs",
+  "@waterGlassesProgress": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "goal": { "type": "int" }
+    }
+  },
+  "@waterGoalValue": {
+    "placeholders": {
+      "glasses": { "type": "int" },
+      "liters": { "type": "String" }
+    }
+  },
+  "@waterDayCountUnit": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

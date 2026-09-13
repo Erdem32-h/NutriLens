@@ -1968,4 +1968,68 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get filterSelectionSubtitle =>
       'سيتم تنبيهك عندما يحتوي منتج تمسحه على ما اخترته';
+
+  @override
+  String get waterTitle => 'الماء';
+
+  @override
+  String waterGlassesProgress(int count, int goal) {
+    return '$count / $goal أكواب';
+  }
+
+  @override
+  String get waterAddGlass => '+1 كوب';
+
+  @override
+  String get waterRemoveGlass => 'إزالة كوب';
+
+  @override
+  String get waterGoalReached => 'تم بلوغ الهدف اليومي';
+
+  @override
+  String get waterLast7Days => 'آخر 7 أيام';
+
+  @override
+  String get waterDailyGoal => 'الهدف اليومي';
+
+  @override
+  String waterGoalValue(int glasses, String liters) {
+    return '$glasses أكواب ($liters لتر)';
+  }
+
+  @override
+  String get waterDecreaseGoal => 'خفض الهدف';
+
+  @override
+  String get waterIncreaseGoal => 'رفع الهدف';
+
+  @override
+  String get waterGoalFromWeight => 'اضبط حسب وزني';
+
+  @override
+  String get waterReminderSwitch => 'تذكيرات شرب الماء';
+
+  @override
+  String get waterReminderSchedule => 'كل ساعتين، 09:00–21:00';
+
+  @override
+  String get waterReminderPrompt => 'هل أذكّرك كل ساعتين؟';
+
+  @override
+  String get waterReminderEnable => 'تفعيل';
+
+  @override
+  String get waterPermissionDenied =>
+      'الإشعارات متوقفة. يمكنك السماح بها من الإعدادات.';
+
+  @override
+  String get waterReminderTitle => 'حان وقت شرب الماء';
+
+  @override
+  String get waterReminderBody => 'اشرب كوب ماء واقترب من هدف اليوم.';
+
+  @override
+  String waterDayCountUnit(int count) {
+    return 'سجل ماء لـ $count يوم';
+  }
 }

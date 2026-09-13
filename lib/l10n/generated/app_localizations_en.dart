@@ -1977,4 +1977,69 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get filterSelectionSubtitle =>
       'You\'ll be warned when a product you scan contains what you pick';
+
+  @override
+  String get waterTitle => 'Water';
+
+  @override
+  String waterGlassesProgress(int count, int goal) {
+    return '$count / $goal glasses';
+  }
+
+  @override
+  String get waterAddGlass => '+1 glass';
+
+  @override
+  String get waterRemoveGlass => 'Remove a glass';
+
+  @override
+  String get waterGoalReached => 'Daily goal reached';
+
+  @override
+  String get waterLast7Days => 'Last 7 days';
+
+  @override
+  String get waterDailyGoal => 'Daily goal';
+
+  @override
+  String waterGoalValue(int glasses, String liters) {
+    return '$glasses glasses ($liters L)';
+  }
+
+  @override
+  String get waterDecreaseGoal => 'Decrease goal';
+
+  @override
+  String get waterIncreaseGoal => 'Increase goal';
+
+  @override
+  String get waterGoalFromWeight => 'Set from my weight';
+
+  @override
+  String get waterReminderSwitch => 'Water reminders';
+
+  @override
+  String get waterReminderSchedule => 'Every 2 hours, 09:00–21:00';
+
+  @override
+  String get waterReminderPrompt => 'Remind you every 2 hours?';
+
+  @override
+  String get waterReminderEnable => 'Turn on';
+
+  @override
+  String get waterPermissionDenied =>
+      'Notifications are off. You can allow them in Settings.';
+
+  @override
+  String get waterReminderTitle => 'Time for water';
+
+  @override
+  String get waterReminderBody =>
+      'Have a glass of water and get closer to today\'s goal.';
+
+  @override
+  String waterDayCountUnit(int count) {
+    return '$count days of water logs';
+  }
 }

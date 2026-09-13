@@ -1983,4 +1983,68 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get filterSelectionSubtitle =>
       'Seçtiklerin taradığın üründe bulunursa uyarılırsın';
+
+  @override
+  String get waterTitle => 'Su';
+
+  @override
+  String waterGlassesProgress(int count, int goal) {
+    return '$count / $goal bardak';
+  }
+
+  @override
+  String get waterAddGlass => '+1 bardak';
+
+  @override
+  String get waterRemoveGlass => 'Bir bardak çıkar';
+
+  @override
+  String get waterGoalReached => 'Günlük hedefe ulaştın';
+
+  @override
+  String get waterLast7Days => 'Son 7 gün';
+
+  @override
+  String get waterDailyGoal => 'Günlük hedef';
+
+  @override
+  String waterGoalValue(int glasses, String liters) {
+    return '$glasses bardak ($liters L)';
+  }
+
+  @override
+  String get waterDecreaseGoal => 'Hedefi azalt';
+
+  @override
+  String get waterIncreaseGoal => 'Hedefi artır';
+
+  @override
+  String get waterGoalFromWeight => 'Kiloma göre ayarla';
+
+  @override
+  String get waterReminderSwitch => 'Su hatırlatıcısı';
+
+  @override
+  String get waterReminderSchedule => '09:00–21:00 arası, 2 saatte bir';
+
+  @override
+  String get waterReminderPrompt => '2 saatte bir hatırlatayım mı?';
+
+  @override
+  String get waterReminderEnable => 'Aç';
+
+  @override
+  String get waterPermissionDenied =>
+      'Bildirim izni verilmedi. Ayarlardan açabilirsin.';
+
+  @override
+  String get waterReminderTitle => 'Su içme zamanı';
+
+  @override
+  String get waterReminderBody => 'Bir bardak su iç, bugünkü hedefine yaklaş.';
+
+  @override
+  String waterDayCountUnit(int count) {
+    return '$count günlük su kaydı';
+  }
 }

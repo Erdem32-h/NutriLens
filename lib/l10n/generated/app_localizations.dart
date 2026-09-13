@@ -3783,6 +3783,120 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Seçtiklerin taradığın üründe bulunursa uyarılırsın'**
   String get filterSelectionSubtitle;
+
+  /// No description provided for @waterTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Su'**
+  String get waterTitle;
+
+  /// No description provided for @waterGlassesProgress.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} / {goal} bardak'**
+  String waterGlassesProgress(int count, int goal);
+
+  /// No description provided for @waterAddGlass.
+  ///
+  /// In tr, this message translates to:
+  /// **'+1 bardak'**
+  String get waterAddGlass;
+
+  /// No description provided for @waterRemoveGlass.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir bardak çıkar'**
+  String get waterRemoveGlass;
+
+  /// No description provided for @waterGoalReached.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük hedefe ulaştın'**
+  String get waterGoalReached;
+
+  /// No description provided for @waterLast7Days.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 7 gün'**
+  String get waterLast7Days;
+
+  /// No description provided for @waterDailyGoal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük hedef'**
+  String get waterDailyGoal;
+
+  /// No description provided for @waterGoalValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'{glasses} bardak ({liters} L)'**
+  String waterGoalValue(int glasses, String liters);
+
+  /// No description provided for @waterDecreaseGoal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefi azalt'**
+  String get waterDecreaseGoal;
+
+  /// No description provided for @waterIncreaseGoal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefi artır'**
+  String get waterIncreaseGoal;
+
+  /// No description provided for @waterGoalFromWeight.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kiloma göre ayarla'**
+  String get waterGoalFromWeight;
+
+  /// No description provided for @waterReminderSwitch.
+  ///
+  /// In tr, this message translates to:
+  /// **'Su hatırlatıcısı'**
+  String get waterReminderSwitch;
+
+  /// No description provided for @waterReminderSchedule.
+  ///
+  /// In tr, this message translates to:
+  /// **'09:00–21:00 arası, 2 saatte bir'**
+  String get waterReminderSchedule;
+
+  /// No description provided for @waterReminderPrompt.
+  ///
+  /// In tr, this message translates to:
+  /// **'2 saatte bir hatırlatayım mı?'**
+  String get waterReminderPrompt;
+
+  /// No description provided for @waterReminderEnable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aç'**
+  String get waterReminderEnable;
+
+  /// No description provided for @waterPermissionDenied.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim izni verilmedi. Ayarlardan açabilirsin.'**
+  String get waterPermissionDenied;
+
+  /// No description provided for @waterReminderTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Su içme zamanı'**
+  String get waterReminderTitle;
+
+  /// No description provided for @waterReminderBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir bardak su iç, bugünkü hedefine yaklaş.'**
+  String get waterReminderBody;
+
+  /// No description provided for @waterDayCountUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} günlük su kaydı'**
+  String waterDayCountUnit(int count);
 }
 
 class _AppLocalizationsDelegate
