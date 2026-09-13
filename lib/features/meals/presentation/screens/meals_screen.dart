@@ -25,6 +25,7 @@ import '../widgets/calorie_stacked_bar_chart.dart';
 import '../widgets/macro_balance_card.dart';
 import '../widgets/meal_sync_banner.dart';
 import '../../../scanner/presentation/providers/scanner_mode_provider.dart';
+import '../../../water/presentation/widgets/water_card.dart';
 
 class MealsScreen extends ConsumerWidget {
   const MealsScreen({super.key});
@@ -66,6 +67,12 @@ class MealsScreen extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 18),
                 child: _DailyTargetSummary(),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 18),
+                child: WaterCard(),
               ),
             ),
             mealsAsync.when(

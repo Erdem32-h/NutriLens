@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutrilens/config/drift/app_database.dart';
+import 'package:nutrilens/core/providers/locale_provider.dart';
 import 'package:nutrilens/core/providers/monetization_provider.dart';
 import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/core/theme/app_theme.dart';
@@ -14,6 +15,7 @@ import 'package:nutrilens/features/product/domain/entities/nutriments_entity.dar
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
 import 'package:nutrilens/features/profile/presentation/providers/user_metrics_provider.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// meals_screen.dart'in liste basliginin ustune eklenen gunluk
 /// alinan/hedef ozet satirini test eder (Task 8, Step 2/6).
@@ -24,19 +26,19 @@ import 'package:nutrilens/l10n/generated/app_localizations.dart';
 /// etmeyi saglar; user_metrics_provider.dart'taki kendi dokumantasyonu
 /// tam olarak bu ayrimi tanimliyor.
 MealEntryEntity _todayMeal({required double calories}) => MealEntryEntity(
-      id: 'today-1',
-      userId: 'user-1',
-      mealName: 'Test ogun',
-      brand: 'Ev yapimi',
-      mealType: MealType.lunch,
-      capturedAt: DateTime.now(),
-      ingredientsText: 'test',
-      nutriments: NutrimentsEntity(energyKcal: calories),
-      calories: calories,
-      hpScore: 70,
-      confidence: 0.8,
-      aiRawJson: '{}',
-    );
+  id: 'today-1',
+  userId: 'user-1',
+  mealName: 'Test ogun',
+  brand: 'Ev yapimi',
+  mealType: MealType.lunch,
+  capturedAt: DateTime.now(),
+  ingredientsText: 'test',
+  nutriments: NutrimentsEntity(energyKcal: calories),
+  calories: calories,
+  hpScore: 70,
+  confidence: 0.8,
+  aiRawJson: '{}',
+);
 
 // `extraOverrides` bilerek tiplenmemis: `Override`, `riverpod` paketinden
 // gelir ve bu paket `flutter_riverpod` uzerinden yalnizca gecisli bir
@@ -44,26 +46,32 @@ MealEntryEntity _todayMeal({required double calories}) => MealEntryEntity(
 // etmek yerine, hedef tip zaten `ProviderScope.overrides` parametresinden
 // (List<Override>) cikarilabildigi icin asagida `.cast()` tip argumanini
 // belirtmeden kullaniliyor.
-Widget wrap(AppDatabase db, {List extraOverrides = const []}) =>
-    ProviderScope(
-      overrides: [
-        appDatabaseProvider.overrideWithValue(db),
-        effectiveUserIdProvider.overrideWithValue('user-1'),
-        // meal_provider.dart'taki mealCloudSyncProvider, currentUserProvider +
-        // isPremiumProvider'i kosulsuz watch eder (bkz. meals_screen_chart_test.dart
-        // ayni yorum) — bunlar olmadan zincir Supabase/RevenueCat'e uzanip patlar.
-        currentUserProvider.overrideWithValue(null),
-        isPremiumProvider.overrideWithValue(false),
-        ...extraOverrides,
-      ].cast(),
-      child: MaterialApp(
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('tr'),
-        home: const MealsScreen(),
-      ),
-    );
+// Task 9: MealsScreen artik WaterCard iceriyor, o da
+// waterSettingsStoreProvider uzerinden sharedPreferencesProvider'i okuyor —
+// bu olmadan provider kasitli olarak fırlatir (bkz. app_session.dart). Her
+// testten once `setUp` ile taze bir mock instance kuruluyor.
+late SharedPreferences _prefs;
+
+Widget wrap(AppDatabase db, {List extraOverrides = const []}) => ProviderScope(
+  overrides: [
+    appDatabaseProvider.overrideWithValue(db),
+    effectiveUserIdProvider.overrideWithValue('user-1'),
+    // meal_provider.dart'taki mealCloudSyncProvider, currentUserProvider +
+    // isPremiumProvider'i kosulsuz watch eder (bkz. meals_screen_chart_test.dart
+    // ayni yorum) — bunlar olmadan zincir Supabase/RevenueCat'e uzanip patlar.
+    currentUserProvider.overrideWithValue(null),
+    isPremiumProvider.overrideWithValue(false),
+    sharedPreferencesProvider.overrideWithValue(_prefs),
+    ...extraOverrides,
+  ].cast(),
+  child: MaterialApp(
+    theme: AppTheme.light,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    locale: const Locale('tr'),
+    home: const MealsScreen(),
+  ),
+);
 
 /// Öğünlerim ekranı dolu haldeyken (grafik + yeni özet kartı + öğün
 /// listesi) varsayılan 800×600 test yüzeyine sığmıyor — flutter_test'in
@@ -79,38 +87,45 @@ Future<void> _useTallSurface(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets(
-      'metrics yokken varsayilan 2000 kcal hedefiyle "alinan / hedef" ozeti gorunur',
-      (tester) async {
-    await _useTallSurface(tester);
-    final db = AppDatabase.forTesting(NativeDatabase.memory());
-    addTearDown(db.close);
-    await MealLocalDataSourceImpl(db).saveMeal(_todayMeal(calories: 1420));
-
-    await tester.pumpWidget(wrap(db));
-    await tester.pumpAndSettle();
-
-    expect(find.text('1420 / 2000 kcal'), findsOneWidget);
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    _prefs = await SharedPreferences.getInstance();
   });
 
   testWidgets(
-      'dailyCalorieTargetProvider 2500 override edildiginde ozet yeni hedefi gosterir',
-      (tester) async {
-    await _useTallSurface(tester);
-    final db = AppDatabase.forTesting(NativeDatabase.memory());
-    addTearDown(db.close);
-    await MealLocalDataSourceImpl(db).saveMeal(_todayMeal(calories: 1420));
+    'metrics yokken varsayilan 2000 kcal hedefiyle "alinan / hedef" ozeti gorunur',
+    (tester) async {
+      await _useTallSurface(tester);
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      await MealLocalDataSourceImpl(db).saveMeal(_todayMeal(calories: 1420));
 
-    await tester.pumpWidget(
-      wrap(
-        db,
-        extraOverrides: [dailyCalorieTargetProvider.overrideWithValue(2500)],
-      ),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(wrap(db));
+      await tester.pumpAndSettle();
 
-    expect(find.text('1420 / 2500 kcal'), findsOneWidget);
-  });
+      expect(find.text('1420 / 2000 kcal'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'dailyCalorieTargetProvider 2500 override edildiginde ozet yeni hedefi gosterir',
+    (tester) async {
+      await _useTallSurface(tester);
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      await MealLocalDataSourceImpl(db).saveMeal(_todayMeal(calories: 1420));
+
+      await tester.pumpWidget(
+        wrap(
+          db,
+          extraOverrides: [dailyCalorieTargetProvider.overrideWithValue(2500)],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('1420 / 2500 kcal'), findsOneWidget);
+    },
+  );
 
   testWidgets('toplam hedefi asinca asim gostergesi gorunur', (tester) async {
     await _useTallSurface(tester);
@@ -148,20 +163,22 @@ void main() {
   });
 
   testWidgets(
-      'metrics yokken (varsayilan 2000 kcal) dahi tibbi tavsiye dipnotu '
-      'gorunur — gosterilen sayi kisisel olsun olmasin tahmini bir '
-      'referanstir', (tester) async {
-    await _useTallSurface(tester);
-    final db = AppDatabase.forTesting(NativeDatabase.memory());
-    addTearDown(db.close);
-    await MealLocalDataSourceImpl(db).saveMeal(_todayMeal(calories: 1420));
+    'metrics yokken (varsayilan 2000 kcal) dahi tibbi tavsiye dipnotu '
+    'gorunur — gosterilen sayi kisisel olsun olmasin tahmini bir '
+    'referanstir',
+    (tester) async {
+      await _useTallSurface(tester);
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      await MealLocalDataSourceImpl(db).saveMeal(_todayMeal(calories: 1420));
 
-    await tester.pumpWidget(wrap(db));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(wrap(db));
+      await tester.pumpAndSettle();
 
-    expect(
-      find.text('Tahmini değerdir, tıbbi tavsiye yerine geçmez.'),
-      findsOneWidget,
-    );
-  });
+      expect(
+        find.text('Tahmini değerdir, tıbbi tavsiye yerine geçmez.'),
+        findsOneWidget,
+      );
+    },
+  );
 }

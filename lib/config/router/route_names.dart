@@ -33,6 +33,9 @@ abstract final class RouteNames {
   // Meals
   static const String mealDetail = 'mealDetail';
 
+  // Water
+  static const String water = 'water';
+
   // Favorites sub-screens
   static const String blacklist = 'blacklist';
 
