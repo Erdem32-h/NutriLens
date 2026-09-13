@@ -17,8 +17,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MockNotificationService extends Mock implements NotificationService {}
 
-class SilentAnalytics extends AnalyticsService {
-  SilentAnalytics()
+class RecordingAnalytics extends AnalyticsService {
+  RecordingAnalytics()
     : super(
         client: null,
         deviceId: null,
@@ -27,8 +27,11 @@ class SilentAnalytics extends AnalyticsService {
         flushInterval: Duration.zero,
       );
 
+  final names = <String>[];
+
   @override
-  void track(String name, {Map<String, Object?> props = const {}}) {}
+  void track(String name, {Map<String, Object?> props = const {}}) =>
+      names.add(name);
 }
 
 class WaterHarness {
@@ -70,7 +73,7 @@ Future<WaterHarness> pumpWaterWidget(
         sharedPreferencesProvider.overrideWithValue(prefs),
         effectiveUserIdProvider.overrideWithValue('user-1'),
         notificationServiceProvider.overrideWithValue(notifications),
-        analyticsServiceProvider.overrideWithValue(SilentAnalytics()),
+        analyticsServiceProvider.overrideWithValue(RecordingAnalytics()),
         waterClockProvider.overrideWithValue(
           () => DateTime(2026, 9, 13, 10, 30),
         ),

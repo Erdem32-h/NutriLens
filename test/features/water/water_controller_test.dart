@@ -5,7 +5,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:nutrilens/config/drift/app_database.dart';
 import 'package:nutrilens/core/analytics/analytics_event.dart';
 import 'package:nutrilens/core/analytics/analytics_provider.dart';
-import 'package:nutrilens/core/analytics/analytics_service.dart';
 import 'package:nutrilens/core/providers/locale_provider.dart';
 import 'package:nutrilens/core/services/calorie_target_calculator.dart';
 import 'package:nutrilens/core/services/notification_service.dart';
@@ -16,31 +15,14 @@ import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.d
 import 'package:nutrilens/features/water/presentation/providers/water_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class _MockNotifications extends Mock implements NotificationService {}
-
-class _RecordingAnalytics extends AnalyticsService {
-  _RecordingAnalytics()
-    : super(
-        client: null,
-        deviceId: null,
-        prefs: null,
-        enabled: false,
-        flushInterval: Duration.zero,
-      );
-
-  final names = <String>[];
-
-  @override
-  void track(String name, {Map<String, Object?> props = const {}}) =>
-      names.add(name);
-}
+import 'water_widget_harness.dart';
 
 const WaterReminderCopy _copy = (title: 't', body: 'b');
 
 void main() {
   late AppDatabase db;
-  late _MockNotifications notifications;
-  late _RecordingAnalytics analytics;
+  late MockNotificationService notifications;
+  late RecordingAnalytics analytics;
   late DateTime now;
 
   setUpAll(() => registerFallbackValue(<DateTime>[]));
@@ -70,8 +52,8 @@ void main() {
 
   setUp(() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
-    notifications = _MockNotifications();
-    analytics = _RecordingAnalytics();
+    notifications = MockNotificationService();
+    analytics = RecordingAnalytics();
     now = DateTime(2026, 9, 13, 10, 30);
     when(() => notifications.cancelWaterReminders()).thenAnswer((_) async {});
     when(

@@ -19,8 +19,8 @@ Future<void> addWaterGlass(BuildContext context, WidgetRef ref) async {
   if (ref.read(waterSettingsProvider).reminderEnabled || store.promptShown) {
     return;
   }
-  await store.markPromptShown();
   if (!context.mounted) return;
+  await store.markPromptShown();
   messenger.showSnackBar(
     SnackBar(
       content: Text(l10n.waterReminderPrompt),
