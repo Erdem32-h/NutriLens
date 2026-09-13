@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../data/services/account_deletion_service.dart';
 import '../../data/services/user_data_deletion_service.dart';
@@ -14,6 +15,9 @@ final userDataDeletionServiceProvider = Provider<UserDataDeletionService>((
     remoteStore: SupabaseRemoteUserDataStore(client),
     preferences: ref.watch(sharedPreferencesProvider),
     currentUserId: () => client.auth.currentUser?.id,
+    cancelWaterReminders: ref
+        .watch(notificationServiceProvider)
+        .cancelWaterReminders,
   );
 });
 

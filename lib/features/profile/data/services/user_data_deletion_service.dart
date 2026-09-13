@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../config/drift/app_database.dart';
 import '../../../meals/data/datasources/meal_remote_datasource.dart';
+import '../../../water/data/water_settings_store.dart';
 import 'account_deletion_service.dart';
 import 'storage_folder_cleaner.dart';
 
@@ -113,16 +114,19 @@ class UserDataDeletionService implements UserDataCleaner {
   final RemoteUserDataStore _remoteStore;
   final SharedPreferences _preferences;
   final String? Function()? _currentUserId;
+  final Future<void> Function()? _cancelWaterReminders;
 
   const UserDataDeletionService({
     required AppDatabase db,
     required RemoteUserDataStore remoteStore,
     required SharedPreferences preferences,
     String? Function()? currentUserId,
+    Future<void> Function()? cancelWaterReminders,
   }) : _db = db,
        _remoteStore = remoteStore,
        _preferences = preferences,
-       _currentUserId = currentUserId;
+       _currentUserId = currentUserId,
+       _cancelWaterReminders = cancelWaterReminders;
 
   @override
   Future<void> deleteAllUserData(String userId) async {
@@ -203,17 +207,21 @@ class UserDataDeletionService implements UserDataCleaner {
       await (_db.delete(
         _db.userMetrics,
       )..where((table) => table.userId.equals(userId))).go();
+      await (_db.delete(
+        _db.waterLogs,
+      )..where((table) => table.userId.equals(userId))).go();
     });
     // Preferences are device-global, unlike rows. A resumed deletion of A
     // must not clear health filters now belonging to signed-in user B.
     final currentId = _currentUserId?.call();
     if (currentId == null || currentId == userId) {
       await _clearLocalProfilePreferences();
+      await _cancelWaterReminders?.call();
     }
   }
 
   Future<void> _clearLocalProfilePreferences() async {
-    for (final key in _healthFilterKeys) {
+    for (final key in [..._healthFilterKeys, ...WaterSettingsStore.keys]) {
       await _preferences.remove(key);
     }
   }

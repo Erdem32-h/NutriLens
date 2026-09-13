@@ -12,13 +12,18 @@ void main() {
   late SharedPreferences prefs;
   late _RecordingRemoteUserDataStore remote;
   late UserDataDeletionService service;
+  var cancelledReminders = 0;
 
   setUp(() async {
+    cancelledReminders = 0;
     SharedPreferences.setMockInitialValues({
       'health_filters_allergens': ['milk'],
       'health_filters_diets': ['vegan'],
       'health_filters_oils': ['palm'],
       'health_filters_chemicals': ['msg'],
+      'water_goal_glasses': 12,
+      'water_reminder_enabled': true,
+      'water_reminder_prompt_shown': true,
     });
     prefs = await SharedPreferences.getInstance();
     db = AppDatabase.forTesting(NativeDatabase.memory());
@@ -27,6 +32,7 @@ void main() {
       db: db,
       remoteStore: remote,
       preferences: prefs,
+      cancelWaterReminders: () async => cancelledReminders++,
     );
   });
 
@@ -206,6 +212,45 @@ void main() {
 
     await expectLater(service.deleteAllUserData('user-1'), throwsException);
   });
+
+  test(
+    'local cleanup removes water logs, prefs and pending reminders',
+    () async {
+      for (final id in ['user-1', 'user-2']) {
+        await db
+            .into(db.waterLogs)
+            .insert(
+              WaterLogsCompanion.insert(
+                userId: id,
+                day: '2026-09-13',
+                goalGlasses: 10,
+              ),
+            );
+      }
+      await service.deleteLocalUserData('user-1');
+      expect((await db.select(db.waterLogs).get()).single.userId, 'user-2');
+      expect(prefs.getInt('water_goal_glasses'), isNull);
+      expect(prefs.getBool('water_reminder_enabled'), isNull);
+      expect(prefs.getBool('water_reminder_prompt_shown'), isNull);
+      expect(cancelledReminders, 1);
+    },
+  );
+
+  test(
+    'resumed deletion of another account keeps current user reminders',
+    () async {
+      final other = UserDataDeletionService(
+        db: db,
+        remoteStore: remote,
+        preferences: prefs,
+        currentUserId: () => 'user-2',
+        cancelWaterReminders: () async => cancelledReminders++,
+      );
+      await other.deleteLocalUserData('user-1');
+      expect(cancelledReminders, 0);
+      expect(prefs.getBool('water_reminder_enabled'), isTrue);
+    },
+  );
 
   group('SupabaseRemoteUserDataStore.clearedProfileColumns', () {
     // Compliance test: the body measurements are declared as health data in

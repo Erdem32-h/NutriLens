@@ -18,6 +18,7 @@ import 'package:nutrilens/features/history/data/datasources/scan_history_local_d
 import 'package:nutrilens/features/meals/data/datasources/meal_local_datasource.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
 import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.dart';
+import 'package:nutrilens/features/water/data/datasources/water_local_datasource.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 
 /// Holds `inspectPending` open so a test can dispose the caller mid-flight —
@@ -116,11 +117,7 @@ void main() {
     testWidgets('REGRESSION: leaves guest mode even when the caller is '
         'disposed mid-flow', (tester) async {
       migration = _GatedMigration(
-        const GuestDataSummary(
-          scanCount: 0,
-          mealCount: 0,
-          hasMetrics: false,
-        ),
+        const GuestDataSummary(scanCount: 0, mealCount: 0, hasMetrics: false),
       );
 
       await tester.pumpWidget(subject());
@@ -144,11 +141,7 @@ void main() {
       tester,
     ) async {
       migration = _GatedMigration(
-        const GuestDataSummary(
-          scanCount: 0,
-          mealCount: 0,
-          hasMetrics: false,
-        ),
+        const GuestDataSummary(scanCount: 0, mealCount: 0, hasMetrics: false),
       );
 
       await tester.pumpWidget(subject());
@@ -165,11 +158,7 @@ void main() {
 
     testWidgets('still exits guest mode on the normal path', (tester) async {
       migration = _GatedMigration(
-        const GuestDataSummary(
-          scanCount: 0,
-          mealCount: 0,
-          hasMetrics: false,
-        ),
+        const GuestDataSummary(scanCount: 0, mealCount: 0, hasMetrics: false),
       );
 
       await tester.pumpWidget(subject());
@@ -214,6 +203,7 @@ void main() {
           scanDs: ScanHistoryLocalDataSourceImpl(db),
           mealDs: MealLocalDataSourceImpl(db),
           metricsDs: metricsDs,
+          waterDs: WaterLocalDataSourceImpl(db),
           supabase: _MockSupabaseClient(),
           counter: counter,
         );

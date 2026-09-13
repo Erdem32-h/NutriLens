@@ -7,6 +7,8 @@ import '../../features/meals/data/datasources/meal_local_datasource.dart';
 import '../../features/meals/presentation/providers/meal_provider.dart';
 import '../../features/profile/data/datasources/user_metrics_local_datasource.dart';
 import '../../features/profile/presentation/providers/user_metrics_provider.dart';
+import '../../features/water/data/datasources/water_local_datasource.dart';
+import '../../features/water/presentation/providers/water_provider.dart';
 import '../services/guest_scan_counter.dart';
 import 'app_session.dart';
 
@@ -25,19 +27,26 @@ class GuestDataSummary {
   /// sonraki misafire sızar (sağlık verisi sızıntısı — bkz. discard()).
   final bool hasMetrics;
 
+  /// Days with a water log. Local-only data, but still the guest's — counts
+  /// toward "is there anything to move", same reasoning as [hasMetrics].
+  final int waterDayCount;
+
   const GuestDataSummary({
     required this.scanCount,
     required this.mealCount,
     required this.hasMetrics,
+    this.waterDayCount = 0,
   });
 
-  bool get isEmpty => scanCount == 0 && mealCount == 0 && !hasMetrics;
+  bool get isEmpty =>
+      scanCount == 0 && mealCount == 0 && !hasMetrics && waterDayCount == 0;
 }
 
 class GuestMigrationService {
   final ScanHistoryLocalDataSource _scanDs;
   final MealLocalDataSource _mealDs;
   final UserMetricsLocalDataSource _metricsDs;
+  final WaterLocalDataSource _waterDs;
   final SupabaseClient _supabase;
   final GuestScanCounter _counter;
 
@@ -45,28 +54,32 @@ class GuestMigrationService {
     required ScanHistoryLocalDataSource scanDs,
     required MealLocalDataSource mealDs,
     required UserMetricsLocalDataSource metricsDs,
+    required WaterLocalDataSource waterDs,
     required SupabaseClient supabase,
     required GuestScanCounter counter,
-  })  : _scanDs = scanDs,
-        _mealDs = mealDs,
-        _metricsDs = metricsDs,
-        _supabase = supabase,
-        _counter = counter;
+  }) : _scanDs = scanDs,
+       _mealDs = mealDs,
+       _metricsDs = metricsDs,
+       _waterDs = waterDs,
+       _supabase = supabase,
+       _counter = counter;
 
   Future<GuestDataSummary> inspectPending() async {
     final scans = await _scanDs.countByUser(kGuestUserId);
     final meals = await _mealDs.countByUser(kGuestUserId);
     final metrics = await _metricsDs.get(kGuestUserId);
+    final waterDays = await _waterDs.countDays(kGuestUserId);
     return GuestDataSummary(
       scanCount: scans,
       mealCount: meals,
       hasMetrics: metrics != null,
+      waterDayCount: waterDays,
     );
   }
 
   /// Performs the migration:
   ///   1. Re-key local Drift rows (scan_history, meal_entries,
-  ///      user_metrics) from [kGuestUserId] to [newUserId] — instant,
+  ///      user_metrics, water_logs) from [kGuestUserId] to [newUserId] — instant,
   ///      all-or-nothing per table. `user_metrics` never overwrites an
   ///      existing row on the target account (see
   ///      [UserMetricsLocalDataSource.reassignOwner]).
@@ -83,30 +96,27 @@ class GuestMigrationService {
   /// where their stuff went.
   Future<void> migrate({required String newUserId}) async {
     // 1. Local re-key (must succeed; otherwise the data is invisible)
-    await _scanDs.reassignOwner(
-      fromUserId: kGuestUserId,
-      toUserId: newUserId,
-    );
-    await _mealDs.reassignOwner(
-      fromUserId: kGuestUserId,
-      toUserId: newUserId,
-    );
+    await _scanDs.reassignOwner(fromUserId: kGuestUserId, toUserId: newUserId);
+    await _mealDs.reassignOwner(fromUserId: kGuestUserId, toUserId: newUserId);
     await _metricsDs.reassignOwner(
       fromUserId: kGuestUserId,
       toUserId: newUserId,
     );
+    await _waterDs.reassignOwner(fromUserId: kGuestUserId, toUserId: newUserId);
 
     // 2. Cloud upload (best-effort — local data is already saved)
     try {
       final scans = await _scanDs.rawByUser(newUserId);
       if (scans.isNotEmpty) {
         final payload = scans
-            .map((m) => {
-                  'user_id': newUserId,
-                  'barcode': m['barcode'],
-                  'scanned_at': m['scanned_at'],
-                  'hp_score_at_scan': m['hp_score_at_scan'],
-                })
+            .map(
+              (m) => {
+                'user_id': newUserId,
+                'barcode': m['barcode'],
+                'scanned_at': m['scanned_at'],
+                'hp_score_at_scan': m['hp_score_at_scan'],
+              },
+            )
             .toList();
         await _supabase
             .from('scan_history')
@@ -134,6 +144,7 @@ class GuestMigrationService {
       await _mealDs.deleteMeal(m.id);
     }
     await _metricsDs.deleteFor(kGuestUserId);
+    await _waterDs.deleteFor(kGuestUserId);
     await _counter.reset();
   }
 }
@@ -143,6 +154,7 @@ final guestMigrationServiceProvider = Provider<GuestMigrationService>((ref) {
     scanDs: ref.watch(scanHistoryLocalDataSourceProvider),
     mealDs: ref.watch(mealLocalDataSourceProvider),
     metricsDs: ref.watch(userMetricsLocalDataSourceProvider),
+    waterDs: ref.watch(waterLocalDataSourceProvider),
     supabase: Supabase.instance.client,
     counter: ref.watch(guestScanCounterProvider.notifier),
   );

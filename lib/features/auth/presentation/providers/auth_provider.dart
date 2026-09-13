@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/providers/monetization_provider.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
@@ -125,6 +127,12 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
   }
 
   Future<void> signOut() async {
+    // Pending water reminders belong to the account that is leaving.
+    try {
+      await ref.read(notificationServiceProvider).cancelWaterReminders();
+    } catch (e) {
+      debugPrint('[Auth] water reminder cancel failed: $e');
+    }
     final subscriptionService = ref.read(subscriptionServiceProvider);
     await subscriptionService.logOut();
     await ref.read(authRepositoryProvider).signOut();

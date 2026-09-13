@@ -41,6 +41,8 @@ class GuestMigrationPromptSheet extends StatelessWidget {
     final parts = <String>[
       if (summary.scanCount > 0) l10n.scanCountUnit(summary.scanCount),
       if (summary.mealCount > 0) l10n.mealCountUnit(summary.mealCount),
+      if (summary.waterDayCount > 0)
+        l10n.waterDayCountUnit(summary.waterDayCount),
     ];
     final dataLine = parts.join(', ');
 
