@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -131,6 +133,13 @@ class NotificationService {
   /// Replaces every pending water reminder with [times] (wall-clock, local).
   /// Ids are sequential from 2000 so a shorter list never leaves stale
   /// reminders behind — all 14 ids are cancelled first.
+  ///
+  /// `times` is trusted to be computed against a "now" that may be a few
+  /// seconds stale by the time this runs (goal resolution, a DB read, and
+  /// 14 cancels all await first) — flutter_local_notifications throws
+  /// `ArgumentError` for a `scheduledDate` that has already passed, so each
+  /// slot is re-checked against the current clock right before scheduling
+  /// and skipped rather than aborting the whole batch.
   Future<void> rescheduleWaterReminders({
     required List<DateTime> times,
     required String title,
@@ -140,21 +149,24 @@ class NotificationService {
     if (times.isEmpty) return;
 
     await _ensureTimezone();
-    final count = times.length < _waterMaxCount ? times.length : _waterMaxCount;
+    final count = math.min(times.length, _waterMaxCount);
+    var armed = 0;
     for (var i = 0; i < count; i++) {
       final t = times[i];
+      final scheduled = tz.TZDateTime(
+        tz.local,
+        t.year,
+        t.month,
+        t.day,
+        t.hour,
+        t.minute,
+      );
+      if (!scheduled.isAfter(tz.TZDateTime.now(tz.local))) continue;
       await _plugin.zonedSchedule(
-        id: _waterBaseId + i,
+        id: _waterBaseId + armed,
         title: title,
         body: body,
-        scheduledDate: tz.TZDateTime(
-          tz.local,
-          t.year,
-          t.month,
-          t.day,
-          t.hour,
-          t.minute,
-        ),
+        scheduledDate: scheduled,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
@@ -166,6 +178,7 @@ class NotificationService {
           iOS: DarwinNotificationDetails(),
         ),
       );
+      armed++;
     }
   }
 

@@ -60,8 +60,12 @@ void main() {
   );
 
   test('her zaman sirali id ile kurulur, duvar saati korunur', () async {
+    // Far-future fixture dates: they must stay ahead of the real clock
+    // regardless of when this suite runs (this file also asserts the
+    // past-slot skip, so a fixture that drifts into the past would make
+    // this test flaky rather than the one it's meant to guard).
     await service.rescheduleWaterReminders(
-      times: [DateTime(2026, 9, 13, 13), DateTime(2026, 9, 14, 9)],
+      times: [DateTime(2099, 9, 13, 13), DateTime(2099, 9, 14, 9)],
       title: 'Su içme zamanı',
       body: 'b',
     );
@@ -82,8 +86,9 @@ void main() {
   });
 
   test('14ten fazla zaman verilirse yalniz ilk 14 kurulur', () async {
+    // Far-future fixture date — see comment above.
     await service.rescheduleWaterReminders(
-      times: [for (var h = 0; h < 20; h++) DateTime(2026, 9, 13, h)],
+      times: [for (var h = 0; h < 20; h++) DateTime(2099, 9, 13, h)],
       title: 't',
       body: 'b',
     );
@@ -97,6 +102,30 @@ void main() {
         androidScheduleMode: any(named: 'androidScheduleMode'),
       ),
     ).called(14);
+  });
+
+  test('gecmiste kalan slot atlanir, sadece gelecekteki zamanlanir', () async {
+    final past = DateTime(2000, 1, 1, 0, 0);
+    final future = DateTime(2099, 9, 13, 13);
+
+    await service.rescheduleWaterReminders(
+      times: [past, future],
+      title: 't',
+      body: 'b',
+    );
+
+    final captured = verify(
+      () => plugin.zonedSchedule(
+        id: captureAny(named: 'id'),
+        title: any(named: 'title'),
+        body: any(named: 'body'),
+        scheduledDate: any(named: 'scheduledDate'),
+        notificationDetails: any(named: 'notificationDetails'),
+        androidScheduleMode: any(named: 'androidScheduleMode'),
+      ),
+    ).captured;
+
+    expect(captured, [2000]);
   });
 
   test('cancelWaterReminders yalniz su idlerini iptal eder', () async {
