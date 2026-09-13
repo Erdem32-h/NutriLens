@@ -7,9 +7,12 @@ import 'package:nutrilens/core/analytics/analytics_event.dart';
 import 'package:nutrilens/core/analytics/analytics_provider.dart';
 import 'package:nutrilens/core/analytics/analytics_service.dart';
 import 'package:nutrilens/core/providers/locale_provider.dart';
+import 'package:nutrilens/core/services/calorie_target_calculator.dart';
 import 'package:nutrilens/core/services/notification_service.dart';
 import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
+import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
+import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.dart';
 import 'package:nutrilens/features/water/presentation/providers/water_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -160,6 +163,30 @@ void main() {
     expect(c.read(waterGoalProvider), 10);
   });
 
+  test(
+    'metrics henuz yuklenirken bardak eklenirse kilo bazli hedef yazilir',
+    () async {
+      await UserMetricsLocalDataSourceImpl(db).save(
+        UserMetricsEntity(
+          userId: 'user-1',
+          sex: BiologicalSex.male,
+          birthYear: 1990,
+          heightCm: 180,
+          weightKg: 70,
+          activity: ActivityLevel.moderate,
+          updatedAt: DateTime(2026, 8, 14),
+        ),
+      );
+      final c = await makeContainer();
+
+      // Metrics future'i once beklemeden dogrudan bardak ekleniyor —
+      // waterGoalProvider.value henuz null olabilecegi pencereyi kapsar.
+      final day = await c.read(waterControllerProvider).addGlass(_copy);
+
+      expect(day!.goalGlasses, 12);
+    },
+  );
+
   test('hafta 7 gun doner, eksik gunler 0 bardak', () async {
     final c = await makeContainer();
     await c.read(waterControllerProvider).addGlass(_copy);
@@ -186,6 +213,15 @@ void main() {
 
     expect(day, isNull);
     expect(await db.select(db.waterLogs).get(), isEmpty);
+    verify(() => notifications.cancelWaterReminders()).called(1);
+  });
+
+  test('oturum yokken cikarma da hatirlatmalari iptal eder', () async {
+    final c = await makeContainer(userId: null);
+
+    final day = await c.read(waterControllerProvider).removeGlass(_copy);
+
+    expect(day, isNull);
     verify(() => notifications.cancelWaterReminders()).called(1);
   });
 }

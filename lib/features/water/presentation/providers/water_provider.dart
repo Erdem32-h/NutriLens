@@ -130,6 +130,21 @@ class WaterController {
     _ref.invalidate(waterWeekProvider);
   }
 
+  /// `waterGoalProvider` falls back to the default goal while the profile's
+  /// weight is still loading (its `.value` reads null mid-flight). Awaiting
+  /// the metrics future first means a write that races the initial load
+  /// still persists the weight-based goal instead of a stale default that
+  /// nothing later re-syncs onto the row.
+  Future<int> _resolvedGoal() async {
+    try {
+      await _ref.read(waterMetricsWeightProvider.future);
+    } catch (_) {
+      // Metrics failed to load — fall through to whatever the provider
+      // currently holds (the default goal), same as before this fix.
+    }
+    return _ref.read(waterGoalProvider);
+  }
+
   Future<WaterDay?> addGlass(WaterReminderCopy copy) async {
     final userId = _ref.read(effectiveUserIdProvider);
     if (userId == null) {
@@ -139,7 +154,7 @@ class WaterController {
     final day = await _ds.addGlass(
       userId: userId,
       now: _now(),
-      goal: _ref.read(waterGoalProvider),
+      goal: await _resolvedGoal(),
     );
     _invalidate();
     _ref.read(analyticsServiceProvider).track(FunnelEvents.waterGlassAdded);
@@ -149,11 +164,14 @@ class WaterController {
 
   Future<WaterDay?> removeGlass(WaterReminderCopy copy) async {
     final userId = _ref.read(effectiveUserIdProvider);
-    if (userId == null) return null;
+    if (userId == null) {
+      await rescheduleReminders(copy);
+      return null;
+    }
     final day = await _ds.removeGlass(
       userId: userId,
       now: _now(),
-      goal: _ref.read(waterGoalProvider),
+      goal: await _resolvedGoal(),
     );
     _invalidate();
     await rescheduleReminders(copy);
@@ -167,7 +185,7 @@ class WaterController {
       await _ds.setGoalForDay(
         userId: userId,
         day: waterDayKey(_now()),
-        goal: _ref.read(waterGoalProvider),
+        goal: await _resolvedGoal(),
       );
     }
     _invalidate();
@@ -199,7 +217,7 @@ class WaterController {
         return;
       }
       final now = _now();
-      final goal = _ref.read(waterGoalProvider);
+      final goal = await _resolvedGoal();
       final today = await _ds.getDay(userId, waterDayKey(now));
       await _notifications.rescheduleWaterReminders(
         times: waterReminderTimes(
