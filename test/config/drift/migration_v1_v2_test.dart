@@ -181,45 +181,47 @@ Future<AppDatabase> _openAndMigrateFrom(int version) async {
 }
 
 void main() {
-  test(
-    'v1 -> v4 migration completes without throwing and does not '
-    'double-add portion_grams',
-    () async {
-      final db = await _openAndMigrateFrom(1);
-      addTearDown(db.close);
+  test('v1 -> v5 migration completes without throwing and does not '
+      'double-add portion_grams', () async {
+    final db = await _openAndMigrateFrom(1);
+    addTearDown(db.close);
 
-      final portionGramsColumns = await db
-          .customSelect(
-            "SELECT name FROM pragma_table_info('meal_entries') "
-            "WHERE name = 'portion_grams'",
-          )
-          .get();
-      expect(portionGramsColumns, hasLength(1));
+    final portionGramsColumns = await db
+        .customSelect(
+          "SELECT name FROM pragma_table_info('meal_entries') "
+          "WHERE name = 'portion_grams'",
+        )
+        .get();
+    expect(portionGramsColumns, hasLength(1));
 
-      final hpScoreVersionColumns = await db
-          .customSelect(
-            "SELECT name FROM pragma_table_info('food_products') "
-            "WHERE name = 'hp_score_version'",
-          )
-          .get();
-      expect(hpScoreVersionColumns, hasLength(1));
-    },
-  );
+    final hpScoreVersionColumns = await db
+        .customSelect(
+          "SELECT name FROM pragma_table_info('food_products') "
+          "WHERE name = 'hp_score_version'",
+        )
+        .get();
+    expect(hpScoreVersionColumns, hasLength(1));
 
-  test(
-    'v2 -> v4 migration completes without throwing and does not '
-    'double-add portion_grams',
-    () async {
-      final db = await _openAndMigrateFrom(2);
-      addTearDown(db.close);
+    final waterLogsTables = await db
+        .customSelect(
+          "SELECT name FROM sqlite_master "
+          "WHERE type = 'table' AND name = 'water_logs'",
+        )
+        .get();
+    expect(waterLogsTables, hasLength(1));
+  });
 
-      final portionGramsColumns = await db
-          .customSelect(
-            "SELECT name FROM pragma_table_info('meal_entries') "
-            "WHERE name = 'portion_grams'",
-          )
-          .get();
-      expect(portionGramsColumns, hasLength(1));
-    },
-  );
+  test('v2 -> v5 migration completes without throwing and does not '
+      'double-add portion_grams', () async {
+    final db = await _openAndMigrateFrom(2);
+    addTearDown(db.close);
+
+    final portionGramsColumns = await db
+        .customSelect(
+          "SELECT name FROM pragma_table_info('meal_entries') "
+          "WHERE name = 'portion_grams'",
+        )
+        .get();
+    expect(portionGramsColumns, hasLength(1));
+  });
 }

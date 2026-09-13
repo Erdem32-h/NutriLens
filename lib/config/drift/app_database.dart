@@ -67,6 +67,10 @@ class AppDatabase extends _$AppDatabase {
         if (from < 5 && to >= 5) {
           await m.createTable(waterLogs);
         }
+        // A future addColumn on waterLogs must be guarded `from >= 5` —
+        // createTable above already emits the CURRENT schema, so an
+        // unguarded ALTER would double-add the column for devices
+        // migrating straight from < 5 (see migration_v1_v2_test.dart).
       },
     );
   }
