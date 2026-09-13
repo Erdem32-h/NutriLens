@@ -23,6 +23,8 @@ class AppShellScreen extends ConsumerStatefulWidget {
 }
 
 class _AppShellScreenState extends ConsumerState<AppShellScreen> {
+  AppLifecycleListener? _lifecycle;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +42,24 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
       _ensureDailyReminder();
       _ensureWaterReminders();
     });
+
+    // A process kept alive overnight (warm resume, never cold-launched)
+    // never re-runs the block above, so the water card would keep showing
+    // yesterday's count and reminders would stop re-arming after the first
+    // day. Every foreground resume re-reads today/this week and re-arms.
+    _lifecycle = AppLifecycleListener(
+      onResume: () {
+        ref.invalidate(waterTodayProvider);
+        ref.invalidate(waterWeekProvider);
+        _ensureWaterReminders();
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle?.dispose();
+    super.dispose();
   }
 
   Future<void> _ensureDailyReminder() async {
