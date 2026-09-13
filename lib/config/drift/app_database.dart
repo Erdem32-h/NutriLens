@@ -13,6 +13,7 @@ import 'tables/blacklist_table.dart';
 import 'tables/counterfeit_products_table.dart';
 import 'tables/meal_entries_table.dart';
 import 'tables/user_metrics_table.dart';
+import 'tables/water_logs_table.dart';
 
 part 'app_database.g.dart';
 
@@ -27,6 +28,7 @@ part 'app_database.g.dart';
     CounterfeitProducts,
     MealEntries,
     UserMetrics,
+    WaterLogs,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -35,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -58,6 +60,12 @@ class AppDatabase extends _$AppDatabase {
           if (from >= 3) {
             await m.addColumn(mealEntries, mealEntries.portionGrams);
           }
+        }
+        // `to` guard: SchemaVerifier replays older steps with `to` pinned to
+        // the version under test (e.g. 3 → 4). Without it, the v3→v4 test
+        // would also get this table and fail validation.
+        if (from < 5 && to >= 5) {
+          await m.createTable(waterLogs);
         }
       },
     );

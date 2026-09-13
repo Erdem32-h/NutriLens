@@ -13,10 +13,6 @@ void main() {
   setUp(() => db = AppDatabase.forTesting(NativeDatabase.memory()));
   tearDown(() => db.close());
 
-  test('sema surumu 4', () {
-    expect(db.schemaVersion, 4);
-  });
-
   test('user_metrics tablosu bos baslar ve tek satir tutar', () async {
     expect(await db.select(db.userMetrics).get(), isEmpty);
 
@@ -71,40 +67,46 @@ void main() {
       verifier = SchemaVerifier(GeneratedHelper());
     });
 
-    test('v3 semasindan v4e yukseltme SchemaMismatch atmadan tamamlanir',
-        () async {
-      final connection = await verifier.startAt(3);
-      final migratedDb = AppDatabase.forTesting(connection);
-      addTearDown(migratedDb.close);
+    test(
+      'v3 semasindan v4e yukseltme SchemaMismatch atmadan tamamlanir',
+      () async {
+        final connection = await verifier.startAt(3);
+        final migratedDb = AppDatabase.forTesting(connection);
+        addTearDown(migratedDb.close);
 
-      await verifier.migrateAndValidate(migratedDb, 4);
-    });
+        await verifier.migrateAndValidate(migratedDb, 4);
+      },
+    );
 
-    test('v3teki meal_entries satiri v4e tasinir; portion_grams null gelir',
-        () async {
-      final schema = await verifier.schemaAt(3);
-      addTearDown(schema.close);
+    test(
+      'v3teki meal_entries satiri v4e tasinir; portion_grams null gelir',
+      () async {
+        final schema = await verifier.schemaAt(3);
+        addTearDown(schema.close);
 
-      final oldDb = v3.DatabaseAtV3(schema.newConnection());
-      await oldDb.into(oldDb.mealEntries).insert(
-            v3.MealEntriesCompanion.insert(
-              id: 'v3-oncesi-kayit',
-              userId: 'guest',
-              mealName: 'Migration Oncesi Ogun',
-              mealType: 'lunch',
-              capturedAt: DateTime(2026, 1, 1).millisecondsSinceEpoch ~/ 1000,
-            ),
-          );
-      await oldDb.close();
+        final oldDb = v3.DatabaseAtV3(schema.newConnection());
+        await oldDb
+            .into(oldDb.mealEntries)
+            .insert(
+              v3.MealEntriesCompanion.insert(
+                id: 'v3-oncesi-kayit',
+                userId: 'guest',
+                mealName: 'Migration Oncesi Ogun',
+                mealType: 'lunch',
+                capturedAt: DateTime(2026, 1, 1).millisecondsSinceEpoch ~/ 1000,
+              ),
+            );
+        await oldDb.close();
 
-      final migratedDb = AppDatabase.forTesting(schema.newConnection());
-      addTearDown(migratedDb.close);
-      await verifier.migrateAndValidate(migratedDb, 4);
+        final migratedDb = AppDatabase.forTesting(schema.newConnection());
+        addTearDown(migratedDb.close);
+        await verifier.migrateAndValidate(migratedDb, 4);
 
-      final row = await migratedDb.select(migratedDb.mealEntries).getSingle();
-      expect(row.id, 'v3-oncesi-kayit');
-      expect(row.mealName, 'Migration Oncesi Ogun');
-      expect(row.portionGrams, isNull);
-    });
+        final row = await migratedDb.select(migratedDb.mealEntries).getSingle();
+        expect(row.id, 'v3-oncesi-kayit');
+        expect(row.mealName, 'Migration Oncesi Ogun');
+        expect(row.portionGrams, isNull);
+      },
+    );
   });
 }

@@ -40,7 +40,8 @@ Primary key `(userId, day)`.
 - `goalGlasses` is snapshotted so later goal changes do not rewrite whether a
   past day was met. The snapshot is written when the row is created and
   refreshed whenever the goal changes on that same day.
-- `schemaVersion` 4 → 5; `onUpgrade`: `if (from < 5) await m.createTable(waterLogs);`.
+- `schemaVersion` 4 → 5; `onUpgrade`: `if (from < 5 && to >= 5) await m.createTable(waterLogs);`
+  (`to` guard keeps SchemaVerifier's v3→v4 replay valid).
   No `addColumn` targets this table, so the createTable trap does not apply.
   Generate `drift_schemas/drift_schema_v5.json` and the matching
   `test/config/drift/generated_migrations/schema_v5.dart`.
