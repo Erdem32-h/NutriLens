@@ -30,6 +30,7 @@ import '../../features/profile/presentation/screens/oil_filter_screen.dart';
 import '../../features/profile/presentation/screens/chemical_filter_screen.dart';
 import '../../features/product/presentation/screens/additive_detail_screen.dart';
 import '../../features/comparison/presentation/screens/comparison_screen.dart';
+import '../../features/water/presentation/screens/water_screen.dart';
 import 'route_names.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -243,6 +244,12 @@ GoRouter createRouter(WidgetRef ref) {
           }
           return MealDetailScreen(meal: meal);
         },
+      ),
+      GoRoute(
+        path: '/water',
+        name: RouteNames.water,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const WaterScreen(),
       ),
       GoRoute(
         path: '/paywall',
