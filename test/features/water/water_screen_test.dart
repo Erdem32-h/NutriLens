@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nutrilens/features/water/presentation/providers/water_provider.dart';
 import 'package:nutrilens/features/water/presentation/screens/water_screen.dart';
 
 import 'water_widget_harness.dart';
@@ -57,5 +59,32 @@ void main() {
       find.text('Bildirim izni verilmedi. Ayarlardan açabilirsin.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('buyuk metin olceginde haftalik grafik tasmaz', (tester) async {
+    await pumpWaterWidget(
+      tester,
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(2.0)),
+        child: const WaterScreen(),
+      ),
+    );
+
+    // Goal 1 + one glass logged -> today's bar hits its full 90px max
+    // height, the worst case the fixed-height chart row has to fit
+    // alongside the 2x-scaled labels above and below it.
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(WaterScreen)),
+    );
+    await container.read(waterControllerProvider).setGoal(1, (
+      title: 't',
+      body: 'b',
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('+1 bardak'));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(_bars(), findsNWidgets(7));
   });
 }

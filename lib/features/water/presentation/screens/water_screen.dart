@@ -163,12 +163,20 @@ class _WeekChart extends StatelessWidget {
                     children: [
                       Text('${day.glasses}', style: labelStyle),
                       const SizedBox(height: 4),
-                      Container(
-                        key: ValueKey('water-bar-${day.day}'),
-                        height: _barMaxHeight * day.glasses / maxValue,
-                        decoration: BoxDecoration(
-                          color: day.goalMet ? ink : ink.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(6),
+                      Flexible(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: _barMaxHeight * day.glasses / maxValue,
+                          ),
+                          child: Container(
+                            key: ValueKey('water-bar-${day.day}'),
+                            decoration: BoxDecoration(
+                              color: day.goalMet
+                                  ? ink
+                                  : ink.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 6),
