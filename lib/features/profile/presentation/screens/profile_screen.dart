@@ -16,6 +16,7 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../history/presentation/providers/history_provider.dart';
 import '../../../meals/presentation/providers/meal_chart_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
+import '../../../water/presentation/providers/water_provider.dart';
 import '../providers/health_filters_provider.dart';
 import '../providers/user_data_deletion_provider.dart';
 import '../providers/user_metrics_provider.dart';
@@ -372,6 +373,9 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(todayCalorieTotalProvider);
       ref.invalidate(healthFiltersProvider);
       ref.invalidate(userMetricsProvider);
+      ref.invalidate(waterSettingsProvider);
+      ref.invalidate(waterTodayProvider);
+      ref.invalidate(waterWeekProvider);
 
       if (!context.mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.userDataDeleted)));
@@ -434,6 +438,9 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(healthFiltersProvider);
       ref.invalidate(authStateProvider);
       ref.invalidate(userMetricsProvider);
+      ref.invalidate(waterSettingsProvider);
+      ref.invalidate(waterTodayProvider);
+      ref.invalidate(waterWeekProvider);
 
       if (!context.mounted) return;
       context.go('/login');
