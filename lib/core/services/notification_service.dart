@@ -21,6 +21,13 @@ class NotificationService {
   static const _channelId = 'daily_meal_reminder';
   static const _channelName = 'Öğün Hatırlatma';
 
+  static const _waterChannelId = 'water_reminder';
+  static const _waterChannelName = 'Su Hatırlatma';
+  static const _waterBaseId = 2000;
+
+  /// Today's remaining slots + tomorrow's 7 (see `waterReminderTimes`).
+  static const _waterMaxCount = 14;
+
   final FlutterLocalNotificationsPlugin _plugin;
   bool _tzReady = false;
 
@@ -54,25 +61,29 @@ class NotificationService {
     _tzReady = true;
   }
 
-  /// Requests OS notification permission. Both platforms show their system
-  /// dialog at most once per install regardless of call count — callers
-  /// still gate this behind their own one-shot flag (see
-  /// `NotificationPromptStore`) so the ask happens at a deliberate moment
-  /// (after the first meal save) rather than on every app launch.
-  Future<void> requestPermission() async {
+  /// Requests OS notification permission and reports whether it is granted.
+  /// Both platforms show their system dialog at most once per install
+  /// regardless of call count — callers still gate this behind their own
+  /// one-shot flag (see `NotificationPromptStore`) so the ask happens at a
+  /// deliberate moment rather than on every app launch.
+  Future<bool> requestPermission() async {
     final android = _plugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >();
     if (android != null) {
-      await android.requestNotificationsPermission();
-      return;
+      return await android.requestNotificationsPermission() ?? false;
     }
     final ios = _plugin
         .resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin
         >();
-    await ios?.requestPermissions(alert: true, badge: true, sound: true);
+    return await ios?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        ) ??
+        false;
   }
 
   /// Cancels any pending reminder and, unless [mealLoggedToday], arms a
@@ -115,6 +126,53 @@ class NotificationService {
         iOS: DarwinNotificationDetails(),
       ),
     );
+  }
+
+  /// Replaces every pending water reminder with [times] (wall-clock, local).
+  /// Ids are sequential from 2000 so a shorter list never leaves stale
+  /// reminders behind — all 14 ids are cancelled first.
+  Future<void> rescheduleWaterReminders({
+    required List<DateTime> times,
+    required String title,
+    required String body,
+  }) async {
+    await cancelWaterReminders();
+    if (times.isEmpty) return;
+
+    await _ensureTimezone();
+    final count = times.length < _waterMaxCount ? times.length : _waterMaxCount;
+    for (var i = 0; i < count; i++) {
+      final t = times[i];
+      await _plugin.zonedSchedule(
+        id: _waterBaseId + i,
+        title: title,
+        body: body,
+        scheduledDate: tz.TZDateTime(
+          tz.local,
+          t.year,
+          t.month,
+          t.day,
+          t.hour,
+          t.minute,
+        ),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            _waterChannelId,
+            _waterChannelName,
+            importance: Importance.defaultImportance,
+            priority: Priority.defaultPriority,
+          ),
+          iOS: DarwinNotificationDetails(),
+        ),
+      );
+    }
+  }
+
+  Future<void> cancelWaterReminders() async {
+    for (var i = 0; i < _waterMaxCount; i++) {
+      await _plugin.cancel(id: _waterBaseId + i);
+    }
   }
 }
 

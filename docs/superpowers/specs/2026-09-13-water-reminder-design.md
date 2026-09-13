@@ -88,7 +88,8 @@ in `lib/features/water/domain/water_reminder_schedule.dart`:
 
 `NotificationService.rescheduleWaterReminders({times, title, body})`:
 
-- Cancels ids 2000–2006 (today) and 2010–2016 (tomorrow) only — never 1001.
+- Cancels ids 2000–2013 and arms `times[i]` as id `2000 + i` (sequential, max
+  14) — never 1001.
 - Arms one-shot `zonedSchedule` per time, `AndroidScheduleMode.inexactAllowWhileIdle`,
   channel `water_reminder`.
 - `cancelWaterReminders()` for disabled / signed-out / deleted.
