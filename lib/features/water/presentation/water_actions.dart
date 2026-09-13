@@ -11,7 +11,8 @@ WaterReminderCopy waterReminderCopy(AppLocalizations l10n) =>
 Future<void> addWaterGlass(BuildContext context, WidgetRef ref) async {
   final l10n = context.l10n;
   final messenger = ScaffoldMessenger.of(context);
-  await ref.read(waterControllerProvider).addGlass(waterReminderCopy(l10n));
+  final controller = ref.read(waterControllerProvider);
+  await controller.addGlass(waterReminderCopy(l10n));
 
   // One-shot discovery: the switch lives on the water screen, which most
   // users never open before the habit forms.
@@ -26,7 +27,22 @@ Future<void> addWaterGlass(BuildContext context, WidgetRef ref) async {
       content: Text(l10n.waterReminderPrompt),
       action: SnackBarAction(
         label: l10n.waterReminderEnable,
-        onPressed: () => setWaterReminder(context, ref, true),
+        // Captured `controller` and `messenger` above instead of re-reading
+        // `context`/`ref` here: this action can fire long after the card
+        // that created it is gone (e.g. +1 on /water then back), and by
+        // then `context.mounted` would just return silently, burning the
+        // one-shot prompt for nothing.
+        onPressed: () async {
+          final ok = await controller.setReminderEnabled(
+            true,
+            waterReminderCopy(l10n),
+          );
+          if (!ok) {
+            messenger.showSnackBar(
+              SnackBar(content: Text(l10n.waterPermissionDenied)),
+            );
+          }
+        },
       ),
     ),
   );
