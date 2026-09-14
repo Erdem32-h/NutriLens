@@ -22,9 +22,9 @@ try {
     Start-Sleep -Seconds 5
     foreach ($file in @(
         'supabase/tests/p0_fixture.sql',
-        'supabase/migrations/20260905210000_account_deletion_preparation.sql',
+        'supabase/migrations/20260914163742_account_deletion_preparation.sql',
         'supabase/migrations/20260905211000_persistent_ai_quota.sql',
-        'supabase/migrations/20260906090000_account_deletion_receipts.sql',
+        'supabase/migrations/20260914163752_account_deletion_receipts.sql',
         'supabase/tests/p0_regression.sql'
     )) {
         Invoke-TestSql (Get-Content (Join-Path $root $file) -Raw)

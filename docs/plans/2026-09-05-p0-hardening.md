@@ -1,6 +1,10 @@
 # P0 hardening — account deletion and AI admission
 
-Status: implemented locally, NOT deployed. No production user was deleted.
+Status (2026-09-14): deployed. AI admission live since 2026-09-12 (`AI_GLOBAL_DAILY_LIMIT=5000`,
+`gemini-proxy` v54). Account deletion migrations applied as `20260914163742` / `20260914163752`
+(local files renamed to match) and `delete-account` v1 deployed; smoke-tested without touching an
+account (405/401/400/401, receipt-only 200). Hosted deletion with a dedicated test account (step 3
+below) is still pending. No production user was deleted.
 
 ## Account deletion
 
