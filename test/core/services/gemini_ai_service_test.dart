@@ -68,9 +68,9 @@ void main() {
     expect(result.foodName, 'Mercimek Corbasi');
   });
 
-  test('gives up after the second dropped connection', () async {
-    // One retry, not a loop: a genuinely dead link must surface as an error
-    // the user can act on rather than an unbounded spinner.
+  test('gives up after the third dropped connection', () async {
+    // Two retries, not an unbounded loop: a genuinely dead link must surface
+    // as an error the user can act on rather than an endless spinner.
     var attempts = 0;
     when(() => functions.invoke(any(), body: any(named: 'body'))).thenAnswer((
       _,
@@ -80,7 +80,7 @@ void main() {
     });
 
     await expectLater(analyze(), throwsA(isA<GeminiServiceException>()));
-    expect(attempts, 2);
+    expect(attempts, 3);
   });
 
   test('does not retry a rate-limited request', () async {

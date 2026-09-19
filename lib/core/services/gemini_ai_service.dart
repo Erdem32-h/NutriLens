@@ -413,28 +413,43 @@ class GeminiAiService {
         }
         return await _invokeOnce(action, payload, timeout);
       }
-      // Single retry on a dropped connection. A null status means no HTTP
-      // response ever came back — the socket died, most often part-way
+      // Up to two retries on a dropped connection. A null status means no
+      // HTTP response ever came back — the socket died, most often part-way
       // through uploading the ~1 MB base64 frame on a weak cellular link
       // (Sentry NUTRILENS-7: 43 failures, mostly low-end Android on mobile
-      // data). One immediate retry costs at most a second attempt on a
-      // request the server almost certainly never finished reading, and it
-      // is the difference between a retry button and a working scan.
+      // data). Each attempt the server almost certainly never finished
+      // reading, so the extra retry costs little and is the difference
+      // between a retry button and a working scan on a flaky link.
       //
       // Deliberately excludes every status-carrying failure: a 429 must not
       // be hammered, a 408 already waited out the full timeout, and a 422 is
       // the model's answer, not the network's.
       if (e.statusCode == null) {
-        debugPrint('[GeminiAI] $action transport failure — retrying once');
-        await Future<void>.delayed(_transportRetryDelay);
-        return await _invokeOnce(action, payload, timeout);
+        for (var attempt = 1; attempt <= _transportRetryCount; attempt++) {
+          debugPrint(
+            '[GeminiAI] $action transport failure — retry $attempt/'
+            '$_transportRetryCount',
+          );
+          await Future<void>.delayed(_transportRetryDelay);
+          try {
+            return await _invokeOnce(action, payload, timeout);
+          } on GeminiServiceException catch (retryError) {
+            if (retryError.statusCode != null || attempt == _transportRetryCount) {
+              rethrow;
+            }
+          }
+        }
       }
       rethrow;
     }
   }
 
-  /// Breathing room before the transport retry above. Long enough to ride out
-  /// a cell handover, short enough that the user is still watching the
+  /// How many times a transport failure (null status) is retried before
+  /// giving up.
+  static const _transportRetryCount = 2;
+
+  /// Breathing room before each transport retry above. Long enough to ride
+  /// out a cell handover, short enough that the user is still watching the
   /// spinner rather than deciding the app is broken.
   static const _transportRetryDelay = Duration(seconds: 1);
 
