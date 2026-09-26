@@ -58,3 +58,8 @@ nutrilens-release.jks
 
 # Kotlin build cache introduced by AGP 8.11 / Gradle 8.13
 android/.kotlin/
+
+# graphify knowledge graph: rebuilt locally by the post-commit hook.
+#   .graphify_root holds the absolute path of whoever generated it (machine-local)
+# Tracking it rewrote hundreds of files on every commit and left the tree dirty.
+graphify-out/
