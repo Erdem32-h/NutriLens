@@ -32,7 +32,7 @@ Flutter mobil uygulama. Barkod tarama & yemek fotoğrafı analizi ile içerik in
 
 ### Token Disiplini:
 - `02-decisions-log.md` (128KB): asla tam okuma, grep ile ara.
-- `docs/plans/` + `docs/superpowers/`: sadece aktif feature planı; bitmişler vault `archive/`'de.
+- `docs/plans/` + `docs/superpowers/`: sadece aktif feature planı; bitmişler vault `wiki/archive/plans/`'de.
 - `graphify-out/GRAPH_REPORT.md`: sadece istenirse oku.
 - Büyük dosya: offset/limit ile parça parça.
 
