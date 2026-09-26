@@ -30,7 +30,7 @@ Flutter mobil uygulama. Barkod tarama & AI yemek analizi ile HP Score (0-100) ü
 ---
 
 ## Token Disiplini
-- `wiki/02-decisions-log.md` (128KB): **asla tam okuma** — grep ile ilgili kararı bul, sadece o bölümü oku.
+- `wiki/02-decisions-log.md` (~135KB): **asla tam okuma** — önce baştaki "Indeks" tablosunu oku, sonra `^## <tarih>` başlığını grep ile bul ve sadece o bölümü oku. Yeni karara indekste de 1 satır ekle.
 - `docs/plans/` + `docs/superpowers/`: yalnızca aktif feature'ın planını oku; bitmiş planlar vault `archive/`'de.
 - `graphify-out/GRAPH_REPORT.md`: yalnızca açıkça istenirse oku; aksi halde harcanmaz.
 - Büyük dosya gerekirse offset/limit ile parça parça oku.
