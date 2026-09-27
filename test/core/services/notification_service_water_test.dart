@@ -6,6 +6,9 @@ import 'package:timezone/timezone.dart' as tz;
 
 class _MockPlugin extends Mock implements FlutterLocalNotificationsPlugin {}
 
+class _MockAndroidPlugin extends Mock
+    implements AndroidFlutterLocalNotificationsPlugin {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -133,4 +136,39 @@ void main() {
     verify(() => plugin.cancel(id: any(named: 'id'))).called(14);
     verifyNever(() => plugin.cancel(id: 1001));
   });
+
+  test(
+    'Ramazan icin exact alarm izni acik olsa bile su hatirlatmasi inexactAllowWhileIdle kullanir (D1)',
+    () async {
+      final android = _MockAndroidPlugin();
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(android);
+      when(
+        () => android.canScheduleExactNotifications(),
+      ).thenAnswer((_) async => true);
+
+      await service.rescheduleWaterReminders(
+        times: [DateTime(2099, 9, 13, 13)],
+        title: 't',
+        body: 'b',
+      );
+
+      final mode = verify(
+        () => plugin.zonedSchedule(
+          id: any(named: 'id'),
+          title: any(named: 'title'),
+          body: any(named: 'body'),
+          scheduledDate: any(named: 'scheduledDate'),
+          notificationDetails: any(named: 'notificationDetails'),
+          androidScheduleMode: captureAny(named: 'androidScheduleMode'),
+        ),
+      ).captured.single;
+
+      expect(mode, AndroidScheduleMode.inexactAllowWhileIdle);
+    },
+  );
 }

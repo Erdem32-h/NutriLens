@@ -256,9 +256,7 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
     final l10n = context.l10n;
     await ref
         .read(ramadanControllerProvider)
-        .reschedule(
-          ramadanCopy(l10n, ref.read(ramadanSettingsProvider).sahurOffsetMin),
-        );
+        .reschedule(ramadanCopy(l10n));
   }
 
   Future<void> _pickLocation(BuildContext context) async {
@@ -272,10 +270,7 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
           lng: pick.lng,
           label: pick.label,
           plate: pick.plate,
-          copy: ramadanCopy(
-            l10n,
-            ref.read(ramadanSettingsProvider).sahurOffsetMin,
-          ),
+          copy: ramadanCopy(l10n),
           waterCopy: waterReminderCopy(l10n),
         );
   }

@@ -841,7 +841,7 @@
   "ramadanShareWater": "{liters} L su",
   "ramadanTimesDisclaimer": "Vakitler hesaplamadır; kendi imsakiyeni esas al.",
   "ramadanSahurTitle": "Sahur vakti yaklaşıyor",
-  "ramadanSahurBody": "İmsaka {min} dk kaldı. Sahurda 2 bardak su içmeyi unutma.",
+  "ramadanSahurBody": "İmsak {time}. Sahurda 2 bardak su içmeyi unutma.",
   "ramadanIftarTitle": "Hayırlı iftarlar",
   "ramadanIftarBody": "Orucunu bir bardak suyla aç.",
   "@ramadanUntilIftar": {
@@ -890,7 +890,7 @@
   },
   "@ramadanSahurBody": {
     "placeholders": {
-      "min": { "type": "int" }
+      "time": { "type": "String" }
     }
   },
   "ramadanEnabledConfirm": "Ramazan modu açıldı. Ayarlar: Profil › Ramazan",

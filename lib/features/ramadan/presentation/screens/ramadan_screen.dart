@@ -180,7 +180,7 @@ class RamadanScreen extends ConsumerWidget {
                 selected: settings.sahurOffsetMin == min,
                 onSelected: (_) => ref
                     .read(ramadanControllerProvider)
-                    .setSahurOffset(min, ramadanCopy(l10n, min)),
+                    .setSahurOffset(min, ramadanCopy(l10n)),
               );
             }).toList(),
           ),
@@ -220,10 +220,7 @@ class RamadanScreen extends ConsumerWidget {
             label: location.label,
             plate: location.plate,
             source: location.plate != null ? 'city' : 'gps',
-            copy: ramadanCopy(
-              l10n,
-              ref.read(ramadanSettingsProvider).sahurOffsetMin,
-            ),
+            copy: ramadanCopy(l10n),
             waterCopy: waterReminderCopy(l10n),
           );
       return;
@@ -239,10 +236,7 @@ class RamadanScreen extends ConsumerWidget {
           label: pick.label,
           plate: pick.plate,
           source: pick.source,
-          copy: ramadanCopy(
-            freshL10n,
-            ref.read(ramadanSettingsProvider).sahurOffsetMin,
-          ),
+          copy: ramadanCopy(freshL10n),
           waterCopy: waterReminderCopy(freshL10n),
         );
   }
@@ -261,10 +255,7 @@ class RamadanScreen extends ConsumerWidget {
           lng: pick.lng,
           label: pick.label,
           plate: pick.plate,
-          copy: ramadanCopy(
-            l10n,
-            ref.read(ramadanSettingsProvider).sahurOffsetMin,
-          ),
+          copy: ramadanCopy(l10n),
           waterCopy: waterReminderCopy(l10n),
         );
   }

@@ -19,9 +19,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../water/water_widget_harness.dart';
 
+String _sahurBody(DateTime imsak) => 'sb';
+
 const RamadanCopy _copy = (
   sahurTitle: 'st',
-  sahurBody: 'sb',
+  sahurBody: _sahurBody,
   iftarTitle: 'it',
   iftarBody: 'ib',
 );
@@ -67,6 +69,10 @@ void main() {
     analytics = RecordingAnalytics();
     now = DateTime(2027, 2, 8, 12);
     when(() => notifications.requestPermission()).thenAnswer((_) async => true);
+    // Default: exact alarms already granted, so enable() never needs to ask.
+    // Tests for the D3 permission-request path override this.
+    when(() => notifications.canScheduleExact()).thenAnswer((_) async => true);
+    when(() => notifications.requestExactAlarms()).thenAnswer((_) async {});
     when(() => notifications.cancelWaterReminders()).thenAnswer((_) async {});
     when(
       () => notifications.rescheduleWaterReminders(
@@ -112,7 +118,7 @@ void main() {
                 () => notifications.rescheduleRamadanNotifications(
                   items: captureAny(named: 'items'),
                   sahurTitle: 'st',
-                  sahurBody: 'sb',
+                  sahurBody: _sahurBody,
                   iftarTitle: 'it',
                   iftarBody: 'ib',
                 ),
@@ -132,6 +138,48 @@ void main() {
       expect(times.first, DateTime(2027, 2, 8, 18, 53));
 
       expect(analytics.names, contains(FunnelEvents.ramadanEnabled));
+    },
+  );
+
+  test(
+    'enable: canScheduleExact false ise requestExactAlarms cagirilir (D3)',
+    () async {
+      when(
+        () => notifications.canScheduleExact(),
+      ).thenAnswer((_) async => false);
+      final c = await makeContainer();
+
+      await c.read(ramadanControllerProvider).enable(
+        lat: _lat,
+        lng: _lng,
+        label: _label,
+        plate: _plate,
+        source: 'city',
+        copy: _copy,
+        waterCopy: _waterCopy,
+      );
+
+      verify(() => notifications.requestExactAlarms()).called(1);
+    },
+  );
+
+  test(
+    'enable: canScheduleExact true ise requestExactAlarms cagirilmaz (D3)',
+    () async {
+      // canScheduleExact -> true is the setUp() default.
+      final c = await makeContainer();
+
+      await c.read(ramadanControllerProvider).enable(
+        lat: _lat,
+        lng: _lng,
+        label: _label,
+        plate: _plate,
+        source: 'city',
+        copy: _copy,
+        waterCopy: _waterCopy,
+      );
+
+      verifyNever(() => notifications.requestExactAlarms());
     },
   );
 
@@ -180,7 +228,7 @@ void main() {
                 () => notifications.rescheduleRamadanNotifications(
                   items: captureAny(named: 'items'),
                   sahurTitle: 'st',
-                  sahurBody: 'sb',
+                  sahurBody: _sahurBody,
                   iftarTitle: 'it',
                   iftarBody: 'ib',
                 ),
@@ -228,7 +276,7 @@ void main() {
                 () => notifications.rescheduleRamadanNotifications(
                   items: captureAny(named: 'items'),
                   sahurTitle: 'st',
-                  sahurBody: 'sb',
+                  sahurBody: _sahurBody,
                   iftarTitle: 'it',
                   iftarBody: 'ib',
                 ),
@@ -326,7 +374,7 @@ void main() {
                 () => notifications.rescheduleRamadanNotifications(
                   items: captureAny(named: 'items'),
                   sahurTitle: 'st',
-                  sahurBody: 'sb',
+                  sahurBody: _sahurBody,
                   iftarTitle: 'it',
                   iftarBody: 'ib',
                 ),

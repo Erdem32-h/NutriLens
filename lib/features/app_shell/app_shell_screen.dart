@@ -103,13 +103,9 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
   Future<void> _ensureRamadanState() async {
     if (!mounted) return;
     final l10n = context.l10n;
-    final settings = ref.read(ramadanSettingsProvider);
     await ref
         .read(ramadanControllerProvider)
-        .onResume(
-          ramadanCopy(l10n, settings.sahurOffsetMin),
-          waterReminderCopy(l10n),
-        );
+        .onResume(ramadanCopy(l10n), waterReminderCopy(l10n));
   }
 
   // Tab order: 0 meals · 1 history · 2 scanner (center) · 3 favorites · 4 profile

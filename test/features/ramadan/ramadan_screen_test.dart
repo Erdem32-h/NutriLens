@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrilens/core/services/share_service.dart';
+import 'package:nutrilens/features/ramadan/domain/ramadan_schedule.dart';
 import 'package:nutrilens/features/ramadan/presentation/providers/ramadan_provider.dart';
 import 'package:nutrilens/features/ramadan/presentation/screens/ramadan_screen.dart';
 import 'package:nutrilens/features/ramadan/presentation/widgets/ramadan_share_card.dart';
@@ -284,20 +285,26 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(container.read(ramadanSettingsProvider).sahurOffsetMin, 60);
-        final sahurBody =
+        final items =
             verify(
                   () => h.notifications.rescheduleRamadanNotifications(
-                    items: any(named: 'items'),
+                    items: captureAny(named: 'items'),
                     sahurTitle: any(named: 'sahurTitle'),
-                    sahurBody: captureAny(named: 'sahurBody'),
+                    sahurBody: any(named: 'sahurBody'),
                     iftarTitle: any(named: 'iftarTitle'),
                     iftarBody: any(named: 'iftarBody'),
                   ),
                 ).captured.last
-                as String;
-        // The body must be built from the NEW offset (60), not the offset
-        // that was selected before the tap (45) — see task-8-brief ruling.
-        expect(sahurBody, contains('60'));
+                as List<RamadanNotification>;
+        // The sahur item must be built from the NEW offset (60 min before
+        // imsak), not the offset that was selected before the tap (45) —
+        // see task-8-brief ruling. The body itself no longer encodes the
+        // offset (D2 — it states the absolute imsak time instead), so this
+        // asserts on the scheduled gap between imsakAt and at.
+        final sahur = items.firstWhere(
+          (n) => n.kind == RamadanNotificationKind.sahur,
+        );
+        expect(sahur.imsakAt!.difference(sahur.at).inMinutes, 60);
       },
     );
 

@@ -806,7 +806,7 @@
   "ramadanShareWater": "{liters} L de agua",
   "ramadanTimesDisclaimer": "Los horarios son estimados; consulta tu calendario local.",
   "ramadanSahurTitle": "Se acerca el sahur",
-  "ramadanSahurBody": "Faltan {min} min para el imsak. No olvides beber 2 vasos de agua en el sahur.",
+  "ramadanSahurBody": "Imsak a las {time}. No olvides beber 2 vasos de agua en el sahur.",
   "ramadanIftarTitle": "Feliz iftar",
   "ramadanIftarBody": "Rompe tu ayuno con un vaso de agua.",
   "@ramadanUntilIftar": {
@@ -855,7 +855,7 @@
   },
   "@ramadanSahurBody": {
     "placeholders": {
-      "min": { "type": "int" }
+      "time": { "type": "String" }
     }
   },
   "ramadanEnabledConfirm": "Modo Ramadán activado. Ajustes: Perfil › Ramadán",

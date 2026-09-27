@@ -806,7 +806,7 @@
   "ramadanShareWater": "{liters} لتر ماء",
   "ramadanTimesDisclaimer": "الأوقات تقديرية؛ اعتمد على إمساكية منطقتك.",
   "ramadanSahurTitle": "اقترب وقت السحور",
-  "ramadanSahurBody": "بقي {min} د على الإمساك. لا تنس كوبين من الماء في السحور.",
+  "ramadanSahurBody": "الإمساك الساعة {time}. لا تنس كوبين من الماء في السحور.",
   "ramadanIftarTitle": "إفطارًا شهيًا",
   "ramadanIftarBody": "افطر على كوب من الماء.",
   "@ramadanUntilIftar": {
@@ -855,7 +855,7 @@
   },
   "@ramadanSahurBody": {
     "placeholders": {
-      "min": { "type": "int" }
+      "time": { "type": "String" }
     }
   },
   "ramadanEnabledConfirm": "تم تفعيل وضع رمضان. الإعدادات: الملف الشخصي › رمضان",

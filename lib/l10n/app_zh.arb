@@ -806,7 +806,7 @@
   "ramadanShareWater": "{liters} 升水",
   "ramadanTimesDisclaimer": "时间为估算值；请以当地封斋历为准。",
   "ramadanSahurTitle": "封斋时间快到了",
-  "ramadanSahurBody": "距封斋还有 {min} 分钟。别忘了封斋前喝两杯水。",
+  "ramadanSahurBody": "封斋时间 {time}。别忘了封斋前喝两杯水。",
   "ramadanIftarTitle": "开斋愉快",
   "ramadanIftarBody": "用一杯水开斋吧。",
   "@ramadanUntilIftar": {
@@ -855,7 +855,7 @@
   },
   "@ramadanSahurBody": {
     "placeholders": {
-      "min": { "type": "int" }
+      "time": { "type": "String" }
     }
   },
   "ramadanEnabledConfirm": "斋月模式已开启。设置：个人中心 › 斋月",

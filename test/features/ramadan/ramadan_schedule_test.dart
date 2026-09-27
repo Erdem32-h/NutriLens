@@ -112,9 +112,24 @@ void main() {
         eidDay: DateTime.utc(2027, 3, 9),
       );
       expect(n, containsAll([
-        (id: 3010, at: DateTime(2027, 2, 8, 18, 23), kind: RamadanNotificationKind.iftar),
-        (id: 3001, at: DateTime(2027, 2, 9, 5, 32), kind: RamadanNotificationKind.sahur),
-        (id: 3011, at: DateTime(2027, 2, 9, 18, 24), kind: RamadanNotificationKind.iftar),
+        (
+          id: 3010,
+          at: DateTime(2027, 2, 8, 18, 23),
+          kind: RamadanNotificationKind.iftar,
+          imsakAt: null,
+        ),
+        (
+          id: 3001,
+          at: DateTime(2027, 2, 9, 5, 32),
+          kind: RamadanNotificationKind.sahur,
+          imsakAt: DateTime(2027, 2, 9, 6, 17),
+        ),
+        (
+          id: 3011,
+          at: DateTime(2027, 2, 9, 18, 24),
+          kind: RamadanNotificationKind.iftar,
+          imsakAt: null,
+        ),
       ]));
       expect(n.any((x) => x.id == 3000), isFalse); // 05:33 today already passed
     });

@@ -2135,8 +2135,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ramadanSahurTitle => 'Sahur is approaching';
 
   @override
-  String ramadanSahurBody(int min) {
-    return '$min min until imsak. Don\'t forget 2 glasses of water at sahur.';
+  String ramadanSahurBody(String time) {
+    return 'Imsak at $time. Don\'t forget 2 glasses of water at sahur.';
   }
 
   @override

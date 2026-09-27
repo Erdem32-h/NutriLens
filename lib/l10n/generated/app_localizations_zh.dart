@@ -2080,8 +2080,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ramadanSahurTitle => '封斋时间快到了';
 
   @override
-  String ramadanSahurBody(int min) {
-    return '距封斋还有 $min 分钟。别忘了封斋前喝两杯水。';
+  String ramadanSahurBody(String time) {
+    return '封斋时间 $time。别忘了封斋前喝两杯水。';
   }
 
   @override

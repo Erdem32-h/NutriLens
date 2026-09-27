@@ -121,7 +121,7 @@ class _RamadanOfferCardState extends ConsumerState<RamadanOfferCard> {
           label: pick.label,
           plate: pick.plate,
           source: pick.source,
-          copy: ramadanCopy(l10n, ref.read(ramadanSettingsProvider).sahurOffsetMin),
+          copy: ramadanCopy(l10n),
           waterCopy: waterReminderCopy(l10n),
         );
     // The card disappears once enabled, so point at where the settings

@@ -806,7 +806,7 @@
   "ramadanShareWater": "{liters} L water",
   "ramadanTimesDisclaimer": "Times are estimates; check your local prayer calendar.",
   "ramadanSahurTitle": "Sahur is approaching",
-  "ramadanSahurBody": "{min} min until imsak. Don't forget 2 glasses of water at sahur.",
+  "ramadanSahurBody": "Imsak at {time}. Don't forget 2 glasses of water at sahur.",
   "ramadanIftarTitle": "Blessed iftar",
   "ramadanIftarBody": "Break your fast with a glass of water.",
   "@ramadanUntilIftar": {
@@ -855,7 +855,7 @@
   },
   "@ramadanSahurBody": {
     "placeholders": {
-      "min": { "type": "int" }
+      "time": { "type": "String" }
     }
   },
   "ramadanEnabledConfirm": "Ramadan mode is on. Settings: Profile › Ramadan",

@@ -219,11 +219,18 @@ class NotificationService {
   /// All 14 ids (3000-3006 for sahur, 3010-3016 for iftar) are cancelled first.
   ///
   /// Past notifications are skipped (same guard as water reminders). Uses the
-  /// appropriate title/body based on notification kind.
+  /// appropriate title/body based on notification kind — [sahurBody] is
+  /// called with that item's [RamadanNotification.imsakAt] so the text
+  /// always states the real imsak instant (see D2).
+  ///
+  /// Scheduled exact (D1) when the OS currently allows it, else inexact —
+  /// re-checked on every call rather than cached, since the user can flip
+  /// the "Alarms & reminders" permission from Settings at any time (D3).
+  /// Water and meal reminders are unaffected; they always stay inexact.
   Future<void> rescheduleRamadanNotifications({
     required List<RamadanNotification> items,
     required String sahurTitle,
-    required String sahurBody,
+    required String Function(DateTime imsak) sahurBody,
     required String iftarTitle,
     required String iftarBody,
   }) async {
@@ -231,6 +238,9 @@ class NotificationService {
     if (items.isEmpty) return;
 
     await _ensureTimezone();
+    final scheduleMode = await canScheduleExact()
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle;
     for (final notification in items) {
       final scheduled = tz.TZDateTime(
         tz.local,
@@ -243,7 +253,7 @@ class NotificationService {
       if (!scheduled.isAfter(tz.TZDateTime.now(tz.local))) continue;
 
       final (title, body) = notification.kind == RamadanNotificationKind.sahur
-          ? (sahurTitle, sahurBody)
+          ? (sahurTitle, sahurBody(notification.imsakAt!))
           : (iftarTitle, iftarBody);
 
       await _plugin.zonedSchedule(
@@ -251,7 +261,7 @@ class NotificationService {
         title: title,
         body: body,
         scheduledDate: scheduled,
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: scheduleMode,
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
             _ramadanChannelId,
@@ -274,6 +284,30 @@ class NotificationService {
     for (var i = 0; i < _ramadanIftarIdRange; i++) {
       await _plugin.cancel(id: 3010 + i);
     }
+  }
+
+  /// Whether the OS currently permits exact alarms (Android 12+'s "Alarms &
+  /// reminders" toggle). Always false on iOS, where the concept doesn't
+  /// exist — [rescheduleRamadanNotifications] falls back to inexact there,
+  /// same as before this permission existed.
+  Future<bool> canScheduleExact() async {
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android == null) return false;
+    return await android.canScheduleExactNotifications() ?? false;
+  }
+
+  /// Shows the OS's "Alarms & reminders" settings screen so the user can
+  /// grant exact-alarm scheduling. A thin wrapper so callers (e.g.
+  /// `RamadanController`) never touch the plugin directly. No-op on iOS.
+  Future<void> requestExactAlarms() async {
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    await android?.requestExactAlarmsPermission();
   }
 }
 

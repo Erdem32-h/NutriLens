@@ -115,6 +115,10 @@ Future<RamadanHarness> pumpRamadanWidget(
   registerFallbackValue(<DateTime>[]);
   final notifications = MockNotificationService();
   when(() => notifications.requestPermission()).thenAnswer((_) async => true);
+  // Default: exact alarms already granted, so enable() never needs to ask
+  // (D3) — tests covering that permission flow override this per-test.
+  when(() => notifications.canScheduleExact()).thenAnswer((_) async => true);
+  when(() => notifications.requestExactAlarms()).thenAnswer((_) async {});
   when(() => notifications.cancelWaterReminders()).thenAnswer((_) async {});
   when(
     () => notifications.rescheduleWaterReminders(

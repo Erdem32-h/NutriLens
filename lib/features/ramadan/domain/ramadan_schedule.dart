@@ -62,8 +62,16 @@ List<DateTime> ramadanWaterTimes({
 
 enum RamadanNotificationKind { sahur, iftar }
 
-/// A single scheduled sahur or iftar notification.
-typedef RamadanNotification = ({int id, DateTime at, RamadanNotificationKind kind});
+/// A single scheduled sahur or iftar notification. [imsakAt] is that day's
+/// imsak instant — set for sahur notifications (the body states it
+/// verbatim so a late-firing inexact alarm never implies more time is
+/// left than there is, see D2), null for iftar.
+typedef RamadanNotification = ({
+  int id,
+  DateTime at,
+  RamadanNotificationKind kind,
+  DateTime? imsakAt,
+});
 
 /// Civil (year/month/day) key for date comparisons that must ignore the
 /// instant/timezone a `DateTime` was built with — see `RamadanPeriod`.
@@ -94,10 +102,20 @@ List<RamadanNotification> ramadanNotificationTimes({
 
     final sahurAt = times.imsak.subtract(Duration(minutes: sahurOffsetMin));
     if (sahurAt.isAfter(now)) {
-      result.add((id: 3000 + i, at: sahurAt, kind: RamadanNotificationKind.sahur));
+      result.add((
+        id: 3000 + i,
+        at: sahurAt,
+        kind: RamadanNotificationKind.sahur,
+        imsakAt: times.imsak,
+      ));
     }
     if (times.iftar.isAfter(now)) {
-      result.add((id: 3010 + i, at: times.iftar, kind: RamadanNotificationKind.iftar));
+      result.add((
+        id: 3010 + i,
+        at: times.iftar,
+        kind: RamadanNotificationKind.iftar,
+        imsakAt: null,
+      ));
     }
   }
 

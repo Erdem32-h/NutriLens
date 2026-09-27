@@ -4045,8 +4045,8 @@ abstract class AppLocalizations {
   /// No description provided for @ramadanSahurBody.
   ///
   /// In tr, this message translates to:
-  /// **'İmsaka {min} dk kaldı. Sahurda 2 bardak su içmeyi unutma.'**
-  String ramadanSahurBody(int min);
+  /// **'İmsak {time}. Sahurda 2 bardak su içmeyi unutma.'**
+  String ramadanSahurBody(String time);
 
   /// No description provided for @ramadanIftarTitle.
   ///

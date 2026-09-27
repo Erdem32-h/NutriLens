@@ -163,6 +163,17 @@ class RamadanController {
     } catch (e) {
       debugPrint('[Ramadan] permission request failed: $e');
     }
+    // D1/D3: sahur must never fire late, which needs an exact alarm. Ask
+    // for the "Alarms & reminders" permission only when it isn't already
+    // granted, and enable regardless of the answer — a denial just falls
+    // back to inexact scheduling (see NotificationService.canScheduleExact).
+    try {
+      if (!await _notifications.canScheduleExact()) {
+        await _notifications.requestExactAlarms();
+      }
+    } catch (e) {
+      debugPrint('[Ramadan] exact alarm permission request failed: $e');
+    }
     _ref.invalidate(notificationsPermittedProvider);
     await _settings.setLocation(lat: lat, lng: lng, label: label, plate: plate);
     await _settings.setEnabled(true);

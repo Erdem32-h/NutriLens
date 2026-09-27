@@ -45,11 +45,21 @@ void main() {
     () async {
       await service.rescheduleRamadanNotifications(
         items: [
-          (id: 3001, at: DateTime(2099, 9, 13, 4, 30), kind: RamadanNotificationKind.sahur),
-          (id: 3011, at: DateTime(2099, 9, 13, 18, 45), kind: RamadanNotificationKind.iftar),
+          (
+            id: 3001,
+            at: DateTime(2099, 9, 13, 4, 30),
+            kind: RamadanNotificationKind.sahur,
+            imsakAt: DateTime(2099, 9, 13, 5, 15),
+          ),
+          (
+            id: 3011,
+            at: DateTime(2099, 9, 13, 18, 45),
+            kind: RamadanNotificationKind.iftar,
+            imsakAt: null,
+          ),
         ],
         sahurTitle: 'Sahur Vakti',
-        sahurBody: 'Sahura {min} dakika kaldi',
+        sahurBody: (imsak) => 'Sahura dakika kaldi',
         iftarTitle: 'Iftar Vakti',
         iftarBody: 'Iftar zamani',
       );
@@ -104,11 +114,16 @@ void main() {
 
     await service.rescheduleRamadanNotifications(
       items: [
-        (id: 3000, at: past, kind: RamadanNotificationKind.sahur),
-        (id: 3010, at: future, kind: RamadanNotificationKind.iftar),
+        (
+          id: 3000,
+          at: past,
+          kind: RamadanNotificationKind.sahur,
+          imsakAt: DateTime(2000, 1, 1, 5, 15),
+        ),
+        (id: 3010, at: future, kind: RamadanNotificationKind.iftar, imsakAt: null),
       ],
       sahurTitle: 'Sahur',
-      sahurBody: 'Sahura {min} dakika kaldi',
+      sahurBody: (imsak) => 'Sahura dakika kaldi',
       iftarTitle: 'Iftar',
       iftarBody: 'Iftar',
     );
@@ -131,11 +146,21 @@ void main() {
   test('sahur ve iftar basliklari dogru kanalda gonderilir', () async {
     await service.rescheduleRamadanNotifications(
       items: [
-        (id: 3001, at: DateTime(2099, 9, 13, 4, 30), kind: RamadanNotificationKind.sahur),
-        (id: 3011, at: DateTime(2099, 9, 13, 18, 45), kind: RamadanNotificationKind.iftar),
+        (
+          id: 3001,
+          at: DateTime(2099, 9, 13, 4, 30),
+          kind: RamadanNotificationKind.sahur,
+          imsakAt: DateTime(2099, 9, 13, 5, 15),
+        ),
+        (
+          id: 3011,
+          at: DateTime(2099, 9, 13, 18, 45),
+          kind: RamadanNotificationKind.iftar,
+          imsakAt: null,
+        ),
       ],
       sahurTitle: 'Sahur Vakti',
-      sahurBody: 'Sahura {min} dakika kaldi',
+      sahurBody: (imsak) => 'Sahura dakika kaldi',
       iftarTitle: 'Iftar Vakti',
       iftarBody: 'Iftar zamani',
     );
@@ -158,6 +183,174 @@ void main() {
     // Second call: iftar
     expect(captured[2], 3011);
     expect(captured[3], 'Iftar Vakti');
+  });
+
+  test('sahur govdesi o gunun imsak saatini icerir', () async {
+    // 8 Feb Ankara imsak — matches the example in device-fix-findings.md.
+    final imsak = DateTime(2027, 2, 8, 6, 18);
+
+    await service.rescheduleRamadanNotifications(
+      items: [
+        (
+          id: 3000,
+          at: DateTime(2099, 9, 13, 4, 30), // far future so it isn't skipped
+          kind: RamadanNotificationKind.sahur,
+          imsakAt: imsak,
+        ),
+      ],
+      sahurTitle: 'Sahur',
+      sahurBody: (i) =>
+          'İmsak ${i.hour.toString().padLeft(2, '0')}:${i.minute.toString().padLeft(2, '0')}. '
+          'Sahurda 2 bardak su icmeyi unutma.',
+      iftarTitle: 'Iftar',
+      iftarBody: 'Iftar',
+    );
+
+    final body = verify(
+      () => plugin.zonedSchedule(
+        id: any(named: 'id'),
+        title: any(named: 'title'),
+        body: captureAny(named: 'body'),
+        scheduledDate: any(named: 'scheduledDate'),
+        notificationDetails: any(named: 'notificationDetails'),
+        androidScheduleMode: any(named: 'androidScheduleMode'),
+      ),
+    ).captured.single as String;
+
+    expect(body, contains('06:18'));
+  });
+
+  group('exact alarm mode (D1/D3)', () {
+    test(
+      'canScheduleExactNotifications true ise exactAllowWhileIdle kullanilir',
+      () async {
+        final android = _MockAndroidPlugin();
+        when(
+          () => plugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >(),
+        ).thenReturn(android);
+        when(
+          () => android.canScheduleExactNotifications(),
+        ).thenAnswer((_) async => true);
+
+        await service.rescheduleRamadanNotifications(
+          items: [
+            (
+              id: 3000,
+              at: DateTime(2099, 9, 13, 4, 30),
+              kind: RamadanNotificationKind.sahur,
+              imsakAt: DateTime(2099, 9, 13, 5, 15),
+            ),
+          ],
+          sahurTitle: 'Sahur',
+          sahurBody: (imsak) => 'body',
+          iftarTitle: 'Iftar',
+          iftarBody: 'Iftar',
+        );
+
+        final mode = verify(
+          () => plugin.zonedSchedule(
+            id: any(named: 'id'),
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: captureAny(named: 'androidScheduleMode'),
+          ),
+        ).captured.single;
+
+        expect(mode, AndroidScheduleMode.exactAllowWhileIdle);
+      },
+    );
+
+    test(
+      'canScheduleExactNotifications false ise inexactAllowWhileIdle kullanilir',
+      () async {
+        final android = _MockAndroidPlugin();
+        when(
+          () => plugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >(),
+        ).thenReturn(android);
+        when(
+          () => android.canScheduleExactNotifications(),
+        ).thenAnswer((_) async => false);
+
+        await service.rescheduleRamadanNotifications(
+          items: [
+            (
+              id: 3000,
+              at: DateTime(2099, 9, 13, 4, 30),
+              kind: RamadanNotificationKind.sahur,
+              imsakAt: DateTime(2099, 9, 13, 5, 15),
+            ),
+          ],
+          sahurTitle: 'Sahur',
+          sahurBody: (imsak) => 'body',
+          iftarTitle: 'Iftar',
+          iftarBody: 'Iftar',
+        );
+
+        final mode = verify(
+          () => plugin.zonedSchedule(
+            id: any(named: 'id'),
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: captureAny(named: 'androidScheduleMode'),
+          ),
+        ).captured.single;
+
+        expect(mode, AndroidScheduleMode.inexactAllowWhileIdle);
+      },
+    );
+
+    test('canScheduleExact(): Android true doner', () async {
+      final android = _MockAndroidPlugin();
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(android);
+      when(
+        () => android.canScheduleExactNotifications(),
+      ).thenAnswer((_) async => true);
+
+      expect(await service.canScheduleExact(), isTrue);
+    });
+
+    test('canScheduleExact(): Android yoksa (iOS) false doner', () async {
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(null);
+
+      expect(await service.canScheduleExact(), isFalse);
+    });
+
+    test('requestExactAlarms(): Android varsa plugin metodunu cagirir', () async {
+      final android = _MockAndroidPlugin();
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(android);
+      when(
+        () => android.requestExactAlarmsPermission(),
+      ).thenAnswer((_) async => true);
+
+      await service.requestExactAlarms();
+
+      verify(() => android.requestExactAlarmsPermission()).called(1);
+    });
   });
 
   group('notificationsPermitted', () {
