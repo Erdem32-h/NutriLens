@@ -37,8 +37,24 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
-      if (mounted) setState(() {});
+    _scheduleTick();
+  }
+
+  /// Ticks on every full minute (:00) so the shown minutes change exactly
+  /// when the wall clock does, rather than up to a minute late.
+  void _scheduleTick() {
+    final now = ref.read(ramadanClockProvider)();
+    final next = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      now.hour,
+      now.minute + 1,
+    );
+    _timer = Timer(next.difference(now), () {
+      if (!mounted) return;
+      setState(() {});
+      _scheduleTick();
     });
   }
 
@@ -97,9 +113,10 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
     // fasting-cycle order (imsak -> iftar -> next imsak) rather than a
     // single "before today's iftar" check, so the early-morning hours
     // before imsak correctly count down to sahur rather than to the
-    // (much later) iftar.
+    // (much later) iftar. After the last day's iftar there is no next
+    // sahur (tomorrow is Eid), so no countdown is shown.
     final today = fastingTimes(now, location.lat, location.lng);
-    final DateTime target;
+    final DateTime? target;
     final bool isIftar;
     if (now.isBefore(today.imsak)) {
       target = today.imsak;
@@ -108,21 +125,29 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
       target = today.iftar;
       isIftar = true;
     } else {
-      final tomorrow = fastingTimes(
-        DateTime(now.year, now.month, now.day + 1),
-        location.lat,
-        location.lng,
-      );
-      target = tomorrow.imsak;
+      final tomorrowDay = DateTime(now.year, now.month, now.day + 1);
+      target = currentRamadan(tomorrowDay) == null
+          ? null
+          : fastingTimes(tomorrowDay, location.lat, location.lng).imsak;
       isIftar = false;
     }
 
-    final diffMinutes = target.difference(now).inMinutes;
-    final h = diffMinutes ~/ 60;
-    final m = diffMinutes % 60;
-    final countdownText = isIftar
-        ? l10n.ramadanUntilIftar(h, m)
-        : l10n.ramadanUntilSahur(h, m);
+    // Safety rounding: iftar rounds the remaining minutes up (never shows
+    // 0 while iftar is still ahead), sahur rounds down (never overstates
+    // the time left to eat).
+    String? countdownText;
+    if (target != null) {
+      const perMinute = Duration.microsecondsPerMinute;
+      final remaining = target.difference(now).inMicroseconds;
+      final minutes = isIftar
+          ? (remaining + perMinute - 1) ~/ perMinute
+          : remaining ~/ perMinute;
+      final h = minutes ~/ 60;
+      final m = minutes % 60;
+      countdownText = isIftar
+          ? l10n.ramadanUntilIftar(h, m)
+          : l10n.ramadanUntilSahur(h, m);
+    }
 
     final timeFormat = DateFormat('HH:mm');
     final fastedToday = (ref.watch(fastingDaysProvider).value ?? const {})
@@ -144,23 +169,25 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.nightlight_round, color: tint.ink),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      countdownText,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
+              if (countdownText != null) ...[
+                Row(
+                  children: [
+                    Icon(Icons.nightlight_round, color: tint.ink),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        countdownText,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: colors.textPrimary,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
+                  ],
+                ),
+                const SizedBox(height: 4),
+              ],
               Text(
                 l10n.ramadanImsakIftar(
                   timeFormat.format(today.imsak),

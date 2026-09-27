@@ -195,6 +195,77 @@ void main() {
       },
     );
 
+    testWidgets('iftar 18:23:00, saat 18:21:30 -> İftara 0 sa 2 dk (yukarı yuvarlar)', (
+      tester,
+    ) async {
+      await pumpRamadanWidget(
+        tester,
+        const RamadanCountdownCard(),
+        now: DateTime(2027, 2, 8, 18, 21, 30),
+      );
+      await _enableRamadan(tester, RamadanCountdownCard);
+
+      expect(find.text('İftara 0 sa 2 dk'), findsOneWidget);
+    });
+
+    testWidgets('iftar 18:23:00, saat 18:22:30 -> İftara 0 sa 1 dk', (
+      tester,
+    ) async {
+      await pumpRamadanWidget(
+        tester,
+        const RamadanCountdownCard(),
+        now: DateTime(2027, 2, 8, 18, 22, 30),
+      );
+      await _enableRamadan(tester, RamadanCountdownCard);
+
+      expect(find.text('İftara 0 sa 1 dk'), findsOneWidget);
+    });
+
+    testWidgets('imsak 06:17, saat 06:15:30 -> Sahura 0 sa 1 dk (aşağı yuvarlar)', (
+      tester,
+    ) async {
+      await pumpRamadanWidget(
+        tester,
+        const RamadanCountdownCard(),
+        now: DateTime(2027, 2, 9, 6, 15, 30),
+      );
+      await _enableRamadan(tester, RamadanCountdownCard);
+
+      expect(find.text('Sahura 0 sa 1 dk'), findsOneWidget);
+    });
+
+    testWidgets('sayaç bir sonraki tam dakikada (:00) tazelenir', (
+      tester,
+    ) async {
+      final h = await pumpRamadanWidget(
+        tester,
+        const RamadanCountdownCard(),
+        now: DateTime(2027, 2, 8, 18, 21, 30),
+      );
+      await _enableRamadan(tester, RamadanCountdownCard);
+      expect(find.text('İftara 0 sa 2 dk'), findsOneWidget);
+
+      h.setNow(DateTime(2027, 2, 8, 18, 22));
+      await tester.pump(const Duration(seconds: 30));
+
+      expect(find.text('İftara 0 sa 1 dk'), findsOneWidget);
+    });
+
+    testWidgets('son gün 8 Mart 20:00 (son iftardan sonra) -> sayaç yok', (
+      tester,
+    ) async {
+      await pumpRamadanWidget(
+        tester,
+        const RamadanCountdownCard(),
+        now: DateTime(2027, 3, 8, 20),
+      );
+      await _enableRamadan(tester, RamadanCountdownCard);
+
+      expect(find.textContaining('Sahura'), findsNothing);
+      expect(find.textContaining('İftara'), findsNothing);
+      expect(find.text('Bugün oruçluyum'), findsOneWidget);
+    });
+
     testWidgets('6 Şubat, mod açık ama Ramazan henüz başlamadı -> kart yok', (
       tester,
     ) async {
