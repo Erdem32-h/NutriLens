@@ -17,6 +17,8 @@ void main() {
       expect(offerPeriod(DateTime(2027, 3, 9)), isNull);
       expect(latestPeriod(DateTime(2027, 6, 1))?.year, 2027);
       expect(latestPeriod(DateTime(2026, 12, 1)), isNull);
+      expect(latestPeriod(DateTime(2027, 2, 10))?.year, 2027);
+      expect(latestPeriod(DateTime(2027, 2, 7)), isNull);
     });
   });
 }

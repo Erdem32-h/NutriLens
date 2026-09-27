@@ -46,7 +46,11 @@ RamadanPeriod? currentRamadan(DateTime now) {
 RamadanPeriod? offerPeriod(DateTime now) {
   final dateUtc = _dateToUtc(now);
   for (final period in ramadanPeriods) {
-    final offerStart = period.firstDay.subtract(Duration(days: 3));
+    final offerStart = DateTime.utc(
+      period.firstDay.year,
+      period.firstDay.month,
+      period.firstDay.day - 3,
+    );
     if (!dateUtc.isBefore(offerStart) && dateUtc.isBefore(period.eidDay)) {
       return period;
     }
@@ -54,12 +58,12 @@ RamadanPeriod? offerPeriod(DateTime now) {
   return null;
 }
 
-/// Returns the latest Ramadan period that has ended (eidDay <= now) or null.
+/// Returns the most recent Ramadan period whose firstDay <= now, or null.
 RamadanPeriod? latestPeriod(DateTime now) {
   final dateUtc = _dateToUtc(now);
   RamadanPeriod? latest;
   for (final period in ramadanPeriods) {
-    if (!dateUtc.isBefore(period.eidDay)) {
+    if (!dateUtc.isBefore(period.firstDay)) {
       latest = period;
     }
   }
