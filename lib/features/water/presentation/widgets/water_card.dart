@@ -9,6 +9,7 @@ import '../../../../core/widgets/app_tap_card.dart';
 import '../../../../core/widgets/cozy_tile.dart';
 import '../providers/water_provider.dart';
 import '../water_actions.dart';
+import 'water_glasses.dart';
 
 class WaterCard extends ConsumerWidget {
   const WaterCard({super.key});
@@ -46,18 +47,18 @@ class WaterCard extends ConsumerWidget {
                     ),
                   ),
                 ),
+                IconButton(
+                  tooltip: l10n.waterRemoveGlass,
+                  visualDensity: VisualDensity.compact,
+                  onPressed: glasses > 0
+                      ? () => removeWaterGlass(context, ref)
+                      : null,
+                  icon: const Icon(Icons.remove_rounded),
+                ),
               ],
             ),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(999),
-              child: LinearProgressIndicator(
-                value: goal <= 0 ? 0 : (glasses / goal).clamp(0.0, 1.0),
-                minHeight: 8,
-                backgroundColor: colors.border,
-                color: met ? colors.primary : tint.ink,
-              ),
-            ),
+            const SizedBox(height: 4),
+            WaterGlasses(glasses: glasses, goal: goal),
             if (met) ...[
               const SizedBox(height: 6),
               Text(
@@ -69,24 +70,6 @@ class WaterCard extends ConsumerWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  tooltip: l10n.waterRemoveGlass,
-                  onPressed: glasses > 0
-                      ? () => removeWaterGlass(context, ref)
-                      : null,
-                  icon: const Icon(Icons.remove_rounded),
-                ),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: () => addWaterGlass(context, ref),
-                  child: Text(l10n.waterAddGlass),
-                ),
-              ],
-            ),
           ],
         ),
       ),

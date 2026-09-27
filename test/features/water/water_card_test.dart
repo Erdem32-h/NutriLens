@@ -21,7 +21,7 @@ void main() {
   testWidgets('+1 sayar, ilk seferde hatirlatma sorusu cikar', (tester) async {
     await pumpWaterWidget(tester, const WaterCard());
 
-    await tester.tap(find.text('+1 bardak'));
+    await tester.tap(find.byKey(const ValueKey('water-glass-0')));
     await tester.pumpAndSettle();
 
     expect(find.text('1 / 10 bardak'), findsOneWidget);
@@ -32,7 +32,7 @@ void main() {
     final h = await pumpWaterWidget(tester, const WaterCard());
     await h.prefs.setBool('water_reminder_prompt_shown', true);
 
-    await tester.tap(find.text('+1 bardak'));
+    await tester.tap(find.byKey(const ValueKey('water-glass-0')));
     await tester.pumpAndSettle();
 
     expect(find.text('2 saatte bir hatırlatayım mı?'), findsNothing);
@@ -41,7 +41,7 @@ void main() {
   testWidgets('soru aksiyonu izin ister ve hatirlatmayi kurar', (tester) async {
     final h = await pumpWaterWidget(tester, const WaterCard());
 
-    await tester.tap(find.text('+1 bardak'));
+    await tester.tap(find.byKey(const ValueKey('water-glass-0')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Aç'));
     await tester.pumpAndSettle();
@@ -52,13 +52,43 @@ void main() {
 
   testWidgets('eksi bir bardak geri alir', (tester) async {
     await pumpWaterWidget(tester, const WaterCard());
-    await tester.tap(find.text('+1 bardak'));
+    await tester.tap(find.byKey(const ValueKey('water-glass-0')));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byTooltip('Bir bardak çıkar'));
     await tester.pumpAndSettle();
 
     expect(find.text('0 / 10 bardak'), findsOneWidget);
+  });
+
+  testWidgets('son dolu bardaga dokunmak onu geri alir', (tester) async {
+    await pumpWaterWidget(tester, const WaterCard());
+    await tester.tap(find.byKey(const ValueKey('water-glass-0')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('water-glass-9')), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('water-glass-0')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('0 / 10 bardak'), findsOneWidget);
+  });
+
+  testWidgets('hedef asilinca bir bos bardak daha eklenir', (tester) async {
+    await pumpWaterWidget(tester, const WaterCard());
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(WaterCard)),
+    );
+    await container.read(waterControllerProvider).setGoal(1, (
+      title: 't',
+      body: 'b',
+    ));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('water-glass-1')), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('water-glass-0')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('water-glass-1')), findsOneWidget);
   });
 
   testWidgets('hedefe ulasinca mesaj gorunur', (tester) async {
@@ -72,7 +102,7 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('+1 bardak'));
+    await tester.tap(find.byKey(const ValueKey('water-glass-0')));
     await tester.pumpAndSettle();
 
     expect(find.text('Günlük hedefe ulaştın'), findsOneWidget);

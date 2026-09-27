@@ -10,6 +10,7 @@ import '../../domain/water_day.dart';
 import '../../domain/water_goal.dart';
 import '../providers/water_provider.dart';
 import '../water_actions.dart';
+import '../widgets/water_glasses.dart';
 
 class WaterScreen extends ConsumerWidget {
   const WaterScreen({super.key});
@@ -51,6 +52,10 @@ class WaterScreen extends ConsumerWidget {
                 color: colors.textPrimary,
               ),
             ),
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: WaterGlasses(glasses: glasses, goal: goal, glassWidth: 34),
           ),
           const SizedBox(height: 12),
           Row(
