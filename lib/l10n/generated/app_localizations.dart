@@ -3897,6 +3897,168 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{count} günlük su kaydı'**
   String waterDayCountUnit(int count);
+
+  /// No description provided for @ramadanOfferTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ramazan modu'**
+  String get ramadanOfferTitle;
+
+  /// No description provided for @ramadanOfferBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sahur ve iftar sayacı, iftar–sahur arası su hatırlatması.'**
+  String get ramadanOfferBody;
+
+  /// No description provided for @ramadanOfferCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aç'**
+  String get ramadanOfferCta;
+
+  /// No description provided for @ramadanUntilIftar.
+  ///
+  /// In tr, this message translates to:
+  /// **'İftara {h} sa {m} dk'**
+  String ramadanUntilIftar(int h, int m);
+
+  /// No description provided for @ramadanUntilSahur.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sahura {h} sa {m} dk'**
+  String ramadanUntilSahur(int h, int m);
+
+  /// No description provided for @ramadanImsakIftar.
+  ///
+  /// In tr, this message translates to:
+  /// **'İmsak {imsak} · İftar {iftar}'**
+  String ramadanImsakIftar(String imsak, String iftar);
+
+  /// No description provided for @ramadanFastingToday.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün oruçluyum'**
+  String get ramadanFastingToday;
+
+  /// No description provided for @ramadanNotificationsOff.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirimler kapalı — aç'**
+  String get ramadanNotificationsOff;
+
+  /// No description provided for @ramadanChooseLocation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Konum seç'**
+  String get ramadanChooseLocation;
+
+  /// No description provided for @ramadanUseMyLocation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Konumumu kullan'**
+  String get ramadanUseMyLocation;
+
+  /// No description provided for @ramadanMyLocationLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Konumum'**
+  String get ramadanMyLocationLabel;
+
+  /// No description provided for @ramadanLocationFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Konum alınamadı, listeden ilini seç.'**
+  String get ramadanLocationFailed;
+
+  /// No description provided for @ramadanSearchCity.
+  ///
+  /// In tr, this message translates to:
+  /// **'İl ara'**
+  String get ramadanSearchCity;
+
+  /// No description provided for @ramadanTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ramazan'**
+  String get ramadanTitle;
+
+  /// No description provided for @ramadanDaysProgress.
+  ///
+  /// In tr, this message translates to:
+  /// **'{n}/{total} gün'**
+  String ramadanDaysProgress(int n, int total);
+
+  /// No description provided for @ramadanStreak.
+  ///
+  /// In tr, this message translates to:
+  /// **'{n} gün seri'**
+  String ramadanStreak(int n);
+
+  /// No description provided for @ramadanModeSwitch.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ramazan modu'**
+  String get ramadanModeSwitch;
+
+  /// No description provided for @ramadanSahurOffset.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sahur hatırlatması'**
+  String get ramadanSahurOffset;
+
+  /// No description provided for @ramadanMinutesBefore.
+  ///
+  /// In tr, this message translates to:
+  /// **'{min} dk önce'**
+  String ramadanMinutesBefore(int min);
+
+  /// No description provided for @ramadanShareSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ramazan özetimi paylaş'**
+  String get ramadanShareSummary;
+
+  /// No description provided for @ramadanShareFasted.
+  ///
+  /// In tr, this message translates to:
+  /// **'{n} gün oruç'**
+  String ramadanShareFasted(int n);
+
+  /// No description provided for @ramadanShareWater.
+  ///
+  /// In tr, this message translates to:
+  /// **'{liters} L su'**
+  String ramadanShareWater(String liters);
+
+  /// No description provided for @ramadanTimesDisclaimer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vakitler hesaplamadır; kendi imsakiyeni esas al.'**
+  String get ramadanTimesDisclaimer;
+
+  /// No description provided for @ramadanSahurTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sahur vakti yaklaşıyor'**
+  String get ramadanSahurTitle;
+
+  /// No description provided for @ramadanSahurBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'İmsaka {min} dk kaldı. Sahurda 2 bardak su içmeyi unutma.'**
+  String ramadanSahurBody(int min);
+
+  /// No description provided for @ramadanIftarTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hayırlı iftarlar'**
+  String get ramadanIftarTitle;
+
+  /// No description provided for @ramadanIftarBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orucunu bir bardak suyla aç.'**
+  String get ramadanIftarBody;
 }
 
 class _AppLocalizationsDelegate

@@ -781,5 +781,81 @@
     "placeholders": {
       "count": { "type": "int" }
     }
+  },
+  "ramadanOfferTitle": "وضع رمضان",
+  "ramadanOfferBody": "عدّاد السحور والإفطار، مع تذكير بشرب الماء بين الإفطار والسحور.",
+  "ramadanOfferCta": "تفعيل",
+  "ramadanUntilIftar": "الإفطار بعد {h} س {m} د",
+  "ramadanUntilSahur": "السحور بعد {h} س {m} د",
+  "ramadanImsakIftar": "الإمساك {imsak} · الإفطار {iftar}",
+  "ramadanFastingToday": "أنا صائم اليوم",
+  "ramadanNotificationsOff": "الإشعارات مغلقة — تفعيل",
+  "ramadanChooseLocation": "اختر الموقع",
+  "ramadanUseMyLocation": "استخدم موقعي",
+  "ramadanMyLocationLabel": "موقعي",
+  "ramadanLocationFailed": "تعذّر تحديد موقعك، اختر مدينتك من القائمة.",
+  "ramadanSearchCity": "ابحث عن مدينة",
+  "ramadanTitle": "رمضان",
+  "ramadanDaysProgress": "{n}/{total} يوم",
+  "ramadanStreak": "{n} يوم متتالٍ",
+  "ramadanModeSwitch": "وضع رمضان",
+  "ramadanSahurOffset": "تذكير السحور",
+  "ramadanMinutesBefore": "قبل {min} د",
+  "ramadanShareSummary": "شارك ملخص رمضان الخاص بي",
+  "ramadanShareFasted": "{n} يوم صيام",
+  "ramadanShareWater": "{liters} لتر ماء",
+  "ramadanTimesDisclaimer": "الأوقات تقديرية؛ اعتمد على إمساكية منطقتك.",
+  "ramadanSahurTitle": "اقترب وقت السحور",
+  "ramadanSahurBody": "بقي {min} د على الإمساك. لا تنس كوبين من الماء في السحور.",
+  "ramadanIftarTitle": "إفطارًا شهيًا",
+  "ramadanIftarBody": "افطر على كوب من الماء.",
+  "@ramadanUntilIftar": {
+    "placeholders": {
+      "h": { "type": "int" },
+      "m": { "type": "int" }
+    }
+  },
+  "@ramadanUntilSahur": {
+    "placeholders": {
+      "h": { "type": "int" },
+      "m": { "type": "int" }
+    }
+  },
+  "@ramadanImsakIftar": {
+    "placeholders": {
+      "imsak": { "type": "String" },
+      "iftar": { "type": "String" }
+    }
+  },
+  "@ramadanDaysProgress": {
+    "placeholders": {
+      "n": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "@ramadanStreak": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "@ramadanMinutesBefore": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "@ramadanShareFasted": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "@ramadanShareWater": {
+    "placeholders": {
+      "liters": { "type": "String" }
+    }
+  },
+  "@ramadanSahurBody": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
   }
 }

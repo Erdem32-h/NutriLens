@@ -1,0 +1,303 @@
+import 'package:drift/native.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:nutrilens/config/drift/app_database.dart';
+import 'package:nutrilens/core/analytics/analytics_event.dart';
+import 'package:nutrilens/core/analytics/analytics_provider.dart';
+import 'package:nutrilens/core/providers/locale_provider.dart';
+import 'package:nutrilens/core/services/notification_service.dart';
+import 'package:nutrilens/core/session/app_session.dart';
+import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
+import 'package:nutrilens/features/ramadan/domain/ramadan_schedule.dart';
+import 'package:nutrilens/features/ramadan/presentation/providers/ramadan_provider.dart';
+import 'package:nutrilens/features/ramadan/presentation/ramadan_actions.dart';
+import 'package:nutrilens/features/water/domain/water_reminder_schedule.dart';
+import 'package:nutrilens/features/water/presentation/providers/water_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../water/water_widget_harness.dart';
+
+const RamadanCopy _copy = (
+  sahurTitle: 'st',
+  sahurBody: 'sb',
+  iftarTitle: 'it',
+  iftarBody: 'ib',
+);
+const WaterReminderCopy _waterCopy = (title: 'wt', body: 'wb');
+
+// Ankara — matches the coordinates used in fasting_times_test.dart and
+// ramadan_schedule_test.dart so the expected times line up: 8 Feb iftar
+// ~18:23, so the first Ramadan water slot (iftar + 30) is ~18:53.
+const _lat = 39.9334;
+const _lng = 32.8597;
+const _label = 'Ankara';
+const _plate = 6;
+
+void main() {
+  late AppDatabase db;
+  late MockNotificationService notifications;
+  late RecordingAnalytics analytics;
+  late DateTime now;
+
+  setUpAll(() => registerFallbackValue(<RamadanNotification>[]));
+
+  Future<ProviderContainer> makeContainer({String? userId = 'user-1'}) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final container = ProviderContainer(
+      overrides: [
+        appDatabaseProvider.overrideWithValue(db),
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        effectiveUserIdProvider.overrideWithValue(userId),
+        notificationServiceProvider.overrideWithValue(notifications),
+        analyticsServiceProvider.overrideWithValue(analytics),
+        waterClockProvider.overrideWithValue(() => now),
+        ramadanClockProvider.overrideWithValue(() => now),
+      ],
+    );
+    addTearDown(container.dispose);
+    return container;
+  }
+
+  setUp(() {
+    db = AppDatabase.forTesting(NativeDatabase.memory());
+    notifications = MockNotificationService();
+    analytics = RecordingAnalytics();
+    now = DateTime(2027, 2, 8, 12);
+    when(() => notifications.cancelWaterReminders()).thenAnswer((_) async {});
+    when(
+      () => notifications.rescheduleWaterReminders(
+        times: any(named: 'times'),
+        title: any(named: 'title'),
+        body: any(named: 'body'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => notifications.cancelRamadanNotifications(),
+    ).thenAnswer((_) async {});
+    when(
+      () => notifications.rescheduleRamadanNotifications(
+        items: any(named: 'items'),
+        sahurTitle: any(named: 'sahurTitle'),
+        sahurBody: any(named: 'sahurBody'),
+        iftarTitle: any(named: 'iftarTitle'),
+        iftarBody: any(named: 'iftarBody'),
+      ),
+    ).thenAnswer((_) async {});
+  });
+  tearDown(() => db.close());
+
+  test(
+    'enable 8 Sub 12:00: iftar 3010 planlanir, su acikken Ramazan slotlariyla, '
+    'analitik location_source ile yollanir',
+    () async {
+      final c = await makeContainer();
+      await c.read(waterSettingsProvider.notifier).setReminderEnabled(true);
+
+      await c.read(ramadanControllerProvider).enable(
+        lat: _lat,
+        lng: _lng,
+        label: _label,
+        plate: _plate,
+        source: 'city',
+        copy: _copy,
+        waterCopy: _waterCopy,
+      );
+
+      final items =
+          verify(
+                () => notifications.rescheduleRamadanNotifications(
+                  items: captureAny(named: 'items'),
+                  sahurTitle: 'st',
+                  sahurBody: 'sb',
+                  iftarTitle: 'it',
+                  iftarBody: 'ib',
+                ),
+              ).captured.last
+              as List<RamadanNotification>;
+      expect(items.any((n) => n.id == 3010), isTrue);
+
+      final times =
+          verify(
+                () => notifications.rescheduleWaterReminders(
+                  times: captureAny(named: 'times'),
+                  title: 'wt',
+                  body: 'wb',
+                ),
+              ).captured.last
+              as List<DateTime>;
+      expect(times.first, DateTime(2027, 2, 8, 18, 53));
+
+      expect(analytics.names, contains(FunnelEvents.ramadanEnabled));
+    },
+  );
+
+  test('su hatirlaticisi kapali + mod acik: bildirim iptal edilir, su planlanmaz', () async {
+    final c = await makeContainer();
+
+    await c.read(ramadanControllerProvider).enable(
+      lat: _lat,
+      lng: _lng,
+      label: _label,
+      source: 'gps',
+      copy: _copy,
+      waterCopy: _waterCopy,
+    );
+
+    verify(() => notifications.cancelWaterReminders()).called(1);
+    verifyNever(
+      () => notifications.rescheduleWaterReminders(
+        times: any(named: 'times'),
+        title: any(named: 'title'),
+        body: any(named: 'body'),
+      ),
+    );
+  });
+
+  test(
+    'teklif penceresinde (6 Sub) etkinlestirme: activeRamadanProvider null, '
+    'su waterReminderTimes ile ayni, Ramazan bildirimi planlanmaz',
+    () async {
+      now = DateTime(2027, 2, 6, 10, 30);
+      final c = await makeContainer();
+      await c.read(waterSettingsProvider.notifier).setReminderEnabled(true);
+
+      await c.read(ramadanControllerProvider).enable(
+        lat: _lat,
+        lng: _lng,
+        label: _label,
+        source: 'city',
+        copy: _copy,
+        waterCopy: _waterCopy,
+      );
+
+      expect(c.read(activeRamadanProvider), isNull);
+
+      final times =
+          verify(
+                () => notifications.rescheduleWaterReminders(
+                  times: captureAny(named: 'times'),
+                  title: 'wt',
+                  body: 'wb',
+                ),
+              ).captured.last
+              as List<DateTime>;
+      expect(
+        times,
+        waterReminderTimes(
+          now: now,
+          lastGlassAt: null,
+          glassesToday: 0,
+          goal: 10,
+        ),
+      );
+
+      verifyNever(
+        () => notifications.rescheduleRamadanNotifications(
+          items: any(named: 'items'),
+          sahurTitle: any(named: 'sahurTitle'),
+          sahurBody: any(named: 'sahurBody'),
+          iftarTitle: any(named: 'iftarTitle'),
+          iftarBody: any(named: 'iftarBody'),
+        ),
+      );
+    },
+  );
+
+  test(
+    'onResume 15 Mart: mod otomatik kapanir, Ramazan bildirimleri iptal edilir, '
+    'su normal saatlere doner',
+    () async {
+      final c = await makeContainer();
+      await c.read(ramadanSettingsProvider.notifier).setLocation(
+        lat: _lat,
+        lng: _lng,
+        label: _label,
+        plate: _plate,
+      );
+      await c.read(ramadanSettingsProvider.notifier).setEnabled(true);
+      await c.read(waterSettingsProvider.notifier).setReminderEnabled(true);
+
+      now = DateTime(2027, 3, 15, 10, 30);
+      await c.read(ramadanControllerProvider).onResume(_copy, _waterCopy);
+
+      expect(c.read(ramadanSettingsProvider).enabled, isFalse);
+      verify(() => notifications.cancelRamadanNotifications()).called(1);
+
+      final times =
+          verify(
+                () => notifications.rescheduleWaterReminders(
+                  times: captureAny(named: 'times'),
+                  title: 'wt',
+                  body: 'wb',
+                ),
+              ).captured.last
+              as List<DateTime>;
+      expect(
+        times,
+        waterReminderTimes(
+          now: now,
+          lastGlassAt: null,
+          glassesToday: 0,
+          goal: 10,
+        ),
+      );
+    },
+  );
+
+  test(
+    'mod acik, konum silinmis: reschedule hicbir sey planlamaz ve firlatmaz',
+    () async {
+      final c = await makeContainer();
+      await c.read(ramadanSettingsProvider.notifier).setEnabled(true);
+
+      await expectLater(
+        c.read(ramadanControllerProvider).reschedule(_copy),
+        completes,
+      );
+
+      verify(() => notifications.cancelRamadanNotifications()).called(1);
+      verifyNever(
+        () => notifications.rescheduleRamadanNotifications(
+          items: any(named: 'items'),
+          sahurTitle: any(named: 'sahurTitle'),
+          sahurBody: any(named: 'sahurBody'),
+          iftarTitle: any(named: 'iftarTitle'),
+          iftarBody: any(named: 'iftarBody'),
+        ),
+      );
+    },
+  );
+
+  test('disable: Ramazan idleri iptal eder, su normal saatlere doner', () async {
+    final c = await makeContainer();
+    await c.read(ramadanSettingsProvider.notifier).setLocation(
+      lat: _lat,
+      lng: _lng,
+      label: _label,
+      plate: _plate,
+    );
+    await c.read(ramadanSettingsProvider.notifier).setEnabled(true);
+    await c.read(waterSettingsProvider.notifier).setReminderEnabled(true);
+
+    await c.read(ramadanControllerProvider).disable(_waterCopy);
+
+    expect(c.read(ramadanSettingsProvider).enabled, isFalse);
+    verify(() => notifications.cancelRamadanNotifications()).called(1);
+
+    final times =
+        verify(
+              () => notifications.rescheduleWaterReminders(
+                times: captureAny(named: 'times'),
+                title: 'wt',
+                body: 'wb',
+              ),
+            ).captured.last
+            as List<DateTime>;
+    expect(
+      times,
+      waterReminderTimes(now: now, lastGlassAt: null, glassesToday: 0, goal: 10),
+    );
+  });
+}

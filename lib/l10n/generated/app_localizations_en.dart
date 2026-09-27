@@ -2042,4 +2042,106 @@ class AppLocalizationsEn extends AppLocalizations {
   String waterDayCountUnit(int count) {
     return '$count days of water logs';
   }
+
+  @override
+  String get ramadanOfferTitle => 'Ramadan mode';
+
+  @override
+  String get ramadanOfferBody =>
+      'Sahur and iftar countdown, plus water reminders between iftar and sahur.';
+
+  @override
+  String get ramadanOfferCta => 'Turn on';
+
+  @override
+  String ramadanUntilIftar(int h, int m) {
+    return '${h}h ${m}m to iftar';
+  }
+
+  @override
+  String ramadanUntilSahur(int h, int m) {
+    return '${h}h ${m}m to sahur';
+  }
+
+  @override
+  String ramadanImsakIftar(String imsak, String iftar) {
+    return 'Imsak $imsak · Iftar $iftar';
+  }
+
+  @override
+  String get ramadanFastingToday => 'I\'m fasting today';
+
+  @override
+  String get ramadanNotificationsOff => 'Notifications are off — turn on';
+
+  @override
+  String get ramadanChooseLocation => 'Choose location';
+
+  @override
+  String get ramadanUseMyLocation => 'Use my location';
+
+  @override
+  String get ramadanMyLocationLabel => 'My location';
+
+  @override
+  String get ramadanLocationFailed =>
+      'Couldn\'t get your location — pick your city from the list.';
+
+  @override
+  String get ramadanSearchCity => 'Search city';
+
+  @override
+  String get ramadanTitle => 'Ramadan';
+
+  @override
+  String ramadanDaysProgress(int n, int total) {
+    return '$n/$total days';
+  }
+
+  @override
+  String ramadanStreak(int n) {
+    return '$n-day streak';
+  }
+
+  @override
+  String get ramadanModeSwitch => 'Ramadan mode';
+
+  @override
+  String get ramadanSahurOffset => 'Sahur reminder';
+
+  @override
+  String ramadanMinutesBefore(int min) {
+    return '$min min before';
+  }
+
+  @override
+  String get ramadanShareSummary => 'Share my Ramadan summary';
+
+  @override
+  String ramadanShareFasted(int n) {
+    return '$n days fasted';
+  }
+
+  @override
+  String ramadanShareWater(String liters) {
+    return '$liters L water';
+  }
+
+  @override
+  String get ramadanTimesDisclaimer =>
+      'Times are estimates; check your local prayer calendar.';
+
+  @override
+  String get ramadanSahurTitle => 'Sahur is approaching';
+
+  @override
+  String ramadanSahurBody(int min) {
+    return '$min min until imsak. Don\'t forget 2 glasses of water at sahur.';
+  }
+
+  @override
+  String get ramadanIftarTitle => 'Blessed iftar';
+
+  @override
+  String get ramadanIftarBody => 'Break your fast with a glass of water.';
 }

@@ -40,6 +40,14 @@ void main() {
     expect(store.offerDismissedYear, 2027);
   });
 
+  test('sadece lat/lng var, label yoksa location null doner', () async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('ramadan_location_lat', 39.9);
+    await prefs.setDouble('ramadan_location_lng', 32.8);
+
+    expect(store.location, isNull);
+  });
+
   test('keys tum ramadan tercihlerini listeler', () {
     expect(RamadanSettingsStore.keys, [
       'ramadan_enabled',

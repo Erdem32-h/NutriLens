@@ -781,5 +781,81 @@
     "placeholders": {
       "count": { "type": "int" }
     }
+  },
+  "ramadanOfferTitle": "Ramadan mode",
+  "ramadanOfferBody": "Sahur and iftar countdown, plus water reminders between iftar and sahur.",
+  "ramadanOfferCta": "Turn on",
+  "ramadanUntilIftar": "{h}h {m}m to iftar",
+  "ramadanUntilSahur": "{h}h {m}m to sahur",
+  "ramadanImsakIftar": "Imsak {imsak} · Iftar {iftar}",
+  "ramadanFastingToday": "I'm fasting today",
+  "ramadanNotificationsOff": "Notifications are off — turn on",
+  "ramadanChooseLocation": "Choose location",
+  "ramadanUseMyLocation": "Use my location",
+  "ramadanMyLocationLabel": "My location",
+  "ramadanLocationFailed": "Couldn't get your location — pick your city from the list.",
+  "ramadanSearchCity": "Search city",
+  "ramadanTitle": "Ramadan",
+  "ramadanDaysProgress": "{n}/{total} days",
+  "ramadanStreak": "{n}-day streak",
+  "ramadanModeSwitch": "Ramadan mode",
+  "ramadanSahurOffset": "Sahur reminder",
+  "ramadanMinutesBefore": "{min} min before",
+  "ramadanShareSummary": "Share my Ramadan summary",
+  "ramadanShareFasted": "{n} days fasted",
+  "ramadanShareWater": "{liters} L water",
+  "ramadanTimesDisclaimer": "Times are estimates; check your local prayer calendar.",
+  "ramadanSahurTitle": "Sahur is approaching",
+  "ramadanSahurBody": "{min} min until imsak. Don't forget 2 glasses of water at sahur.",
+  "ramadanIftarTitle": "Blessed iftar",
+  "ramadanIftarBody": "Break your fast with a glass of water.",
+  "@ramadanUntilIftar": {
+    "placeholders": {
+      "h": { "type": "int" },
+      "m": { "type": "int" }
+    }
+  },
+  "@ramadanUntilSahur": {
+    "placeholders": {
+      "h": { "type": "int" },
+      "m": { "type": "int" }
+    }
+  },
+  "@ramadanImsakIftar": {
+    "placeholders": {
+      "imsak": { "type": "String" },
+      "iftar": { "type": "String" }
+    }
+  },
+  "@ramadanDaysProgress": {
+    "placeholders": {
+      "n": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "@ramadanStreak": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "@ramadanMinutesBefore": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "@ramadanShareFasted": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "@ramadanShareWater": {
+    "placeholders": {
+      "liters": { "type": "String" }
+    }
+  },
+  "@ramadanSahurBody": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
   }
 }

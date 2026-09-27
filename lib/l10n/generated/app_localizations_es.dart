@@ -2053,4 +2053,106 @@ class AppLocalizationsEs extends AppLocalizations {
   String waterDayCountUnit(int count) {
     return '$count días de registro de agua';
   }
+
+  @override
+  String get ramadanOfferTitle => 'Modo Ramadán';
+
+  @override
+  String get ramadanOfferBody =>
+      'Cuenta atrás de sahur e iftar, más recordatorios de agua entre el iftar y el sahur.';
+
+  @override
+  String get ramadanOfferCta => 'Activar';
+
+  @override
+  String ramadanUntilIftar(int h, int m) {
+    return 'Iftar en $h h $m min';
+  }
+
+  @override
+  String ramadanUntilSahur(int h, int m) {
+    return 'Sahur en $h h $m min';
+  }
+
+  @override
+  String ramadanImsakIftar(String imsak, String iftar) {
+    return 'Imsak $imsak · Iftar $iftar';
+  }
+
+  @override
+  String get ramadanFastingToday => 'Hoy estoy ayunando';
+
+  @override
+  String get ramadanNotificationsOff => 'Notificaciones desactivadas — activar';
+
+  @override
+  String get ramadanChooseLocation => 'Elegir ubicación';
+
+  @override
+  String get ramadanUseMyLocation => 'Usar mi ubicación';
+
+  @override
+  String get ramadanMyLocationLabel => 'Mi ubicación';
+
+  @override
+  String get ramadanLocationFailed =>
+      'No se pudo obtener tu ubicación; elige tu ciudad de la lista.';
+
+  @override
+  String get ramadanSearchCity => 'Buscar ciudad';
+
+  @override
+  String get ramadanTitle => 'Ramadán';
+
+  @override
+  String ramadanDaysProgress(int n, int total) {
+    return '$n/$total días';
+  }
+
+  @override
+  String ramadanStreak(int n) {
+    return 'Racha de $n días';
+  }
+
+  @override
+  String get ramadanModeSwitch => 'Modo Ramadán';
+
+  @override
+  String get ramadanSahurOffset => 'Recordatorio de sahur';
+
+  @override
+  String ramadanMinutesBefore(int min) {
+    return '$min min antes';
+  }
+
+  @override
+  String get ramadanShareSummary => 'Compartir mi resumen de Ramadán';
+
+  @override
+  String ramadanShareFasted(int n) {
+    return '$n días de ayuno';
+  }
+
+  @override
+  String ramadanShareWater(String liters) {
+    return '$liters L de agua';
+  }
+
+  @override
+  String get ramadanTimesDisclaimer =>
+      'Los horarios son estimados; consulta tu calendario local.';
+
+  @override
+  String get ramadanSahurTitle => 'Se acerca el sahur';
+
+  @override
+  String ramadanSahurBody(int min) {
+    return 'Faltan $min min para el imsak. No olvides beber 2 vasos de agua en el sahur.';
+  }
+
+  @override
+  String get ramadanIftarTitle => 'Feliz iftar';
+
+  @override
+  String get ramadanIftarBody => 'Rompe tu ayuno con un vaso de agua.';
 }

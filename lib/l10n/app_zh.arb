@@ -781,5 +781,81 @@
     "placeholders": {
       "count": { "type": "int" }
     }
+  },
+  "ramadanOfferTitle": "斋月模式",
+  "ramadanOfferBody": "封斋与开斋倒计时，并在开斋与封斋之间提醒喝水。",
+  "ramadanOfferCta": "开启",
+  "ramadanUntilIftar": "距开斋还有 {h} 小时 {m} 分钟",
+  "ramadanUntilSahur": "距封斋还有 {h} 小时 {m} 分钟",
+  "ramadanImsakIftar": "封斋 {imsak} · 开斋 {iftar}",
+  "ramadanFastingToday": "我今天封斋",
+  "ramadanNotificationsOff": "通知已关闭 — 开启",
+  "ramadanChooseLocation": "选择位置",
+  "ramadanUseMyLocation": "使用我的位置",
+  "ramadanMyLocationLabel": "我的位置",
+  "ramadanLocationFailed": "无法获取你的位置，请从列表中选择你的城市。",
+  "ramadanSearchCity": "搜索城市",
+  "ramadanTitle": "斋月",
+  "ramadanDaysProgress": "{n}/{total} 天",
+  "ramadanStreak": "连续 {n} 天",
+  "ramadanModeSwitch": "斋月模式",
+  "ramadanSahurOffset": "封斋提醒",
+  "ramadanMinutesBefore": "提前 {min} 分钟",
+  "ramadanShareSummary": "分享我的斋月总结",
+  "ramadanShareFasted": "封斋 {n} 天",
+  "ramadanShareWater": "{liters} 升水",
+  "ramadanTimesDisclaimer": "时间为估算值；请以当地封斋历为准。",
+  "ramadanSahurTitle": "封斋时间快到了",
+  "ramadanSahurBody": "距封斋还有 {min} 分钟。别忘了封斋前喝两杯水。",
+  "ramadanIftarTitle": "开斋愉快",
+  "ramadanIftarBody": "用一杯水开斋吧。",
+  "@ramadanUntilIftar": {
+    "placeholders": {
+      "h": { "type": "int" },
+      "m": { "type": "int" }
+    }
+  },
+  "@ramadanUntilSahur": {
+    "placeholders": {
+      "h": { "type": "int" },
+      "m": { "type": "int" }
+    }
+  },
+  "@ramadanImsakIftar": {
+    "placeholders": {
+      "imsak": { "type": "String" },
+      "iftar": { "type": "String" }
+    }
+  },
+  "@ramadanDaysProgress": {
+    "placeholders": {
+      "n": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "@ramadanStreak": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "@ramadanMinutesBefore": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "@ramadanShareFasted": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "@ramadanShareWater": {
+    "placeholders": {
+      "liters": { "type": "String" }
+    }
+  },
+  "@ramadanSahurBody": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
   }
 }

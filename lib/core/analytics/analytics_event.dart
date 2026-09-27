@@ -257,6 +257,15 @@ abstract final class FunnelEvents {
   static const waterGlassAdded = 'water_glass_added';
   static const waterReminderEnabled = 'water_reminder_enabled';
 
+  // --- Ramadan ----------------------------------------------------------
+  static const ramadanOfferShown = 'ramadan_offer_shown';
+  static const ramadanOfferDismissed = 'ramadan_offer_dismissed';
+
+  /// props: `location_source` (city|gps)
+  static const ramadanEnabled = 'ramadan_enabled';
+  static const ramadanDayMarked = 'ramadan_day_marked';
+  static const ramadanSummaryShared = 'ramadan_summary_shared';
+
   // --- Monetization ---------------------------------------------------
   /// props: `trigger` (scan_limit|profile|feature_gate)
   static const paywallShown = 'paywall_shown';

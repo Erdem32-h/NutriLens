@@ -9,6 +9,8 @@ import '../../core/session/app_session.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/ad_banner_widget.dart';
 import '../meals/presentation/providers/meal_provider.dart';
+import '../ramadan/presentation/providers/ramadan_provider.dart';
+import '../ramadan/presentation/ramadan_actions.dart';
 import '../water/presentation/providers/water_provider.dart';
 import '../water/presentation/water_actions.dart';
 import 'widgets/nutrilens_nav_bar.dart';
@@ -41,6 +43,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _ensureDailyReminder();
       _ensureWaterReminders();
+      _ensureRamadanState();
     });
 
     // A process kept alive overnight (warm resume, never cold-launched)
@@ -52,6 +55,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
         ref.invalidate(waterTodayProvider);
         ref.invalidate(waterWeekProvider);
         _ensureWaterReminders();
+        _ensureRamadanState();
       },
     );
   }
@@ -91,6 +95,21 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
     await ref
         .read(waterControllerProvider)
         .rescheduleReminders(waterReminderCopy(context.l10n));
+  }
+
+  /// Turns Ramadan mode off once Ramadan has ended, then re-arms sahur/iftar
+  /// notifications and re-syncs water reminders onto the iftar window.
+  /// Never throws.
+  Future<void> _ensureRamadanState() async {
+    if (!mounted) return;
+    final l10n = context.l10n;
+    final settings = ref.read(ramadanSettingsProvider);
+    await ref
+        .read(ramadanControllerProvider)
+        .onResume(
+          ramadanCopy(l10n, settings.sahurOffsetMin),
+          waterReminderCopy(l10n),
+        );
   }
 
   // Tab order: 0 meals · 1 history · 2 scanner (center) · 3 favorites · 4 profile

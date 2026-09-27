@@ -8,6 +8,8 @@ import '../../../../core/services/notification_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../../profile/presentation/providers/user_metrics_provider.dart';
+import '../../../ramadan/domain/ramadan_schedule.dart';
+import '../../../ramadan/presentation/providers/ramadan_provider.dart';
 import '../../data/datasources/water_local_datasource.dart';
 import '../../data/water_settings_store.dart';
 import '../../domain/water_day.dart';
@@ -219,13 +221,29 @@ class WaterController {
       final now = _now();
       final goal = await _resolvedGoal();
       final today = await _ds.getDay(userId, waterDayKey(now));
+      final ramadanToday = _ref.read(fastingTodayProvider);
+      final ramadanTomorrow = _ref.read(fastingTomorrowProvider);
+      final inRamadan =
+          _ref.read(activeRamadanProvider) != null &&
+          ramadanToday != null &&
+          ramadanTomorrow != null;
+      final times = inRamadan
+          ? ramadanWaterTimes(
+              now: now,
+              today: ramadanToday,
+              tomorrow: ramadanTomorrow,
+              lastGlassAt: today?.lastGlassAt,
+              glassesToday: today?.glasses ?? 0,
+              goal: goal,
+            )
+          : waterReminderTimes(
+              now: now,
+              lastGlassAt: today?.lastGlassAt,
+              glassesToday: today?.glasses ?? 0,
+              goal: goal,
+            );
       await _notifications.rescheduleWaterReminders(
-        times: waterReminderTimes(
-          now: now,
-          lastGlassAt: today?.lastGlassAt,
-          glassesToday: today?.glasses ?? 0,
-          goal: goal,
-        ),
+        times: times,
         title: copy.title,
         body: copy.body,
       );

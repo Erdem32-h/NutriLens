@@ -2047,4 +2047,105 @@ class AppLocalizationsTr extends AppLocalizations {
   String waterDayCountUnit(int count) {
     return '$count günlük su kaydı';
   }
+
+  @override
+  String get ramadanOfferTitle => 'Ramazan modu';
+
+  @override
+  String get ramadanOfferBody =>
+      'Sahur ve iftar sayacı, iftar–sahur arası su hatırlatması.';
+
+  @override
+  String get ramadanOfferCta => 'Aç';
+
+  @override
+  String ramadanUntilIftar(int h, int m) {
+    return 'İftara $h sa $m dk';
+  }
+
+  @override
+  String ramadanUntilSahur(int h, int m) {
+    return 'Sahura $h sa $m dk';
+  }
+
+  @override
+  String ramadanImsakIftar(String imsak, String iftar) {
+    return 'İmsak $imsak · İftar $iftar';
+  }
+
+  @override
+  String get ramadanFastingToday => 'Bugün oruçluyum';
+
+  @override
+  String get ramadanNotificationsOff => 'Bildirimler kapalı — aç';
+
+  @override
+  String get ramadanChooseLocation => 'Konum seç';
+
+  @override
+  String get ramadanUseMyLocation => 'Konumumu kullan';
+
+  @override
+  String get ramadanMyLocationLabel => 'Konumum';
+
+  @override
+  String get ramadanLocationFailed => 'Konum alınamadı, listeden ilini seç.';
+
+  @override
+  String get ramadanSearchCity => 'İl ara';
+
+  @override
+  String get ramadanTitle => 'Ramazan';
+
+  @override
+  String ramadanDaysProgress(int n, int total) {
+    return '$n/$total gün';
+  }
+
+  @override
+  String ramadanStreak(int n) {
+    return '$n gün seri';
+  }
+
+  @override
+  String get ramadanModeSwitch => 'Ramazan modu';
+
+  @override
+  String get ramadanSahurOffset => 'Sahur hatırlatması';
+
+  @override
+  String ramadanMinutesBefore(int min) {
+    return '$min dk önce';
+  }
+
+  @override
+  String get ramadanShareSummary => 'Ramazan özetimi paylaş';
+
+  @override
+  String ramadanShareFasted(int n) {
+    return '$n gün oruç';
+  }
+
+  @override
+  String ramadanShareWater(String liters) {
+    return '$liters L su';
+  }
+
+  @override
+  String get ramadanTimesDisclaimer =>
+      'Vakitler hesaplamadır; kendi imsakiyeni esas al.';
+
+  @override
+  String get ramadanSahurTitle => 'Sahur vakti yaklaşıyor';
+
+  @override
+  String ramadanSahurBody(int min) {
+    return 'İmsaka $min dk kaldı. Sahurda 2 bardak su içmeyi unutma.';
+  }
+
+  @override
+  String get ramadanIftarTitle => 'Hayırlı iftarlar';
+
+  @override
+  String get ramadanIftarBody => 'Orucunu bir bardak suyla aç.';
 }

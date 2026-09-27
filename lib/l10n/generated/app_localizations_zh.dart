@@ -1990,4 +1990,103 @@ class AppLocalizationsZh extends AppLocalizations {
   String waterDayCountUnit(int count) {
     return '$count 天饮水记录';
   }
+
+  @override
+  String get ramadanOfferTitle => '斋月模式';
+
+  @override
+  String get ramadanOfferBody => '封斋与开斋倒计时，并在开斋与封斋之间提醒喝水。';
+
+  @override
+  String get ramadanOfferCta => '开启';
+
+  @override
+  String ramadanUntilIftar(int h, int m) {
+    return '距开斋还有 $h 小时 $m 分钟';
+  }
+
+  @override
+  String ramadanUntilSahur(int h, int m) {
+    return '距封斋还有 $h 小时 $m 分钟';
+  }
+
+  @override
+  String ramadanImsakIftar(String imsak, String iftar) {
+    return '封斋 $imsak · 开斋 $iftar';
+  }
+
+  @override
+  String get ramadanFastingToday => '我今天封斋';
+
+  @override
+  String get ramadanNotificationsOff => '通知已关闭 — 开启';
+
+  @override
+  String get ramadanChooseLocation => '选择位置';
+
+  @override
+  String get ramadanUseMyLocation => '使用我的位置';
+
+  @override
+  String get ramadanMyLocationLabel => '我的位置';
+
+  @override
+  String get ramadanLocationFailed => '无法获取你的位置，请从列表中选择你的城市。';
+
+  @override
+  String get ramadanSearchCity => '搜索城市';
+
+  @override
+  String get ramadanTitle => '斋月';
+
+  @override
+  String ramadanDaysProgress(int n, int total) {
+    return '$n/$total 天';
+  }
+
+  @override
+  String ramadanStreak(int n) {
+    return '连续 $n 天';
+  }
+
+  @override
+  String get ramadanModeSwitch => '斋月模式';
+
+  @override
+  String get ramadanSahurOffset => '封斋提醒';
+
+  @override
+  String ramadanMinutesBefore(int min) {
+    return '提前 $min 分钟';
+  }
+
+  @override
+  String get ramadanShareSummary => '分享我的斋月总结';
+
+  @override
+  String ramadanShareFasted(int n) {
+    return '封斋 $n 天';
+  }
+
+  @override
+  String ramadanShareWater(String liters) {
+    return '$liters 升水';
+  }
+
+  @override
+  String get ramadanTimesDisclaimer => '时间为估算值；请以当地封斋历为准。';
+
+  @override
+  String get ramadanSahurTitle => '封斋时间快到了';
+
+  @override
+  String ramadanSahurBody(int min) {
+    return '距封斋还有 $min 分钟。别忘了封斋前喝两杯水。';
+  }
+
+  @override
+  String get ramadanIftarTitle => '开斋愉快';
+
+  @override
+  String get ramadanIftarBody => '用一杯水开斋吧。';
 }

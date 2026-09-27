@@ -12,6 +12,7 @@ import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
 import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.dart';
+import 'package:nutrilens/features/ramadan/presentation/providers/ramadan_provider.dart';
 import 'package:nutrilens/features/water/presentation/providers/water_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -107,6 +108,34 @@ void main() {
     expect(c.read(waterSettingsProvider).reminderEnabled, isTrue);
     expect(analytics.names, contains(FunnelEvents.waterReminderEnabled));
   });
+
+  test(
+    'Ramazan konumu var ama mod kapali: normal waterReminderTimes kullanilir',
+    () async {
+      final c = await makeContainer();
+      await c.read(ramadanSettingsProvider.notifier).setLocation(
+        lat: 39.9334,
+        lng: 32.8597,
+        label: 'Ankara',
+        plate: 6,
+      );
+      final controller = c.read(waterControllerProvider);
+
+      await controller.setReminderEnabled(true, _copy);
+      await controller.addGlass(_copy);
+
+      final times =
+          verify(
+                () => notifications.rescheduleWaterReminders(
+                  times: captureAny(named: 'times'),
+                  title: 't',
+                  body: 'b',
+                ),
+              ).captured.last
+              as List<DateTime>;
+      expect(times.first, DateTime(2026, 9, 13, 13));
+    },
+  );
 
   test('izin reddedilirse false doner ve kapali kalir', () async {
     final c = await makeContainer(permission: false);
