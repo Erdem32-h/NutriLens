@@ -1,5 +1,6 @@
 import 'package:nutrilens/features/ramadan/domain/fasting_times.dart';
-import 'package:nutrilens/features/water/domain/water_reminder_schedule.dart' show waterReminderGap;
+import 'package:nutrilens/features/water/domain/water_reminder_schedule.dart'
+    show waterReminderGap, todaySlotFilter;
 
 /// How long after iftar the first Ramadan water reminder fires.
 const _ramadanWaterAfterIftar = Duration(minutes: 30);
@@ -37,19 +38,11 @@ List<DateTime> ramadanWaterTimes({
   required int glassesToday,
   required int goal,
 }) {
-  final lastToday =
-      lastGlassAt != null &&
-      lastGlassAt.year == now.year &&
-      lastGlassAt.month == now.month &&
-      lastGlassAt.day == now.day;
-  final quietUntil = lastToday ? lastGlassAt.add(waterReminderGap) : null;
+  final isTodaySlot = todaySlotFilter(now: now, lastGlassAt: lastGlassAt);
 
   final todaySlots = <DateTime>[
     if (glassesToday < goal) ..._daySlots(today),
-  ].where((slot) {
-    if (!slot.isAfter(now)) return false;
-    return quietUntil == null || !slot.isBefore(quietUntil);
-  });
+  ].where(isTodaySlot);
 
   final result = [...todaySlots, ..._daySlots(tomorrow)];
   return result.length > _ramadanWaterMaxSlots ? result.sublist(0, _ramadanWaterMaxSlots) : result;
@@ -67,13 +60,15 @@ int _civilDateKey(DateTime d) => d.year * 10000 + d.month * 100 + d.day;
 /// Sahur (imsak - [sahurOffsetMin]) and iftar notifications for each day in
 /// [nextDays], skipping days on or after [eidDay] and any notification that
 /// has already passed [now]. Day `i` in the list gets ids `3000 + i`
-/// (sahur) and `3010 + i` (iftar).
+/// (sahur) and `3010 + i` (iftar) — [nextDays] must be at most 7 entries so
+/// ids stay within the 3000–3006 / 3010–3016 range reserved for this feature.
 List<RamadanNotification> ramadanNotificationTimes({
   required DateTime now,
   required List<(DateTime day, FastingTimes times)> nextDays,
   required int sahurOffsetMin,
   required DateTime eidDay,
 }) {
+  assert(nextDays.length <= 7, 'nextDays must be at most 7 days (ids stay within 3000-3006/3010-3016)');
   final eidKey = _civilDateKey(eidDay);
   final result = <RamadanNotification>[];
 
