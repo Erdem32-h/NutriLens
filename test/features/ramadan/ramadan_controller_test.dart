@@ -247,6 +247,53 @@ void main() {
   );
 
   test(
+    'sicak resume: 6 Subat etkinlestirip saati 8 Subata almak eski '
+    'activeRamadanProvider/fasting degerlerini birakmaz',
+    () async {
+      now = DateTime(2027, 2, 6, 10, 30);
+      final c = await makeContainer();
+      await c.read(waterSettingsProvider.notifier).setReminderEnabled(true);
+      await c.read(ramadanControllerProvider).enable(
+        lat: _lat,
+        lng: _lng,
+        label: _label,
+        source: 'city',
+        copy: _copy,
+        waterCopy: _waterCopy,
+      );
+      expect(c.read(activeRamadanProvider), isNull);
+
+      // Sicak resume: uygulama kapanmadan saat degisir (6 -> 8 Subat).
+      now = DateTime(2027, 2, 8, 12);
+      await c.read(ramadanControllerProvider).onResume(_copy, _waterCopy);
+
+      final items =
+          verify(
+                () => notifications.rescheduleRamadanNotifications(
+                  items: captureAny(named: 'items'),
+                  sahurTitle: 'st',
+                  sahurBody: 'sb',
+                  iftarTitle: 'it',
+                  iftarBody: 'ib',
+                ),
+              ).captured.last
+              as List<RamadanNotification>;
+      expect(items.any((n) => n.id == 3010), isTrue);
+
+      final times =
+          verify(
+                () => notifications.rescheduleWaterReminders(
+                  times: captureAny(named: 'times'),
+                  title: 'wt',
+                  body: 'wb',
+                ),
+              ).captured.last
+              as List<DateTime>;
+      expect(times.first, DateTime(2027, 2, 8, 18, 53));
+    },
+  );
+
+  test(
     'mod acik, konum silinmis: reschedule hicbir sey planlamaz ve firlatmaz',
     () async {
       final c = await makeContainer();

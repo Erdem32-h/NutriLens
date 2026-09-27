@@ -264,19 +264,24 @@ class RamadanController {
     }
   }
 
-  /// Call once per app launch and on every foreground resume. Turns the
-  /// mode off once Ramadan has ended (so a forgotten switch doesn't keep
-  /// steering water reminders at an iftar window that no longer exists),
-  /// then re-arms notifications and water reminders for the day.
+  /// Call once per app launch and on every foreground resume. A warm
+  /// resume never re-runs `build()` on the plain `Provider`s below — they
+  /// read `ramadanClockProvider()` once and cache the result, the same
+  /// staleness `waterTodayProvider` has (see `AppShellScreen`'s comment) —
+  /// so they're force-refreshed here before anything reads "now" through
+  /// them. Then turns the mode off once Ramadan's offer window has closed
+  /// (so a forgotten switch doesn't keep steering water reminders at an
+  /// iftar window that no longer exists), then re-arms notifications and
+  /// water reminders for the day.
   Future<void> onResume(RamadanCopy copy, WaterReminderCopy waterCopy) async {
+    _ref.invalidate(activeRamadanProvider);
+    _ref.invalidate(fastingTodayProvider);
+    _ref.invalidate(fastingTomorrowProvider);
+    _ref.invalidate(fastingDaysProvider);
+
     final settings = _ref.read(ramadanSettingsProvider);
-    if (settings.enabled) {
-      final now = _now();
-      final period = latestPeriod(now);
-      if (period != null &&
-          ramadanDayKey(now).compareTo(ramadanDayKey(period.eidDay)) >= 0) {
-        await _settings.setEnabled(false);
-      }
+    if (settings.enabled && offerPeriod(_now()) == null) {
+      await _settings.setEnabled(false);
     }
     await reschedule(copy);
     await _ref.read(waterControllerProvider).rescheduleReminders(waterCopy);
