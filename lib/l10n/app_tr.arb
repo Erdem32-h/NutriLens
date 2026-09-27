@@ -893,5 +893,14 @@
       "min": { "type": "int" }
     }
   },
-  "ramadanEnabledConfirm": "Ramazan modu açıldı. Ayarlar: Profil › Ramazan"
+  "ramadanEnabledConfirm": "Ramazan modu açıldı. Ayarlar: Profil › Ramazan",
+  "fastingDayCountUnit": "{count} günlük oruç kaydı",
+  "@fastingDayCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "migrationMessageGeneric": "Bu cihazda kayıtlı verilerin var. Yeni hesabına taşıyalım mı?"
 }

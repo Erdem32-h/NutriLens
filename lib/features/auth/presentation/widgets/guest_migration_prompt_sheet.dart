@@ -43,8 +43,14 @@ class GuestMigrationPromptSheet extends StatelessWidget {
       if (summary.mealCount > 0) l10n.mealCountUnit(summary.mealCount),
       if (summary.waterDayCount > 0)
         l10n.waterDayCountUnit(summary.waterDayCount),
+      if (summary.fastingDayCount > 0)
+        l10n.fastingDayCountUnit(summary.fastingDayCount),
     ];
-    final dataLine = parts.join(', ');
+    // Metrics aren't counted, so a metrics-only guest has no parts — use
+    // the generic wording instead of "This device has . Move it…".
+    final message = parts.isEmpty
+        ? l10n.migrationMessageGeneric
+        : l10n.migrationMessage(parts.join(', '));
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
@@ -94,7 +100,7 @@ class GuestMigrationPromptSheet extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            l10n.migrationMessage(dataLine),
+            message,
             style: TextStyle(
               fontSize: 14,
               color: colors.textMuted,

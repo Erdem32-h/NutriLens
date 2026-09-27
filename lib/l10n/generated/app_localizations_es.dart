@@ -2159,4 +2159,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get ramadanEnabledConfirm =>
       'Modo Ramadán activado. Ajustes: Perfil › Ramadán';
+
+  @override
+  String fastingDayCountUnit(int count) {
+    return '$count días de registro de ayuno';
+  }
+
+  @override
+  String get migrationMessageGeneric =>
+      'Tienes datos guardados en este dispositivo. ¿Deseas moverlos a tu nueva cuenta?';
 }

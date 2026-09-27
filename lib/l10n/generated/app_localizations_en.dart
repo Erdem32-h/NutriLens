@@ -2148,4 +2148,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get ramadanEnabledConfirm =>
       'Ramadan mode is on. Settings: Profile › Ramadan';
+
+  @override
+  String fastingDayCountUnit(int count) {
+    return '$count days of fasting logs';
+  }
+
+  @override
+  String get migrationMessageGeneric =>
+      'You have saved data on this device. Move it to your new account?';
 }

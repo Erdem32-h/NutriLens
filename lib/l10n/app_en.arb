@@ -858,5 +858,14 @@
       "min": { "type": "int" }
     }
   },
-  "ramadanEnabledConfirm": "Ramadan mode is on. Settings: Profile › Ramadan"
+  "ramadanEnabledConfirm": "Ramadan mode is on. Settings: Profile › Ramadan",
+  "fastingDayCountUnit": "{count} days of fasting logs",
+  "@fastingDayCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "migrationMessageGeneric": "You have saved data on this device. Move it to your new account?"
 }

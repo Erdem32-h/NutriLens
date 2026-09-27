@@ -2138,4 +2138,13 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get ramadanEnabledConfirm =>
       'تم تفعيل وضع رمضان. الإعدادات: الملف الشخصي › رمضان';
+
+  @override
+  String fastingDayCountUnit(int count) {
+    return 'سجل صيام لـ $count يوم';
+  }
+
+  @override
+  String get migrationMessageGeneric =>
+      'لديك بيانات محفوظة على هذا الجهاز. هل تريد نقلها إلى حسابك الجديد؟';
 }

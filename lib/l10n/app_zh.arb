@@ -858,5 +858,14 @@
       "min": { "type": "int" }
     }
   },
-  "ramadanEnabledConfirm": "斋月模式已开启。设置：个人中心 › 斋月"
+  "ramadanEnabledConfirm": "斋月模式已开启。设置：个人中心 › 斋月",
+  "fastingDayCountUnit": "{count} 天封斋记录",
+  "@fastingDayCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "migrationMessageGeneric": "此设备上有您保存的数据。是否将其迁移至您的新账号？"
 }

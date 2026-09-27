@@ -4065,6 +4065,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Ramazan modu açıldı. Ayarlar: Profil › Ramazan'**
   String get ramadanEnabledConfirm;
+
+  /// No description provided for @fastingDayCountUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} günlük oruç kaydı'**
+  String fastingDayCountUnit(int count);
+
+  /// No description provided for @migrationMessageGeneric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu cihazda kayıtlı verilerin var. Yeni hesabına taşıyalım mı?'**
+  String get migrationMessageGeneric;
 }
 
 class _AppLocalizationsDelegate

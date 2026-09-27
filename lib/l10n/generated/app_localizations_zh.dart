@@ -2092,4 +2092,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ramadanEnabledConfirm => '斋月模式已开启。设置：个人中心 › 斋月';
+
+  @override
+  String fastingDayCountUnit(int count) {
+    return '$count 天封斋记录';
+  }
+
+  @override
+  String get migrationMessageGeneric => '此设备上有您保存的数据。是否将其迁移至您的新账号？';
 }

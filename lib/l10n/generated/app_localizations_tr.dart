@@ -2152,4 +2152,13 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get ramadanEnabledConfirm =>
       'Ramazan modu açıldı. Ayarlar: Profil › Ramazan';
+
+  @override
+  String fastingDayCountUnit(int count) {
+    return '$count günlük oruç kaydı';
+  }
+
+  @override
+  String get migrationMessageGeneric =>
+      'Bu cihazda kayıtlı verilerin var. Yeni hesabına taşıyalım mı?';
 }

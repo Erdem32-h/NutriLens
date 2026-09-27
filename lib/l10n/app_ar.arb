@@ -858,5 +858,14 @@
       "min": { "type": "int" }
     }
   },
-  "ramadanEnabledConfirm": "تم تفعيل وضع رمضان. الإعدادات: الملف الشخصي › رمضان"
+  "ramadanEnabledConfirm": "تم تفعيل وضع رمضان. الإعدادات: الملف الشخصي › رمضان",
+  "fastingDayCountUnit": "سجل صيام لـ {count} يوم",
+  "@fastingDayCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "migrationMessageGeneric": "لديك بيانات محفوظة على هذا الجهاز. هل تريد نقلها إلى حسابك الجديد؟"
 }

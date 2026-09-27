@@ -858,5 +858,14 @@
       "min": { "type": "int" }
     }
   },
-  "ramadanEnabledConfirm": "Modo Ramadán activado. Ajustes: Perfil › Ramadán"
+  "ramadanEnabledConfirm": "Modo Ramadán activado. Ajustes: Perfil › Ramadán",
+  "fastingDayCountUnit": "{count} días de registro de ayuno",
+  "@fastingDayCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "migrationMessageGeneric": "Tienes datos guardados en este dispositivo. ¿Deseas moverlos a tu nueva cuenta?"
 }
