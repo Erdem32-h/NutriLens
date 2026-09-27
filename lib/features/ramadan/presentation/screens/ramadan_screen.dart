@@ -123,9 +123,11 @@ class RamadanScreen extends ConsumerWidget {
               final day = ramadanScreenDay(period, i);
               final fasted = fastedDays.contains(ramadanDayKey(day));
               final isFuture = day.isAfter(today);
+              final isToday = ramadanDayKey(day) == ramadanDayKey(today);
               return _DayCell(
                 index: i,
                 fasted: fasted,
+                isToday: isToday,
                 tint: tint,
                 colors: colors,
                 onTap: isFuture
@@ -148,6 +150,13 @@ class RamadanScreen extends ConsumerWidget {
             title: Text(l10n.ramadanModeSwitch),
             value: settings.enabled,
             onChanged: (value) => _toggleMode(context, ref, value),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(Icons.location_on_rounded, color: colors.textPrimary),
+            title: Text(settings.location?.label ?? l10n.ramadanChooseLocation),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => _pickLocation(context, ref),
           ),
           const SizedBox(height: 12),
           Text(
@@ -193,11 +202,28 @@ class RamadanScreen extends ConsumerWidget {
           .disable(waterReminderCopy(l10n));
       return;
     }
-    // Always resolve the location through the picker on enable-from-screen,
-    // regardless of whether a stale one is already stored (e.g. left over
-    // from a previous disable) — the mode must never go on without a
-    // confirmed location, and re-confirming here is the simplest way to
-    // guarantee that from this entry point.
+    final location = ref.read(ramadanSettingsProvider).location;
+    if (location != null) {
+      // A location is already on file (e.g. left over from a previous
+      // disable, or set via the location row below) — enable straight
+      // away with it. The picker is only required when there's nothing
+      // stored yet, per the fix-round-1 ruling.
+      await ref
+          .read(ramadanControllerProvider)
+          .enable(
+            lat: location.lat,
+            lng: location.lng,
+            label: location.label,
+            plate: location.plate,
+            source: location.plate != null ? 'city' : 'gps',
+            copy: ramadanCopy(
+              l10n,
+              ref.read(ramadanSettingsProvider).sahurOffsetMin,
+            ),
+            waterCopy: waterReminderCopy(l10n),
+          );
+      return;
+    }
     final pick = await showCityPicker(context);
     if (pick == null || !context.mounted) return;
     final freshL10n = context.l10n;
@@ -214,6 +240,28 @@ class RamadanScreen extends ConsumerWidget {
             ref.read(ramadanSettingsProvider).sahurOffsetMin,
           ),
           waterCopy: waterReminderCopy(freshL10n),
+        );
+  }
+
+  /// Location row's tap target — mirrors `_pickLocation` in
+  /// `ramadan_countdown_card.dart`: opens the city picker and writes the
+  /// pick straight to storage (independent of whether the mode is on).
+  Future<void> _pickLocation(BuildContext context, WidgetRef ref) async {
+    final pick = await showCityPicker(context);
+    if (pick == null || !context.mounted) return;
+    final l10n = context.l10n;
+    await ref
+        .read(ramadanControllerProvider)
+        .setLocation(
+          lat: pick.lat,
+          lng: pick.lng,
+          label: pick.label,
+          plate: pick.plate,
+          copy: ramadanCopy(
+            l10n,
+            ref.read(ramadanSettingsProvider).sahurOffsetMin,
+          ),
+          waterCopy: waterReminderCopy(l10n),
         );
   }
 
@@ -273,6 +321,11 @@ class RamadanScreen extends ConsumerWidget {
 class _DayCell extends StatelessWidget {
   final int index;
   final bool fasted;
+
+  /// Whether this cell is the current calendar day — gets a distinct
+  /// outline regardless of [fasted], so "today" reads at a glance in both
+  /// the filled and unfilled state.
+  final bool isToday;
   final CozyTint tint;
   final AppColorsExtension colors;
   final VoidCallback? onTap;
@@ -280,6 +333,7 @@ class _DayCell extends StatelessWidget {
   const _DayCell({
     required this.index,
     required this.fasted,
+    required this.isToday,
     required this.tint,
     required this.colors,
     required this.onTap,
@@ -308,6 +362,7 @@ class _DayCell extends StatelessWidget {
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(10),
+          border: isToday ? Border.all(color: colors.primary, width: 2) : null,
         ),
         alignment: Alignment.center,
         child: Text(

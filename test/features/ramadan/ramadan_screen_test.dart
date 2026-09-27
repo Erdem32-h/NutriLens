@@ -130,6 +130,100 @@ void main() {
     });
 
     testWidgets(
+      'konum satirina dokununca sehir secici acilir, Ankara secilince '
+      'plaka 6 ile kaydedilir',
+      (tester) async {
+        await pumpRamadanWidget(
+          tester,
+          const RamadanScreen(),
+          now: DateTime(2027, 2, 10),
+        );
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(RamadanScreen)),
+        );
+
+        await tester.dragUntilVisible(
+          find.text('Konum seç'),
+          find.byType(ListView),
+          const Offset(0, -200),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Konum seç'));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byType(TextField), 'Ankara');
+        await tester.pumpAndSettle();
+        // Two "Ankara" matches: the typed search field's own text and the
+        // filtered list tile — the tile is last in tree order.
+        await tester.tap(find.text('Ankara').last);
+        await tester.pumpAndSettle();
+
+        final location = container.read(ramadanSettingsProvider).location;
+        expect(location?.label, 'Ankara');
+        expect(location?.plate, 6);
+      },
+    );
+
+    testWidgets('konum kayitliyken mod acilinca sehir secici acilmadan enable '
+        'cagrilir', (tester) async {
+      final h = await pumpRamadanWidget(
+        tester,
+        const RamadanScreen(),
+        now: DateTime(2027, 2, 10),
+      );
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(RamadanScreen)),
+      );
+      await container
+          .read(ramadanSettingsProvider.notifier)
+          .setLocation(
+            lat: _ankaraLat,
+            lng: _ankaraLng,
+            label: 'Ankara',
+            plate: 6,
+          );
+      await tester.pumpAndSettle();
+
+      await tester.dragUntilVisible(
+        find.byType(Switch),
+        find.byType(ListView),
+        const Offset(0, -200),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+
+      expect(container.read(ramadanSettingsProvider).enabled, isTrue);
+      expect(h.analytics.names, contains('ramadan_enabled'));
+      // The city picker's search field never appeared.
+      expect(find.byType(TextField), findsNothing);
+    });
+
+    testWidgets("bugunun hucresi (gun 3, 10 Subat'ta) cerceveli, gun 2 degil", (
+      tester,
+    ) async {
+      await pumpRamadanWidget(
+        tester,
+        const RamadanScreen(),
+        now: DateTime(2027, 2, 10),
+      );
+
+      BoxDecoration decorationOf(int index) =>
+          tester
+                  .widget<Container>(
+                    find.descendant(
+                      of: find.byKey(ValueKey('ramadan-day-$index')),
+                      matching: find.byType(Container),
+                    ),
+                  )
+                  .decoration!
+              as BoxDecoration;
+
+      expect(decorationOf(3).border, isNotNull);
+      expect(decorationOf(2).border, isNull);
+    });
+
+    testWidgets(
       'sahur cipi 60 secilince YENI offsetle (60) yeniden planlanir',
       (tester) async {
         final h = await pumpRamadanWidget(
