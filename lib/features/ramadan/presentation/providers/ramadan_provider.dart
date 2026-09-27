@@ -155,6 +155,15 @@ class RamadanController {
     required RamadanCopy copy,
     required WaterReminderCopy waterCopy,
   }) async {
+    // Ask for notification permission (spec §5 step 2) but enable whatever
+    // the answer — the countdown card's "Bildirimler kapalı — aç" link
+    // covers a denial.
+    try {
+      await _notifications.requestPermission();
+    } catch (e) {
+      debugPrint('[Ramadan] permission request failed: $e');
+    }
+    _ref.invalidate(notificationsPermittedProvider);
     await _settings.setLocation(lat: lat, lng: lng, label: label, plate: plate);
     await _settings.setEnabled(true);
     _ref

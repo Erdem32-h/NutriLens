@@ -197,6 +197,7 @@ void main() {
       expect(h.analytics.names, contains('ramadan_enabled'));
       // The city picker's search field never appeared.
       expect(find.byType(TextField), findsNothing);
+      verify(() => h.notifications.requestPermission()).called(1);
     });
 
     testWidgets("bugunun hucresi (gun 3, 10 Subat'ta) cerceveli, gun 2 degil", (

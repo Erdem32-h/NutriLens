@@ -66,6 +66,7 @@ void main() {
     notifications = MockNotificationService();
     analytics = RecordingAnalytics();
     now = DateTime(2027, 2, 8, 12);
+    when(() => notifications.requestPermission()).thenAnswer((_) async => true);
     when(() => notifications.cancelWaterReminders()).thenAnswer((_) async {});
     when(
       () => notifications.rescheduleWaterReminders(

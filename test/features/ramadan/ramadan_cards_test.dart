@@ -80,10 +80,11 @@ void main() {
       expect(h.analytics.names, isEmpty);
     });
 
-    testWidgets('CTA -> il seçici -> Ankara -> plaka 6 ile mod açılır', (
+    testWidgets('CTA -> il seçici -> Ankara -> plaka 6 ile mod açılır, '
+        'bildirim izni bir kez istenir', (
       tester,
     ) async {
-      await pumpRamadanWidget(
+      final h = await pumpRamadanWidget(
         tester,
         const RamadanOfferCard(),
         now: DateTime(2027, 2, 5),
@@ -105,6 +106,31 @@ void main() {
       final settings = container.read(ramadanSettingsProvider);
       expect(settings.enabled, isTrue);
       expect(settings.location?.plate, 6);
+      verify(() => h.notifications.requestPermission()).called(1);
+    });
+
+    testWidgets('izin reddedilse de mod açılır', (tester) async {
+      final h = await pumpRamadanWidget(
+        tester,
+        const RamadanOfferCard(),
+        now: DateTime(2027, 2, 5),
+      );
+      when(
+        () => h.notifications.requestPermission(),
+      ).thenAnswer((_) async => false);
+
+      await tester.tap(find.text('Aç'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'Ankara');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Ankara').last);
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(RamadanOfferCard)),
+      );
+      expect(container.read(ramadanSettingsProvider).enabled, isTrue);
+      verify(() => h.notifications.requestPermission()).called(1);
     });
 
     testWidgets(
