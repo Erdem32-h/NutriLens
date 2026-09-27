@@ -9,6 +9,7 @@ import 'package:nutrilens/core/providers/locale_provider.dart';
 import 'package:nutrilens/core/services/notification_service.dart';
 import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
+import 'package:nutrilens/features/ramadan/domain/fasting_times.dart';
 import 'package:nutrilens/features/ramadan/domain/ramadan_schedule.dart';
 import 'package:nutrilens/features/ramadan/presentation/providers/ramadan_provider.dart';
 import 'package:nutrilens/features/ramadan/presentation/ramadan_actions.dart';
@@ -156,10 +157,11 @@ void main() {
   });
 
   test(
-    'teklif penceresinde (6 Sub) etkinlestirme: activeRamadanProvider null, '
-    'su waterReminderTimes ile ayni, Ramazan bildirimi planlanmaz',
+    'teklif penceresinde 7 Sub 20:00 etkinlestirme: 8 Subat sahur (3001) ve '
+    'iftar (3011) planlanir, 7 Subat icin hic yok; su bugun normal, yarin '
+    'Ramazan slotlari',
     () async {
-      now = DateTime(2027, 2, 6, 10, 30);
+      now = DateTime(2027, 2, 7, 20);
       final c = await makeContainer();
       await c.read(waterSettingsProvider.notifier).setReminderEnabled(true);
 
@@ -172,7 +174,22 @@ void main() {
         waterCopy: _waterCopy,
       );
 
-      expect(c.read(activeRamadanProvider), isNull);
+      final items =
+          verify(
+                () => notifications.rescheduleRamadanNotifications(
+                  items: captureAny(named: 'items'),
+                  sahurTitle: 'st',
+                  sahurBody: 'sb',
+                  iftarTitle: 'it',
+                  iftarBody: 'ib',
+                ),
+              ).captured.last
+              as List<RamadanNotification>;
+      final ids = items.map((n) => n.id).toList();
+      expect(ids, containsAll([3001, 3011]));
+      expect(ids, isNot(contains(3000)));
+      expect(ids, isNot(contains(3010)));
+      expect(items.every((n) => !n.at.isBefore(DateTime(2027, 2, 8))), isTrue);
 
       final times =
           verify(
@@ -183,25 +200,63 @@ void main() {
                 ),
               ).captured.last
               as List<DateTime>;
-      expect(
-        times,
-        waterReminderTimes(
-          now: now,
-          lastGlassAt: null,
-          glassesToday: 0,
-          goal: 10,
-        ),
+      expect(times.where((d) => d.day == 7), [DateTime(2027, 2, 7, 21)]);
+      expect(times.where((d) => d.day == 8).first, DateTime(2027, 2, 8, 18, 53));
+    },
+  );
+
+  test(
+    'son gun 8 Mart 20:00: 9 Mart (Bayram) icin bildirim yok, 9 Mart suyu '
+    'normal saatlerde, bugunun suyu iftar sonrasi',
+    () async {
+      now = DateTime(2027, 3, 8, 20);
+      final c = await makeContainer();
+      await c.read(waterSettingsProvider.notifier).setReminderEnabled(true);
+
+      await c.read(ramadanControllerProvider).enable(
+        lat: _lat,
+        lng: _lng,
+        label: _label,
+        source: 'city',
+        copy: _copy,
+        waterCopy: _waterCopy,
       );
 
-      verifyNever(
-        () => notifications.rescheduleRamadanNotifications(
-          items: any(named: 'items'),
-          sahurTitle: any(named: 'sahurTitle'),
-          sahurBody: any(named: 'sahurBody'),
-          iftarTitle: any(named: 'iftarTitle'),
-          iftarBody: any(named: 'iftarBody'),
-        ),
-      );
+      final items =
+          verify(
+                () => notifications.rescheduleRamadanNotifications(
+                  items: captureAny(named: 'items'),
+                  sahurTitle: 'st',
+                  sahurBody: 'sb',
+                  iftarTitle: 'it',
+                  iftarBody: 'ib',
+                ),
+              ).captured.last
+              as List<RamadanNotification>;
+      expect(items, isEmpty);
+
+      final times =
+          verify(
+                () => notifications.rescheduleWaterReminders(
+                  times: captureAny(named: 'times'),
+                  title: 'wt',
+                  body: 'wb',
+                ),
+              ).captured.last
+              as List<DateTime>;
+      final iftar = fastingTimes(DateTime(2027, 3, 8), _lat, _lng).iftar;
+      final expectedToday = [
+        for (
+          var slot = iftar.add(const Duration(minutes: 30));
+          slot.hour * 60 + slot.minute <= 23 * 60 + 30 && slot.day == 8;
+          slot = slot.add(const Duration(hours: 2))
+        )
+          if (slot.isAfter(now)) slot,
+      ];
+      expect(times.where((d) => d.day == 8), expectedToday);
+      expect(times.where((d) => d.day == 9), [
+        for (final h in waterReminderHours) DateTime(2027, 3, 9, h),
+      ]);
     },
   );
 
@@ -248,7 +303,7 @@ void main() {
 
   test(
     'sicak resume: 6 Subat etkinlestirip saati 8 Subata almak eski '
-    'activeRamadanProvider/fasting degerlerini birakmaz',
+    'fasting degerlerini birakmaz',
     () async {
       now = DateTime(2027, 2, 6, 10, 30);
       final c = await makeContainer();
@@ -261,8 +316,6 @@ void main() {
         copy: _copy,
         waterCopy: _waterCopy,
       );
-      expect(c.read(activeRamadanProvider), isNull);
-
       // Sicak resume: uygulama kapanmadan saat degisir (6 -> 8 Subat).
       now = DateTime(2027, 2, 8, 12);
       await c.read(ramadanControllerProvider).onResume(_copy, _waterCopy);

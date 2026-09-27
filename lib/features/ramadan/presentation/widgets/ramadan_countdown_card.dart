@@ -22,9 +22,7 @@ import 'city_picker_sheet.dart';
 /// and today falls inside the current Ramadan window (regardless of the
 /// earlier offer window). Ticks every minute so it never shows a stale
 /// countdown across midnight; recomputes imsak/iftar from the stored
-/// location and the current clock on every tick rather than reading the
-/// cached `fastingToday`/`fastingTomorrowProvider` (those are only
-/// refreshed on `onResume` — see `RamadanController.onResume`).
+/// location and the current clock on every tick.
 class RamadanCountdownCard extends ConsumerStatefulWidget {
   const RamadanCountdownCard({super.key});
 

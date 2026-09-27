@@ -118,31 +118,6 @@ final ramadanSettingsProvider =
       RamadanSettingsNotifier.new,
     );
 
-/// Non-null only when the mode is on, a location is set, and today falls
-/// inside the current Ramadan window (not just the earlier offer window).
-final activeRamadanProvider = Provider<RamadanPeriod?>((ref) {
-  final settings = ref.watch(ramadanSettingsProvider);
-  if (!settings.enabled || settings.location == null) return null;
-  return currentRamadan(ref.watch(ramadanClockProvider)());
-});
-
-/// Null whenever no location is set, regardless of whether the mode itself
-/// is on — lets the offer screen preview times before enabling.
-final fastingTodayProvider = Provider<FastingTimes?>((ref) {
-  final location = ref.watch(ramadanSettingsProvider).location;
-  if (location == null) return null;
-  final now = ref.watch(ramadanClockProvider)();
-  return fastingTimes(now, location.lat, location.lng);
-});
-
-final fastingTomorrowProvider = Provider<FastingTimes?>((ref) {
-  final location = ref.watch(ramadanSettingsProvider).location;
-  if (location == null) return null;
-  final now = ref.watch(ramadanClockProvider)();
-  final tomorrow = DateTime(now.year, now.month, now.day + 1);
-  return fastingTimes(tomorrow, location.lat, location.lng);
-});
-
 /// Days of `latestPeriod` the user marked as fasted.
 final fastingDaysProvider = FutureProvider<Set<String>>((ref) async {
   final userId = ref.watch(effectiveUserIdProvider);
@@ -230,20 +205,22 @@ class RamadanController {
     }
   }
 
-  /// Cancels and re-arms every pending sahur/iftar notification for the
-  /// current Ramadan window (up to 7 days out). Cancels everything and
-  /// schedules nothing when the mode is off, no location is set, or today
-  /// isn't inside a Ramadan window (e.g. still in the earlier offer window).
+  /// Cancels and re-arms every pending sahur/iftar notification (up to 7
+  /// days out). Runs from the offer window on (`offerPeriod(now) != null`),
+  /// so enabling before day 1 already arms day 1; only days inside
+  /// `[firstDay, eidDay)` get notifications. Cancels everything and
+  /// schedules nothing when the mode is off, no location is set, or the
+  /// offer window has closed.
   Future<void> reschedule(RamadanCopy copy) async {
     try {
-      final period = _ref.read(activeRamadanProvider);
-      if (period == null) {
+      final settings = _ref.read(ramadanSettingsProvider);
+      final location = settings.location;
+      final now = _now();
+      final period = offerPeriod(now);
+      if (!settings.enabled || location == null || period == null) {
         await _notifications.cancelRamadanNotifications();
         return;
       }
-      final settings = _ref.read(ramadanSettingsProvider);
-      final location = settings.location!;
-      final now = _now();
       final nextDays = [
         for (var i = 0; i < 7; i++)
           (
@@ -259,6 +236,7 @@ class RamadanController {
         now: now,
         nextDays: nextDays,
         sahurOffsetMin: settings.sahurOffsetMin,
+        firstDay: period.firstDay,
         eidDay: period.eidDay,
       );
       await _notifications.rescheduleRamadanNotifications(
@@ -274,19 +252,18 @@ class RamadanController {
   }
 
   /// Call once per app launch and on every foreground resume. A warm
-  /// resume never re-runs `build()` on the plain `Provider`s below — they
-  /// read `ramadanClockProvider()` once and cache the result, the same
-  /// staleness `waterTodayProvider` has (see `AppShellScreen`'s comment) —
-  /// so they're force-refreshed here before anything reads "now" through
-  /// them. Then turns the mode off once Ramadan's offer window has closed
+  /// resume never re-runs `build()` on cached providers —
+  /// `fastingDaysProvider` reads `ramadanClockProvider()` once, the same
+  /// staleness `waterTodayProvider` has (see `AppShellScreen`'s comment),
+  /// and the OS notification permission may have changed in Settings — so
+  /// both are force-refreshed here. Then turns the mode off once Ramadan's
+  /// offer window has closed
   /// (so a forgotten switch doesn't keep steering water reminders at an
   /// iftar window that no longer exists), then re-arms notifications and
   /// water reminders for the day.
   Future<void> onResume(RamadanCopy copy, WaterReminderCopy waterCopy) async {
-    _ref.invalidate(activeRamadanProvider);
-    _ref.invalidate(fastingTodayProvider);
-    _ref.invalidate(fastingTomorrowProvider);
     _ref.invalidate(fastingDaysProvider);
+    _ref.invalidate(notificationsPermittedProvider);
 
     final settings = _ref.read(ramadanSettingsProvider);
     if (settings.enabled && offerPeriod(_now()) == null) {

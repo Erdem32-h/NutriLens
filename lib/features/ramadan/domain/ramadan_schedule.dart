@@ -1,6 +1,6 @@
 import 'package:nutrilens/features/ramadan/domain/fasting_times.dart';
 import 'package:nutrilens/features/water/domain/water_reminder_schedule.dart'
-    show waterReminderGap, todaySlotFilter;
+    show waterReminderGap, waterReminderHours, todaySlotFilter;
 
 /// How long after iftar the first Ramadan water reminder fires.
 const _ramadanWaterAfterIftar = Duration(minutes: 30);
@@ -25,15 +25,24 @@ List<DateTime> _daySlots(FastingTimes times) {
   return slots;
 }
 
-/// Ramadan water reminder times for today (remaining) and tomorrow (all
-/// slots), mirroring `waterReminderTimes`: today's slots are dropped once
-/// they're in the past, silenced for [waterReminderGap] after the last
-/// glass (if drunk today), and skipped entirely once [goal] is met.
-/// Tomorrow's slots are always included. Capped at 14 total.
+/// The normal (non-Ramadan) `waterReminderHours` slots for [day].
+List<DateTime> _normalSlots(DateTime day) => [
+  for (final hour in waterReminderHours) DateTime(day.year, day.month, day.day, hour),
+];
+
+/// Water reminder times for today (remaining) and tomorrow (all slots),
+/// mirroring `waterReminderTimes`: today's slots are dropped once they're
+/// in the past, silenced for [waterReminderGap] after the last glass (if
+/// drunk today), and skipped entirely once [goal] is met. Tomorrow's slots
+/// are always included. Capped at 14 total.
+///
+/// Decided per day: a day with [FastingTimes] (a Ramadan day) gets the
+/// iftar-window slots, a null day (offer window before day 1, or Eid) gets
+/// the normal `waterReminderHours`.
 List<DateTime> ramadanWaterTimes({
   required DateTime now,
-  required FastingTimes today,
-  required FastingTimes tomorrow,
+  required FastingTimes? today,
+  required FastingTimes? tomorrow,
   required DateTime? lastGlassAt,
   required int glassesToday,
   required int goal,
@@ -41,10 +50,13 @@ List<DateTime> ramadanWaterTimes({
   final isTodaySlot = todaySlotFilter(now: now, lastGlassAt: lastGlassAt);
 
   final todaySlots = <DateTime>[
-    if (glassesToday < goal) ..._daySlots(today),
+    if (glassesToday < goal) ...today != null ? _daySlots(today) : _normalSlots(now),
   ].where(isTodaySlot);
+  final tomorrowSlots = tomorrow != null
+      ? _daySlots(tomorrow)
+      : _normalSlots(DateTime(now.year, now.month, now.day + 1));
 
-  final result = [...todaySlots, ..._daySlots(tomorrow)];
+  final result = [...todaySlots, ...tomorrowSlots];
   return result.length > _ramadanWaterMaxSlots ? result.sublist(0, _ramadanWaterMaxSlots) : result;
 }
 
@@ -58,7 +70,8 @@ typedef RamadanNotification = ({int id, DateTime at, RamadanNotificationKind kin
 int _civilDateKey(DateTime d) => d.year * 10000 + d.month * 100 + d.day;
 
 /// Sahur (imsak - [sahurOffsetMin]) and iftar notifications for each day in
-/// [nextDays], skipping days on or after [eidDay] and any notification that
+/// [nextDays], skipping days before [firstDay] (the offer window) or on/after
+/// [eidDay], and any notification that
 /// has already passed [now]. Day `i` in the list gets ids `3000 + i`
 /// (sahur) and `3010 + i` (iftar) — [nextDays] must be at most 7 entries so
 /// ids stay within the 3000–3006 / 3010–3016 range reserved for this feature.
@@ -66,15 +79,18 @@ List<RamadanNotification> ramadanNotificationTimes({
   required DateTime now,
   required List<(DateTime day, FastingTimes times)> nextDays,
   required int sahurOffsetMin,
+  required DateTime firstDay,
   required DateTime eidDay,
 }) {
   assert(nextDays.length <= 7, 'nextDays must be at most 7 days (ids stay within 3000-3006/3010-3016)');
+  final firstKey = _civilDateKey(firstDay);
   final eidKey = _civilDateKey(eidDay);
   final result = <RamadanNotification>[];
 
   for (var i = 0; i < nextDays.length; i++) {
     final (day, times) = nextDays[i];
-    if (_civilDateKey(day) >= eidKey) continue;
+    final key = _civilDateKey(day);
+    if (key < firstKey || key >= eidKey) continue;
 
     final sahurAt = times.imsak.subtract(Duration(minutes: sahurOffsetMin));
     if (sahurAt.isAfter(now)) {

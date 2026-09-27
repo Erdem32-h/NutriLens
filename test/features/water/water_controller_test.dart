@@ -13,6 +13,7 @@ import 'package:nutrilens/features/product/presentation/providers/product_provid
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
 import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.dart';
 import 'package:nutrilens/features/ramadan/presentation/providers/ramadan_provider.dart';
+import 'package:nutrilens/features/water/domain/water_reminder_schedule.dart';
 import 'package:nutrilens/features/water/presentation/providers/water_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,6 +32,7 @@ void main() {
   Future<ProviderContainer> makeContainer({
     String? userId = 'user-1',
     bool permission = true,
+    DateTime Function()? ramadanNow,
   }) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -45,6 +47,8 @@ void main() {
         notificationServiceProvider.overrideWithValue(notifications),
         analyticsServiceProvider.overrideWithValue(analytics),
         waterClockProvider.overrideWithValue(() => now),
+        if (ramadanNow != null)
+          ramadanClockProvider.overrideWithValue(ramadanNow),
       ],
     );
     addTearDown(container.dispose);
@@ -110,9 +114,11 @@ void main() {
   });
 
   test(
-    'Ramazan konumu var ama mod kapali: normal waterReminderTimes kullanilir',
+    'Ramazan gununde konum kayitli ama mod kapali: tam olarak '
+    'waterReminderTimes listesi kullanilir',
     () async {
-      final c = await makeContainer();
+      now = DateTime(2027, 2, 10, 10, 30);
+      final c = await makeContainer(ramadanNow: () => now);
       await c.read(ramadanSettingsProvider.notifier).setLocation(
         lat: 39.9334,
         lng: 32.8597,
@@ -122,7 +128,6 @@ void main() {
       final controller = c.read(waterControllerProvider);
 
       await controller.setReminderEnabled(true, _copy);
-      await controller.addGlass(_copy);
 
       final times =
           verify(
@@ -133,7 +138,15 @@ void main() {
                 ),
               ).captured.last
               as List<DateTime>;
-      expect(times.first, DateTime(2026, 9, 13, 13));
+      expect(
+        times,
+        waterReminderTimes(
+          now: now,
+          lastGlassAt: null,
+          glassesToday: 0,
+          goal: 10,
+        ),
+      );
     },
   );
 

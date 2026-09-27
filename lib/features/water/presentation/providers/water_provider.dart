@@ -8,6 +8,8 @@ import '../../../../core/services/notification_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../product/presentation/providers/product_provider.dart';
 import '../../../profile/presentation/providers/user_metrics_provider.dart';
+import '../../../ramadan/domain/fasting_times.dart';
+import '../../../ramadan/domain/ramadan_calendar.dart';
 import '../../../ramadan/domain/ramadan_schedule.dart';
 import '../../../ramadan/presentation/providers/ramadan_provider.dart';
 import '../../data/datasources/water_local_datasource.dart';
@@ -221,27 +223,14 @@ class WaterController {
       final now = _now();
       final goal = await _resolvedGoal();
       final today = await _ds.getDay(userId, waterDayKey(now));
-      final ramadanToday = _ref.read(fastingTodayProvider);
-      final ramadanTomorrow = _ref.read(fastingTomorrowProvider);
-      final inRamadan =
-          _ref.read(activeRamadanProvider) != null &&
-          ramadanToday != null &&
-          ramadanTomorrow != null;
-      final times = inRamadan
-          ? ramadanWaterTimes(
-              now: now,
-              today: ramadanToday,
-              tomorrow: ramadanTomorrow,
-              lastGlassAt: today?.lastGlassAt,
-              glassesToday: today?.glasses ?? 0,
-              goal: goal,
-            )
-          : waterReminderTimes(
-              now: now,
-              lastGlassAt: today?.lastGlassAt,
-              glassesToday: today?.glasses ?? 0,
-              goal: goal,
-            );
+      final times =
+          _ramadanTimes(now, today, goal) ??
+          waterReminderTimes(
+            now: now,
+            lastGlassAt: today?.lastGlassAt,
+            glassesToday: today?.glasses ?? 0,
+            goal: goal,
+          );
       await _notifications.rescheduleWaterReminders(
         times: times,
         title: copy.title,
@@ -249,6 +238,39 @@ class WaterController {
       );
     } catch (e) {
       debugPrint('[Water] reminder reschedule failed: $e');
+    }
+  }
+
+  /// Ramadan-aware slots, or null to use the normal `waterReminderTimes`.
+  /// Checks the mode first so users with it off never compute fasting
+  /// times here, then decides per day (today/tomorrow each inside Ramadan
+  /// or not). A failure computing fasting times falls back to the normal
+  /// slots rather than skipping water reminders.
+  List<DateTime>? _ramadanTimes(DateTime now, WaterDay? today, int goal) {
+    final settings = _ref.read(ramadanSettingsProvider);
+    final location = settings.location;
+    if (!settings.enabled || location == null) return null;
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
+    final todayIn = currentRamadan(now) != null;
+    final tomorrowIn = currentRamadan(tomorrow) != null;
+    if (!todayIn && !tomorrowIn) return null;
+    try {
+      FastingTimes at(DateTime d) => fastingTimes(
+        DateTime(d.year, d.month, d.day),
+        location.lat,
+        location.lng,
+      );
+      return ramadanWaterTimes(
+        now: now,
+        today: todayIn ? at(now) : null,
+        tomorrow: tomorrowIn ? at(tomorrow) : null,
+        lastGlassAt: today?.lastGlassAt,
+        glassesToday: today?.glasses ?? 0,
+        goal: goal,
+      );
+    } catch (e) {
+      debugPrint('[Water] Ramadan slots failed, using normal slots: $e');
+      return null;
     }
   }
 }
