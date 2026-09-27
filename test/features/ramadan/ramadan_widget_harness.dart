@@ -91,7 +91,8 @@ class RamadanHarness {
   /// invalidates `notificationsPermittedProvider` (see
   /// `RamadanCountdownCard._enableNotifications`) simulates the OS granting
   /// permission mid-test.
-  void setNotificationsPermitted(bool value) => _setNotificationsPermitted(value);
+  void setNotificationsPermitted(bool value) =>
+      _setNotificationsPermitted(value);
 }
 
 Future<RamadanHarness> pumpRamadanWidget(
@@ -100,6 +101,11 @@ Future<RamadanHarness> pumpRamadanWidget(
   DateTime? now,
   ({double lat, double lng})? initialPosition,
   bool notificationsPermitted = true,
+  // Untyped like `daily_target_summary_test.dart`'s `extraOverrides`:
+  // `Override` comes from `riverpod`, a transitive-only dependency here
+  // (not in pubspec.yaml), so it can't be named as an explicit type — the
+  // list's element type is inferred from `ProviderScope.overrides` below.
+  List overrides = const [],
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -108,9 +114,7 @@ Future<RamadanHarness> pumpRamadanWidget(
 
   registerFallbackValue(<DateTime>[]);
   final notifications = MockNotificationService();
-  when(
-    () => notifications.requestPermission(),
-  ).thenAnswer((_) async => true);
+  when(() => notifications.requestPermission()).thenAnswer((_) async => true);
   when(() => notifications.cancelWaterReminders()).thenAnswer((_) async {});
   when(
     () => notifications.rescheduleWaterReminders(
@@ -150,6 +154,7 @@ Future<RamadanHarness> pumpRamadanWidget(
         analyticsServiceProvider.overrideWithValue(analytics),
         ramadanClockProvider.overrideWithValue(() => clock.value),
         currentPositionProvider.overrideWithValue(() async => position.value),
+        ...overrides,
       ],
       child: MaterialApp(
         theme: AppTheme.light,

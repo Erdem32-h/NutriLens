@@ -31,6 +31,7 @@ import '../../features/profile/presentation/screens/chemical_filter_screen.dart'
 import '../../features/product/presentation/screens/additive_detail_screen.dart';
 import '../../features/comparison/presentation/screens/comparison_screen.dart';
 import '../../features/water/presentation/screens/water_screen.dart';
+import '../../features/ramadan/presentation/screens/ramadan_screen.dart';
 import 'route_names.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -250,6 +251,12 @@ GoRouter createRouter(WidgetRef ref) {
         name: RouteNames.water,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const WaterScreen(),
+      ),
+      GoRoute(
+        path: '/ramadan',
+        name: RouteNames.ramadan,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const RamadanScreen(),
       ),
       GoRoute(
         path: '/paywall',

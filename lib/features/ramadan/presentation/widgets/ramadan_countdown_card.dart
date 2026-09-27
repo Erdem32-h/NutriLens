@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../config/router/route_names.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -125,10 +127,8 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
         : l10n.ramadanUntilSahur(h, m);
 
     final timeFormat = DateFormat('HH:mm');
-    final fastedToday =
-        (ref.watch(fastingDaysProvider).value ?? const {}).contains(
-          ramadanDayKey(now),
-        );
+    final fastedToday = (ref.watch(fastingDaysProvider).value ?? const {})
+        .contains(ramadanDayKey(now));
     // `.value` reads null while loading/erroring — the link only appears
     // once we positively know permission is off, never as a loading guess.
     final notificationsOff =
@@ -136,84 +136,87 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        // No `onTap`: the day-detail route (`/ramadan`) doesn't exist yet
-        // (Task 8) — this card is read-only until then.
+      child: AppTapCard(
+        onTap: () => context.pushNamed(RouteNames.ramadan),
+        semanticLabel: l10n.ramadanTitle,
+        borderRadius: BorderRadius.circular(24),
         decoration: cozyCardDecoration(context).copyWith(color: tint.surface),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.nightlight_round, color: tint.ink),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    countdownText,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              l10n.ramadanImsakIftar(
-                timeFormat.format(today.imsak),
-                timeFormat.format(today.iftar),
-              ),
-              style: TextStyle(fontSize: 12, color: colors.textMuted),
-            ),
-            if (notificationsOff) ...[
-              const SizedBox(height: 6),
-              GestureDetector(
-                onTap: () => _enableNotifications(context),
-                child: Text(
-                  l10n.ramadanNotificationsOff,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: tint.ink,
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () => ref
-                  .read(ramadanControllerProvider)
-                  .setFasted(now, !fastedToday),
-              child: Row(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Icon(
-                    fastedToday
-                        ? Icons.check_circle_rounded
-                        : Icons.circle_outlined,
-                    color: tint.ink,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    l10n.ramadanFastingToday,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textPrimary,
+                  Icon(Icons.nightlight_round, color: tint.ink),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      countdownText,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: colors.textPrimary,
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              l10n.ramadanTimesDisclaimer,
-              style: TextStyle(fontSize: 11, color: colors.textMuted),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                l10n.ramadanImsakIftar(
+                  timeFormat.format(today.imsak),
+                  timeFormat.format(today.iftar),
+                ),
+                style: TextStyle(fontSize: 12, color: colors.textMuted),
+              ),
+              if (notificationsOff) ...[
+                const SizedBox(height: 6),
+                GestureDetector(
+                  onTap: () => _enableNotifications(context),
+                  child: Text(
+                    l10n.ramadanNotificationsOff,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: tint.ink,
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () => ref
+                    .read(ramadanControllerProvider)
+                    .setFasted(now, !fastedToday),
+                child: Row(
+                  children: [
+                    Icon(
+                      fastedToday
+                          ? Icons.check_circle_rounded
+                          : Icons.circle_outlined,
+                      color: tint.ink,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.ramadanFastingToday,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.ramadanTimesDisclaimer,
+                style: TextStyle(fontSize: 11, color: colors.textMuted),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -244,7 +247,10 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
           lng: pick.lng,
           label: pick.label,
           plate: pick.plate,
-          copy: ramadanCopy(l10n, ref.read(ramadanSettingsProvider).sahurOffsetMin),
+          copy: ramadanCopy(
+            l10n,
+            ref.read(ramadanSettingsProvider).sahurOffsetMin,
+          ),
           waterCopy: waterReminderCopy(l10n),
         );
   }

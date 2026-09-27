@@ -36,6 +36,9 @@ abstract final class RouteNames {
   // Water
   static const String water = 'water';
 
+  // Ramadan
+  static const String ramadan = 'ramadan';
+
   // Favorites sub-screens
   static const String blacklist = 'blacklist';
 

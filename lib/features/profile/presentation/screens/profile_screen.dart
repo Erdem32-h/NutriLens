@@ -16,6 +16,8 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../history/presentation/providers/history_provider.dart';
 import '../../../meals/presentation/providers/meal_chart_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
+import '../../../ramadan/domain/ramadan_calendar.dart';
+import '../../../ramadan/presentation/providers/ramadan_provider.dart';
 import '../../../water/presentation/providers/water_provider.dart';
 import '../providers/health_filters_provider.dart';
 import '../providers/user_data_deletion_provider.dart';
@@ -25,6 +27,18 @@ import '../widgets/analytics_opt_out_tile.dart';
 import '../../../../core/theme/cozy_tokens.dart';
 import '../../../../core/widgets/cozy_header.dart';
 import '../../../../core/widgets/cozy_tile.dart';
+
+/// Whether the "Ramazan" settings row should show: from the latest period's
+/// `firstDay` on, hidden again only once the *next* period's offer window
+/// opens — so last year's grid/history doesn't linger once we're gearing up
+/// for the new one. With only the 2027 period on the calendar this is
+/// simply "from 8 Feb 2027 on" (see `task-8-brief.md`).
+bool ramadanRowVisible(DateTime now) {
+  final latest = latestPeriod(now);
+  if (latest == null) return false;
+  final offer = offerPeriod(now);
+  return offer == null || offer.firstDay == latest.firstDay;
+}
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -228,6 +242,29 @@ class ProfileScreen extends ConsumerWidget {
             subtitle: l10n.chemicalOptions,
             tint: cozy.rose,
             onTap: () => context.goNamed(RouteNames.chemicalFilter),
+          ),
+
+          // Ramadan — only while the latest period is still the relevant
+          // one to show (see `ramadanRowVisible`).
+          Consumer(
+            builder: (context, ref, _) {
+              final now = ref.watch(ramadanClockProvider)();
+              if (!ramadanRowVisible(now)) return const SizedBox.shrink();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 18),
+                  CozySectionLabel(l10n.ramadanTitle),
+                  _SettingsTile(
+                    icon: Icons.nightlight_round,
+                    title: l10n.ramadanTitle,
+                    subtitle: l10n.ramadanOfferBody,
+                    tint: cozy.lilac,
+                    onTap: () => context.pushNamed(RouteNames.ramadan),
+                  ),
+                ],
+              );
+            },
           ),
 
           const SizedBox(height: 18),
