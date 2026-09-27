@@ -371,6 +371,20 @@ void main() {
     },
   );
 
+  test('onResume bildirim izni durumunu tazeler', () async {
+    var permitted = false;
+    when(
+      () => notifications.notificationsPermitted(),
+    ).thenAnswer((_) async => permitted);
+    final c = await makeContainer();
+    expect(await c.read(notificationsPermittedProvider.future), isFalse);
+
+    permitted = true; // user turned notifications on in OS Settings
+    await c.read(ramadanControllerProvider).onResume(_copy, _waterCopy);
+
+    expect(await c.read(notificationsPermittedProvider.future), isTrue);
+  });
+
   test('disable: Ramazan idleri iptal eder, su normal saatlere doner', () async {
     final c = await makeContainer();
     await c.read(ramadanSettingsProvider.notifier).setLocation(

@@ -109,6 +109,28 @@ void main() {
       },
     );
 
+    testWidgets('Bayramdan sonra (15 Mart) mod anahtari devre disi', (
+      tester,
+    ) async {
+      await pumpRamadanWidget(
+        tester,
+        const RamadanScreen(),
+        now: DateTime(2027, 3, 15),
+      );
+
+      await tester.dragUntilVisible(
+        find.byType(Switch),
+        find.byType(ListView),
+        const Offset(0, -200),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile)).onChanged,
+        isNull,
+      );
+    });
+
     testWidgets('2 gun isaretlenince baslik "2/29 gün" gosterir', (
       tester,
     ) async {

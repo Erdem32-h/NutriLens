@@ -149,7 +149,11 @@ class RamadanScreen extends ConsumerWidget {
             contentPadding: EdgeInsets.zero,
             title: Text(l10n.ramadanModeSwitch),
             value: settings.enabled,
-            onChanged: (value) => _toggleMode(context, ref, value),
+            // Once the offer window has closed (after Eid) the mode can't
+            // be turned on — `onResume` would switch it straight back off.
+            onChanged: offerPeriod(now) == null
+                ? null
+                : (value) => _toggleMode(context, ref, value),
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,

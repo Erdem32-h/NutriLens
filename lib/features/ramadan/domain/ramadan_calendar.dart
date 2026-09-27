@@ -17,7 +17,8 @@ class RamadanPeriod {
   int get year => firstDay.year;
 }
 
-/// Ramadan 1448–1449 AH (2026–2028 CE).
+/// Ramadan periods on the calendar — currently only Ramadan 1448 AH
+/// (2027 CE); add the next year's entry before its offer window.
 /// Source: Diyanet (Turkish Presidency of Religious Affairs).
 final ramadanPeriods = [
   // Ramadan 1448 AH → 29 days (source: Diyanet).
