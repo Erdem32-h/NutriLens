@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:nutrilens/features/ramadan/domain/ramadan_schedule.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -29,6 +30,13 @@ class NotificationService {
 
   /// Today's remaining slots + tomorrow's 7 (see `waterReminderTimes`).
   static const _waterMaxCount = 14;
+
+  static const _ramadanChannelId = 'ramadan_reminder';
+  static const _ramadanChannelName = 'Ramazan Hatırlatma';
+
+  /// Sahur ids: 3000-3006 (7 slots), Iftar ids: 3010-3016 (7 slots).
+  static const _ramadanSahurIdRange = 7;
+  static const _ramadanIftarIdRange = 7;
 
   final FlutterLocalNotificationsPlugin _plugin;
   bool _tzReady = false;
@@ -185,6 +193,67 @@ class NotificationService {
   Future<void> cancelWaterReminders() async {
     for (var i = 0; i < _waterMaxCount; i++) {
       await _plugin.cancel(id: _waterBaseId + i);
+    }
+  }
+
+  /// Replaces every pending Ramadan notification (sahur/iftar) with [items].
+  /// All 14 ids (3000-3006 for sahur, 3010-3016 for iftar) are cancelled first.
+  ///
+  /// Past notifications are skipped (same guard as water reminders). Uses the
+  /// appropriate title/body based on notification kind.
+  Future<void> rescheduleRamadanNotifications({
+    required List<RamadanNotification> items,
+    required String sahurTitle,
+    required String sahurBody,
+    required String iftarTitle,
+    required String iftarBody,
+  }) async {
+    await cancelRamadanNotifications();
+    if (items.isEmpty) return;
+
+    await _ensureTimezone();
+    for (final notification in items) {
+      final scheduled = tz.TZDateTime(
+        tz.local,
+        notification.at.year,
+        notification.at.month,
+        notification.at.day,
+        notification.at.hour,
+        notification.at.minute,
+      );
+      if (!scheduled.isAfter(tz.TZDateTime.now(tz.local))) continue;
+
+      final (title, body) = notification.kind == RamadanNotificationKind.sahur
+          ? (sahurTitle, sahurBody)
+          : (iftarTitle, iftarBody);
+
+      await _plugin.zonedSchedule(
+        id: notification.id,
+        title: title,
+        body: body,
+        scheduledDate: scheduled,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            _ramadanChannelId,
+            _ramadanChannelName,
+            importance: Importance.high,
+            priority: Priority.high,
+          ),
+          iOS: DarwinNotificationDetails(),
+        ),
+      );
+    }
+  }
+
+  Future<void> cancelRamadanNotifications() async {
+    // Sahur: 3000-3006
+    for (var i = 0; i < _ramadanSahurIdRange; i++) {
+      await _plugin.cancel(id: 3000 + i);
+    }
+    // Iftar: 3010-3016
+    for (var i = 0; i < _ramadanIftarIdRange; i++) {
+      await _plugin.cancel(id: 3010 + i);
     }
   }
 }
