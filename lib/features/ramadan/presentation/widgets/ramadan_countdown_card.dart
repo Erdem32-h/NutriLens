@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 import '../../../../core/widgets/cozy_tile.dart';
@@ -128,6 +129,10 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
         (ref.watch(fastingDaysProvider).value ?? const {}).contains(
           ramadanDayKey(now),
         );
+    // `.value` reads null while loading/erroring — the link only appears
+    // once we positively know permission is off, never as a loading guess.
+    final notificationsOff =
+        ref.watch(notificationsPermittedProvider).value == false;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
@@ -163,6 +168,20 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
               ),
               style: TextStyle(fontSize: 12, color: colors.textMuted),
             ),
+            if (notificationsOff) ...[
+              const SizedBox(height: 6),
+              GestureDetector(
+                onTap: () => _enableNotifications(context),
+                child: Text(
+                  l10n.ramadanNotificationsOff,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: tint.ink,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
             GestureDetector(
               onTap: () => ref
@@ -198,6 +217,20 @@ class _RamadanCountdownCardState extends ConsumerState<RamadanCountdownCard> {
         ),
       ),
     );
+  }
+
+  Future<void> _enableNotifications(BuildContext context) async {
+    final granted = await ref
+        .read(notificationServiceProvider)
+        .requestPermission();
+    ref.invalidate(notificationsPermittedProvider);
+    if (!granted || !context.mounted) return;
+    final l10n = context.l10n;
+    await ref
+        .read(ramadanControllerProvider)
+        .reschedule(
+          ramadanCopy(l10n, ref.read(ramadanSettingsProvider).sahurOffsetMin),
+        );
   }
 
   Future<void> _pickLocation(BuildContext context) async {

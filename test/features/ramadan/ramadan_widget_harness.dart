@@ -56,6 +56,11 @@ class _PositionBox {
   _PositionBox(this.value);
 }
 
+class _BoolBox {
+  bool value;
+  _BoolBox(this.value);
+}
+
 class RamadanHarness {
   final AppDatabase db;
   final SharedPreferences prefs;
@@ -63,6 +68,7 @@ class RamadanHarness {
   final RecordingAnalytics analytics;
   final void Function(DateTime) _setNow;
   final void Function(({double lat, double lng})?) _setPosition;
+  final void Function(bool) _setNotificationsPermitted;
 
   RamadanHarness(
     this.db,
@@ -71,6 +77,7 @@ class RamadanHarness {
     this.analytics,
     this._setNow,
     this._setPosition,
+    this._setNotificationsPermitted,
   );
 
   void setNow(DateTime value) => _setNow(value);
@@ -78,6 +85,13 @@ class RamadanHarness {
   /// Overrides what `currentPositionProvider` resolves to on the next call
   /// — null simulates a denied permission / GPS failure.
   void setPosition(({double lat, double lng})? value) => _setPosition(value);
+
+  /// Overrides what `notifications.notificationsPermitted()` resolves to on
+  /// its next call — read lazily, so flipping this after a tap that
+  /// invalidates `notificationsPermittedProvider` (see
+  /// `RamadanCountdownCard._enableNotifications`) simulates the OS granting
+  /// permission mid-test.
+  void setNotificationsPermitted(bool value) => _setNotificationsPermitted(value);
 }
 
 Future<RamadanHarness> pumpRamadanWidget(
@@ -85,6 +99,7 @@ Future<RamadanHarness> pumpRamadanWidget(
   Widget child, {
   DateTime? now,
   ({double lat, double lng})? initialPosition,
+  bool notificationsPermitted = true,
 }) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -119,6 +134,10 @@ Future<RamadanHarness> pumpRamadanWidget(
 
   final clock = _ClockBox(now ?? DateTime(2027, 2, 5));
   final position = _PositionBox(initialPosition);
+  final permitted = _BoolBox(notificationsPermitted);
+  when(
+    () => notifications.notificationsPermitted(),
+  ).thenAnswer((_) async => permitted.value);
   final analytics = RecordingAnalytics();
 
   await tester.pumpWidget(
@@ -149,5 +168,6 @@ Future<RamadanHarness> pumpRamadanWidget(
     analytics,
     (value) => clock.value = value,
     (value) => position.value = value,
+    (value) => permitted.value = value,
   );
 }

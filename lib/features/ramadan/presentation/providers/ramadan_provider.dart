@@ -27,6 +27,15 @@ final fastingDaysLocalDataSourceProvider =
 /// Test seam for "now".
 final ramadanClockProvider = Provider<DateTime Function()>((_) => DateTime.now);
 
+/// Whether the OS currently permits local notifications — backs the
+/// countdown card's "Bildirimler kapalı — aç" nudge. Invalidate after a
+/// permission request to re-check without restarting the app; doesn't
+/// itself show the system dialog (see `NotificationService.requestPermission`
+/// for that).
+final notificationsPermittedProvider = FutureProvider<bool>(
+  (ref) => ref.read(notificationServiceProvider).notificationsPermitted(),
+);
+
 class RamadanState {
   final bool enabled;
 

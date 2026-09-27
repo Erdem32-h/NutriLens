@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:nutrilens/features/ramadan/domain/ramadan_calendar.dart';
 import 'package:nutrilens/features/ramadan/presentation/providers/ramadan_provider.dart';
 import 'package:nutrilens/features/ramadan/presentation/widgets/ramadan_countdown_card.dart';
@@ -221,6 +222,61 @@ void main() {
             .getDays('user-1', from: '2027-02-01', toExclusive: '2027-03-09');
         expect(days.contains(ramadanDayKey(now)), isTrue);
         expect(h.analytics.names, contains('ramadan_day_marked'));
+      },
+    );
+
+    testWidgets(
+      'bildirim izni kapalıyken "Bildirimler kapalı — aç" görünür',
+      (tester) async {
+        await pumpRamadanWidget(
+          tester,
+          const RamadanCountdownCard(),
+          now: DateTime(2027, 2, 8, 12, 0),
+          notificationsPermitted: false,
+        );
+        await _enableRamadan(tester, RamadanCountdownCard);
+
+        expect(find.text('Bildirimler kapalı — aç'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'izin açıksa "Bildirimler kapalı — aç" görünmez',
+      (tester) async {
+        await pumpRamadanWidget(
+          tester,
+          const RamadanCountdownCard(),
+          now: DateTime(2027, 2, 8, 12, 0),
+          notificationsPermitted: true,
+        );
+        await _enableRamadan(tester, RamadanCountdownCard);
+
+        expect(find.text('Bildirimler kapalı — aç'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'linke dokununca izin istenir; verilince link kaybolur',
+      (tester) async {
+        final h = await pumpRamadanWidget(
+          tester,
+          const RamadanCountdownCard(),
+          now: DateTime(2027, 2, 8, 12, 0),
+          notificationsPermitted: false,
+        );
+        await _enableRamadan(tester, RamadanCountdownCard);
+        expect(find.text('Bildirimler kapalı — aç'), findsOneWidget);
+
+        // requestPermission() is stubbed to return true by default; simulate
+        // the OS having actually granted it so the re-check after tap sees
+        // the new state too.
+        h.setNotificationsPermitted(true);
+
+        await tester.tap(find.text('Bildirimler kapalı — aç'));
+        await tester.pumpAndSettle();
+
+        verify(() => h.notifications.requestPermission()).called(1);
+        expect(find.text('Bildirimler kapalı — aç'), findsNothing);
       },
     );
   });

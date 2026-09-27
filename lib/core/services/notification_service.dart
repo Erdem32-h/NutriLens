@@ -96,6 +96,25 @@ class NotificationService {
         false;
   }
 
+  /// Reports whether the OS currently permits local notifications, without
+  /// showing the system permission dialog (unlike [requestPermission]) —
+  /// safe to call from a build method to decide whether to show a
+  /// "notifications are off" nudge.
+  Future<bool> notificationsPermitted() async {
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android != null) {
+      return await android.areNotificationsEnabled() ?? false;
+    }
+    final ios = _plugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >();
+    return (await ios?.checkPermissions())?.isEnabled ?? false;
+  }
+
   /// Cancels any pending reminder and, unless [mealLoggedToday], arms a
   /// fresh one-shot for the next 19:00 that hasn't passed yet (today's if
   /// it's still ahead, otherwise tomorrow's).

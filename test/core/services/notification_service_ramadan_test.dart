@@ -7,6 +7,11 @@ import 'package:timezone/timezone.dart' as tz;
 
 class _MockPlugin extends Mock implements FlutterLocalNotificationsPlugin {}
 
+class _MockAndroidPlugin extends Mock
+    implements AndroidFlutterLocalNotificationsPlugin {}
+
+class _MockIOSPlugin extends Mock implements IOSFlutterLocalNotificationsPlugin {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -153,5 +158,120 @@ void main() {
     // Second call: iftar
     expect(captured[2], 3011);
     expect(captured[3], 'Iftar Vakti');
+  });
+
+  group('notificationsPermitted', () {
+    test('Android: areNotificationsEnabled true -> true doner', () async {
+      final android = _MockAndroidPlugin();
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(android);
+      when(
+        () => android.areNotificationsEnabled(),
+      ).thenAnswer((_) async => true);
+
+      expect(await service.notificationsPermitted(), isTrue);
+    });
+
+    test('Android: areNotificationsEnabled false -> false doner', () async {
+      final android = _MockAndroidPlugin();
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(android);
+      when(
+        () => android.areNotificationsEnabled(),
+      ).thenAnswer((_) async => false);
+
+      expect(await service.notificationsPermitted(), isFalse);
+    });
+
+    test('Android: areNotificationsEnabled null -> false doner', () async {
+      final android = _MockAndroidPlugin();
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(android);
+      when(
+        () => android.areNotificationsEnabled(),
+      ).thenAnswer((_) async => null);
+
+      expect(await service.notificationsPermitted(), isFalse);
+    });
+
+    test('iOS: checkPermissions().isEnabled true -> true doner', () async {
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(null);
+      final ios = _MockIOSPlugin();
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(ios);
+      when(() => ios.checkPermissions()).thenAnswer(
+        (_) async => const NotificationsEnabledOptions(
+          isEnabled: true,
+          isSoundEnabled: true,
+          isAlertEnabled: true,
+          isBadgeEnabled: true,
+          isProvisionalEnabled: false,
+          isCriticalEnabled: false,
+          isProvidesAppNotificationSettingsEnabled: false,
+        ),
+      );
+
+      expect(await service.notificationsPermitted(), isTrue);
+    });
+
+    test('iOS: checkPermissions null -> false doner', () async {
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(null);
+      final ios = _MockIOSPlugin();
+      when(
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >(),
+      ).thenReturn(ios);
+      when(() => ios.checkPermissions()).thenAnswer((_) async => null);
+
+      expect(await service.notificationsPermitted(), isFalse);
+    });
+
+    test(
+      'ne Android ne iOS platform implementasyonu yoksa false doner',
+      () async {
+        when(
+          () => plugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >(),
+        ).thenReturn(null);
+        when(
+          () => plugin
+              .resolvePlatformSpecificImplementation<
+                IOSFlutterLocalNotificationsPlugin
+              >(),
+        ).thenReturn(null);
+
+        expect(await service.notificationsPermitted(), isFalse);
+      },
+    );
   });
 }
