@@ -892,5 +892,6 @@
     "placeholders": {
       "min": { "type": "int" }
     }
-  }
+  },
+  "ramadanEnabledConfirm": "Ramazan modu açıldı. Ayarlar: Profil › Ramazan"
 }

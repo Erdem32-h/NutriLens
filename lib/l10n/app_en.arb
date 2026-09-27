@@ -857,5 +857,6 @@
     "placeholders": {
       "min": { "type": "int" }
     }
-  }
+  },
+  "ramadanEnabledConfirm": "Ramadan mode is on. Settings: Profile › Ramadan"
 }

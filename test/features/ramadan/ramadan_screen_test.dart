@@ -91,6 +91,24 @@ void main() {
       },
     );
 
+    testWidgets(
+      'teklif penceresinde (6 Subat) ekran bos degil: 29 gunluk izgara, '
+      'hepsi gelecek gun',
+      (tester) async {
+        await pumpRamadanWidget(
+          tester,
+          const RamadanScreen(),
+          now: DateTime(2027, 2, 6),
+        );
+
+        expect(find.text('0/29 gün'), findsOneWidget);
+        final day1 = tester.widget<GestureDetector>(
+          find.byKey(const ValueKey('ramadan-day-1')),
+        );
+        expect(day1.onTap, isNull);
+      },
+    );
+
     testWidgets('2 gun isaretlenince baslik "2/29 gün" gosterir', (
       tester,
     ) async {

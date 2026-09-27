@@ -857,5 +857,6 @@
     "placeholders": {
       "min": { "type": "int" }
     }
-  }
+  },
+  "ramadanEnabledConfirm": "Modo Ramadán activado. Ajustes: Perfil › Ramadán"
 }

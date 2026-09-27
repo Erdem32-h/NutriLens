@@ -857,5 +857,6 @@
     "placeholders": {
       "min": { "type": "int" }
     }
-  }
+  },
+  "ramadanEnabledConfirm": "斋月模式已开启。设置：个人中心 › 斋月"
 }

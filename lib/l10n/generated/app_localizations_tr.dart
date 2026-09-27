@@ -2148,4 +2148,8 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get ramadanIftarBody => 'Orucunu bir bardak suyla aç.';
+
+  @override
+  String get ramadanEnabledConfirm =>
+      'Ramazan modu açıldı. Ayarlar: Profil › Ramazan';
 }

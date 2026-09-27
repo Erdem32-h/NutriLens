@@ -2089,4 +2089,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ramadanIftarBody => '用一杯水开斋吧。';
+
+  @override
+  String get ramadanEnabledConfirm => '斋月模式已开启。设置：个人中心 › 斋月';
 }

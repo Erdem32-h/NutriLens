@@ -2144,4 +2144,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ramadanIftarBody => 'Break your fast with a glass of water.';
+
+  @override
+  String get ramadanEnabledConfirm =>
+      'Ramadan mode is on. Settings: Profile › Ramadan';
 }

@@ -70,6 +70,11 @@ RamadanPeriod? latestPeriod(DateTime now) {
   return latest;
 }
 
+/// The period the Ramadan screen and profile row are about: the upcoming or
+/// current one from its offer window on, else the most recent past one.
+RamadanPeriod? displayPeriod(DateTime now) =>
+    offerPeriod(now) ?? latestPeriod(now);
+
 /// Returns the 1-based day of Ramadan if [now] is within the current Ramadan, or null.
 int? ramadanDayIndex(DateTime now) {
   final period = currentRamadan(now);

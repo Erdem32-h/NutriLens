@@ -2155,4 +2155,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get ramadanIftarBody => 'Rompe tu ayuno con un vaso de agua.';
+
+  @override
+  String get ramadanEnabledConfirm =>
+      'Modo Ramadán activado. Ajustes: Perfil › Ramadán';
 }

@@ -857,5 +857,6 @@
     "placeholders": {
       "min": { "type": "int" }
     }
-  }
+  },
+  "ramadanEnabledConfirm": "تم تفعيل وضع رمضان. الإعدادات: الملف الشخصي › رمضان"
 }

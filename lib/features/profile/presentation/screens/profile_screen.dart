@@ -28,17 +28,11 @@ import '../../../../core/theme/cozy_tokens.dart';
 import '../../../../core/widgets/cozy_header.dart';
 import '../../../../core/widgets/cozy_tile.dart';
 
-/// Whether the "Ramazan" settings row should show: from the latest period's
-/// `firstDay` on, hidden again only once the *next* period's offer window
-/// opens — so last year's grid/history doesn't linger once we're gearing up
-/// for the new one. With only the 2027 period on the calendar this is
-/// simply "from 8 Feb 2027 on" (see `task-8-brief.md`).
-bool ramadanRowVisible(DateTime now) {
-  final latest = latestPeriod(now);
-  if (latest == null) return false;
-  final offer = offerPeriod(now);
-  return offer == null || offer.firstDay == latest.firstDay;
-}
+/// Whether the "Ramazan" settings row should show: from the first period's
+/// offer window on (so a user who enabled the mode from the offer card can
+/// find the settings before day 1). The row then always points at
+/// `displayPeriod` — the next period once its offer window opens.
+bool ramadanRowVisible(DateTime now) => displayPeriod(now) != null;
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});

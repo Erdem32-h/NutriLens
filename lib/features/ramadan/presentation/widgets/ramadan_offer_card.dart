@@ -112,6 +112,7 @@ class _RamadanOfferCardState extends ConsumerState<RamadanOfferCard> {
     final pick = await showCityPicker(context);
     if (pick == null || !context.mounted) return;
     final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
     await ref
         .read(ramadanControllerProvider)
         .enable(
@@ -123,5 +124,10 @@ class _RamadanOfferCardState extends ConsumerState<RamadanOfferCard> {
           copy: ramadanCopy(l10n, ref.read(ramadanSettingsProvider).sahurOffsetMin),
           waterCopy: waterReminderCopy(l10n),
         );
+    // The card disappears once enabled, so point at where the settings
+    // live now (Profile › Ramazan, visible from the offer window on).
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.ramadanEnabledConfirm)),
+    );
   }
 }

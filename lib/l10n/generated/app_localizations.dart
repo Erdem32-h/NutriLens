@@ -4059,6 +4059,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Orucunu bir bardak suyla aç.'**
   String get ramadanIftarBody;
+
+  /// No description provided for @ramadanEnabledConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ramazan modu açıldı. Ayarlar: Profil › Ramazan'**
+  String get ramadanEnabledConfirm;
 }
 
 class _AppLocalizationsDelegate

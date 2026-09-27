@@ -107,6 +107,10 @@ void main() {
       expect(settings.enabled, isTrue);
       expect(settings.location?.plate, 6);
       verify(() => h.notifications.requestPermission()).called(1);
+      expect(
+        find.text('Ramazan modu açıldı. Ayarlar: Profil › Ramazan'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('izin reddedilse de mod açılır', (tester) async {

@@ -118,10 +118,10 @@ final ramadanSettingsProvider =
       RamadanSettingsNotifier.new,
     );
 
-/// Days of `latestPeriod` the user marked as fasted.
+/// Days of `displayPeriod` the user marked as fasted.
 final fastingDaysProvider = FutureProvider<Set<String>>((ref) async {
   final userId = ref.watch(effectiveUserIdProvider);
-  final period = latestPeriod(ref.watch(ramadanClockProvider)());
+  final period = displayPeriod(ref.watch(ramadanClockProvider)());
   if (userId == null || period == null) return {};
   return ref
       .watch(fastingDaysLocalDataSourceProvider)

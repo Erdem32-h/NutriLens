@@ -2134,4 +2134,8 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ramadanIftarBody => 'افطر على كوب من الماء.';
+
+  @override
+  String get ramadanEnabledConfirm =>
+      'تم تفعيل وضع رمضان. الإعدادات: الملف الشخصي › رمضان';
 }

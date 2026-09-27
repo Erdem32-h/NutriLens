@@ -47,10 +47,10 @@ int fastingStreak(Set<String> days, DateTime today) {
   return streak;
 }
 
-/// Fasting calendar + settings: a grid to mark each day of the latest
-/// Ramadan period, the mode switch, the sahur-offset picker and a share
-/// button for the summary card. Reachable from the countdown card and the
-/// profile row whenever `latestPeriod(now) != null`.
+/// Fasting calendar + settings: a grid to mark each day of
+/// `displayPeriod(now)`, the mode switch, the sahur-offset picker and a
+/// share button for the summary card. Reachable from the countdown card
+/// and the profile row whenever `displayPeriod(now) != null`.
 class RamadanScreen extends ConsumerWidget {
   const RamadanScreen({super.key});
 
@@ -60,13 +60,13 @@ class RamadanScreen extends ConsumerWidget {
     final colors = context.colors;
     final now = ref.watch(ramadanClockProvider)();
     final today = DateTime(now.year, now.month, now.day);
-    final period = latestPeriod(now);
+    final period = displayPeriod(now);
     final settings = ref.watch(ramadanSettingsProvider);
     final fastedDays = ref.watch(fastingDaysProvider).value ?? const {};
 
     if (period == null) {
       // The entry points (countdown card, profile row) only show while
-      // `latestPeriod(now) != null`, so this is defensive rather than a
+      // `displayPeriod(now) != null`, so this is defensive rather than a
       // real path — a plain empty screen beats a crash if reached anyway
       // (e.g. a stale deep link once a period rolls off the calendar).
       return Scaffold(
