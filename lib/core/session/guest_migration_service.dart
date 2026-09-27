@@ -7,6 +7,8 @@ import '../../features/meals/data/datasources/meal_local_datasource.dart';
 import '../../features/meals/presentation/providers/meal_provider.dart';
 import '../../features/profile/data/datasources/user_metrics_local_datasource.dart';
 import '../../features/profile/presentation/providers/user_metrics_provider.dart';
+import '../../features/ramadan/data/fasting_days_local_datasource.dart';
+import '../../features/ramadan/presentation/providers/ramadan_provider.dart';
 import '../../features/water/data/datasources/water_local_datasource.dart';
 import '../../features/water/presentation/providers/water_provider.dart';
 import '../services/guest_scan_counter.dart';
@@ -31,15 +33,24 @@ class GuestDataSummary {
   /// toward "is there anything to move", same reasoning as [hasMetrics].
   final int waterDayCount;
 
+  /// Days marked as fasted. Local-only data, same reasoning as
+  /// [waterDayCount].
+  final int fastingDayCount;
+
   const GuestDataSummary({
     required this.scanCount,
     required this.mealCount,
     required this.hasMetrics,
     this.waterDayCount = 0,
+    this.fastingDayCount = 0,
   });
 
   bool get isEmpty =>
-      scanCount == 0 && mealCount == 0 && !hasMetrics && waterDayCount == 0;
+      scanCount == 0 &&
+      mealCount == 0 &&
+      !hasMetrics &&
+      waterDayCount == 0 &&
+      fastingDayCount == 0;
 }
 
 class GuestMigrationService {
@@ -47,6 +58,7 @@ class GuestMigrationService {
   final MealLocalDataSource _mealDs;
   final UserMetricsLocalDataSource _metricsDs;
   final WaterLocalDataSource _waterDs;
+  final FastingDaysLocalDataSource _fastingDs;
   final SupabaseClient _supabase;
   final GuestScanCounter _counter;
 
@@ -55,12 +67,14 @@ class GuestMigrationService {
     required MealLocalDataSource mealDs,
     required UserMetricsLocalDataSource metricsDs,
     required WaterLocalDataSource waterDs,
+    required FastingDaysLocalDataSource fastingDs,
     required SupabaseClient supabase,
     required GuestScanCounter counter,
   }) : _scanDs = scanDs,
        _mealDs = mealDs,
        _metricsDs = metricsDs,
        _waterDs = waterDs,
+       _fastingDs = fastingDs,
        _supabase = supabase,
        _counter = counter;
 
@@ -69,11 +83,13 @@ class GuestMigrationService {
     final meals = await _mealDs.countByUser(kGuestUserId);
     final metrics = await _metricsDs.get(kGuestUserId);
     final waterDays = await _waterDs.countDays(kGuestUserId);
+    final fastingDays = await _fastingDs.countDays(kGuestUserId);
     return GuestDataSummary(
       scanCount: scans,
       mealCount: meals,
       hasMetrics: metrics != null,
       waterDayCount: waterDays,
+      fastingDayCount: fastingDays,
     );
   }
 
@@ -103,6 +119,10 @@ class GuestMigrationService {
       toUserId: newUserId,
     );
     await _waterDs.reassignOwner(fromUserId: kGuestUserId, toUserId: newUserId);
+    await _fastingDs.reassignOwner(
+      fromUserId: kGuestUserId,
+      toUserId: newUserId,
+    );
 
     // 2. Cloud upload (best-effort — local data is already saved)
     try {
@@ -145,6 +165,7 @@ class GuestMigrationService {
     }
     await _metricsDs.deleteFor(kGuestUserId);
     await _waterDs.deleteFor(kGuestUserId);
+    await _fastingDs.deleteFor(kGuestUserId);
     await _counter.reset();
   }
 }
@@ -155,6 +176,7 @@ final guestMigrationServiceProvider = Provider<GuestMigrationService>((ref) {
     mealDs: ref.watch(mealLocalDataSourceProvider),
     metricsDs: ref.watch(userMetricsLocalDataSourceProvider),
     waterDs: ref.watch(waterLocalDataSourceProvider),
+    fastingDs: ref.watch(fastingDaysLocalDataSourceProvider),
     supabase: Supabase.instance.client,
     counter: ref.watch(guestScanCounterProvider.notifier),
   );

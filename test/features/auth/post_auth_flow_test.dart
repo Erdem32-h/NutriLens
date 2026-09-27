@@ -18,6 +18,7 @@ import 'package:nutrilens/features/history/data/datasources/scan_history_local_d
 import 'package:nutrilens/features/meals/data/datasources/meal_local_datasource.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
 import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.dart';
+import 'package:nutrilens/features/ramadan/data/fasting_days_local_datasource.dart';
 import 'package:nutrilens/features/water/data/datasources/water_local_datasource.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 
@@ -204,6 +205,7 @@ void main() {
           mealDs: MealLocalDataSourceImpl(db),
           metricsDs: metricsDs,
           waterDs: WaterLocalDataSourceImpl(db),
+          fastingDs: FastingDaysLocalDataSourceImpl(db),
           supabase: _MockSupabaseClient(),
           counter: counter,
         );

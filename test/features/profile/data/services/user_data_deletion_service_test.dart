@@ -13,9 +13,11 @@ void main() {
   late _RecordingRemoteUserDataStore remote;
   late UserDataDeletionService service;
   var cancelledReminders = 0;
+  var cancelledRamadanNotifications = 0;
 
   setUp(() async {
     cancelledReminders = 0;
+    cancelledRamadanNotifications = 0;
     SharedPreferences.setMockInitialValues({
       'health_filters_allergens': ['milk'],
       'health_filters_diets': ['vegan'],
@@ -24,6 +26,8 @@ void main() {
       'water_goal_glasses': 12,
       'water_reminder_enabled': true,
       'water_reminder_prompt_shown': true,
+      'ramadan_enabled': true,
+      'ramadan_sahur_offset_min': 30,
     });
     prefs = await SharedPreferences.getInstance();
     db = AppDatabase.forTesting(NativeDatabase.memory());
@@ -33,6 +37,7 @@ void main() {
       remoteStore: remote,
       preferences: prefs,
       cancelWaterReminders: () async => cancelledReminders++,
+      cancelRamadanNotifications: () async => cancelledRamadanNotifications++,
     );
   });
 
@@ -274,6 +279,46 @@ void main() {
     expect(await db.select(db.waterLogs).get(), isEmpty);
     expect(prefs.getBool('water_reminder_enabled'), isNull);
   });
+
+  test(
+    'local cleanup removes fasting days, Ramadan prefs and pending notifications',
+    () async {
+      for (final id in ['user-1', 'user-2']) {
+        await db
+            .into(db.fastingDays)
+            .insert(
+              FastingDaysCompanion.insert(userId: id, day: '2027-02-19'),
+            );
+      }
+      await service.deleteLocalUserData('user-1');
+      expect((await db.select(db.fastingDays).get()).single.userId, 'user-2');
+      expect(prefs.getBool('ramadan_enabled'), isNull);
+      expect(prefs.getInt('ramadan_sahur_offset_min'), isNull);
+      expect(cancelledRamadanNotifications, 1);
+    },
+  );
+
+  test(
+    'a throwing Ramadan notification plugin does not fail local cleanup',
+    () async {
+      final flaky = UserDataDeletionService(
+        db: db,
+        remoteStore: remote,
+        preferences: prefs,
+        cancelRamadanNotifications: () async => throw StateError('no plugin'),
+      );
+      await db
+          .into(db.fastingDays)
+          .insert(
+            FastingDaysCompanion.insert(userId: 'user-1', day: '2027-02-19'),
+          );
+
+      await flaky.deleteLocalUserData('user-1');
+
+      expect(await db.select(db.fastingDays).get(), isEmpty);
+      expect(prefs.getBool('ramadan_enabled'), isNull);
+    },
+  );
 
   group('SupabaseRemoteUserDataStore.clearedProfileColumns', () {
     // Compliance test: the body measurements are declared as health data in

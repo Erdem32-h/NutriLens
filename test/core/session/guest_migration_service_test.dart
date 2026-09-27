@@ -12,6 +12,7 @@ import 'package:nutrilens/features/history/data/datasources/scan_history_local_d
 import 'package:nutrilens/features/meals/data/datasources/meal_local_datasource.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
 import 'package:nutrilens/features/profile/domain/entities/user_metrics_entity.dart';
+import 'package:nutrilens/features/ramadan/data/fasting_days_local_datasource.dart';
 import 'package:nutrilens/features/water/data/datasources/water_local_datasource.dart';
 
 class _MockSupabaseClient extends Mock implements SupabaseClient {}
@@ -22,12 +23,14 @@ void main() {
   late AppDatabase db;
   late UserMetricsLocalDataSource metricsDs;
   late WaterLocalDataSource waterDs;
+  late FastingDaysLocalDataSource fastingDs;
   late GuestMigrationService service;
 
   setUp(() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     metricsDs = UserMetricsLocalDataSourceImpl(db);
     waterDs = WaterLocalDataSourceImpl(db);
+    fastingDs = FastingDaysLocalDataSourceImpl(db);
     final counter = _MockGuestScanCounter();
     when(() => counter.reset()).thenAnswer((_) async {});
     service = GuestMigrationService(
@@ -35,6 +38,7 @@ void main() {
       mealDs: MealLocalDataSourceImpl(db),
       metricsDs: metricsDs,
       waterDs: waterDs,
+      fastingDs: fastingDs,
       supabase: _MockSupabaseClient(),
       counter: counter,
     );
@@ -91,5 +95,34 @@ void main() {
     );
     await service.discard();
     expect(await waterDs.countDays(kGuestUserId), 0);
+  });
+
+  test('inspectPending oruc gunlerini sayar ve bos saymaz', () async {
+    await fastingDs.setFasted(kGuestUserId, '2027-02-19', true);
+    await fastingDs.setFasted(kGuestUserId, '2027-02-20', true);
+    final summary = await service.inspectPending();
+    expect(summary.fastingDayCount, 2);
+    expect(summary.isEmpty, isFalse);
+  });
+
+  test('migrate oruc kayitlarini yeni hesaba tasir', () async {
+    await fastingDs.setFasted(kGuestUserId, '2027-02-19', true);
+    await fastingDs.setFasted(kGuestUserId, '2027-02-20', true);
+    await service.migrate(newUserId: 'user-1');
+    expect(await fastingDs.countDays(kGuestUserId), 0);
+    expect(
+      await fastingDs.getDays(
+        'user-1',
+        from: '2027-02-01',
+        toExclusive: '2027-03-01',
+      ),
+      {'2027-02-19', '2027-02-20'},
+    );
+  });
+
+  test('discard misafirin oruc kayitlarini siler', () async {
+    await fastingDs.setFasted(kGuestUserId, '2027-02-19', true);
+    await service.discard();
+    expect(await fastingDs.countDays(kGuestUserId), 0);
   });
 }

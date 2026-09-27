@@ -133,6 +133,12 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     } catch (e) {
       debugPrint('[Auth] water reminder cancel failed: $e');
     }
+    // Same for pending Ramadan sahur/iftar notifications.
+    try {
+      await ref.read(notificationServiceProvider).cancelRamadanNotifications();
+    } catch (e) {
+      debugPrint('[Auth] ramadan notification cancel failed: $e');
+    }
     final subscriptionService = ref.read(subscriptionServiceProvider);
     await subscriptionService.logOut();
     await ref.read(authRepositoryProvider).signOut();

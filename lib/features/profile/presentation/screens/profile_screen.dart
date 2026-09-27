@@ -413,6 +413,8 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(waterSettingsProvider);
       ref.invalidate(waterTodayProvider);
       ref.invalidate(waterWeekProvider);
+      ref.invalidate(ramadanSettingsProvider);
+      ref.invalidate(fastingDaysProvider);
 
       if (!context.mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.userDataDeleted)));
@@ -478,6 +480,8 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(waterSettingsProvider);
       ref.invalidate(waterTodayProvider);
       ref.invalidate(waterWeekProvider);
+      ref.invalidate(ramadanSettingsProvider);
+      ref.invalidate(fastingDaysProvider);
 
       if (!context.mounted) return;
       context.go('/login');

@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../config/drift/app_database.dart';
 import '../../../meals/data/datasources/meal_remote_datasource.dart';
+import '../../../ramadan/data/ramadan_settings_store.dart';
 import '../../../water/data/water_settings_store.dart';
 import 'account_deletion_service.dart';
 import 'storage_folder_cleaner.dart';
@@ -116,6 +117,7 @@ class UserDataDeletionService implements UserDataCleaner {
   final SharedPreferences _preferences;
   final String? Function()? _currentUserId;
   final Future<void> Function()? _cancelWaterReminders;
+  final Future<void> Function()? _cancelRamadanNotifications;
 
   const UserDataDeletionService({
     required AppDatabase db,
@@ -123,11 +125,13 @@ class UserDataDeletionService implements UserDataCleaner {
     required SharedPreferences preferences,
     String? Function()? currentUserId,
     Future<void> Function()? cancelWaterReminders,
+    Future<void> Function()? cancelRamadanNotifications,
   }) : _db = db,
        _remoteStore = remoteStore,
        _preferences = preferences,
        _currentUserId = currentUserId,
-       _cancelWaterReminders = cancelWaterReminders;
+       _cancelWaterReminders = cancelWaterReminders,
+       _cancelRamadanNotifications = cancelRamadanNotifications;
 
   @override
   Future<void> deleteAllUserData(String userId) async {
@@ -211,6 +215,9 @@ class UserDataDeletionService implements UserDataCleaner {
       await (_db.delete(
         _db.waterLogs,
       )..where((table) => table.userId.equals(userId))).go();
+      await (_db.delete(
+        _db.fastingDays,
+      )..where((table) => table.userId.equals(userId))).go();
     });
     // Preferences are device-global, unlike rows. A resumed deletion of A
     // must not clear health filters now belonging to signed-in user B.
@@ -226,11 +233,20 @@ class UserDataDeletionService implements UserDataCleaner {
       } catch (e) {
         debugPrint('[UserDataDeletion] water reminder cancel failed: $e');
       }
+      try {
+        await _cancelRamadanNotifications?.call();
+      } catch (e) {
+        debugPrint('[UserDataDeletion] ramadan notification cancel failed: $e');
+      }
     }
   }
 
   Future<void> _clearLocalProfilePreferences() async {
-    for (final key in [..._healthFilterKeys, ...WaterSettingsStore.keys]) {
+    for (final key in [
+      ..._healthFilterKeys,
+      ...WaterSettingsStore.keys,
+      ...RamadanSettingsStore.keys,
+    ]) {
       await _preferences.remove(key);
     }
   }
