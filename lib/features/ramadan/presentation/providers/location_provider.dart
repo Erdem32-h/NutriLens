@@ -7,8 +7,9 @@ import 'package:geolocator/geolocator.dart';
 /// result without waiting on real GPS/permission plumbing.
 ///
 /// Requests permission if needed, then reads a coarse (`LocationAccuracy.low`
-/// — a city centroid is all Ramadan timing needs) position. Returns null on
-/// denial, a disabled location service, or any platform error — callers
+/// — a city centroid is all Ramadan timing needs) position, giving up after
+/// 15 s. Returns null on denial, a disabled location service, a timeout, or
+/// any platform error — callers
 /// treat null as "ask the user to pick a city instead".
 final currentPositionProvider =
     Provider<Future<({double lat, double lng})?> Function()>(
@@ -31,6 +32,7 @@ Future<({double lat, double lng})?> _currentPosition() async {
     final position = await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.low,
+        timeLimit: Duration(seconds: 15),
       ),
     );
     return (lat: position.latitude, lng: position.longitude);

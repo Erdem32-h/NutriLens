@@ -44,6 +44,10 @@ class _CityPickerSheetState extends ConsumerState<CityPickerSheet> {
   String _query = '';
   bool _locating = false;
 
+  /// Shown inline under the GPS button — a SnackBar would land on the root
+  /// Scaffold, hidden under this 70% sheet.
+  bool _locationFailed = false;
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -51,17 +55,17 @@ class _CityPickerSheetState extends ConsumerState<CityPickerSheet> {
   }
 
   Future<void> _useMyLocation() async {
-    setState(() => _locating = true);
+    setState(() {
+      _locating = true;
+      _locationFailed = false;
+    });
     final position = await ref.read(currentPositionProvider)();
     if (!mounted) return;
-    setState(() => _locating = false);
-
-    if (position == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.ramadanLocationFailed)));
-      return;
-    }
+    setState(() {
+      _locating = false;
+      _locationFailed = position == null;
+    });
+    if (position == null) return;
     Navigator.pop(context, (
       lat: position.lat,
       lng: position.lng,
@@ -75,11 +79,11 @@ class _CityPickerSheetState extends ConsumerState<CityPickerSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
-    final query = _query.trim().toLowerCase();
+    final query = foldTurkish(_query.trim());
     final cities = query.isEmpty
         ? turkishCities
         : turkishCities
-              .where((c) => c.name.toLowerCase().contains(query))
+              .where((c) => foldTurkish(c.name).contains(query))
               .toList();
 
     return DraggableScrollableSheet(
@@ -133,6 +137,17 @@ class _CityPickerSheetState extends ConsumerState<CityPickerSheet> {
                   ),
                 ),
               ),
+              if (_locationFailed)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: Text(
+                    l10n.ramadanLocationFailed,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.error,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 8),
               Expanded(
                 child: ListView.builder(

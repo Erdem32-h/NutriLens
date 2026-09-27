@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrilens/features/ramadan/domain/ramadan_calendar.dart';
 import 'package:nutrilens/features/ramadan/presentation/providers/ramadan_provider.dart';
+import 'package:nutrilens/features/ramadan/presentation/widgets/city_picker_sheet.dart';
 import 'package:nutrilens/features/ramadan/presentation/widgets/ramadan_countdown_card.dart';
 import 'package:nutrilens/features/ramadan/presentation/widgets/ramadan_offer_card.dart';
 
@@ -138,7 +139,7 @@ void main() {
     });
 
     testWidgets(
-      'Konumumu kullan konum alamazsa snackbar gösterir, sheet açık kalır',
+      'Konumumu kullan konum alamazsa sheet içinde hata gösterir, sheet açık kalır',
       (tester) async {
         final h = await pumpRamadanWidget(
           tester,
@@ -153,8 +154,13 @@ void main() {
         await tester.tap(find.text('Konumumu kullan'));
         await tester.pumpAndSettle();
 
+        // Shown inside the sheet itself, not on the root Scaffold hidden
+        // under the 70% sheet.
         expect(
-          find.text('Konum alınamadı, listeden ilini seç.'),
+          find.descendant(
+            of: find.byType(CityPickerSheet),
+            matching: find.text('Konum alınamadı, listeden ilini seç.'),
+          ),
           findsOneWidget,
         );
         // Sheet is still open — the search field is still on screen.

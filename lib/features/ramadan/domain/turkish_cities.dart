@@ -89,6 +89,16 @@ const List<TurkishCity> turkishCities = [
 ];
 
 /// Looks up a province by its plate code (1..81), or null if not found.
+/// Case- and diacritic-insensitive search key: `İ` → `i` first (Dart's
+/// `toLowerCase` would turn it into `i̇`), lowercase, then fold the Turkish
+/// letters (ı ş ç ğ ö ü) to ASCII — so "sanliurfa" finds "Şanlıurfa" and
+/// "ısparta" finds "Isparta".
+String foldTurkish(String s) {
+  const folds = {'ı': 'i', 'ş': 's', 'ç': 'c', 'ğ': 'g', 'ö': 'o', 'ü': 'u'};
+  final lower = s.replaceAll('İ', 'i').toLowerCase();
+  return lower.split('').map((ch) => folds[ch] ?? ch).join();
+}
+
 TurkishCity? cityByPlate(int plate) {
   for (final city in turkishCities) {
     if (city.plate == plate) return city;

@@ -48,5 +48,24 @@ void main() {
       expect(turkishCities.map((c) => c.plate).toSet(), {for (var i = 1; i <= 81; i++) i});
       expect(cityByPlate(6)?.name, 'Ankara');
     });
+
+    test('foldTurkish: Turkish letters fold to ASCII, case-insensitive', () {
+      expect(foldTurkish('Iğdır'), 'igdir');
+      expect(foldTurkish('İSTANBUL'), 'istanbul');
+      expect(foldTurkish('Şanlıurfa'), 'sanliurfa');
+      expect(foldTurkish('ÇANAKKALE'), 'canakkale');
+      expect(foldTurkish('Muğla Ödemiş Üsküdar'), 'mugla odemis uskudar');
+    });
+
+    test('folded search matches both ways', () {
+      List<String> search(String q) => [
+        for (final c in turkishCities)
+          if (foldTurkish(c.name).contains(foldTurkish(q))) c.name,
+      ];
+      expect(search('ısparta'), ['Isparta']);
+      expect(search('sanliurfa'), ['Şanlıurfa']);
+      expect(search('canakkale'), ['Çanakkale']);
+      expect(search('igdir'), ['Iğdır']);
+    });
   });
 }
