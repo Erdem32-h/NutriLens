@@ -14,6 +14,7 @@ import 'tables/counterfeit_products_table.dart';
 import 'tables/meal_entries_table.dart';
 import 'tables/user_metrics_table.dart';
 import 'tables/water_logs_table.dart';
+import 'tables/fasting_days_table.dart';
 
 part 'app_database.g.dart';
 
@@ -29,6 +30,7 @@ part 'app_database.g.dart';
     MealEntries,
     UserMetrics,
     WaterLogs,
+    FastingDays,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -37,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -71,6 +73,9 @@ class AppDatabase extends _$AppDatabase {
         // createTable above already emits the CURRENT schema, so an
         // unguarded ALTER would double-add the column for devices
         // migrating straight from < 5 (see migration_v1_v2_test.dart).
+        if (from < 6 && to >= 6) {
+          await m.createTable(fastingDays);
+        }
       },
     );
   }

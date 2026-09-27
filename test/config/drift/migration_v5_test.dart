@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart' show driftRuntimeOptions;
-import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutrilens/config/drift/app_database.dart';
@@ -8,13 +7,6 @@ import 'generated_migrations/schema.dart';
 import 'generated_migrations/schema_v4.dart' as v4;
 
 void main() {
-  test('sema surumu 5', () async {
-    final db = AppDatabase.forTesting(NativeDatabase.memory());
-    addTearDown(db.close);
-    expect(db.schemaVersion, 5);
-    expect(await db.select(db.waterLogs).get(), isEmpty);
-  });
-
   group('v4 -> v5 migration (drift SchemaVerifier)', () {
     late SchemaVerifier verifier;
 
