@@ -1,7 +1,9 @@
+import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutrilens/config/drift/app_database.dart';
 import 'package:nutrilens/features/fasting/data/fasting_sessions_local_datasource.dart';
+import 'package:nutrilens/features/fasting/domain/fasting_session.dart';
 
 void main() {
   late AppDatabase db;
@@ -43,6 +45,41 @@ void main() {
       throwsA(isA<StateError>()),
     );
   });
+
+  test(
+    'esZamanli iki start cagrisindan sadece biri kazanir, digeri StateError atar',
+    () async {
+      final results = await Future.wait<Object>([
+        ds
+            .start(
+              'u1',
+              startedAt: DateTime(2027, 2, 8, 20),
+              targetMinutes: 960,
+            )
+            .then<Object>((s) => s)
+            .catchError((Object e) => e),
+        ds
+            .start(
+              'u1',
+              startedAt: DateTime(2027, 2, 8, 20, 0, 1),
+              targetMinutes: 960,
+            )
+            .then<Object>((s) => s)
+            .catchError((Object e) => e),
+      ]);
+
+      final errors = results.whereType<StateError>();
+      final sessions = results.whereType<FastingSession>();
+      expect(errors, hasLength(1));
+      expect(sessions, hasLength(1));
+
+      final activeRows =
+          await (db.select(
+            db.fastingSessions,
+          )..where((t) => t.userId.equals('u1') & t.endedAt.isNull())).get();
+      expect(activeRows, hasLength(1));
+    },
+  );
 
   test('end sonrasi active null, recent icinde gorunur', () async {
     final started = await ds.start(

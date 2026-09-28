@@ -56,27 +56,33 @@ final class FastingSessionsLocalDataSourceImpl
     String userId, {
     required DateTime startedAt,
     required int targetMinutes,
-  }) async {
-    if (await active(userId) != null) {
-      throw StateError('$userId already has an active fast');
-    }
-    final id = const Uuid().v4();
-    await _db
-        .into(_db.fastingSessions)
-        .insert(
-          FastingSessionsCompanion.insert(
-            id: id,
-            userId: userId,
-            startedAt: startedAt,
-            targetMinutes: targetMinutes,
-          ),
-        );
-    return FastingSession(
-      id: id,
-      userId: userId,
-      startedAt: startedAt,
-      targetMinutes: targetMinutes,
-    );
+  }) {
+    // Check + insert must be atomic: drift serializes transactions on a
+    // connection, so a concurrent second start() blocks until the first
+    // commits, then sees its row and throws instead of racing past the
+    // check (double-tap would otherwise create two active rows).
+    return _db.transaction(() async {
+      if (await active(userId) != null) {
+        throw StateError('$userId already has an active fast');
+      }
+      final id = const Uuid().v4();
+      await _db
+          .into(_db.fastingSessions)
+          .insert(
+            FastingSessionsCompanion.insert(
+              id: id,
+              userId: userId,
+              startedAt: startedAt,
+              targetMinutes: targetMinutes,
+            ),
+          );
+      return FastingSession(
+        id: id,
+        userId: userId,
+        startedAt: startedAt,
+        targetMinutes: targetMinutes,
+      );
+    });
   }
 
   @override
