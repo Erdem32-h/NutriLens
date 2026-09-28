@@ -29,9 +29,15 @@ class RecordingAnalytics extends AnalyticsService {
 
   final names = <String>[];
 
+  /// Last props passed for each event name — `names` alone doesn't carry
+  /// enough to assert on `completed`/`minutes`/`source` style payloads.
+  final props = <String, Map<String, Object?>>{};
+
   @override
-  void track(String name, {Map<String, Object?> props = const {}}) =>
-      names.add(name);
+  void track(String name, {Map<String, Object?> props = const {}}) {
+    names.add(name);
+    this.props[name] = props;
+  }
 }
 
 class WaterHarness {

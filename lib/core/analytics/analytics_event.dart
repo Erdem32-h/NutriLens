@@ -266,6 +266,18 @@ abstract final class FunnelEvents {
   static const ramadanDayMarked = 'ramadan_day_marked';
   static const ramadanSummaryShared = 'ramadan_summary_shared';
 
+  // --- Intermittent fasting --------------------------------------------
+  /// props: `protocol` (16:8|18:6|20:4|OMAD)
+  static const ifFastStarted = 'if_fast_started';
+
+  /// props: `completed` (bool), `minutes` (int, actual duration),
+  /// `source` (button|meal_save)
+  static const ifFastEnded = 'if_fast_ended';
+
+  /// props: `protocol`
+  static const ifProtocolChanged = 'if_protocol_changed';
+  static const ifHistoryPaywallTapped = 'if_history_paywall_tapped';
+
   // --- Monetization ---------------------------------------------------
   /// props: `trigger` (scan_limit|profile|feature_gate)
   static const paywallShown = 'paywall_shown';

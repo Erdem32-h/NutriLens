@@ -8,6 +8,7 @@ import 'package:nutrilens/core/services/calorie_target_calculator.dart';
 import 'package:nutrilens/core/services/guest_scan_counter.dart';
 import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/core/session/guest_migration_service.dart';
+import 'package:nutrilens/features/fasting/data/fasting_sessions_local_datasource.dart';
 import 'package:nutrilens/features/history/data/datasources/scan_history_local_datasource.dart';
 import 'package:nutrilens/features/meals/data/datasources/meal_local_datasource.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
@@ -24,6 +25,7 @@ void main() {
   late UserMetricsLocalDataSource metricsDs;
   late WaterLocalDataSource waterDs;
   late FastingDaysLocalDataSource fastingDs;
+  late FastingSessionsLocalDataSource fastingSessionsDs;
   late GuestMigrationService service;
 
   setUp(() {
@@ -31,6 +33,7 @@ void main() {
     metricsDs = UserMetricsLocalDataSourceImpl(db);
     waterDs = WaterLocalDataSourceImpl(db);
     fastingDs = FastingDaysLocalDataSourceImpl(db);
+    fastingSessionsDs = FastingSessionsLocalDataSourceImpl(db);
     final counter = _MockGuestScanCounter();
     when(() => counter.reset()).thenAnswer((_) async {});
     service = GuestMigrationService(
@@ -39,6 +42,7 @@ void main() {
       metricsDs: metricsDs,
       waterDs: waterDs,
       fastingDs: fastingDs,
+      fastingSessionsDs: fastingSessionsDs,
       supabase: _MockSupabaseClient(),
       counter: counter,
     );
@@ -124,5 +128,48 @@ void main() {
     await fastingDs.setFasted(kGuestUserId, '2027-02-19', true);
     await service.discard();
     expect(await fastingDs.countDays(kGuestUserId), 0);
+  });
+
+  test(
+    'inspectPending tamamlanmis oruc oturumu sayisini sayar ve bos saymaz',
+    () async {
+      final s = await fastingSessionsDs.start(
+        kGuestUserId,
+        startedAt: DateTime(2027, 2, 19, 20),
+        targetMinutes: 16 * 60,
+      );
+      await fastingSessionsDs.end(s.id, DateTime(2027, 2, 20, 12));
+
+      final summary = await service.inspectPending();
+
+      expect(summary.completedFastCount, 1);
+      expect(summary.isEmpty, isFalse);
+    },
+  );
+
+  test('migrate tamamlanmis oruc oturumlarini yeni hesaba tasir', () async {
+    final s = await fastingSessionsDs.start(
+      kGuestUserId,
+      startedAt: DateTime(2027, 2, 19, 20),
+      targetMinutes: 16 * 60,
+    );
+    await fastingSessionsDs.end(s.id, DateTime(2027, 2, 20, 12));
+
+    await service.migrate(newUserId: 'user-1');
+
+    expect(await fastingSessionsDs.countCompleted(kGuestUserId), 0);
+    expect(await fastingSessionsDs.countCompleted('user-1'), 1);
+  });
+
+  test('discard misafirin oruc oturumu kayitlarini siler', () async {
+    await fastingSessionsDs.start(
+      kGuestUserId,
+      startedAt: DateTime(2027, 2, 19, 20),
+      targetMinutes: 16 * 60,
+    );
+
+    await service.discard();
+
+    expect(await fastingSessionsDs.active(kGuestUserId), isNull);
   });
 }

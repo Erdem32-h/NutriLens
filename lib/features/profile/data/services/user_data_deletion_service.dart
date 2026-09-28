@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../config/drift/app_database.dart';
+import '../../../fasting/data/fasting_settings_store.dart';
 import '../../../meals/data/datasources/meal_remote_datasource.dart';
 import '../../../ramadan/data/ramadan_settings_store.dart';
 import '../../../water/data/water_settings_store.dart';
@@ -118,6 +119,7 @@ class UserDataDeletionService implements UserDataCleaner {
   final String? Function()? _currentUserId;
   final Future<void> Function()? _cancelWaterReminders;
   final Future<void> Function()? _cancelRamadanNotifications;
+  final Future<void> Function()? _cancelFastingNotifications;
 
   const UserDataDeletionService({
     required AppDatabase db,
@@ -126,12 +128,14 @@ class UserDataDeletionService implements UserDataCleaner {
     String? Function()? currentUserId,
     Future<void> Function()? cancelWaterReminders,
     Future<void> Function()? cancelRamadanNotifications,
+    Future<void> Function()? cancelFastingNotifications,
   }) : _db = db,
        _remoteStore = remoteStore,
        _preferences = preferences,
        _currentUserId = currentUserId,
        _cancelWaterReminders = cancelWaterReminders,
-       _cancelRamadanNotifications = cancelRamadanNotifications;
+       _cancelRamadanNotifications = cancelRamadanNotifications,
+       _cancelFastingNotifications = cancelFastingNotifications;
 
   @override
   Future<void> deleteAllUserData(String userId) async {
@@ -218,6 +222,9 @@ class UserDataDeletionService implements UserDataCleaner {
       await (_db.delete(
         _db.fastingDays,
       )..where((table) => table.userId.equals(userId))).go();
+      await (_db.delete(
+        _db.fastingSessions,
+      )..where((table) => table.userId.equals(userId))).go();
     });
     // Preferences are device-global, unlike rows. A resumed deletion of A
     // must not clear health filters now belonging to signed-in user B.
@@ -238,6 +245,11 @@ class UserDataDeletionService implements UserDataCleaner {
       } catch (e) {
         debugPrint('[UserDataDeletion] ramadan notification cancel failed: $e');
       }
+      try {
+        await _cancelFastingNotifications?.call();
+      } catch (e) {
+        debugPrint('[UserDataDeletion] fasting notification cancel failed: $e');
+      }
     }
   }
 
@@ -246,6 +258,7 @@ class UserDataDeletionService implements UserDataCleaner {
       ..._healthFilterKeys,
       ...WaterSettingsStore.keys,
       ...RamadanSettingsStore.keys,
+      ...FastingSettingsStore.keys,
     ]) {
       await _preferences.remove(key);
     }

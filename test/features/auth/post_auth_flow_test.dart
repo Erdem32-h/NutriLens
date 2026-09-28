@@ -14,6 +14,7 @@ import 'package:nutrilens/core/theme/app_theme.dart';
 import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/core/session/guest_migration_service.dart';
 import 'package:nutrilens/features/auth/presentation/widgets/post_auth_flow.dart';
+import 'package:nutrilens/features/fasting/data/fasting_sessions_local_datasource.dart';
 import 'package:nutrilens/features/history/data/datasources/scan_history_local_datasource.dart';
 import 'package:nutrilens/features/meals/data/datasources/meal_local_datasource.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
@@ -206,6 +207,7 @@ void main() {
           metricsDs: metricsDs,
           waterDs: WaterLocalDataSourceImpl(db),
           fastingDs: FastingDaysLocalDataSourceImpl(db),
+          fastingSessionsDs: FastingSessionsLocalDataSourceImpl(db),
           supabase: _MockSupabaseClient(),
           counter: counter,
         );

@@ -45,6 +45,8 @@ class GuestMigrationPromptSheet extends StatelessWidget {
         l10n.waterDayCountUnit(summary.waterDayCount),
       if (summary.fastingDayCount > 0)
         l10n.fastingDayCountUnit(summary.fastingDayCount),
+      if (summary.completedFastCount > 0)
+        l10n.completedFastCountUnit(summary.completedFastCount),
     ];
     // Metrics aren't counted, so a metrics-only guest has no parts — use
     // the generic wording instead of "This device has . Move it…".

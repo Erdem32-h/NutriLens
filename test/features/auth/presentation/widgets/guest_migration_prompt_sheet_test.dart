@@ -40,6 +40,25 @@ void main() {
     );
   });
 
+  testWidgets('tamamlanmis oruc kaydi olan misafir: oruc sayisi satirda', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const GuestDataSummary(
+        scanCount: 0,
+        mealCount: 0,
+        hasMetrics: false,
+        completedFastCount: 3,
+      ),
+    );
+
+    expect(
+      find.text('Bu cihazda 3 oruç bulunuyor. Bunları yeni hesabına yükleyelim mi?'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('yalniz olculeri olan misafir: genel metin, bos satir yok', (
     tester,
   ) async {

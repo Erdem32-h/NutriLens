@@ -21,6 +21,9 @@ final userDataDeletionServiceProvider = Provider<UserDataDeletionService>((
     cancelRamadanNotifications: ref
         .watch(notificationServiceProvider)
         .cancelRamadanNotifications,
+    cancelFastingNotifications: ref
+        .watch(notificationServiceProvider)
+        .cancelFastingTarget,
   );
 });
 

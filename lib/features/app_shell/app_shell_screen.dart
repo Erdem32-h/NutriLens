@@ -8,6 +8,8 @@ import '../../core/services/notification_service.dart';
 import '../../core/session/app_session.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/ad_banner_widget.dart';
+import '../fasting/presentation/fasting_actions.dart';
+import '../fasting/presentation/providers/fasting_provider.dart';
 import '../meals/presentation/providers/meal_provider.dart';
 import '../ramadan/presentation/providers/ramadan_provider.dart';
 import '../ramadan/presentation/ramadan_actions.dart';
@@ -44,6 +46,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
       _ensureDailyReminder();
       _ensureWaterReminders();
       _ensureRamadanState();
+      _ensureFastingState();
     });
 
     // A process kept alive overnight (warm resume, never cold-launched)
@@ -56,6 +59,7 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
         ref.invalidate(waterWeekProvider);
         _ensureWaterReminders();
         _ensureRamadanState();
+        _ensureFastingState();
       },
     );
   }
@@ -106,6 +110,14 @@ class _AppShellScreenState extends ConsumerState<AppShellScreen> {
     await ref
         .read(ramadanControllerProvider)
         .onResume(ramadanCopy(l10n), waterReminderCopy(l10n));
+  }
+
+  /// Re-arms the intermittent-fasting target notification on launch/resume,
+  /// same reasoning as [_ensureRamadanState]. Never throws.
+  Future<void> _ensureFastingState() async {
+    if (!mounted) return;
+    final l10n = context.l10n;
+    await ref.read(fastingControllerProvider).onResume(fastingCopy(l10n));
   }
 
   // Tab order: 0 meals · 1 history · 2 scanner (center) · 3 favorites · 4 profile

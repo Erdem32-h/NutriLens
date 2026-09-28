@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../features/fasting/data/fasting_sessions_local_datasource.dart';
+import '../../features/fasting/presentation/providers/fasting_provider.dart';
 import '../../features/history/data/datasources/scan_history_local_datasource.dart';
 import '../../features/history/presentation/providers/history_provider.dart';
 import '../../features/meals/data/datasources/meal_local_datasource.dart';
@@ -33,9 +35,13 @@ class GuestDataSummary {
   /// toward "is there anything to move", same reasoning as [hasMetrics].
   final int waterDayCount;
 
-  /// Days marked as fasted. Local-only data, same reasoning as
+  /// Days marked as fasted (Ramadan). Local-only data, same reasoning as
   /// [waterDayCount].
   final int fastingDayCount;
+
+  /// Completed intermittent-fasting sessions. Local-only data, same
+  /// reasoning as [waterDayCount].
+  final int completedFastCount;
 
   const GuestDataSummary({
     required this.scanCount,
@@ -43,6 +49,7 @@ class GuestDataSummary {
     required this.hasMetrics,
     this.waterDayCount = 0,
     this.fastingDayCount = 0,
+    this.completedFastCount = 0,
   });
 
   bool get isEmpty =>
@@ -50,7 +57,8 @@ class GuestDataSummary {
       mealCount == 0 &&
       !hasMetrics &&
       waterDayCount == 0 &&
-      fastingDayCount == 0;
+      fastingDayCount == 0 &&
+      completedFastCount == 0;
 }
 
 class GuestMigrationService {
@@ -59,6 +67,7 @@ class GuestMigrationService {
   final UserMetricsLocalDataSource _metricsDs;
   final WaterLocalDataSource _waterDs;
   final FastingDaysLocalDataSource _fastingDs;
+  final FastingSessionsLocalDataSource _fastingSessionsDs;
   final SupabaseClient _supabase;
   final GuestScanCounter _counter;
 
@@ -68,6 +77,7 @@ class GuestMigrationService {
     required UserMetricsLocalDataSource metricsDs,
     required WaterLocalDataSource waterDs,
     required FastingDaysLocalDataSource fastingDs,
+    required FastingSessionsLocalDataSource fastingSessionsDs,
     required SupabaseClient supabase,
     required GuestScanCounter counter,
   }) : _scanDs = scanDs,
@@ -75,6 +85,7 @@ class GuestMigrationService {
        _metricsDs = metricsDs,
        _waterDs = waterDs,
        _fastingDs = fastingDs,
+       _fastingSessionsDs = fastingSessionsDs,
        _supabase = supabase,
        _counter = counter;
 
@@ -84,12 +95,16 @@ class GuestMigrationService {
     final metrics = await _metricsDs.get(kGuestUserId);
     final waterDays = await _waterDs.countDays(kGuestUserId);
     final fastingDays = await _fastingDs.countDays(kGuestUserId);
+    final completedFasts = await _fastingSessionsDs.countCompleted(
+      kGuestUserId,
+    );
     return GuestDataSummary(
       scanCount: scans,
       mealCount: meals,
       hasMetrics: metrics != null,
       waterDayCount: waterDays,
       fastingDayCount: fastingDays,
+      completedFastCount: completedFasts,
     );
   }
 
@@ -120,6 +135,10 @@ class GuestMigrationService {
     );
     await _waterDs.reassignOwner(fromUserId: kGuestUserId, toUserId: newUserId);
     await _fastingDs.reassignOwner(
+      fromUserId: kGuestUserId,
+      toUserId: newUserId,
+    );
+    await _fastingSessionsDs.reassignOwner(
       fromUserId: kGuestUserId,
       toUserId: newUserId,
     );
@@ -166,6 +185,7 @@ class GuestMigrationService {
     await _metricsDs.deleteFor(kGuestUserId);
     await _waterDs.deleteFor(kGuestUserId);
     await _fastingDs.deleteFor(kGuestUserId);
+    await _fastingSessionsDs.deleteFor(kGuestUserId);
     await _counter.reset();
   }
 }
@@ -177,6 +197,7 @@ final guestMigrationServiceProvider = Provider<GuestMigrationService>((ref) {
     metricsDs: ref.watch(userMetricsLocalDataSourceProvider),
     waterDs: ref.watch(waterLocalDataSourceProvider),
     fastingDs: ref.watch(fastingDaysLocalDataSourceProvider),
+    fastingSessionsDs: ref.watch(fastingSessionsLocalDataSourceProvider),
     supabase: Supabase.instance.client,
     counter: ref.watch(guestScanCounterProvider.notifier),
   );

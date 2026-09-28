@@ -139,6 +139,12 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
     } catch (e) {
       debugPrint('[Auth] ramadan notification cancel failed: $e');
     }
+    // Same for a pending intermittent-fasting target notification.
+    try {
+      await ref.read(notificationServiceProvider).cancelFastingTarget();
+    } catch (e) {
+      debugPrint('[Auth] fasting notification cancel failed: $e');
+    }
     final subscriptionService = ref.read(subscriptionServiceProvider);
     await subscriptionService.logOut();
     await ref.read(authRepositoryProvider).signOut();

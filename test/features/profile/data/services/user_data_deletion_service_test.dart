@@ -14,10 +14,12 @@ void main() {
   late UserDataDeletionService service;
   var cancelledReminders = 0;
   var cancelledRamadanNotifications = 0;
+  var cancelledFastingNotifications = 0;
 
   setUp(() async {
     cancelledReminders = 0;
     cancelledRamadanNotifications = 0;
+    cancelledFastingNotifications = 0;
     SharedPreferences.setMockInitialValues({
       'health_filters_allergens': ['milk'],
       'health_filters_diets': ['vegan'],
@@ -28,6 +30,7 @@ void main() {
       'water_reminder_prompt_shown': true,
       'ramadan_enabled': true,
       'ramadan_sahur_offset_min': 30,
+      'if_protocol': '18:6',
     });
     prefs = await SharedPreferences.getInstance();
     db = AppDatabase.forTesting(NativeDatabase.memory());
@@ -38,6 +41,7 @@ void main() {
       preferences: prefs,
       cancelWaterReminders: () async => cancelledReminders++,
       cancelRamadanNotifications: () async => cancelledRamadanNotifications++,
+      cancelFastingNotifications: () async => cancelledFastingNotifications++,
     );
   });
 
@@ -295,6 +299,58 @@ void main() {
       expect(prefs.getBool('ramadan_enabled'), isNull);
       expect(prefs.getInt('ramadan_sahur_offset_min'), isNull);
       expect(cancelledRamadanNotifications, 1);
+    },
+  );
+
+  test(
+    'local cleanup removes fasting sessions and the protocol preference',
+    () async {
+      for (final id in ['user-1', 'user-2']) {
+        await db
+            .into(db.fastingSessions)
+            .insert(
+              FastingSessionsCompanion.insert(
+                id: 'session-$id',
+                userId: id,
+                startedAt: DateTime(2027, 2, 19, 20),
+                targetMinutes: 16 * 60,
+              ),
+            );
+      }
+      await service.deleteLocalUserData('user-1');
+      expect(
+        (await db.select(db.fastingSessions).get()).single.userId,
+        'user-2',
+      );
+      expect(prefs.getString('if_protocol'), isNull);
+      expect(cancelledFastingNotifications, 1);
+    },
+  );
+
+  test(
+    'a throwing fasting notification plugin does not fail local cleanup',
+    () async {
+      final flaky = UserDataDeletionService(
+        db: db,
+        remoteStore: remote,
+        preferences: prefs,
+        cancelFastingNotifications: () async => throw StateError('no plugin'),
+      );
+      await db
+          .into(db.fastingSessions)
+          .insert(
+            FastingSessionsCompanion.insert(
+              id: 'session-user-1',
+              userId: 'user-1',
+              startedAt: DateTime(2027, 2, 19, 20),
+              targetMinutes: 16 * 60,
+            ),
+          );
+
+      await flaky.deleteLocalUserData('user-1');
+
+      expect(await db.select(db.fastingSessions).get(), isEmpty);
+      expect(prefs.getString('if_protocol'), isNull);
     },
   );
 
