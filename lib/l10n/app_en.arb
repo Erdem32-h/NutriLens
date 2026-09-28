@@ -867,5 +867,89 @@
       }
     }
   },
-  "migrationMessageGeneric": "You have saved data on this device. Move it to your new account?"
+  "migrationMessageGeneric": "You have saved data on this device. Move it to your new account?",
+  "fastingTitle": "Intermittent Fasting",
+  "fastingSubtitle": "Fasting timer with 16:8 and other protocols",
+  "fastingStart": "Start fasting",
+  "fastingEnd": "End fasting",
+  "fastingElapsed": "Elapsed: {time}",
+  "@fastingElapsed": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingRemaining": "Remaining: {time}",
+  "@fastingRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingGoalReached": "Goal reached 🎉",
+  "fastingEndEarlyTitle": "End fast early?",
+  "fastingEndEarlyBody": "{time} left until your goal. End anyway?",
+  "@fastingEndEarlyBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingNotificationTitle": "Fast completed",
+  "fastingNotificationBody": "You completed your {hours}-hour fast.",
+  "@fastingNotificationBody": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingBlockedByRamadan": "Intermittent fasting is paused while Ramadan mode is on.",
+  "fastingLastFast": "Last fast: {time}",
+  "@fastingLastFast": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingStreak": "{count}-day streak",
+  "@fastingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingAverage": "Average: {time}",
+  "@fastingAverage": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingHistory": "Recent fasts",
+  "fastingPremiumTeaser": "Streaks and history with Premium",
+  "fastingMealWarningTitle": "You're fasting",
+  "fastingMealWarningBody": "It's {time}. Logging this meal will end your fast.",
+  "@fastingMealWarningBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingMealWarningConfirm": "End fast and log",
+  "completedFastCountUnit": "{count} fasts",
+  "@completedFastCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

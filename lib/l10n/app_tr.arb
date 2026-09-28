@@ -902,5 +902,89 @@
       }
     }
   },
-  "migrationMessageGeneric": "Bu cihazda kayıtlı verilerin var. Yeni hesabına taşıyalım mı?"
+  "migrationMessageGeneric": "Bu cihazda kayıtlı verilerin var. Yeni hesabına taşıyalım mı?",
+  "fastingTitle": "Aralıklı Oruç",
+  "fastingSubtitle": "16:8 ve diğer protokollerle oruç sayacı",
+  "fastingStart": "Orucu başlat",
+  "fastingEnd": "Orucu bitir",
+  "fastingElapsed": "Geçen: {time}",
+  "@fastingElapsed": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingRemaining": "Kalan: {time}",
+  "@fastingRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingGoalReached": "Hedefe ulaştın 🎉",
+  "fastingEndEarlyTitle": "Orucu erken bitir?",
+  "fastingEndEarlyBody": "Hedefe {time} kaldı. Yine de bitirilsin mi?",
+  "@fastingEndEarlyBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingNotificationTitle": "Oruç tamamlandı",
+  "fastingNotificationBody": "{hours} saatlik orucunu tamamladın.",
+  "@fastingNotificationBody": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingBlockedByRamadan": "Ramazan modu açıkken aralıklı oruç duraklatılır.",
+  "fastingLastFast": "Son oruç: {time}",
+  "@fastingLastFast": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingStreak": "{count} gün seri",
+  "@fastingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingAverage": "Ortalama: {time}",
+  "@fastingAverage": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingHistory": "Son oruçlar",
+  "fastingPremiumTeaser": "Seri ve geçmiş Premium ile",
+  "fastingMealWarningTitle": "Oruçtasın",
+  "fastingMealWarningBody": "{time} oldu. Bu öğünü kaydetmek orucunu bitirir.",
+  "@fastingMealWarningBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingMealWarningConfirm": "Orucu bitir ve kaydet",
+  "completedFastCountUnit": "{count} oruç",
+  "@completedFastCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

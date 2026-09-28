@@ -2147,4 +2147,86 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get migrationMessageGeneric =>
       'لديك بيانات محفوظة على هذا الجهاز. هل تريد نقلها إلى حسابك الجديد؟';
+
+  @override
+  String get fastingTitle => 'الصيام المتقطع';
+
+  @override
+  String get fastingSubtitle => 'عداد صيام بنظام 16:8 وبروتوكولات أخرى';
+
+  @override
+  String get fastingStart => 'ابدأ الصيام';
+
+  @override
+  String get fastingEnd => 'أنهِ الصيام';
+
+  @override
+  String fastingElapsed(String time) {
+    return 'المنقضي: $time';
+  }
+
+  @override
+  String fastingRemaining(String time) {
+    return 'المتبقي: $time';
+  }
+
+  @override
+  String get fastingGoalReached => 'وصلت إلى هدفك 🎉';
+
+  @override
+  String get fastingEndEarlyTitle => 'إنهاء الصيام مبكرًا؟';
+
+  @override
+  String fastingEndEarlyBody(String time) {
+    return 'تبقى $time للوصول إلى هدفك. هل تريد الإنهاء رغم ذلك؟';
+  }
+
+  @override
+  String get fastingNotificationTitle => 'اكتمل الصيام';
+
+  @override
+  String fastingNotificationBody(int hours) {
+    return 'أتممت صيامك لمدة $hours ساعة.';
+  }
+
+  @override
+  String get fastingBlockedByRamadan =>
+      'يتوقف الصيام المتقطع مؤقتًا أثناء تفعيل وضع رمضان.';
+
+  @override
+  String fastingLastFast(String time) {
+    return 'آخر صيام: $time';
+  }
+
+  @override
+  String fastingStreak(int count) {
+    return '$count يوم متتالٍ';
+  }
+
+  @override
+  String fastingAverage(String time) {
+    return 'المتوسط: $time';
+  }
+
+  @override
+  String get fastingHistory => 'آخر مرات الصيام';
+
+  @override
+  String get fastingPremiumTeaser => 'السلسلة والسجل مع Premium';
+
+  @override
+  String get fastingMealWarningTitle => 'أنت صائم';
+
+  @override
+  String fastingMealWarningBody(String time) {
+    return 'الساعة $time. تسجيل هذه الوجبة سينهي صيامك.';
+  }
+
+  @override
+  String get fastingMealWarningConfirm => 'أنهِ الصيام وسجّل';
+
+  @override
+  String completedFastCountUnit(int count) {
+    return '$count صيام';
+  }
 }

@@ -2168,4 +2168,86 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get migrationMessageGeneric =>
       'Tienes datos guardados en este dispositivo. ¿Deseas moverlos a tu nueva cuenta?';
+
+  @override
+  String get fastingTitle => 'Ayuno Intermitente';
+
+  @override
+  String get fastingSubtitle => 'Contador de ayuno con 16:8 y otros protocolos';
+
+  @override
+  String get fastingStart => 'Iniciar ayuno';
+
+  @override
+  String get fastingEnd => 'Terminar ayuno';
+
+  @override
+  String fastingElapsed(String time) {
+    return 'Transcurrido: $time';
+  }
+
+  @override
+  String fastingRemaining(String time) {
+    return 'Restante: $time';
+  }
+
+  @override
+  String get fastingGoalReached => 'Llegaste a tu meta 🎉';
+
+  @override
+  String get fastingEndEarlyTitle => '¿Terminar el ayuno antes de tiempo?';
+
+  @override
+  String fastingEndEarlyBody(String time) {
+    return 'Faltan $time para tu meta. ¿Terminar de todos modos?';
+  }
+
+  @override
+  String get fastingNotificationTitle => 'Ayuno completado';
+
+  @override
+  String fastingNotificationBody(int hours) {
+    return 'Completaste tu ayuno de $hours horas.';
+  }
+
+  @override
+  String get fastingBlockedByRamadan =>
+      'El ayuno intermitente se pausa mientras el modo Ramadán está activo.';
+
+  @override
+  String fastingLastFast(String time) {
+    return 'Último ayuno: $time';
+  }
+
+  @override
+  String fastingStreak(int count) {
+    return 'Racha de $count días';
+  }
+
+  @override
+  String fastingAverage(String time) {
+    return 'Promedio: $time';
+  }
+
+  @override
+  String get fastingHistory => 'Ayunos recientes';
+
+  @override
+  String get fastingPremiumTeaser => 'Racha e historial con Premium';
+
+  @override
+  String get fastingMealWarningTitle => 'Estás ayunando';
+
+  @override
+  String fastingMealWarningBody(String time) {
+    return 'Son las $time. Registrar esta comida terminará tu ayuno.';
+  }
+
+  @override
+  String get fastingMealWarningConfirm => 'Terminar ayuno y registrar';
+
+  @override
+  String completedFastCountUnit(int count) {
+    return '$count ayunos';
+  }
 }

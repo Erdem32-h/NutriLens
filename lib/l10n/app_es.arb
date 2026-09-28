@@ -867,5 +867,89 @@
       }
     }
   },
-  "migrationMessageGeneric": "Tienes datos guardados en este dispositivo. ¿Deseas moverlos a tu nueva cuenta?"
+  "migrationMessageGeneric": "Tienes datos guardados en este dispositivo. ¿Deseas moverlos a tu nueva cuenta?",
+  "fastingTitle": "Ayuno Intermitente",
+  "fastingSubtitle": "Contador de ayuno con 16:8 y otros protocolos",
+  "fastingStart": "Iniciar ayuno",
+  "fastingEnd": "Terminar ayuno",
+  "fastingElapsed": "Transcurrido: {time}",
+  "@fastingElapsed": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingRemaining": "Restante: {time}",
+  "@fastingRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingGoalReached": "Llegaste a tu meta 🎉",
+  "fastingEndEarlyTitle": "¿Terminar el ayuno antes de tiempo?",
+  "fastingEndEarlyBody": "Faltan {time} para tu meta. ¿Terminar de todos modos?",
+  "@fastingEndEarlyBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingNotificationTitle": "Ayuno completado",
+  "fastingNotificationBody": "Completaste tu ayuno de {hours} horas.",
+  "@fastingNotificationBody": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingBlockedByRamadan": "El ayuno intermitente se pausa mientras el modo Ramadán está activo.",
+  "fastingLastFast": "Último ayuno: {time}",
+  "@fastingLastFast": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingStreak": "Racha de {count} días",
+  "@fastingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingAverage": "Promedio: {time}",
+  "@fastingAverage": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingHistory": "Ayunos recientes",
+  "fastingPremiumTeaser": "Racha e historial con Premium",
+  "fastingMealWarningTitle": "Estás ayunando",
+  "fastingMealWarningBody": "Son las {time}. Registrar esta comida terminará tu ayuno.",
+  "@fastingMealWarningBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingMealWarningConfirm": "Terminar ayuno y registrar",
+  "completedFastCountUnit": "{count} ayunos",
+  "@completedFastCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

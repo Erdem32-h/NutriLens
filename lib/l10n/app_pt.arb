@@ -867,5 +867,89 @@
       }
     }
   },
-  "migrationMessageGeneric": "Você tem dados salvos neste dispositivo. Deseja movê-los para sua nova conta?"
+  "migrationMessageGeneric": "Você tem dados salvos neste dispositivo. Deseja movê-los para sua nova conta?",
+  "fastingTitle": "Jejum Intermitente",
+  "fastingSubtitle": "Cronômetro de jejum com 16:8 e outros protocolos",
+  "fastingStart": "Iniciar jejum",
+  "fastingEnd": "Encerrar jejum",
+  "fastingElapsed": "Decorrido: {time}",
+  "@fastingElapsed": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingRemaining": "Restante: {time}",
+  "@fastingRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingGoalReached": "Você atingiu sua meta 🎉",
+  "fastingEndEarlyTitle": "Encerrar o jejum mais cedo?",
+  "fastingEndEarlyBody": "Faltam {time} para sua meta. Encerrar mesmo assim?",
+  "@fastingEndEarlyBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingNotificationTitle": "Jejum concluído",
+  "fastingNotificationBody": "Você completou seu jejum de {hours} horas.",
+  "@fastingNotificationBody": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingBlockedByRamadan": "O jejum intermitente fica pausado enquanto o modo Ramadã estiver ativo.",
+  "fastingLastFast": "Último jejum: {time}",
+  "@fastingLastFast": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingStreak": "Sequência de {count} dias",
+  "@fastingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingAverage": "Média: {time}",
+  "@fastingAverage": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingHistory": "Jejuns recentes",
+  "fastingPremiumTeaser": "Sequência e histórico com Premium",
+  "fastingMealWarningTitle": "Você está em jejum",
+  "fastingMealWarningBody": "São {time}. Registrar esta refeição encerrará seu jejum.",
+  "@fastingMealWarningBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingMealWarningConfirm": "Encerrar jejum e registrar",
+  "completedFastCountUnit": "{count} jejuns",
+  "@completedFastCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

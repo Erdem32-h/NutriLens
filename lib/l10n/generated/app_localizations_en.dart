@@ -2157,4 +2157,86 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get migrationMessageGeneric =>
       'You have saved data on this device. Move it to your new account?';
+
+  @override
+  String get fastingTitle => 'Intermittent Fasting';
+
+  @override
+  String get fastingSubtitle => 'Fasting timer with 16:8 and other protocols';
+
+  @override
+  String get fastingStart => 'Start fasting';
+
+  @override
+  String get fastingEnd => 'End fasting';
+
+  @override
+  String fastingElapsed(String time) {
+    return 'Elapsed: $time';
+  }
+
+  @override
+  String fastingRemaining(String time) {
+    return 'Remaining: $time';
+  }
+
+  @override
+  String get fastingGoalReached => 'Goal reached 🎉';
+
+  @override
+  String get fastingEndEarlyTitle => 'End fast early?';
+
+  @override
+  String fastingEndEarlyBody(String time) {
+    return '$time left until your goal. End anyway?';
+  }
+
+  @override
+  String get fastingNotificationTitle => 'Fast completed';
+
+  @override
+  String fastingNotificationBody(int hours) {
+    return 'You completed your $hours-hour fast.';
+  }
+
+  @override
+  String get fastingBlockedByRamadan =>
+      'Intermittent fasting is paused while Ramadan mode is on.';
+
+  @override
+  String fastingLastFast(String time) {
+    return 'Last fast: $time';
+  }
+
+  @override
+  String fastingStreak(int count) {
+    return '$count-day streak';
+  }
+
+  @override
+  String fastingAverage(String time) {
+    return 'Average: $time';
+  }
+
+  @override
+  String get fastingHistory => 'Recent fasts';
+
+  @override
+  String get fastingPremiumTeaser => 'Streaks and history with Premium';
+
+  @override
+  String get fastingMealWarningTitle => 'You\'re fasting';
+
+  @override
+  String fastingMealWarningBody(String time) {
+    return 'It\'s $time. Logging this meal will end your fast.';
+  }
+
+  @override
+  String get fastingMealWarningConfirm => 'End fast and log';
+
+  @override
+  String completedFastCountUnit(int count) {
+    return '$count fasts';
+  }
 }

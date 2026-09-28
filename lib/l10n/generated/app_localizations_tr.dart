@@ -2161,4 +2161,86 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get migrationMessageGeneric =>
       'Bu cihazda kayıtlı verilerin var. Yeni hesabına taşıyalım mı?';
+
+  @override
+  String get fastingTitle => 'Aralıklı Oruç';
+
+  @override
+  String get fastingSubtitle => '16:8 ve diğer protokollerle oruç sayacı';
+
+  @override
+  String get fastingStart => 'Orucu başlat';
+
+  @override
+  String get fastingEnd => 'Orucu bitir';
+
+  @override
+  String fastingElapsed(String time) {
+    return 'Geçen: $time';
+  }
+
+  @override
+  String fastingRemaining(String time) {
+    return 'Kalan: $time';
+  }
+
+  @override
+  String get fastingGoalReached => 'Hedefe ulaştın 🎉';
+
+  @override
+  String get fastingEndEarlyTitle => 'Orucu erken bitir?';
+
+  @override
+  String fastingEndEarlyBody(String time) {
+    return 'Hedefe $time kaldı. Yine de bitirilsin mi?';
+  }
+
+  @override
+  String get fastingNotificationTitle => 'Oruç tamamlandı';
+
+  @override
+  String fastingNotificationBody(int hours) {
+    return '$hours saatlik orucunu tamamladın.';
+  }
+
+  @override
+  String get fastingBlockedByRamadan =>
+      'Ramazan modu açıkken aralıklı oruç duraklatılır.';
+
+  @override
+  String fastingLastFast(String time) {
+    return 'Son oruç: $time';
+  }
+
+  @override
+  String fastingStreak(int count) {
+    return '$count gün seri';
+  }
+
+  @override
+  String fastingAverage(String time) {
+    return 'Ortalama: $time';
+  }
+
+  @override
+  String get fastingHistory => 'Son oruçlar';
+
+  @override
+  String get fastingPremiumTeaser => 'Seri ve geçmiş Premium ile';
+
+  @override
+  String get fastingMealWarningTitle => 'Oruçtasın';
+
+  @override
+  String fastingMealWarningBody(String time) {
+    return '$time oldu. Bu öğünü kaydetmek orucunu bitirir.';
+  }
+
+  @override
+  String get fastingMealWarningConfirm => 'Orucu bitir ve kaydet';
+
+  @override
+  String completedFastCountUnit(int count) {
+    return '$count oruç';
+  }
 }

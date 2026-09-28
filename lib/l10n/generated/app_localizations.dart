@@ -4077,6 +4077,132 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bu cihazda kayıtlı verilerin var. Yeni hesabına taşıyalım mı?'**
   String get migrationMessageGeneric;
+
+  /// No description provided for @fastingTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aralıklı Oruç'**
+  String get fastingTitle;
+
+  /// No description provided for @fastingSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'16:8 ve diğer protokollerle oruç sayacı'**
+  String get fastingSubtitle;
+
+  /// No description provided for @fastingStart.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orucu başlat'**
+  String get fastingStart;
+
+  /// No description provided for @fastingEnd.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orucu bitir'**
+  String get fastingEnd;
+
+  /// No description provided for @fastingElapsed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçen: {time}'**
+  String fastingElapsed(String time);
+
+  /// No description provided for @fastingRemaining.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kalan: {time}'**
+  String fastingRemaining(String time);
+
+  /// No description provided for @fastingGoalReached.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefe ulaştın 🎉'**
+  String get fastingGoalReached;
+
+  /// No description provided for @fastingEndEarlyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orucu erken bitir?'**
+  String get fastingEndEarlyTitle;
+
+  /// No description provided for @fastingEndEarlyBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefe {time} kaldı. Yine de bitirilsin mi?'**
+  String fastingEndEarlyBody(String time);
+
+  /// No description provided for @fastingNotificationTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oruç tamamlandı'**
+  String get fastingNotificationTitle;
+
+  /// No description provided for @fastingNotificationBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'{hours} saatlik orucunu tamamladın.'**
+  String fastingNotificationBody(int hours);
+
+  /// No description provided for @fastingBlockedByRamadan.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ramazan modu açıkken aralıklı oruç duraklatılır.'**
+  String get fastingBlockedByRamadan;
+
+  /// No description provided for @fastingLastFast.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son oruç: {time}'**
+  String fastingLastFast(String time);
+
+  /// No description provided for @fastingStreak.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} gün seri'**
+  String fastingStreak(int count);
+
+  /// No description provided for @fastingAverage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ortalama: {time}'**
+  String fastingAverage(String time);
+
+  /// No description provided for @fastingHistory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son oruçlar'**
+  String get fastingHistory;
+
+  /// No description provided for @fastingPremiumTeaser.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seri ve geçmiş Premium ile'**
+  String get fastingPremiumTeaser;
+
+  /// No description provided for @fastingMealWarningTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oruçtasın'**
+  String get fastingMealWarningTitle;
+
+  /// No description provided for @fastingMealWarningBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'{time} oldu. Bu öğünü kaydetmek orucunu bitirir.'**
+  String fastingMealWarningBody(String time);
+
+  /// No description provided for @fastingMealWarningConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orucu bitir ve kaydet'**
+  String get fastingMealWarningConfirm;
+
+  /// No description provided for @completedFastCountUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} oruç'**
+  String completedFastCountUnit(int count);
 }
 
 class _AppLocalizationsDelegate

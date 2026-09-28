@@ -867,5 +867,89 @@
       }
     }
   },
-  "migrationMessageGeneric": "此设备上有您保存的数据。是否将其迁移至您的新账号？"
+  "migrationMessageGeneric": "此设备上有您保存的数据。是否将其迁移至您的新账号？",
+  "fastingTitle": "间歇性禁食",
+  "fastingSubtitle": "16:8 等禁食方案计时器",
+  "fastingStart": "开始禁食",
+  "fastingEnd": "结束禁食",
+  "fastingElapsed": "已过：{time}",
+  "@fastingElapsed": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingRemaining": "剩余：{time}",
+  "@fastingRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingGoalReached": "已达成目标 🎉",
+  "fastingEndEarlyTitle": "提前结束禁食？",
+  "fastingEndEarlyBody": "距目标还差 {time}。仍要结束吗？",
+  "@fastingEndEarlyBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingNotificationTitle": "禁食已完成",
+  "fastingNotificationBody": "你已完成 {hours} 小时的禁食。",
+  "@fastingNotificationBody": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingBlockedByRamadan": "斋月模式开启时，间歇性禁食将暂停。",
+  "fastingLastFast": "上次禁食：{time}",
+  "@fastingLastFast": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingStreak": "连续 {count} 天",
+  "@fastingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingAverage": "平均：{time}",
+  "@fastingAverage": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingHistory": "近期禁食",
+  "fastingPremiumTeaser": "升级 Premium 解锁连续记录与历史",
+  "fastingMealWarningTitle": "你正在禁食",
+  "fastingMealWarningBody": "现在是 {time}。记录这餐将结束你的禁食。",
+  "@fastingMealWarningBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingMealWarningConfirm": "结束禁食并记录",
+  "completedFastCountUnit": "{count} 次禁食",
+  "@completedFastCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -2100,4 +2100,85 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get migrationMessageGeneric => '此设备上有您保存的数据。是否将其迁移至您的新账号？';
+
+  @override
+  String get fastingTitle => '间歇性禁食';
+
+  @override
+  String get fastingSubtitle => '16:8 等禁食方案计时器';
+
+  @override
+  String get fastingStart => '开始禁食';
+
+  @override
+  String get fastingEnd => '结束禁食';
+
+  @override
+  String fastingElapsed(String time) {
+    return '已过：$time';
+  }
+
+  @override
+  String fastingRemaining(String time) {
+    return '剩余：$time';
+  }
+
+  @override
+  String get fastingGoalReached => '已达成目标 🎉';
+
+  @override
+  String get fastingEndEarlyTitle => '提前结束禁食？';
+
+  @override
+  String fastingEndEarlyBody(String time) {
+    return '距目标还差 $time。仍要结束吗？';
+  }
+
+  @override
+  String get fastingNotificationTitle => '禁食已完成';
+
+  @override
+  String fastingNotificationBody(int hours) {
+    return '你已完成 $hours 小时的禁食。';
+  }
+
+  @override
+  String get fastingBlockedByRamadan => '斋月模式开启时，间歇性禁食将暂停。';
+
+  @override
+  String fastingLastFast(String time) {
+    return '上次禁食：$time';
+  }
+
+  @override
+  String fastingStreak(int count) {
+    return '连续 $count 天';
+  }
+
+  @override
+  String fastingAverage(String time) {
+    return '平均：$time';
+  }
+
+  @override
+  String get fastingHistory => '近期禁食';
+
+  @override
+  String get fastingPremiumTeaser => '升级 Premium 解锁连续记录与历史';
+
+  @override
+  String get fastingMealWarningTitle => '你正在禁食';
+
+  @override
+  String fastingMealWarningBody(String time) {
+    return '现在是 $time。记录这餐将结束你的禁食。';
+  }
+
+  @override
+  String get fastingMealWarningConfirm => '结束禁食并记录';
+
+  @override
+  String completedFastCountUnit(int count) {
+    return '$count 次禁食';
+  }
 }

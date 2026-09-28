@@ -867,5 +867,89 @@
       }
     }
   },
-  "migrationMessageGeneric": "لديك بيانات محفوظة على هذا الجهاز. هل تريد نقلها إلى حسابك الجديد؟"
+  "migrationMessageGeneric": "لديك بيانات محفوظة على هذا الجهاز. هل تريد نقلها إلى حسابك الجديد؟",
+  "fastingTitle": "الصيام المتقطع",
+  "fastingSubtitle": "عداد صيام بنظام 16:8 وبروتوكولات أخرى",
+  "fastingStart": "ابدأ الصيام",
+  "fastingEnd": "أنهِ الصيام",
+  "fastingElapsed": "المنقضي: {time}",
+  "@fastingElapsed": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingRemaining": "المتبقي: {time}",
+  "@fastingRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingGoalReached": "وصلت إلى هدفك 🎉",
+  "fastingEndEarlyTitle": "إنهاء الصيام مبكرًا؟",
+  "fastingEndEarlyBody": "تبقى {time} للوصول إلى هدفك. هل تريد الإنهاء رغم ذلك؟",
+  "@fastingEndEarlyBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingNotificationTitle": "اكتمل الصيام",
+  "fastingNotificationBody": "أتممت صيامك لمدة {hours} ساعة.",
+  "@fastingNotificationBody": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingBlockedByRamadan": "يتوقف الصيام المتقطع مؤقتًا أثناء تفعيل وضع رمضان.",
+  "fastingLastFast": "آخر صيام: {time}",
+  "@fastingLastFast": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingStreak": "{count} يوم متتالٍ",
+  "@fastingStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fastingAverage": "المتوسط: {time}",
+  "@fastingAverage": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingHistory": "آخر مرات الصيام",
+  "fastingPremiumTeaser": "السلسلة والسجل مع Premium",
+  "fastingMealWarningTitle": "أنت صائم",
+  "fastingMealWarningBody": "الساعة {time}. تسجيل هذه الوجبة سينهي صيامك.",
+  "@fastingMealWarningBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fastingMealWarningConfirm": "أنهِ الصيام وسجّل",
+  "completedFastCountUnit": "{count} صيام",
+  "@completedFastCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

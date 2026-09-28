@@ -2165,4 +2165,87 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get migrationMessageGeneric =>
       'Você tem dados salvos neste dispositivo. Deseja movê-los para sua nova conta?';
+
+  @override
+  String get fastingTitle => 'Jejum Intermitente';
+
+  @override
+  String get fastingSubtitle =>
+      'Cronômetro de jejum com 16:8 e outros protocolos';
+
+  @override
+  String get fastingStart => 'Iniciar jejum';
+
+  @override
+  String get fastingEnd => 'Encerrar jejum';
+
+  @override
+  String fastingElapsed(String time) {
+    return 'Decorrido: $time';
+  }
+
+  @override
+  String fastingRemaining(String time) {
+    return 'Restante: $time';
+  }
+
+  @override
+  String get fastingGoalReached => 'Você atingiu sua meta 🎉';
+
+  @override
+  String get fastingEndEarlyTitle => 'Encerrar o jejum mais cedo?';
+
+  @override
+  String fastingEndEarlyBody(String time) {
+    return 'Faltam $time para sua meta. Encerrar mesmo assim?';
+  }
+
+  @override
+  String get fastingNotificationTitle => 'Jejum concluído';
+
+  @override
+  String fastingNotificationBody(int hours) {
+    return 'Você completou seu jejum de $hours horas.';
+  }
+
+  @override
+  String get fastingBlockedByRamadan =>
+      'O jejum intermitente fica pausado enquanto o modo Ramadã estiver ativo.';
+
+  @override
+  String fastingLastFast(String time) {
+    return 'Último jejum: $time';
+  }
+
+  @override
+  String fastingStreak(int count) {
+    return 'Sequência de $count dias';
+  }
+
+  @override
+  String fastingAverage(String time) {
+    return 'Média: $time';
+  }
+
+  @override
+  String get fastingHistory => 'Jejuns recentes';
+
+  @override
+  String get fastingPremiumTeaser => 'Sequência e histórico com Premium';
+
+  @override
+  String get fastingMealWarningTitle => 'Você está em jejum';
+
+  @override
+  String fastingMealWarningBody(String time) {
+    return 'São $time. Registrar esta refeição encerrará seu jejum.';
+  }
+
+  @override
+  String get fastingMealWarningConfirm => 'Encerrar jejum e registrar';
+
+  @override
+  String completedFastCountUnit(int count) {
+    return '$count jejuns';
+  }
 }
