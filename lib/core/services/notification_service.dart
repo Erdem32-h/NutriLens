@@ -38,6 +38,10 @@ class NotificationService {
   static const _ramadanSahurIdRange = 7;
   static const _ramadanIftarIdRange = 7;
 
+  static const _fastingTargetId = 4000;
+  static const _fastingChannelId = 'fasting_reminder';
+  static const _fastingChannelName = 'Oruç Hatırlatma';
+
   final FlutterLocalNotificationsPlugin _plugin;
   bool _tzReady = false;
 
@@ -284,6 +288,62 @@ class NotificationService {
     for (var i = 0; i < _ramadanIftarIdRange; i++) {
       await _plugin.cancel(id: 3010 + i);
     }
+  }
+
+  /// Schedules the single "fast target reached" notification (id 4000).
+  /// Cancels any existing one first, then skips arming a new one if [at] is
+  /// already in the past. Exact vs inexact mirrors
+  /// [rescheduleRamadanNotifications] — exact when the OS currently allows
+  /// it, else inexact, re-checked on every call.
+  ///
+  /// [title]/[body] are supplied by the caller and must be precomputed —
+  /// the body must state the fast's target length (e.g. "16 saatlik
+  /// orucunu tamamladin"), never a countdown ("X dakika kaldi"): an inexact
+  /// delivery can arrive late, and a countdown would then read as false by
+  /// the time the user sees it, while a fixed length stays true regardless
+  /// of delivery delay.
+  Future<void> scheduleFastingTarget({
+    required DateTime at,
+    required String title,
+    required String body,
+  }) async {
+    await cancelFastingTarget();
+
+    await _ensureTimezone();
+    final scheduled = tz.TZDateTime(
+      tz.local,
+      at.year,
+      at.month,
+      at.day,
+      at.hour,
+      at.minute,
+    );
+    if (!scheduled.isAfter(tz.TZDateTime.now(tz.local))) return;
+
+    final scheduleMode = await canScheduleExact()
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle;
+
+    await _plugin.zonedSchedule(
+      id: _fastingTargetId,
+      title: title,
+      body: body,
+      scheduledDate: scheduled,
+      androidScheduleMode: scheduleMode,
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          _fastingChannelId,
+          _fastingChannelName,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+    );
+  }
+
+  Future<void> cancelFastingTarget() async {
+    await _plugin.cancel(id: _fastingTargetId);
   }
 
   /// Whether the OS currently permits exact alarms (Android 12+'s "Alarms &
