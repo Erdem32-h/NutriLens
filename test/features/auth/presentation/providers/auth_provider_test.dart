@@ -79,7 +79,7 @@ void main() {
     expect(container.read(authRemoteDataSourceProvider), isNotNull);
   });
 
-  test('signOut cancels both water and Ramadan reminders', () async {
+  test('signOut cancels water, Ramadan and fasting reminders', () async {
     final repository = MockAuthRepository();
     when(() => repository.currentUser).thenReturn(null);
     when(
@@ -94,6 +94,9 @@ void main() {
     when(() => notifications.cancelWaterReminders()).thenAnswer((_) async {});
     when(
       () => notifications.cancelRamadanNotifications(),
+    ).thenAnswer((_) async {});
+    when(
+      () => notifications.cancelFastingTarget(),
     ).thenAnswer((_) async {});
 
     final session = _FakeAppSessionController();
@@ -112,6 +115,7 @@ void main() {
 
     verify(() => notifications.cancelWaterReminders()).called(1);
     verify(() => notifications.cancelRamadanNotifications()).called(1);
+    verify(() => notifications.cancelFastingTarget()).called(1);
     expect(session.exitCalls, 1);
   });
 }

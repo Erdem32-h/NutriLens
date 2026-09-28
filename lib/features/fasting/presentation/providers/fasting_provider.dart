@@ -91,7 +91,12 @@ class FastingController {
   /// when blocked by Ramadan, when there is no user to own the row, or when
   /// the user already has an active fast (the datasource's atomic guard).
   Future<bool> start(FastingCopy copy) async {
-    if (_ref.read(fastingBlockedByRamadanProvider)) return false;
+    // Computed fresh rather than via `fastingBlockedByRamadanProvider`: that
+    // provider caches its clock read until something invalidates it (see
+    // `onResume`), so an app alive overnight into Ramadan day 1 — with no
+    // resume in between — must not read a stale "not blocked" value here.
+    final ramadan = _ref.read(ramadanSettingsProvider);
+    if (ramadan.enabled && currentRamadan(_now()) != null) return false;
     final userId = _ref.read(effectiveUserIdProvider);
     if (userId == null) return false;
 
@@ -189,6 +194,10 @@ class FastingController {
   Future<void> onResume(FastingCopy copy) async {
     _ref.invalidate(activeFastProvider);
     _ref.invalidate(fastingHistoryProvider);
+    // Same staleness as above: a warm resume never re-runs `build()` on a
+    // cached `Provider`, so the Ramadan-block flag (clock read at build
+    // time) needs a forced refresh too — mirrors `fastingDaysProvider`.
+    _ref.invalidate(fastingBlockedByRamadanProvider);
 
     final userId = _ref.read(effectiveUserIdProvider);
     if (userId == null) return;

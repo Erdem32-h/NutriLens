@@ -114,6 +114,44 @@ void main() {
     },
   );
 
+  test('start: kullanici yoksa false doner, hicbir sey planlanmaz', () async {
+    final c = await makeContainer(userId: null);
+
+    final started = await c.read(fastingControllerProvider).start(_copy);
+
+    expect(started, isFalse);
+    verifyNever(
+      () => notifications.scheduleFastingTarget(
+        at: any(named: 'at'),
+        title: any(named: 'title'),
+        body: any(named: 'body'),
+      ),
+    );
+  });
+
+  test(
+    'start: gece boyunca acik kalan uygulama (onResume cagrilmadan) '
+    'Ramazan gunune girince engellenir — blocked provider cache '
+    'yaniltmaz',
+    () async {
+      now = DateTime(2027, 2, 7, 12); // Ramazan'dan (8 Sub) bir gun once
+      final c = await makeContainer();
+      await c
+          .read(ramadanSettingsProvider.notifier)
+          .setLocation(lat: 39.9334, lng: 32.8597, label: 'Ankara');
+      await c.read(ramadanSettingsProvider.notifier).setEnabled(true);
+      expect(c.read(fastingBlockedByRamadanProvider), isFalse);
+
+      // Saat Ramazan'in icine ilerler ama onResume() hic cagrilmaz (uygulama
+      // arka planda degil, sadece gece boyunca acik kalmis).
+      now = DateTime(2027, 2, 10, 12);
+
+      final started = await c.read(fastingControllerProvider).start(_copy);
+
+      expect(started, isFalse);
+    },
+  );
+
   test('start iki kez ust uste: ikincisi false doner', () async {
     final c = await makeContainer();
     expect(await c.read(fastingControllerProvider).start(_copy), isTrue);
@@ -172,17 +210,34 @@ void main() {
   test('onResume_aktif_orucun_bildirimini_yeniden_kurar', () async {
     final c = await makeContainer();
     await c.read(fastingControllerProvider).start(_copy);
+    // Clears the call `start()` itself made, so the verify below can only
+    // be satisfied by a call from `onResume` — without this the assertion
+    // would pass even if `onResume` scheduled nothing at all.
+    clearInteractions(notifications);
 
     await c.read(fastingControllerProvider).onResume(_copy);
 
-    final calls = verify(
+    verify(
       () => notifications.scheduleFastingTarget(
-        at: captureAny(named: 'at'),
+        at: now.add(const Duration(minutes: 16 * 60)),
+        title: 'title',
+        body: 'body-16',
+      ),
+    ).called(1);
+  });
+
+  test('onResume: aktif oruc yoksa hicbir bildirim planlanmaz', () async {
+    final c = await makeContainer();
+
+    await c.read(fastingControllerProvider).onResume(_copy);
+
+    verifyNever(
+      () => notifications.scheduleFastingTarget(
+        at: any(named: 'at'),
         title: any(named: 'title'),
         body: any(named: 'body'),
       ),
-    ).captured;
-    expect(calls.last, now.add(const Duration(minutes: 16 * 60)));
+    );
   });
 
   test('onResume: hedef gecmisse yeni bildirim planlanmaz', () async {

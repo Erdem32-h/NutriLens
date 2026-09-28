@@ -147,6 +147,38 @@ void main() {
     },
   );
 
+  test(
+    'inspectPending yalniz aktif orucu olan misafiri de bos saymaz',
+    () async {
+      await fastingSessionsDs.start(
+        kGuestUserId,
+        startedAt: DateTime(2027, 2, 19, 20),
+        targetMinutes: 16 * 60,
+      );
+
+      final summary = await service.inspectPending();
+
+      expect(summary.hasActiveFast, isTrue);
+      expect(summary.completedFastCount, 0);
+      expect(summary.isEmpty, isFalse);
+    },
+  );
+
+  test('migrate yalniz aktif oruc satirini da hesaba aktif olarak tasir', () async {
+    await fastingSessionsDs.start(
+      kGuestUserId,
+      startedAt: DateTime(2027, 2, 19, 20),
+      targetMinutes: 16 * 60,
+    );
+
+    await service.migrate(newUserId: 'user-1');
+
+    expect(await fastingSessionsDs.active(kGuestUserId), isNull);
+    final moved = await fastingSessionsDs.active('user-1');
+    expect(moved, isNotNull);
+    expect(moved!.isActive, isTrue);
+  });
+
   test('migrate tamamlanmis oruc oturumlarini yeni hesaba tasir', () async {
     final s = await fastingSessionsDs.start(
       kGuestUserId,

@@ -43,6 +43,14 @@ class GuestDataSummary {
   /// reasoning as [waterDayCount].
   final int completedFastCount;
 
+  /// A fast currently running. Not counted by [completedFastCount] (that's
+  /// ended fasts only) but still has to gate [isEmpty] — otherwise a guest
+  /// whose only data is an in-progress fast reads as "nothing to move",
+  /// `migrate`/`discard` never run, and the running row leaks to the next
+  /// guest session on the device (same class of bug [hasMetrics] guards
+  /// against).
+  final bool hasActiveFast;
+
   const GuestDataSummary({
     required this.scanCount,
     required this.mealCount,
@@ -50,6 +58,7 @@ class GuestDataSummary {
     this.waterDayCount = 0,
     this.fastingDayCount = 0,
     this.completedFastCount = 0,
+    this.hasActiveFast = false,
   });
 
   bool get isEmpty =>
@@ -58,7 +67,8 @@ class GuestDataSummary {
       !hasMetrics &&
       waterDayCount == 0 &&
       fastingDayCount == 0 &&
-      completedFastCount == 0;
+      completedFastCount == 0 &&
+      !hasActiveFast;
 }
 
 class GuestMigrationService {
@@ -98,6 +108,7 @@ class GuestMigrationService {
     final completedFasts = await _fastingSessionsDs.countCompleted(
       kGuestUserId,
     );
+    final activeFast = await _fastingSessionsDs.active(kGuestUserId);
     return GuestDataSummary(
       scanCount: scans,
       mealCount: meals,
@@ -105,6 +116,7 @@ class GuestMigrationService {
       waterDayCount: waterDays,
       fastingDayCount: fastingDays,
       completedFastCount: completedFasts,
+      hasActiveFast: activeFast != null,
     );
   }
 

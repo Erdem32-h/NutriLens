@@ -48,8 +48,10 @@ class GuestMigrationPromptSheet extends StatelessWidget {
       if (summary.completedFastCount > 0)
         l10n.completedFastCountUnit(summary.completedFastCount),
     ];
-    // Metrics aren't counted, so a metrics-only guest has no parts — use
-    // the generic wording instead of "This device has . Move it…".
+    // Metrics and an in-progress fast aren't counted (no line for either —
+    // `hasActiveFast` only gates `GuestDataSummary.isEmpty`), so a guest
+    // with only one of those has no parts — use the generic wording instead
+    // of "This device has . Move it…".
     final message = parts.isEmpty
         ? l10n.migrationMessageGeneric
         : l10n.migrationMessage(parts.join(', '));
