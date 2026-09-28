@@ -15,6 +15,7 @@ import 'tables/meal_entries_table.dart';
 import 'tables/user_metrics_table.dart';
 import 'tables/water_logs_table.dart';
 import 'tables/fasting_days_table.dart';
+import 'tables/fasting_sessions_table.dart';
 
 part 'app_database.g.dart';
 
@@ -31,6 +32,7 @@ part 'app_database.g.dart';
     UserMetrics,
     WaterLogs,
     FastingDays,
+    FastingSessions,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -39,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -75,6 +77,9 @@ class AppDatabase extends _$AppDatabase {
         // migrating straight from < 5 (see migration_v1_v2_test.dart).
         if (from < 6 && to >= 6) {
           await m.createTable(fastingDays);
+        }
+        if (from < 7 && to >= 7) {
+          await m.createTable(fastingSessions);
         }
       },
     );
