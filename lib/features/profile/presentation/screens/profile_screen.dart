@@ -13,6 +13,7 @@ import '../../../../core/session/app_session.dart';
 import '../../../../core/session/guest_gate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../fasting/presentation/providers/fasting_provider.dart';
 import '../../../history/presentation/providers/history_provider.dart';
 import '../../../meals/presentation/providers/meal_chart_provider.dart';
 import '../../../meals/presentation/providers/meal_provider.dart';
@@ -255,6 +256,29 @@ class ProfileScreen extends ConsumerWidget {
                     subtitle: l10n.ramadanOfferBody,
                     tint: cozy.lilac,
                     onTap: () => context.pushNamed(RouteNames.ramadan),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          // Fasting — hidden while Ramadan mode has it paused; otherwise
+          // always visible (mirrors the Ramadan row above it).
+          Consumer(
+            builder: (context, ref, _) {
+              final blocked = ref.watch(fastingBlockedByRamadanProvider);
+              if (blocked) return const SizedBox.shrink();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 18),
+                  CozySectionLabel(l10n.fastingTitle),
+                  _SettingsTile(
+                    icon: Icons.timer_outlined,
+                    title: l10n.fastingTitle,
+                    subtitle: l10n.fastingSubtitle,
+                    tint: cozy.mint,
+                    onTap: () => context.pushNamed(RouteNames.fasting),
                   ),
                 ],
               );

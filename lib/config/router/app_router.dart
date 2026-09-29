@@ -31,6 +31,7 @@ import '../../features/profile/presentation/screens/chemical_filter_screen.dart'
 import '../../features/product/presentation/screens/additive_detail_screen.dart';
 import '../../features/comparison/presentation/screens/comparison_screen.dart';
 import '../../features/water/presentation/screens/water_screen.dart';
+import '../../features/fasting/presentation/screens/fasting_screen.dart';
 import '../../features/ramadan/presentation/screens/ramadan_screen.dart';
 import 'route_names.dart';
 
@@ -257,6 +258,12 @@ GoRouter createRouter(WidgetRef ref) {
         name: RouteNames.ramadan,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const RamadanScreen(),
+      ),
+      GoRoute(
+        path: '/fasting',
+        name: RouteNames.fasting,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FastingScreen(),
       ),
       GoRoute(
         path: '/paywall',

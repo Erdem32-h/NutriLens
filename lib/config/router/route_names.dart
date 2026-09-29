@@ -39,6 +39,9 @@ abstract final class RouteNames {
   // Ramadan
   static const String ramadan = 'ramadan';
 
+  // Fasting
+  static const String fasting = 'fasting';
+
   // Favorites sub-screens
   static const String blacklist = 'blacklist';
 
