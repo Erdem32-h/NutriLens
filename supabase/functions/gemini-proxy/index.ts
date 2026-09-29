@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { authorizeAndConsume, readBody, RequestError, validateBody } from "./request_guard.ts";
+import { adminKey } from "../_shared/keys.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 const GEMINI_API_BASE =
@@ -959,7 +960,7 @@ Deno.serve(async (req: Request) => {
     if (!Number.isInteger(limit) || limit < 1 || limit > 100000) {
       throw new RequestError(503, "AI quota is not configured");
     }
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const serviceKey = adminKey();
     if (!serviceKey) throw new RequestError(503, "AI quota is not configured");
     const admin = createClient(SUPABASE_URL, serviceKey, {
       auth: { persistSession: false, autoRefreshToken: false },

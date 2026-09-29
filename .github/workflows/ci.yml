@@ -39,9 +39,9 @@ jobs:
         with:
           deno-version: v2.x
       - name: Type-check changed Edge entrypoints
-        run: deno check supabase/functions/delete-account/index.ts supabase/functions/gemini-proxy/index.ts
+        run: deno check supabase/functions/delete-account/index.ts supabase/functions/gemini-proxy/index.ts supabase/functions/rc-webhook/index.ts
       - name: Run isolated handler tests
-        run: deno test supabase/functions/delete-account/handler_test.ts supabase/functions/gemini-proxy/request_guard_test.ts
+        run: deno test supabase/functions/delete-account/handler_test.ts supabase/functions/gemini-proxy/request_guard_test.ts supabase/functions/_shared/keys_test.ts
       - name: Test migrations on isolated PostgreSQL
         shell: pwsh
         run: ./scripts/test_p0_database.ps1
