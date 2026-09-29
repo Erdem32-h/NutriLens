@@ -2125,7 +2125,7 @@ abstract class AppLocalizations {
   /// No description provided for @guestScanLimitMessage.
   ///
   /// In tr, this message translates to:
-  /// **'Yarın 2 ücretsiz tarama daha kazanırsın. Hesap açarsan geçmişin ve öğünlerin her cihazda görünür.'**
+  /// **'Yarın 2 ücretsiz tarama daha kazanırsın. Hesap açarsan tarama geçmişin her cihazda görünür.'**
   String get guestScanLimitMessage;
 
   /// No description provided for @guestFeatureLockedTitle.
@@ -2151,6 +2151,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Şu an değil'**
   String get notNow;
+
+  /// No description provided for @guestValueCtaTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğünün kaydedildi 🎉'**
+  String get guestValueCtaTitle;
+
+  /// No description provided for @guestValueCtaMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ücretsiz hesap açarsan tarama geçmişin her cihazda seninle olur; favorilerini ve kara listeni de kullanabilirsin. Öğün yedeği Premium\'da.'**
+  String get guestValueCtaMessage;
+
+  /// No description provided for @guestValueCtaAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ücretsiz hesap aç'**
+  String get guestValueCtaAction;
 
   /// No description provided for @featureFavorites.
   ///

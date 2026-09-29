@@ -1072,7 +1072,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get guestScanLimitMessage =>
-      'Amanhã você ganha mais 2 escaneamentos gratuitos. Ao criar uma conta, seu histórico e refeições sincronizam entre dispositivos.';
+      'Amanhã você ganha mais 2 escaneamentos gratuitos. Ao criar uma conta, seu histórico de escaneamentos sincroniza entre dispositivos.';
 
   @override
   String guestFeatureLockedTitle(String feature) {
@@ -1088,6 +1088,16 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get notNow => 'Agora não';
+
+  @override
+  String get guestValueCtaTitle => 'Refeição salva 🎉';
+
+  @override
+  String get guestValueCtaMessage =>
+      'Com uma conta gratuita, seu histórico de escaneamentos acompanha você em todos os dispositivos e você pode usar favoritos e sua lista negra. O backup de refeições faz parte do Premium.';
+
+  @override
+  String get guestValueCtaAction => 'Criar conta grátis';
 
   @override
   String get featureFavorites => 'Favoritos';

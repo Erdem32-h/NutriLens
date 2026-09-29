@@ -1067,7 +1067,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guestScanLimitMessage =>
-      'You\'ll get 2 more free scans tomorrow. Creating an account syncs your history and meals across devices.';
+      'You\'ll get 2 more free scans tomorrow. Creating an account syncs your scan history across devices.';
 
   @override
   String guestFeatureLockedTitle(String feature) {
@@ -1083,6 +1083,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notNow => 'Not now';
+
+  @override
+  String get guestValueCtaTitle => 'Meal saved 🎉';
+
+  @override
+  String get guestValueCtaMessage =>
+      'With a free account your scan history follows you to every device, and you can use favorites and your blacklist. Meal backup comes with Premium.';
+
+  @override
+  String get guestValueCtaAction => 'Create free account';
 
   @override
   String get featureFavorites => 'Favorites';

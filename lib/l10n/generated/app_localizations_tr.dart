@@ -1071,7 +1071,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get guestScanLimitMessage =>
-      'Yarın 2 ücretsiz tarama daha kazanırsın. Hesap açarsan geçmişin ve öğünlerin her cihazda görünür.';
+      'Yarın 2 ücretsiz tarama daha kazanırsın. Hesap açarsan tarama geçmişin her cihazda görünür.';
 
   @override
   String guestFeatureLockedTitle(String feature) {
@@ -1087,6 +1087,16 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get notNow => 'Şu an değil';
+
+  @override
+  String get guestValueCtaTitle => 'Öğünün kaydedildi 🎉';
+
+  @override
+  String get guestValueCtaMessage =>
+      'Ücretsiz hesap açarsan tarama geçmişin her cihazda seninle olur; favorilerini ve kara listeni de kullanabilirsin. Öğün yedeği Premium\'da.';
+
+  @override
+  String get guestValueCtaAction => 'Ücretsiz hesap aç';
 
   @override
   String get featureFavorites => 'Favoriler';

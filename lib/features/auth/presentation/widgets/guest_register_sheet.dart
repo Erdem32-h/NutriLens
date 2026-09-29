@@ -53,6 +53,17 @@ class GuestRegisterSheet extends StatelessWidget {
     );
   }
 
+  /// Value-moment offer right after a guest saves a meal.
+  static Future<bool> showMealSaved(BuildContext context) {
+    final l10n = context.l10n;
+    return show(
+      context,
+      title: l10n.guestValueCtaTitle,
+      message: l10n.guestValueCtaMessage,
+      primaryActionLabel: l10n.guestValueCtaAction,
+    );
+  }
+
   /// Convenience preset for cloud-only features (favorites, blacklist,
   /// premium, community submit).
   static Future<bool> showFeatureLocked(

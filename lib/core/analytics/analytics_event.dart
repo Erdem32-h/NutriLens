@@ -98,6 +98,13 @@ abstract final class FunnelEvents {
   static const authScreenShown = 'auth_screen_shown';
   static const guestStarted = 'guest_started';
 
+  /// A guest was offered an account at a value moment (not at a locked
+  /// feature — those go through `GuestGateExtension.requireAuthOr`).
+  /// props: `trigger` (meal_saved)
+  static const registerPromptShown = 'register_prompt_shown';
+  static const registerPromptAccepted = 'register_prompt_accepted';
+  static const registerPromptDismissed = 'register_prompt_dismissed';
+
   /// The register button was pressed. Fires BEFORE client-side validation,
   /// which is what separates it from [registerStarted]: the difference
   /// between the two counts people who tapped and bounced off a red field.

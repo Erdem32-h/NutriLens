@@ -1070,7 +1070,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guestScanLimitMessage =>
-      'ستحصل على عمليتي مسح مجانيتين إضافيتين غدًا. عند إنشاء حساب تتم مزامنة سجلك ووجباتك عبر الأجهزة.';
+      'ستحصل على عمليتي مسح مجانيتين إضافيتين غدًا. عند إنشاء حساب تتم مزامنة سجل عمليات المسح عبر الأجهزة.';
 
   @override
   String guestFeatureLockedTitle(String feature) {
@@ -1086,6 +1086,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notNow => 'ليس الآن';
+
+  @override
+  String get guestValueCtaTitle => 'تم حفظ الوجبة 🎉';
+
+  @override
+  String get guestValueCtaMessage =>
+      'مع حساب مجاني يرافقك سجل عمليات المسح على جميع أجهزتك، ويمكنك استخدام المفضلة والقائمة السوداء. النسخ الاحتياطي للوجبات متاح مع Premium.';
+
+  @override
+  String get guestValueCtaAction => 'أنشئ حسابًا مجانيًا';
 
   @override
   String get featureFavorites => 'المفضلة';

@@ -22,6 +22,7 @@ import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/services/metrics_prompt_store.dart';
 import '../../../../core/services/notification_prompt_store.dart';
 import '../../../../core/services/notification_service.dart';
+import '../../../../core/services/register_prompt_store.dart';
 import '../../../../core/services/review_prompt_store.dart';
 import '../../../../core/services/share_service.dart';
 import '../../../../core/session/app_session.dart';
@@ -32,6 +33,7 @@ import '../../../../core/widgets/scanning_photo.dart';
 import '../../../fasting/presentation/fasting_actions.dart';
 import '../../../fasting/presentation/providers/fasting_provider.dart';
 import '../providers/scanner_mode_provider.dart';
+import '../../../auth/presentation/widgets/guest_register_sheet.dart';
 import '../../../meals/data/services/meal_thumbnail_service.dart';
 import '../../../meals/domain/entities/meal_entry_entity.dart';
 import '../../../meals/domain/services/meal_defaults.dart';
@@ -338,6 +340,33 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     }
   }
 
+  /// Returns true when the guest accepted — the sheet has already routed to
+  /// /register, so the caller must not pop. Own try/catch: the meal is saved
+  /// by now and a failure here must never read as a save error.
+  Future<bool> _offerAccountToGuest() async {
+    try {
+      final store = ref.read(registerPromptStoreProvider);
+      if (!ref.read(isGuestProvider) || !store.shouldPrompt) return false;
+      await store.markShown();
+      if (!mounted) return false;
+      final analytics = ref.read(analyticsServiceProvider);
+      analytics.track(
+        FunnelEvents.registerPromptShown,
+        props: {'trigger': 'meal_saved'},
+      );
+      final accepted = await GuestRegisterSheet.showMealSaved(context);
+      analytics.track(
+        accepted
+            ? FunnelEvents.registerPromptAccepted
+            : FunnelEvents.registerPromptDismissed,
+      );
+      return accepted;
+    } catch (e) {
+      debugPrint('[FoodResult] register prompt failed: $e');
+      return false;
+    }
+  }
+
   Future<void> _saveMeal() async {
     if (_result == null || _saving) return;
 
@@ -451,6 +480,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       // kaydedilmiş bir öğünü tekrar kaydetmeye çalışır ve yinelenen kayıt
       // oluşur (code review bulgusu — kaydın başarısı kayıt-sonrası bir yan
       // etkinin başarısına bağlı olmamalı).
+      var metricsWizardShown = false;
       try {
         final promptStore = ref.read(metricsPromptStoreProvider);
         final metrics = await ref
@@ -463,6 +493,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
           ref
               .read(analyticsServiceProvider)
               .track(FunnelEvents.metricsPromptShown);
+          metricsWizardShown = true;
           // rootNavigator: same reason as the profile entry point — the
           // wizard needs the whole screen, not what is left over above the
           // shell's ad banner and nav bar.
@@ -519,6 +550,11 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       } catch (e) {
         debugPrint('[FoodResult] daily reminder trigger failed: $e');
       }
+      if (!mounted) return;
+
+      // Guest value moment: offer an account once, but never stacked on top
+      // of the full-screen metrics wizard this same save already opened.
+      if (!metricsWizardShown && await _offerAccountToGuest()) return;
       if (!mounted) return;
 
       final messenger = ScaffoldMessenger.of(context);

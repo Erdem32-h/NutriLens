@@ -367,7 +367,7 @@
   "cameraRationaleContinue": "Continue",
   "cameraRationaleNotNow": "Not now",
   "guestScanLimitTitle": "Today's free scans used",
-  "guestScanLimitMessage": "You'll get 2 more free scans tomorrow. Creating an account syncs your history and meals across devices.",
+  "guestScanLimitMessage": "You'll get 2 more free scans tomorrow. Creating an account syncs your scan history across devices.",
   "guestFeatureLockedTitle": "{feature} requires an account",
   "@guestFeatureLockedTitle": {
     "placeholders": {
@@ -379,6 +379,9 @@
   "guestFeatureLockedMessage": "This feature lives in the cloud. Create an account and sign in to enable it.",
   "createAccountCta": "Create account",
   "notNow": "Not now",
+  "guestValueCtaTitle": "Meal saved 🎉",
+  "guestValueCtaMessage": "With a free account your scan history follows you to every device, and you can use favorites and your blacklist. Meal backup comes with Premium.",
+  "guestValueCtaAction": "Create free account",
   "featureFavorites": "Favorites",
   "featureBlacklist": "Blocklist",
   "featurePremium": "Premium",

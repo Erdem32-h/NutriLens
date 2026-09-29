@@ -367,7 +367,7 @@
   "cameraRationaleContinue": "Continue",
   "cameraRationaleNotNow": "Not now",
   "guestScanLimitTitle": "انتهت عمليات المسح المجانية اليوم",
-  "guestScanLimitMessage": "ستحصل على عمليتي مسح مجانيتين إضافيتين غدًا. عند إنشاء حساب تتم مزامنة سجلك ووجباتك عبر الأجهزة.",
+  "guestScanLimitMessage": "ستحصل على عمليتي مسح مجانيتين إضافيتين غدًا. عند إنشاء حساب تتم مزامنة سجل عمليات المسح عبر الأجهزة.",
   "guestFeatureLockedTitle": "{feature} requires an account",
   "@guestFeatureLockedTitle": {
     "placeholders": {
@@ -379,6 +379,9 @@
   "guestFeatureLockedMessage": "هذه الميزة محفوظة في السحابة. أنشئ حساباً لتفعيلها.",
   "createAccountCta": "إنشاء حساب",
   "notNow": "ليس الآن",
+  "guestValueCtaTitle": "تم حفظ الوجبة 🎉",
+  "guestValueCtaMessage": "مع حساب مجاني يرافقك سجل عمليات المسح على جميع أجهزتك، ويمكنك استخدام المفضلة والقائمة السوداء. النسخ الاحتياطي للوجبات متاح مع Premium.",
+  "guestValueCtaAction": "أنشئ حسابًا مجانيًا",
   "featureFavorites": "المفضلة",
   "featureBlacklist": "القائمة السوداء",
   "featurePremium": "ميزة Premium",

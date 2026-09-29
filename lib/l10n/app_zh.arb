@@ -367,7 +367,7 @@
   "cameraRationaleContinue": "Continue",
   "cameraRationaleNotNow": "Not now",
   "guestScanLimitTitle": "今天的免费扫描次数已用完",
-  "guestScanLimitMessage": "明天还会有 2 次免费扫描。创建账户后，你的记录和餐食可在各设备间同步。",
+  "guestScanLimitMessage": "明天还会有 2 次免费扫描。创建账户后，你的扫描记录可在各设备间同步。",
   "guestFeatureLockedTitle": "{feature} requires an account",
   "@guestFeatureLockedTitle": {
     "placeholders": {
@@ -379,6 +379,9 @@
   "guestFeatureLockedMessage": "此功能保存在云端。创建账号并登录即可启用。",
   "createAccountCta": "创建账号",
   "notNow": "暂不",
+  "guestValueCtaTitle": "餐食已保存 🎉",
+  "guestValueCtaMessage": "创建免费账户后，你的扫描记录会在所有设备上同步，还可以使用收藏夹和黑名单。餐食备份属于 Premium 功能。",
+  "guestValueCtaAction": "创建免费账户",
   "featureFavorites": "收藏夹",
   "featureBlacklist": "黑名单",
   "featurePremium": "Premium 特权",

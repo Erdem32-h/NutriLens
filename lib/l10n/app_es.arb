@@ -367,7 +367,7 @@
   "cameraRationaleContinue": "Continue",
   "cameraRationaleNotNow": "Not now",
   "guestScanLimitTitle": "Escaneos gratuitos de hoy agotados",
-  "guestScanLimitMessage": "Mañana tendrás 2 escaneos gratuitos más. Si creas una cuenta, tu historial y comidas se sincronizan entre dispositivos.",
+  "guestScanLimitMessage": "Mañana tendrás 2 escaneos gratuitos más. Si creas una cuenta, tu historial de escaneos se sincroniza entre dispositivos.",
   "guestFeatureLockedTitle": "{feature} requires an account",
   "@guestFeatureLockedTitle": {
     "placeholders": {
@@ -379,6 +379,9 @@
   "guestFeatureLockedMessage": "Esta función se guarda en la nube. Crea una cuenta para activarla.",
   "createAccountCta": "Crear cuenta",
   "notNow": "Ahora no",
+  "guestValueCtaTitle": "Comida guardada 🎉",
+  "guestValueCtaMessage": "Con una cuenta gratuita, tu historial de escaneos te acompaña en todos tus dispositivos y puedes usar favoritos y tu lista negra. La copia de seguridad de comidas es parte de Premium.",
+  "guestValueCtaAction": "Crear cuenta gratis",
   "featureFavorites": "Favoritos",
   "featureBlacklist": "Lista negra",
   "featurePremium": "Función Premium",

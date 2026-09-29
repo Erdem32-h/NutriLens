@@ -367,7 +367,7 @@
   "cameraRationaleContinue": "Devam et",
   "cameraRationaleNotNow": "Şimdi değil",
   "guestScanLimitTitle": "Bugünkü tarama hakkın bitti",
-  "guestScanLimitMessage": "Yarın 2 ücretsiz tarama daha kazanırsın. Hesap açarsan geçmişin ve öğünlerin her cihazda görünür.",
+  "guestScanLimitMessage": "Yarın 2 ücretsiz tarama daha kazanırsın. Hesap açarsan tarama geçmişin her cihazda görünür.",
   "guestFeatureLockedTitle": "{feature} için hesap gerekli",
   "@guestFeatureLockedTitle": {
     "placeholders": {
@@ -379,6 +379,9 @@
   "guestFeatureLockedMessage": "Bu özellik bulutta saklanır. Hesap açıp giriş yapınca aktif olur.",
   "createAccountCta": "Hesap aç",
   "notNow": "Şu an değil",
+  "guestValueCtaTitle": "Öğünün kaydedildi 🎉",
+  "guestValueCtaMessage": "Ücretsiz hesap açarsan tarama geçmişin her cihazda seninle olur; favorilerini ve kara listeni de kullanabilirsin. Öğün yedeği Premium'da.",
+  "guestValueCtaAction": "Ücretsiz hesap aç",
   "featureFavorites": "Favoriler",
   "featureBlacklist": "Kara liste",
   "featurePremium": "Premium",

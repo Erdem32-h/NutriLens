@@ -1054,7 +1054,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get guestScanLimitTitle => '今天的免费扫描次数已用完';
 
   @override
-  String get guestScanLimitMessage => '明天还会有 2 次免费扫描。创建账户后，你的记录和餐食可在各设备间同步。';
+  String get guestScanLimitMessage => '明天还会有 2 次免费扫描。创建账户后，你的扫描记录可在各设备间同步。';
 
   @override
   String guestFeatureLockedTitle(String feature) {
@@ -1069,6 +1069,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get notNow => '暂不';
+
+  @override
+  String get guestValueCtaTitle => '餐食已保存 🎉';
+
+  @override
+  String get guestValueCtaMessage =>
+      '创建免费账户后，你的扫描记录会在所有设备上同步，还可以使用收藏夹和黑名单。餐食备份属于 Premium 功能。';
+
+  @override
+  String get guestValueCtaAction => '创建免费账户';
 
   @override
   String get featureFavorites => '收藏夹';
