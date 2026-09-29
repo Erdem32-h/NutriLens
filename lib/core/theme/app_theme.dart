@@ -198,6 +198,17 @@ abstract final class AppTheme {
         tileColor: Colors.transparent,
         iconColor: colors.textMuted,
       ),
+      // Default AlertDialog styles fall back to colours that vanish on the dark
+      // surface; set them here so no dialog needs its own overrides.
+      dialogTheme: DialogThemeData(
+        backgroundColor: colors.surfaceCard2,
+        titleTextStyle: AppTypography.textTheme(
+          colors,
+        ).titleLarge?.copyWith(color: colors.textPrimary),
+        contentTextStyle: AppTypography.textTheme(
+          colors,
+        ).bodyMedium?.copyWith(color: colors.textSecondary),
+      ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: colors.surfaceCard2,
         contentTextStyle: TextStyle(color: colors.textPrimary),
