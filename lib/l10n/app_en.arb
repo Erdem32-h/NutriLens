@@ -935,7 +935,7 @@
   "fastingHistory": "Recent fasts",
   "fastingPremiumTeaser": "Streaks and history with Premium",
   "fastingMealWarningTitle": "You're fasting",
-  "fastingMealWarningBody": "It's {time}. Logging this meal will end your fast.",
+  "fastingMealWarningBody": "You've been fasting for {time}. Saving this meal will end your fast.",
   "@fastingMealWarningBody": {
     "placeholders": {
       "time": {

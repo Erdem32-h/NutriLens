@@ -2229,7 +2229,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String fastingMealWarningBody(String time) {
-    return 'It\'s $time. Logging this meal will end your fast.';
+    return 'You\'ve been fasting for $time. Saving this meal will end your fast.';
   }
 
   @override

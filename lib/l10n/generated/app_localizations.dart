@@ -4189,7 +4189,7 @@ abstract class AppLocalizations {
   /// No description provided for @fastingMealWarningBody.
   ///
   /// In tr, this message translates to:
-  /// **'{time} oldu. Bu öğünü kaydetmek orucunu bitirir.'**
+  /// **'{time} süredir oruçtasın. Bu öğünü kaydetmek orucunu bitirir.'**
   String fastingMealWarningBody(String time);
 
   /// No description provided for @fastingMealWarningConfirm.

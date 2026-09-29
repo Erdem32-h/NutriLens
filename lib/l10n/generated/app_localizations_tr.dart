@@ -2233,7 +2233,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String fastingMealWarningBody(String time) {
-    return '$time oldu. Bu öğünü kaydetmek orucunu bitirir.';
+    return '$time süredir oruçtasın. Bu öğünü kaydetmek orucunu bitirir.';
   }
 
   @override

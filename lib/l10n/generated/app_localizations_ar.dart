@@ -2219,7 +2219,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String fastingMealWarningBody(String time) {
-    return 'الساعة $time. تسجيل هذه الوجبة سينهي صيامك.';
+    return 'أنت صائم منذ $time. تسجيل هذه الوجبة سينهي صيامك.';
   }
 
   @override

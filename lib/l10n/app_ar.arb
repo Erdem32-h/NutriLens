@@ -935,7 +935,7 @@
   "fastingHistory": "آخر مرات الصيام",
   "fastingPremiumTeaser": "السلسلة والسجل مع Premium",
   "fastingMealWarningTitle": "أنت صائم",
-  "fastingMealWarningBody": "الساعة {time}. تسجيل هذه الوجبة سينهي صيامك.",
+  "fastingMealWarningBody": "أنت صائم منذ {time}. تسجيل هذه الوجبة سينهي صيامك.",
   "@fastingMealWarningBody": {
     "placeholders": {
       "time": {

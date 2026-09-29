@@ -2171,7 +2171,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String fastingMealWarningBody(String time) {
-    return '现在是 $time。记录这餐将结束你的禁食。';
+    return '你已禁食 $time。记录这餐将结束你的禁食。';
   }
 
   @override

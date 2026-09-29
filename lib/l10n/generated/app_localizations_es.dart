@@ -2240,7 +2240,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String fastingMealWarningBody(String time) {
-    return 'Son las $time. Registrar esta comida terminará tu ayuno.';
+    return 'Llevas $time en ayuno. Registrar esta comida terminará tu ayuno.';
   }
 
   @override

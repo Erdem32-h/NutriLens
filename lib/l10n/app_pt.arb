@@ -935,7 +935,7 @@
   "fastingHistory": "Jejuns recentes",
   "fastingPremiumTeaser": "Sequência e histórico com Premium",
   "fastingMealWarningTitle": "Você está em jejum",
-  "fastingMealWarningBody": "São {time}. Registrar esta refeição encerrará seu jejum.",
+  "fastingMealWarningBody": "Você está em jejum há {time}. Registrar esta refeição encerrará seu jejum.",
   "@fastingMealWarningBody": {
     "placeholders": {
       "time": {

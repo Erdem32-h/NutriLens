@@ -970,7 +970,7 @@
   "fastingHistory": "Son oruçlar",
   "fastingPremiumTeaser": "Seri ve geçmiş Premium ile",
   "fastingMealWarningTitle": "Oruçtasın",
-  "fastingMealWarningBody": "{time} oldu. Bu öğünü kaydetmek orucunu bitirir.",
+  "fastingMealWarningBody": "{time} süredir oruçtasın. Bu öğünü kaydetmek orucunu bitirir.",
   "@fastingMealWarningBody": {
     "placeholders": {
       "time": {

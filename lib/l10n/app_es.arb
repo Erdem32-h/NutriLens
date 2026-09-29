@@ -935,7 +935,7 @@
   "fastingHistory": "Ayunos recientes",
   "fastingPremiumTeaser": "Racha e historial con Premium",
   "fastingMealWarningTitle": "Estás ayunando",
-  "fastingMealWarningBody": "Son las {time}. Registrar esta comida terminará tu ayuno.",
+  "fastingMealWarningBody": "Llevas {time} en ayuno. Registrar esta comida terminará tu ayuno.",
   "@fastingMealWarningBody": {
     "placeholders": {
       "time": {

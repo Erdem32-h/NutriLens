@@ -15,7 +15,6 @@ import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/core/session/guest_migration_service.dart';
 import 'package:nutrilens/features/auth/presentation/widgets/post_auth_flow.dart';
 import 'package:nutrilens/features/fasting/data/fasting_sessions_local_datasource.dart';
-import 'package:nutrilens/features/fasting/presentation/fasting_actions.dart';
 import 'package:nutrilens/features/fasting/presentation/providers/fasting_provider.dart';
 import 'package:nutrilens/features/history/data/datasources/scan_history_local_datasource.dart';
 import 'package:nutrilens/features/meals/data/datasources/meal_local_datasource.dart';

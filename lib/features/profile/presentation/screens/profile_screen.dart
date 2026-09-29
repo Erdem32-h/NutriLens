@@ -433,6 +433,9 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(waterWeekProvider);
       ref.invalidate(ramadanSettingsProvider);
       ref.invalidate(fastingDaysProvider);
+      ref.invalidate(activeFastProvider);
+      ref.invalidate(fastingHistoryProvider);
+      ref.invalidate(fastingProtocolProvider);
 
       if (!context.mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.userDataDeleted)));
@@ -500,6 +503,9 @@ class ProfileScreen extends ConsumerWidget {
       ref.invalidate(waterWeekProvider);
       ref.invalidate(ramadanSettingsProvider);
       ref.invalidate(fastingDaysProvider);
+      ref.invalidate(activeFastProvider);
+      ref.invalidate(fastingHistoryProvider);
+      ref.invalidate(fastingProtocolProvider);
 
       if (!context.mounted) return;
       context.go('/login');

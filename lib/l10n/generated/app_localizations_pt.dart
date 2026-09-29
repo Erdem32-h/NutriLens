@@ -2238,7 +2238,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String fastingMealWarningBody(String time) {
-    return 'São $time. Registrar esta refeição encerrará seu jejum.';
+    return 'Você está em jejum há $time. Registrar esta refeição encerrará seu jejum.';
   }
 
   @override

@@ -935,7 +935,7 @@
   "fastingHistory": "近期禁食",
   "fastingPremiumTeaser": "升级 Premium 解锁连续记录与历史",
   "fastingMealWarningTitle": "你正在禁食",
-  "fastingMealWarningBody": "现在是 {time}。记录这餐将结束你的禁食。",
+  "fastingMealWarningBody": "你已禁食 {time}。记录这餐将结束你的禁食。",
   "@fastingMealWarningBody": {
     "placeholders": {
       "time": {
