@@ -26,6 +26,33 @@ String formatFastDuration(Duration d) {
   return '$hours:${minutes.toString().padLeft(2, '0')}';
 }
 
+/// Warns that saving a meal will end the running fast ([elapsed] so far).
+/// Resolves `true` only on explicit confirm; dismissing counts as cancel.
+Future<bool> confirmMealDuringFast(
+  BuildContext context,
+  Duration elapsed,
+) async {
+  final l10n = context.l10n;
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(l10n.fastingMealWarningTitle),
+      content: Text(l10n.fastingMealWarningBody(formatFastDuration(elapsed))),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext, false),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext, true),
+          child: Text(l10n.fastingMealWarningConfirm),
+        ),
+      ],
+    ),
+  );
+  return confirmed ?? false;
+}
+
 /// Confirms ending [active] before its target is reached (spec's "end
 /// early?" dialog); resolves immediately with `true` once the target has
 /// already been reached. Shared by [FastingScreen] and [FastingCard] so
