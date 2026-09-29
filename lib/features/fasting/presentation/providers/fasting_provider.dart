@@ -21,7 +21,8 @@ final fastingSettingsStoreProvider = Provider<FastingSettingsStore>(
 
 final fastingSessionsLocalDataSourceProvider =
     Provider<FastingSessionsLocalDataSource>(
-      (ref) => FastingSessionsLocalDataSourceImpl(ref.watch(appDatabaseProvider)),
+      (ref) =>
+          FastingSessionsLocalDataSourceImpl(ref.watch(appDatabaseProvider)),
     );
 
 /// Test seam for "now".
@@ -175,14 +176,16 @@ class FastingController {
 
     final elapsed = now.difference(active.startedAt);
     final completed = elapsed >= Duration(minutes: active.targetMinutes);
-    _ref.read(analyticsServiceProvider).track(
-      FunnelEvents.ifFastEnded,
-      props: {
-        'completed': completed,
-        'minutes': elapsed.inMinutes,
-        'source': source,
-      },
-    );
+    _ref
+        .read(analyticsServiceProvider)
+        .track(
+          FunnelEvents.ifFastEnded,
+          props: {
+            'completed': completed,
+            'minutes': elapsed.inMinutes,
+            'source': source,
+          },
+        );
   }
 
   /// Changes the selected protocol. No-op while a fast is active — the

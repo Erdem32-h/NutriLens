@@ -317,6 +317,7 @@ class NotificationService {
       at.day,
       at.hour,
       at.minute,
+      at.second, // never fire early: target minute, not just start minute
     );
     if (!scheduled.isAfter(tz.TZDateTime.now(tz.local))) return;
 

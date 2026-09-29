@@ -40,7 +40,7 @@ void main() {
   test(
     'gelecekteki at ile id 4000 fasting_reminder kanalinda planlanir',
     () async {
-      final future = DateTime(2099, 9, 13, 20, 0);
+      final future = DateTime(2099, 9, 13, 20, 0, 37);
 
       await service.scheduleFastingTarget(
         at: future,
@@ -58,16 +58,21 @@ void main() {
           id: captureAny(named: 'id'),
           title: captureAny(named: 'title'),
           body: captureAny(named: 'body'),
-          scheduledDate: any(named: 'scheduledDate'),
+          scheduledDate: captureAny(named: 'scheduledDate'),
           notificationDetails: captureAny(named: 'notificationDetails'),
           androidScheduleMode: any(named: 'androidScheduleMode'),
         ),
       ).captured;
 
       expect(captured.whereType<int>().single, 4000);
+      // Seconds preserved: dropping them could fire up to 59 s early.
+      expect(captured.whereType<tz.TZDateTime>().single.second, 37);
       expect(
         captured.whereType<String>(),
-        containsAll(<String>['Oruc Tamamlandi', '16 saatlik orucunu tamamladin']),
+        containsAll(<String>[
+          'Oruc Tamamlandi',
+          '16 saatlik orucunu tamamladin',
+        ]),
       );
       final details = captured.whereType<NotificationDetails>().single;
       expect(details.android?.channelId, 'fasting_reminder');

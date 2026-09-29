@@ -21,6 +21,7 @@ import 'package:nutrilens/features/fasting/presentation/fasting_actions.dart';
 import 'package:nutrilens/features/fasting/presentation/providers/fasting_provider.dart';
 import 'package:nutrilens/features/fasting/presentation/screens/fasting_screen.dart';
 import 'package:nutrilens/features/fasting/presentation/widgets/fasting_card.dart';
+import 'package:nutrilens/features/fasting/presentation/widgets/fasting_ring.dart';
 import 'package:nutrilens/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nutrilens/features/ramadan/presentation/providers/ramadan_provider.dart';
 
@@ -84,6 +85,30 @@ void main() {
     testWidgets('hidden without an active fast', (tester) async {
       await _pump(tester, const FastingCard());
       expect(find.text('Orucu bitir'), findsNothing);
+    });
+
+    testWidgets('ring has real size and a track distinct from the card', (
+      tester,
+    ) async {
+      await _pump(tester, const FastingCard(), activeFast: true);
+
+      expect(tester.getSize(find.byType(FastingRing)).width, greaterThan(40));
+      final ring = tester.widget<CircularProgressIndicator>(
+        find.descendant(
+          of: find.byType(FastingRing),
+          matching: find.byType(CircularProgressIndicator),
+        ),
+      );
+      final card = tester.widget<Container>(
+        find
+            .ancestor(
+              of: find.byType(FastingRing),
+              matching: find.byType(Container),
+            )
+            .first,
+      );
+      final cardColor = (card.decoration as BoxDecoration).color;
+      expect(ring.backgroundColor, isNot(cardColor));
     });
 
     testWidgets('shows remaining and ticks with the active fast', (

@@ -63,6 +63,9 @@ class _FastingCardState extends ConsumerState<FastingCard> {
               tint: tint,
               size: 56,
               strokeWidth: 6,
+              // The card itself is tint.surface — the default track would be
+              // invisible against it (ring read as a single dot at 0%).
+              trackColor: tint.ink.withValues(alpha: 0.18),
             ),
             const SizedBox(width: 16),
             Expanded(

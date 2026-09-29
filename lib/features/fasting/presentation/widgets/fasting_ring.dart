@@ -12,6 +12,11 @@ class FastingRing extends StatelessWidget {
   final CozyTint tint;
   final double size;
   final double strokeWidth;
+
+  /// Track behind the arc; defaults to `tint.surface`. Callers drawing the
+  /// ring on a `tint.surface` card must pass another colour, otherwise the
+  /// track vanishes and a fresh (progress 0) fast shows as a lone dot.
+  final Color? trackColor;
   final Widget? child;
 
   const FastingRing({
@@ -20,6 +25,7 @@ class FastingRing extends StatelessWidget {
     required this.tint,
     this.size = 160,
     this.strokeWidth = 10,
+    this.trackColor,
     this.child,
   });
 
@@ -35,7 +41,7 @@ class FastingRing extends StatelessWidget {
             child: CircularProgressIndicator(
               value: progress.clamp(0.0, 1.0),
               strokeWidth: strokeWidth,
-              backgroundColor: tint.surface,
+              backgroundColor: trackColor ?? tint.surface,
               valueColor: AlwaysStoppedAnimation<Color>(tint.ink),
               strokeCap: StrokeCap.round,
             ),
