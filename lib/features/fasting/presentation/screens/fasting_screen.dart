@@ -100,7 +100,7 @@ class _FastingScreenState extends ConsumerState<FastingScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          if (blocked) ...[
+          if (blocked && active == null) ...[
             Text(
               l10n.fastingBlockedByRamadan,
               textAlign: TextAlign.center,
@@ -224,7 +224,7 @@ class _PremiumHistory extends StatelessWidget {
           ),
           const SizedBox(height: 12),
         ],
-        for (final session in history.take(10))
+        for (final session in history)
           if (session.endedAt != null)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
@@ -264,28 +264,33 @@ class _PremiumTeaser extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
 
-    return GestureDetector(
-      onTap: () => _openPaywall(ref, context),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(l10n.fastingStreak(3)),
-                const SizedBox(height: 6),
-                Text(l10n.fastingAverage('16:00')),
-              ],
+    return Semantics(
+      button: true,
+      label: l10n.fastingPremiumTeaser,
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () => _openPaywall(ref, context),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.fastingStreak(3)),
+                  const SizedBox(height: 6),
+                  Text(l10n.fastingAverage('16:00')),
+                ],
+              ),
             ),
-          ),
-          Text(
-            l10n.fastingPremiumTeaser,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w700, color: tint.ink),
-          ),
-        ],
+            Text(
+              l10n.fastingPremiumTeaser,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.w700, color: tint.ink),
+            ),
+          ],
+        ),
       ),
     );
   }

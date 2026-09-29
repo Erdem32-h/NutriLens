@@ -51,8 +51,9 @@ final activeFastProvider = FutureProvider<FastingSession?>((ref) async {
   return ref.watch(fastingSessionsLocalDataSourceProvider).active(userId);
 });
 
-/// Last 30 ended fasts, newest first. Read only when premium — the caller
-/// decides that, this just fetches.
+/// Last 30 ended fasts, newest first. Read for everyone (the free "last
+/// fast" line needs the newest entry); streak, average and the list are the
+/// premium part, gated by the caller.
 final fastingHistoryProvider = FutureProvider<List<FastingSession>>((
   ref,
 ) async {

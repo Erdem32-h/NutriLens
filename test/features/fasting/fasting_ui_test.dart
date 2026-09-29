@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,6 +10,11 @@ import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/core/theme/app_theme.dart';
 import 'package:nutrilens/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
+import 'package:nutrilens/config/drift/app_database.dart';
+import 'package:nutrilens/core/analytics/analytics_provider.dart';
+import 'package:nutrilens/core/services/notification_service.dart';
+import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
+import 'package:drift/native.dart';
 import 'package:nutrilens/core/providers/monetization_provider.dart';
 import 'package:nutrilens/core/widgets/app_button.dart';
 import 'package:nutrilens/features/fasting/presentation/fasting_actions.dart';
@@ -169,6 +175,128 @@ void main() {
       expect(find.text('Seri ve geçmiş Premium ile'), findsNothing);
       expect(find.text('1 gün seri'), findsOneWidget);
       expect(find.text('Ortalama: 16:00'), findsOneWidget);
+    });
+
+    testWidgets('teaser tap tracks analytics and pushes /paywall', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      final analytics = RecordingAnalytics();
+      final router = GoRouter(
+        routes: [
+          GoRoute(path: '/', builder: (_, _) => const FastingScreen()),
+          GoRoute(
+            path: '/paywall',
+            builder: (_, _) => const Scaffold(body: Text('paywall-stub')),
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(db),
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            effectiveUserIdProvider.overrideWithValue('user-1'),
+            notificationServiceProvider.overrideWithValue(
+              MockNotificationService(),
+            ),
+            analyticsServiceProvider.overrideWithValue(analytics),
+            fastingClockProvider.overrideWithValue(() => _t0),
+            isPremiumProvider.overrideWithValue(false),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            locale: const Locale('tr'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Seri ve geçmiş Premium ile'));
+      await tester.tap(find.text('Seri ve geçmiş Premium ile'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('paywall-stub'), findsOneWidget);
+      expect(analytics.names, contains('if_history_paywall_tapped'));
+      expect(
+        analytics.events.where(
+          (e) => e.$1 == 'paywall_shown' && e.$2['source'] == 'fasting_history',
+        ),
+        hasLength(1),
+      );
+    });
+
+    testWidgets('premium list renders all 30 rows, not just 10', (
+      tester,
+    ) async {
+      final (_, clock, c) = await _pump(
+        tester,
+        const FastingScreen(),
+        premium: true,
+      );
+      for (var i = 0; i < 12; i++) {
+        await _seedCompleted(c, clock.value.subtract(Duration(days: i)));
+      }
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Ortalama: 16:00'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.drag(find.byType(ListView), const Offset(0, -2000));
+      await tester.pumpAndSettle();
+      expect(find.text('16:00'), findsNWidgets(12));
+    });
+
+    testWidgets('chips are disabled during an active fast', (tester) async {
+      await _pump(tester, const FastingScreen(), activeFast: true);
+      final chips = tester.widgetList<ChoiceChip>(find.byType(ChoiceChip));
+      expect(chips, isNotEmpty);
+      expect(chips.every((c) => c.onSelected == null), isTrue);
+    });
+
+    testWidgets('Ramadan info hidden while a fast is running', (tester) async {
+      final (_, _, c) = await _pump(
+        tester,
+        const FastingScreen(),
+        now: DateTime(2027, 2, 10, 12),
+        activeFast: true,
+      );
+      await c.read(ramadanSettingsProvider.notifier).setEnabled(true);
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Ramazan modu açıkken aralıklı oruç duraklatılır.'),
+        findsNothing,
+      );
+    });
+
+    testWidgets('End ends the session and tracks source button', (
+      tester,
+    ) async {
+      final (h, clock, c) = await _pump(
+        tester,
+        const FastingScreen(),
+        activeFast: true,
+      );
+      when(
+        () => h.notifications.cancelFastingTarget(),
+      ).thenAnswer((_) async {});
+      clock.value = clock.value.add(const Duration(hours: 17));
+      await tester.pump(const Duration(seconds: 1));
+
+      await tester.tap(find.text('Orucu bitir'));
+      await tester.pumpAndSettle();
+
+      expect(await c.read(activeFastProvider.future), isNull);
+      final ended = h.analytics.events.where((e) => e.$1 == 'if_fast_ended');
+      expect(ended, hasLength(1));
+      expect(ended.single.$2['source'], 'button');
     });
 
     testWidgets('Ramadan block shows info and disables Start', (tester) async {
