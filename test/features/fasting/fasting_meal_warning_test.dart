@@ -24,6 +24,7 @@ import 'package:nutrilens/features/meals/presentation/providers/meal_provider.da
 import 'package:nutrilens/features/product/domain/entities/nutriments_entity.dart';
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
 import 'package:nutrilens/features/scanner/presentation/screens/food_result_screen.dart';
+import 'package:nutrilens/features/scanner/presentation/widgets/meal_save_bar.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -74,8 +75,7 @@ void main() {
   });
 
   setUp(() {
-    TestWidgetsFlutterBinding.ensureInitialized()
-        .defaultBinaryMessenger
+    TestWidgetsFlutterBinding.ensureInitialized().defaultBinaryMessenger
         .setMockMethodCallHandler(
           const MethodChannel('plugins.flutter.io/path_provider'),
           (_) async => Directory.systemTemp.path,
@@ -83,15 +83,18 @@ void main() {
   });
 
   tearDown(() {
-    TestWidgetsFlutterBinding.ensureInitialized()
-        .defaultBinaryMessenger
+    TestWidgetsFlutterBinding.ensureInitialized().defaultBinaryMessenger
         .setMockMethodCallHandler(
           const MethodChannel('plugins.flutter.io/path_provider'),
           null,
         );
   });
 
-  Future<void> pumpScreen(WidgetTester tester, {required bool fasting}) async {
+  Future<void> pumpScreen(
+    WidgetTester tester, {
+    required bool fasting,
+    bool doubleSave = false,
+  }) async {
     SharedPreferences.setMockInitialValues({'metrics_prompt_settled': true});
     final prefs = await SharedPreferences.getInstance();
     db = AppDatabase.forTesting(NativeDatabase.memory());
@@ -151,20 +154,24 @@ void main() {
     router.push('/food-result');
     await tester.pump();
     await _drain(tester, () => tester.any(find.text('Öğünlere kaydet')));
+    // Grab the callback before the first tap disables the button, so the
+    // second call re-enters _saveMeal exactly like a fast double tap.
+    final save = tester.widget<MealSaveBar>(find.byType(MealSaveBar)).onSave!;
     await tester.tap(find.text('Öğünlere kaydet'));
+    if (doubleSave) save();
     await tester.pump();
   }
 
-  Future<int> mealCount(WidgetTester tester) async =>
-      (await tester.runAsync(
-        () =>
-            container.read(mealLocalDataSourceProvider).getMeals(userId: userId),
-      ))!.length;
+  Future<int> mealCount(WidgetTester tester) async => (await tester.runAsync(
+    () => container.read(mealLocalDataSourceProvider).getMeals(userId: userId),
+  ))!.length;
 
   Future<FastingSession?> activeFast(WidgetTester tester) async =>
       (await tester.runAsync<FastingSession?>(
-    () => container.read(fastingSessionsLocalDataSourceProvider).active(userId),
-  ));
+        () => container
+            .read(fastingSessionsLocalDataSourceProvider)
+            .active(userId),
+      ));
 
   testWidgets('oruc yokken uyari cikmaz, ogun kaydedilir', (tester) async {
     await pumpScreen(tester, fasting: false);
@@ -174,7 +181,9 @@ void main() {
     expect(await mealCount(tester), 1);
   });
 
-  testWidgets('aktif oruc + vazgec: kayit yok, oruc devam eder', (tester) async {
+  testWidgets('aktif oruc + vazgec: kayit yok, oruc devam eder', (
+    tester,
+  ) async {
     await pumpScreen(tester, fasting: true);
     await _drain(tester, () => tester.any(find.text('Oruçtasın')));
 
@@ -202,6 +211,25 @@ void main() {
     expect(analytics.props[FunnelEvents.ifFastEnded]?['source'], 'meal_save');
     expect(analytics.props[FunnelEvents.ifFastEnded]?['completed'], false);
     expect(await activeFast(tester), isNull);
+    expect(await mealCount(tester), 1);
+  });
+
+  testWidgets('cift dokunus + aktif oruc: tek uyari, tek ogun', (tester) async {
+    await pumpScreen(tester, fasting: true, doubleSave: true);
+    await _drain(tester, () => tester.any(find.text('Orucu bitir ve kaydet')));
+
+    expect(find.text('Oruçtasın'), findsOneWidget);
+    await tester.tap(find.text('Orucu bitir ve kaydet'));
+    await tester.pump();
+    await _drain(tester, () => !tester.any(find.byType(FoodResultScreen)));
+
+    expect(await mealCount(tester), 1);
+  });
+
+  testWidgets('cift dokunus + oruc yok: tek ogun', (tester) async {
+    await pumpScreen(tester, fasting: false, doubleSave: true);
+    await _drain(tester, () => !tester.any(find.byType(FoodResultScreen)));
+
     expect(await mealCount(tester), 1);
   });
 }

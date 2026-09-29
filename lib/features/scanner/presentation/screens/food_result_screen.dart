@@ -341,21 +341,23 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   Future<void> _saveMeal() async {
     if (_result == null || _saving) return;
 
-    // Saving a meal breaks a running fast: read it fresh (not a watched
-    // value) and let the user back out before anything is written.
-    final activeFast = await ref.read(activeFastProvider.future);
-    if (activeFast != null) {
-      if (!mounted) return;
-      final elapsed = activeFast.elapsed(ref.read(fastingClockProvider)());
-      if (!await confirmMealDuringFast(context, elapsed)) return;
-      if (!mounted) return;
-      await ref.read(fastingControllerProvider).end(source: 'meal_save');
-      if (!mounted) return;
-    }
-
+    // Set before the fast check so a second tap during its awaits is ignored;
+    // every early return below resets it via the finally.
     setState(() => _saving = true);
 
     try {
+      // Saving a meal breaks a running fast: read it fresh (not a watched
+      // value) and let the user back out before anything is written.
+      final activeFast = await ref.read(activeFastProvider.future);
+      if (activeFast != null) {
+        if (!mounted) return;
+        final elapsed = activeFast.elapsed(ref.read(fastingClockProvider)());
+        if (!await confirmMealDuringFast(context, elapsed)) return;
+        if (!mounted) return;
+        await ref.read(fastingControllerProvider).end(source: 'meal_save');
+        if (!mounted) return;
+      }
+
       // Guests get the kGuestUserId sentinel so meals land in local
       // Drift the same as authenticated users — no auth check needed.
       final userId = ref.read(effectiveUserIdProvider);
