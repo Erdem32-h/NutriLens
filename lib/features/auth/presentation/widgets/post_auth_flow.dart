@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/session/app_session.dart';
 import '../../../../core/session/guest_migration_service.dart';
+import '../../../../l10n/generated/app_localizations.dart';
+import '../../../fasting/presentation/fasting_actions.dart';
+import '../../../fasting/presentation/providers/fasting_provider.dart';
 import 'guest_migration_prompt_sheet.dart';
 
 /// Single cross-cutting hook run by both login + register screens
@@ -35,6 +38,11 @@ Future<void> runPostAuthFlow(
   // guest, so the call has to happen either way. Holding the controller is
   // what Riverpod's own error message prescribes.
   final session = ref.read(appSessionControllerProvider);
+  // Same reason for the fasting controller + copy: after migrate/discard the
+  // active fast (and its armed alert) may belong to another owner, so it is
+  // re-synced below. `of` (nullable) because only a mounted app has l10n.
+  final fasting = ref.read(fastingControllerProvider);
+  final l10n = AppLocalizations.of(context);
   final summary = await migration.inspectPending();
 
   // The mounted check guards the SHEET, which needs a live context — it must
@@ -58,6 +66,10 @@ Future<void> runPostAuthFlow(
   // and it is the one step of this flow that must survive the user walking
   // away. Only the navigation below is context-dependent.
   await session.exitGuestMode();
+
+  // After exitGuestMode so the owner is the signed-in user: a migrated fast
+  // is re-armed, a discarded guest fast leaves no ghost alert behind.
+  if (l10n != null) await fasting.onResume(fastingCopy(l10n));
 
   if (!context.mounted) return;
   context.go('/meals');

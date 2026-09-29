@@ -82,6 +82,8 @@ class FastingController {
 
   FastingController(this._ref);
 
+  bool _ending = false;
+
   FastingSessionsLocalDataSource get _sessions =>
       _ref.read(fastingSessionsLocalDataSourceProvider);
   NotificationService get _notifications =>
@@ -142,6 +144,18 @@ class FastingController {
 
   /// Ends the active fast, if any. No-op otherwise.
   Future<void> end({required String source}) async {
+    // Reentrancy guard: a double tap after the target (no confirm dialog)
+    // would otherwise read the same active row twice and track two events.
+    if (_ending) return;
+    _ending = true;
+    try {
+      await _end(source);
+    } finally {
+      _ending = false;
+    }
+  }
+
+  Future<void> _end(String source) async {
     final userId = _ref.read(effectiveUserIdProvider);
     if (userId == null) return;
     final active = await _sessions.active(userId);
@@ -191,7 +205,7 @@ class FastingController {
   /// cached providers — same staleness `fastingDaysProvider` has, see
   /// `AppShellScreen`), then re-arms the target notification if a fast is
   /// still running and its target hasn't passed yet — covers reboot /
-  /// permission change. Never throws.
+  /// permission change; otherwise cancels any stale alert. Never throws.
   Future<void> onResume(FastingCopy copy) async {
     _ref.invalidate(activeFastProvider);
     _ref.invalidate(fastingHistoryProvider);
@@ -203,12 +217,20 @@ class FastingController {
     final userId = _ref.read(effectiveUserIdProvider);
     if (userId == null) return;
     final active = await _sessions.active(userId);
-    if (active == null) return;
-
-    final target = active.startedAt.add(
+    final target = active?.startedAt.add(
       Duration(minutes: active.targetMinutes),
     );
-    if (!target.isAfter(_now())) return;
+
+    // No running fast (guest discard, account switch) or target already
+    // passed: a previously armed alert (id 4000) must not fire as a ghost.
+    if (active == null || target == null || !target.isAfter(_now())) {
+      try {
+        await _notifications.cancelFastingTarget();
+      } catch (e) {
+        debugPrint('[Fasting] resume cancel failed: $e');
+      }
+      return;
+    }
 
     try {
       await _notifications.scheduleFastingTarget(

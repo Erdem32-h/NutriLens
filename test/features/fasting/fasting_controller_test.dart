@@ -238,6 +238,8 @@ void main() {
         body: any(named: 'body'),
       ),
     );
+    // Stale alert (guest discard / account switch) must not linger.
+    verify(() => notifications.cancelFastingTarget()).called(1);
   });
 
   test('onResume: hedef gecmisse yeni bildirim planlanmaz', () async {
@@ -255,5 +257,22 @@ void main() {
         body: any(named: 'body'),
       ),
     ).called(1);
+  });
+
+  test('end: iki es zamanli cagri tek if_fast_ended uretir', () async {
+    final c = await makeContainer();
+    await c.read(fastingControllerProvider).start(_copy);
+    now = now.add(const Duration(hours: 17));
+
+    final ctrl = c.read(fastingControllerProvider);
+    await Future.wait([
+      ctrl.end(source: 'button'),
+      ctrl.end(source: 'button'),
+    ]);
+
+    expect(
+      analytics.names.where((n) => n == FunnelEvents.ifFastEnded),
+      hasLength(1),
+    );
   });
 }

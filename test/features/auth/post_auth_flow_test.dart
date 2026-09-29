@@ -15,6 +15,8 @@ import 'package:nutrilens/core/session/app_session.dart';
 import 'package:nutrilens/core/session/guest_migration_service.dart';
 import 'package:nutrilens/features/auth/presentation/widgets/post_auth_flow.dart';
 import 'package:nutrilens/features/fasting/data/fasting_sessions_local_datasource.dart';
+import 'package:nutrilens/features/fasting/presentation/fasting_actions.dart';
+import 'package:nutrilens/features/fasting/presentation/providers/fasting_provider.dart';
 import 'package:nutrilens/features/history/data/datasources/scan_history_local_datasource.dart';
 import 'package:nutrilens/features/meals/data/datasources/meal_local_datasource.dart';
 import 'package:nutrilens/features/profile/data/datasources/user_metrics_local_datasource.dart';
@@ -51,6 +53,8 @@ class _MockSupabaseClient extends Mock implements SupabaseClient {}
 
 class _MockGuestScanCounter extends Mock implements GuestScanCounter {}
 
+class _MockFastingController extends Mock implements FastingController {}
+
 class _RecordingSession implements AppSessionController {
   int exitCalls = 0;
 
@@ -81,11 +85,15 @@ class _HostState extends ConsumerState<_Host> {
     super.initState();
     // Errors are captured rather than rethrown so the assertion can be about
     // what the flow did, not about how flutter_test surfaces a zone error.
-    runPostAuthFlow(
-      ref,
-      context,
-      userId: 'user-123',
-    ).catchError((Object e) => caught = e);
+    // Post-frame: the flow reads l10n from the context, which is illegal in
+    // initState (the real screens call it from a tap handler).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      runPostAuthFlow(
+        ref,
+        context,
+        userId: 'user-123',
+      ).catchError((Object e) => caught = e);
+    });
   }
 
   @override
@@ -169,6 +177,46 @@ void main() {
       await _drain(tester, () => session.exitCalls > 0);
 
       expect(session.exitCalls, 1);
+    });
+  });
+
+  group('fasting re-sync', () {
+    testWidgets('discarding guest data re-syncs the fast (cancels ghost alert)', (
+      tester,
+    ) async {
+      migration = _GatedMigration(
+        const GuestDataSummary(scanCount: 1, mealCount: 0, hasMetrics: false),
+      );
+      final fasting = _MockFastingController();
+      registerFallbackValue((title: '', body: (int h) => ''));
+      when(() => fasting.onResume(any())).thenAnswer((_) async {});
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            guestMigrationServiceProvider.overrideWithValue(migration),
+            appSessionControllerProvider.overrideWithValue(session),
+            fastingControllerProvider.overrideWithValue(fasting),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('tr'),
+            home: const _Host(),
+          ),
+        ),
+      );
+      await _drain(tester, () => migration.reached);
+      migration.gate.complete();
+      await tester.pumpAndSettle();
+
+      // Decline migration -> discard path.
+      await tester.tap(find.text('Sıfırdan başla'));
+      await tester.pumpAndSettle();
+
+      expect(session.exitCalls, 1);
+      verify(() => fasting.onResume(any())).called(1);
     });
   });
 
