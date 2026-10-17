@@ -58,3 +58,12 @@ class RateLimitException implements Exception {
   @override
   String toString() => 'RateLimitException: $message';
 }
+
+/// Thrown when the user backs out of a native sign-in sheet. Not an error:
+/// kept apart so the funnel can tell a change of mind from a broken flow.
+class SignInCancelledException implements Exception {
+  const SignInCancelledException();
+
+  @override
+  String toString() => 'SignInCancelledException';
+}

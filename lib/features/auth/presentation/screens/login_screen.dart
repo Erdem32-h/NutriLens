@@ -100,12 +100,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         // round trip means the outcome arrives on whichever auth screen the
         // deep link lands on. `take()` makes sure only the first one
         // reports it.
-        final method = ref.read(pendingSocialAuthProvider.notifier).take();
-        if (method != null) {
-          ref
-              .read(analyticsServiceProvider)
-              .track(FunnelEvents.loginSucceeded, props: {'method': method});
-        }
+        completePendingSocialAuth(ref);
         ref.read(subscriptionServiceProvider).logIn(user.id);
         if (!mounted) return;
         runPostAuthFlow(ref, context, userId: user.id);

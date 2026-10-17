@@ -57,3 +57,10 @@ final class AlreadyRegisteredFailure extends Failure {
         "This email is already registered — try signing in or 'Forgot password'.",
   ]) : super(message);
 }
+
+/// The user closed a native sign-in sheet without finishing. Nothing to show
+/// them; it exists so analytics reports `sign_in_cancelled_failure` instead of
+/// lumping it in with real failures.
+final class SignInCancelledFailure extends Failure {
+  const SignInCancelledFailure([super.message = 'Sign-in cancelled.']);
+}

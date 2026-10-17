@@ -1,4 +1,11 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../core/analytics/analytics_event.dart';
+import '../../../../core/analytics/analytics_provider.dart';
 
 /// Holds the social provider whose sign-in is currently in flight.
 ///
@@ -31,6 +38,27 @@ class PendingSocialAuth extends Notifier<String?> {
 
 final pendingSocialAuthProvider =
     NotifierProvider<PendingSocialAuth, String?>(PendingSocialAuth.new);
+
+/// Closes out a social sign-in once its session has landed on an auth
+/// screen: reports the success against the parked method and, on iOS,
+/// dismisses the in-app browser it ran in.
+///
+/// Nothing dismisses that browser otherwise — supabase_flutter handles the
+/// deep link but leaves SFSafariViewController on top of the app, showing
+/// the `nutrilens://` page it could not load.
+///
+/// Does nothing when no social sign-in is in flight, so an email sign-in
+/// reaching the same listener is left alone.
+void completePendingSocialAuth(WidgetRef ref) {
+  final method = ref.read(pendingSocialAuthProvider.notifier).take();
+  if (method == null) return;
+  ref
+      .read(analyticsServiceProvider)
+      .track(FunnelEvents.loginSucceeded, props: {'method': method});
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    unawaited(closeInAppWebView());
+  }
+}
 
 /// Values for the `method` prop shared by every event in the auth funnel.
 abstract final class AuthMethod {

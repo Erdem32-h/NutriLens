@@ -183,12 +183,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         // as a login rather than a registration because the client cannot
         // tell a new Google account from a returning one; the server can,
         // by comparing `auth.users.created_at` with the event timestamp.
-        final method = ref.read(pendingSocialAuthProvider.notifier).take();
-        if (method != null) {
-          ref
-              .read(analyticsServiceProvider)
-              .track(FunnelEvents.loginSucceeded, props: {'method': method});
-        }
+        completePendingSocialAuth(ref);
         ref.read(subscriptionServiceProvider).logIn(user.id);
         if (!mounted) return;
         runPostAuthFlow(ref, context, userId: user.id);

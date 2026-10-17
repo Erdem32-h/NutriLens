@@ -102,6 +102,8 @@ final class AuthRepositoryImpl implements AuthRepository {
     try {
       await action();
       return const Right(null);
+    } on SignInCancelledException {
+      return const Left(SignInCancelledFailure());
     } on AuthException catch (e) {
       return Left(AuthFailure(e.message));
     } catch (e) {

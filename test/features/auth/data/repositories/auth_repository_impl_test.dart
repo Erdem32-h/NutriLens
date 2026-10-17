@@ -189,16 +189,25 @@ void main() {
   });
 
   group('signInWithApple', () {
-    test(
-      'returns Right(null) on success (OAuth completes via redirect)',
-      () async {
-        when(() => mockDataSource.signInWithApple()).thenAnswer((_) async {});
+    test('returns Right(null) once the native sheet signs in', () async {
+      when(() => mockDataSource.signInWithApple()).thenAnswer((_) async {});
 
-        final result = await repository.signInWithApple();
+      final result = await repository.signInWithApple();
 
-        expect(result.isRight(), isTrue);
-      },
-    );
+      expect(result.isRight(), isTrue);
+    });
+
+    test('a dismissed sheet is a cancellation, not a server failure', () async {
+      when(
+        () => mockDataSource.signInWithApple(),
+      ).thenThrow(const SignInCancelledException());
+
+      final result = await repository.signInWithApple();
+
+      // The funnel reads the type: a ServerFailure here would put every
+      // change of mind back under `server_failure`.
+      expect(result, const Left<Failure, void>(SignInCancelledFailure()));
+    });
 
     test('returns AuthFailure on AuthException', () async {
       when(

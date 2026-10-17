@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -9,13 +10,28 @@ import 'package:nutrilens/core/analytics/analytics_service.dart';
 import 'package:nutrilens/core/error/failures.dart';
 import 'package:nutrilens/core/theme/app_colors.dart';
 import 'package:nutrilens/core/widgets/app_button.dart';
+import 'package:nutrilens/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:nutrilens/features/auth/domain/repositories/auth_repository.dart';
 import 'package:nutrilens/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nutrilens/features/auth/presentation/providers/social_auth_tracking.dart';
 import 'package:nutrilens/features/auth/presentation/widgets/social_login_buttons.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
+// LinkDelegate lives in its own entrypoint, not the package barrel.
+import 'package:url_launcher_platform_interface/link.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
+
+/// Counts in-app browser dismissals; nothing in these tests launches.
+class _FakeUrlLauncher extends UrlLauncherPlatform {
+  int closeCalls = 0;
+
+  @override
+  LinkDelegate? get linkDelegate => null;
+
+  @override
+  Future<void> closeWebView() async => closeCalls++;
+}
 
 /// Captures what the widget reports instead of queueing it. The production
 /// service is disabled outside release builds, so a real one would swallow
@@ -123,6 +139,91 @@ void main() {
       );
       expect(scope.read(pendingSocialAuthProvider), 'google');
       expect(analytics.propsFor(FunnelEvents.loginSucceeded), isEmpty);
+    });
+  });
+
+  group('completePendingSocialAuth', () {
+    final realLauncher = UrlLauncherPlatform.instance;
+    late _FakeUrlLauncher launcher;
+
+    setUp(() {
+      launcher = _FakeUrlLauncher();
+      UrlLauncherPlatform.instance = launcher;
+    });
+    tearDown(() => UrlLauncherPlatform.instance = realLauncher);
+
+    Widget landing() => ProviderScope(
+      overrides: [analyticsServiceProvider.overrideWithValue(analytics)],
+      child: MaterialApp(
+        home: Consumer(
+          builder: (context, ref, _) => TextButton(
+            onPressed: () => completePendingSocialAuth(ref),
+            child: const Text('land'),
+          ),
+        ),
+      ),
+    );
+
+    testWidgets(
+      'reports the parked method once and closes the iOS in-app browser',
+      (tester) async {
+        await tester.pumpWidget(landing());
+        ProviderScope.containerOf(
+          tester.element(find.byType(TextButton)),
+        ).read(pendingSocialAuthProvider.notifier).start('apple');
+
+        await tester.tap(find.text('land'));
+        await tester.tap(find.text('land'));
+        await tester.pump();
+
+        final succeeded = analytics.propsFor(FunnelEvents.loginSucceeded);
+        expect(succeeded, hasLength(1));
+        expect(succeeded.single['method'], 'apple');
+        // Otherwise SFSafariViewController stays over the app after sign-in.
+        expect(launcher.closeCalls, 1);
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+    );
+
+    testWidgets(
+      'leaves a sign-in with nothing in flight alone',
+      (tester) async {
+        await tester.pumpWidget(landing());
+
+        await tester.tap(find.text('land'));
+        await tester.pump();
+
+        expect(analytics.propsFor(FunnelEvents.loginSucceeded), isEmpty);
+        expect(launcher.closeCalls, 0);
+      },
+      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
+    );
+  });
+
+  group('isInAppBrowserLoadFailure', () {
+    test('recognises the iOS in-app browser failing at our redirect', () {
+      // Exactly what url_launcher_ios throws when SFSafariViewController's
+      // initial load ends at `nutrilens://auth/callback`.
+      expect(
+        isInAppBrowserLoadFailure(
+          PlatformException(
+            code: 'Error',
+            message: 'Error while launching https://x.supabase.co/auth/v1/'
+                'authorize?provider=apple',
+          ),
+        ),
+        isTrue,
+      );
+    });
+
+    test('lets launches that never opened a browser fail', () {
+      for (final e in [
+        PlatformException(code: 'no_ui_available'),
+        PlatformException(code: 'argument_error', message: 'Unable to parse URL'),
+        PlatformException(code: 'Error'),
+      ]) {
+        expect(isInAppBrowserLoadFailure(e), isFalse, reason: e.code);
+      }
     });
   });
 

@@ -10,5 +10,11 @@
     <array>
         <string>group.app.nutrilens.ios</string>
     </array>
+    <!-- Native Sign in with Apple (sign_in_with_apple). The App ID needs
+         the same capability in the Developer portal. -->
+    <key>com.apple.developer.applesignin</key>
+    <array>
+        <string>Default</string>
+    </array>
 </dict>
 </plist>
