@@ -928,6 +928,9 @@ class AppLocalizationsZh extends AppLocalizations {
       'AI service is currently unavailable. Please try again in a few minutes.';
 
   @override
+  String get aiNetworkError => '无法连接服务器。请检查网络连接后重试。';
+
+  @override
   String get aiServiceDownTitle => 'AI Service Unavailable';
 
   @override

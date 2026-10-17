@@ -72,6 +72,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   String? _error;
   bool _serviceUnavailable = false;
   bool _quotaExhausted = false;
+  bool _connectionLost = false;
   bool _saving = false;
   bool _recalcLoading = false;
 
@@ -123,6 +124,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       _error = null;
       _serviceUnavailable = false;
       _quotaExhausted = false;
+      _connectionLost = false;
     });
 
     final analytics = ref.read(analyticsServiceProvider);
@@ -189,6 +191,10 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       debugPrint('[FoodResult] proxy meal analysis failed: $e');
       unawaited(Sentry.captureException(e, stackTrace: st));
       final quota = e.statusCode == 429;
+      // No status survives the transport retries only when no HTTP reply
+      // ever came back: the request never reached the proxy, so the service
+      // is not what failed.
+      final offline = e.statusCode == null;
       // Tracked BEFORE the mounted guard. The guard used to sit above this
       // call, so a user who backed out of a slow analysis took the failure
       // event with them — which is why meal_analysis_failed had never once
@@ -197,7 +203,11 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       analytics.track(
         FunnelEvents.mealAnalysisFailed,
         props: {
-          'reason': quota ? 'quota' : 'service',
+          'reason': quota
+              ? 'quota'
+              : offline
+              ? 'network'
+              : 'service',
           if (e.statusCode != null) 'status': e.statusCode,
           'abandoned': !mounted,
           'duration_ms': elapsed.elapsedMilliseconds,
@@ -205,7 +215,8 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       );
       if (!mounted) return;
       setState(() {
-        _serviceUnavailable = true;
+        _serviceUnavailable = !offline;
+        _connectionLost = offline;
         // Proxy maps OpenRouter out-of-credit/rate-limit to HTTP 429.
         _quotaExhausted = quota;
         _error = e.toString();
@@ -715,12 +726,18 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
 
   Widget _buildError(AppLocalizations l10n, AppColorsExtension colors) {
     final isServiceDown = _serviceUnavailable;
-    final iconColor = isServiceDown ? colors.warning : colors.error;
-    final icon = isServiceDown
+    final iconColor = isServiceDown || _connectionLost
+        ? colors.warning
+        : colors.error;
+    final icon = _connectionLost
+        ? Icons.wifi_off_rounded
+        : isServiceDown
         ? Icons.cloud_off_rounded
         : Icons.error_outline_rounded;
     final message = _quotaExhausted
         ? l10n.aiQuotaExhausted
+        : _connectionLost
+        ? l10n.aiNetworkError
         : isServiceDown
         ? l10n.aiServiceUnavailableNoFallback
         : l10n.aiFailed;

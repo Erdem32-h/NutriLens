@@ -939,6 +939,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'AI service is currently unavailable. Please try again in a few minutes.';
 
   @override
+  String get aiNetworkError =>
+      'Couldn\'t reach the server. Check your internet connection and try again.';
+
+  @override
   String get aiServiceDownTitle => 'AI Service Unavailable';
 
   @override

@@ -20,6 +20,11 @@ const _validMealJson =
     '"nutrition":{"energy_kcal":180,"fat":4,"protein":9},'
     '"confidence":0.8,"description":"Ev yapimi"}';
 
+/// What `functions.invoke` really does with a non-2xx reply: it throws, it
+/// never returns a [FunctionResponse] carrying the error status.
+FunctionException _httpError(int status, String error) =>
+    FunctionException(status: status, details: {'error': error});
+
 void main() {
   late MockSupabaseClient client;
   late MockFunctionsClient functions;
@@ -91,7 +96,7 @@ void main() {
       _,
     ) async {
       attempts++;
-      return FunctionResponse(data: {'error': 'rate limited'}, status: 429);
+      throw _httpError(429, 'rate limited');
     });
 
     await expectLater(
@@ -111,7 +116,7 @@ void main() {
     when(() => auth.currentSession).thenReturn(MockSession());
     when(() => auth.refreshSession()).thenAnswer((_) async => AuthResponse());
     stubInvoke([
-      () async => FunctionResponse(data: {'error': 'expired'}, status: 401),
+      () async => throw _httpError(401, 'expired'),
       () async =>
           FunctionResponse(data: {'result': _validMealJson}, status: 200),
     ]);
@@ -120,12 +125,32 @@ void main() {
   });
 
   test('guest 401 never attempts session refresh', () async {
-    stubInvoke([
-      () async =>
-          FunctionResponse(data: {'error': 'unauthorized'}, status: 401),
-    ]);
+    stubInvoke([() async => throw _httpError(401, 'unauthorized')]);
     await expectLater(analyze(), throwsA(isA<GeminiServiceException>()));
     verifyNever(() => auth.refreshSession());
+  });
+
+  test('a server error keeps its status and is not retried as a dropped '
+      'connection', () async {
+    // A null status is what the screen reads as "no connection"; a 5xx that
+    // lost its status would be told to check their internet.
+    var attempts = 0;
+    when(() => functions.invoke(any(), body: any(named: 'body'))).thenAnswer((
+      _,
+    ) async {
+      attempts++;
+      throw _httpError(502, 'upstream failed');
+    });
+
+    await expectLater(
+      analyze(),
+      throwsA(
+        isA<GeminiServiceException>()
+            .having((e) => e.statusCode, 'status', 502)
+            .having((e) => e.message, 'message', 'upstream failed'),
+      ),
+    );
+    expect(attempts, 1);
   });
 
   group('content failures are not transport failures', () {

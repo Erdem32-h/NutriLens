@@ -327,6 +327,7 @@
   "aiFailed": "AI analiz başarısız oldu. Tekrar deneyin.",
   "aiServiceUnavailable": "AI servisi şu an çalışmıyor — yedek tarama kullanılıyor, sonuçlar daha az hassas olabilir.",
   "aiServiceUnavailableNoFallback": "AI servisi şu an çalışmıyor. Lütfen birkaç dakika sonra tekrar deneyin.",
+  "aiNetworkError": "Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",
   "aiServiceDownTitle": "AI Servisi Çalışmıyor",
   "aiServiceDownBody": "İçindekiler okuma servisi şu an yanıt vermiyor. Birkaç dakika sonra tekrar deneyin ya da içindekileri elle girin.",
   "tryAgain": "Tekrar Dene",

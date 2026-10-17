@@ -1882,6 +1882,12 @@ abstract class AppLocalizations {
   /// **'AI servisi şu an çalışmıyor. Lütfen birkaç dakika sonra tekrar deneyin.'**
   String get aiServiceUnavailableNoFallback;
 
+  /// No description provided for @aiNetworkError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.'**
+  String get aiNetworkError;
+
   /// No description provided for @aiServiceDownTitle.
   ///
   /// In tr, this message translates to:

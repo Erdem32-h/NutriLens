@@ -230,6 +230,34 @@ void main() {
       expect(failed.single['status'], 429);
     });
 
+    testWidgets('a request that never reached the proxy is a connection '
+        'problem, not an outage', (tester) async {
+      // No status after the transport retries means no HTTP reply ever came
+      // back (2026-10: none of the "AI servisi çalışmıyor" cases reached the
+      // server). Telling those users the service is down sends them away.
+      final analytics = _RecordingAnalytics();
+      final gemini = _FailingGemini(
+        const GeminiServiceException('Connection reset by peer'),
+      );
+
+      await tester.pumpWidget(_subject(analytics, gemini, prefs, image));
+      await _drain(tester, () => gemini.reached);
+      gemini.gate.complete();
+      await _drain(
+        tester,
+        () => analytics.propsFor(FunnelEvents.mealAnalysisFailed).isNotEmpty,
+      );
+      await tester.pump();
+
+      final failed = analytics.propsFor(FunnelEvents.mealAnalysisFailed);
+      expect(failed.single['reason'], 'network');
+      expect(failed.single.containsKey('status'), isFalse);
+
+      final l10n = await AppLocalizations.delegate.load(const Locale('tr'));
+      expect(find.text(l10n.aiNetworkError), findsOneWidget);
+      expect(find.text(l10n.aiServiceUnavailableNoFallback), findsNothing);
+    });
+
     testWidgets('derives a reason for non-service errors instead of a '
         'blanket "error"', (tester) async {
       final analytics = _RecordingAnalytics();

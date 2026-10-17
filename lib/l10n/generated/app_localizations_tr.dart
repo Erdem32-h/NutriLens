@@ -943,6 +943,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'AI servisi şu an çalışmıyor. Lütfen birkaç dakika sonra tekrar deneyin.';
 
   @override
+  String get aiNetworkError =>
+      'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.';
+
+  @override
   String get aiServiceDownTitle => 'AI Servisi Çalışmıyor';
 
   @override

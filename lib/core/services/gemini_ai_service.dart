@@ -492,24 +492,31 @@ class GeminiAiService {
           );
 
       if (response.status != 200) {
-        final errorMsg = response.data is Map
-            ? (response.data['error'] ?? 'Unknown error').toString()
-            : 'HTTP ${response.status}';
-        debugPrint(
-          '[GeminiAI] $action failed: status=${response.status} '
-          'error=$errorMsg',
-        );
-        throw GeminiServiceException(errorMsg, statusCode: response.status);
+        throw _httpFailure(action, response.status, response.data);
       }
 
       return response.data as Map<String, dynamic>;
     } on GeminiServiceException {
       rethrow;
+    } on FunctionException catch (e) {
+      // functions_client throws on every non-2xx reply rather than returning
+      // it. Falling through to the catch-all below dropped the status, so a
+      // 429 never showed the quota screen, a 401 never refreshed the session,
+      // and every server error was retried and shown as a dead connection.
+      throw _httpFailure(action, e.status, e.details);
     } catch (e) {
       // Network errors, FunctionException, etc. — wrap as service failure.
       debugPrint('[GeminiAI] $action transport error: $e');
       throw GeminiServiceException(e.toString());
     }
+  }
+
+  GeminiServiceException _httpFailure(String action, int status, Object? data) {
+    final errorMsg = data is Map
+        ? (data['error'] ?? 'Unknown error').toString()
+        : 'HTTP $status';
+    debugPrint('[GeminiAI] $action failed: status=$status error=$errorMsg');
+    return GeminiServiceException(errorMsg, statusCode: status);
   }
 
   /// Extract JSON from a response that may contain markdown fences.
