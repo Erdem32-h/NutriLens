@@ -590,10 +590,12 @@ class AnthropicAiService {
   /// single person's share), but we clamp defensively in case it returns
   /// an outlier — e.g. a serving-platter total or a misread label.
   /// 50g floor stops drink-only or appetiser-sized portions from looking
-  /// negligible; 350g ceiling covers a hearty Turkish main without
+  /// negligible; 700g ceiling covers one person's multi-dish menu (main +
+  /// rice + salad + cacık measured 600-650g in the 2026-10-17 bake-off,
+  /// which the old 350g cap cut by ~45% in calories) without
   /// blessing values that would only make sense as 2-person totals.
   static const int _mealPortionFloor = 50;
-  static const int _mealPortionCeiling = 350;
+  static const int _mealPortionCeiling = 700;
 
   static int _normalizeMealPortionGrams(int portionGrams) {
     if (portionGrams <= 0) return 200; // sensible default when AI omits
@@ -604,8 +606,8 @@ class AnthropicAiService {
 
   /// Scale the model's nutrition payload to match the clamped portion.
   /// The prompt asks the model to return totals for the portion it
-  /// estimated, so a clamp from 500g to 350g should drop nutrition to
-  /// 350/500 = 0.7×. When the model is already inside the bounds the
+  /// estimated, so a clamp from 1000g to 700g should drop nutrition to
+  /// 700/1000 = 0.7×. When the model is already inside the bounds the
   /// scale is 1.0 and the data passes through unchanged.
   static double _mealNutritionScale(int portionGrams) {
     if (portionGrams <= 0) return 1; // default-200g path uses raw values
@@ -789,8 +791,11 @@ Yiyecek tipi referans aralıkları (bir kişilik):
   * İçecek: 200–400 ml
 
 Sert kurallar:
-- 50 g'dan az veya 350 g'dan fazla TEK KİŞİLİK porsiyon DÖNDÜRME. Bu
+- 50 g'dan az veya 700 g'dan fazla TEK KİŞİLİK porsiyon DÖNDÜRME. Bu
   bandın dışına çıkarsan değerler reddedilir.
+- Tek kişinin önündeki birden çok kap (ana yemek + pilav + salata + cacık
+  gibi bir menü) BİREYSELDİR: `portion_grams` ve `nutrition` hepsinin
+  TOPLAMIdır (çoğunlukla 400–700 g). Tek bir kabı seçip diğerlerini atlama.
 - Default olarak 100 g sabiti KULLANMA. Fotoğrafa ve yemek tipine bak.
 - `portion_grams`: bir kişinin yediği toplam gramaj.
 - `nutrition`: o porsiyonun TOPLAM besin değerleri (100 g için değil).

@@ -126,7 +126,10 @@ Yiyecek tipi referans aralıkları (bir kişilik):
   * İçecek: 200-400 ml
 
 Sert kurallar:
-- 50 g'dan az veya 350 g'dan fazla TEK KİŞİLİK porsiyon DÖNDÜRME.
+- 50 g'dan az veya 700 g'dan fazla TEK KİŞİLİK porsiyon DÖNDÜRME.
+- Tek kişinin önündeki birden çok kap (ana yemek + pilav + salata + cacık
+  gibi bir menü) BİREYSELDİR: portion_grams ve nutrition hepsinin TOPLAMIdır
+  (çoğunlukla 400-700 g). Tek bir kabı seçip diğerlerini atlama.
 - Default olarak 100 g sabiti KULLANMA. Fotoğrafa ve yemek tipine bak.
 - portion_grams: bir kişinin yediği toplam gramaj.
 - nutrition: o porsiyonun TOPLAM besin değerleri (100 g için değil).

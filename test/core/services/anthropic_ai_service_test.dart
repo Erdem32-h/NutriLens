@@ -100,12 +100,13 @@ Alerjenler: Gluten, fındık, süt.
 
       expect(result, isNotNull);
       expect(result!.foodName, 'Menemen ve ekmek');
-      // 420g exceeds the 350g per-person ceiling → clamped to 350 and the
-      // nutrition is scaled by 350/420 = 0.8333.
-      expect(result.portionGrams, 350);
+      // A two-item plate for one person: inside the 700g ceiling, so the
+      // model's own totals pass through unscaled. Under the old 350g cap
+      // this lost a sixth of its calories.
+      expect(result.portionGrams, 420);
       expect(result.ingredientsText, contains('Yumurta'));
-      expect(result.nutriments.energyKcal, 508.33);
-      expect(result.nutriments.carbohydrates, 45.83);
+      expect(result.nutriments.energyKcal, 610);
+      expect(result.nutriments.carbohydrates, 55);
       expect(result.confidence, 0.72);
     });
 
@@ -133,12 +134,12 @@ Alerjenler: Gluten, fındık, süt.
     });
 
     test(
-      'normalizes oversized visible portions to the 350g personal ceiling',
+      'normalizes oversized visible portions to the 700g personal ceiling',
       () {
         final result = AnthropicAiService.parseMealAnalysisResponseText('''
 {
   "food_name": "Tencere yemeği",
-  "portion_grams": 500,
+  "portion_grams": 1000,
   "ingredients_text": "Et, sebze, yağ",
   "nutrition": {
     "energy_kcal": 750,
@@ -157,8 +158,8 @@ Alerjenler: Gluten, fındık, süt.
 ''');
 
         expect(result, isNotNull);
-        // 500g → clamped to the 350g ceiling, nutrition scaled by 350/500 = 0.7.
-        expect(result!.portionGrams, 350);
+        // 1000g → clamped to the 700g ceiling, nutrition scaled by 0.7.
+        expect(result!.portionGrams, 700);
         expect(result.nutriments.energyKcal, 525);
         expect(result.nutriments.fat, 24.5);
         expect(result.nutriments.salt, 2.8);
