@@ -115,6 +115,15 @@ abstract final class FunnelEvents {
   /// props: `method`
   static const registerSubmitTapped = 'register_submit_tapped';
 
+  /// Client-side validation stopped a register submit. Names the fields,
+  /// never their contents, so the gap between [registerSubmitTapped] and
+  /// [registerStarted] can be split by cause (2026-10, Android: 61 taps,
+  /// 9 starts, cause unknown).
+  ///
+  /// props: `method`, `fields` (comma-separated, screen order:
+  /// name, email, password, confirm_password)
+  static const registerValidationFailed = 'register_validation_failed';
+
   /// Client-side validation passed and the account request went out.
   /// props: `method`
   static const registerStarted = 'register_started';

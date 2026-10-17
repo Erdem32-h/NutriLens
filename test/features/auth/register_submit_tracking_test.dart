@@ -84,6 +84,32 @@ void main() {
     expect(analytics.propsFor(FunnelEvents.registerStarted), isEmpty);
   });
 
+  testWidgets('a submit stopped by validation names the fields that stopped '
+      'it, never their contents', (tester) async {
+    await tester.pumpWidget(subject());
+    await tester.pump();
+
+    // Name, email, password, confirmation — in screen order.
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.at(0), 'Ayşe');
+    await tester.enterText(fields.at(1), 'ayse@example.com');
+    await tester.enterText(fields.at(2), 'secret1');
+    await tester.enterText(fields.at(3), 'secret2');
+
+    final submit = find.byType(AppButton).first;
+    await tester.ensureVisible(submit);
+    await tester.pumpAndSettle();
+    await tester.tap(submit);
+    await tester.pumpAndSettle();
+
+    // Android: 61 taps from 9 devices, 9 got past validation, and nothing
+    // said which field held the rest back.
+    final failed = analytics.propsFor(FunnelEvents.registerValidationFailed);
+    expect(failed, hasLength(1));
+    expect(failed.single, {'method': 'email', 'fields': 'confirm_password'});
+    expect(analytics.propsFor(FunnelEvents.registerStarted), isEmpty);
+  });
+
   testWidgets('the email path carries its method so social sign-ups are '
       'distinguishable', (tester) async {
     await tester.pumpWidget(subject());

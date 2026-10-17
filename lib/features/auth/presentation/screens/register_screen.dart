@@ -57,6 +57,34 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     super.dispose();
   }
 
+  String? _validateName(String? v) =>
+      v == null || v.isEmpty ? context.l10n.enterName : null;
+
+  String? _validateEmail(String? v) {
+    if (v == null || v.isEmpty) return context.l10n.enterEmail;
+    if (!v.contains('@')) return context.l10n.validEmail;
+    return null;
+  }
+
+  String? _validatePassword(String? v) {
+    if (v == null || v.isEmpty) return context.l10n.enterPassword;
+    if (v.length < 6) return context.l10n.passwordMinLength;
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? v) =>
+      v != _passwordController.text ? context.l10n.passwordsDoNotMatch : null;
+
+  /// The fields the validators above reject, by name only — the report
+  /// that goes with a blocked submit must never carry what was typed.
+  String _invalidFields() => [
+    if (_validateName(_nameController.text) != null) 'name',
+    if (_validateEmail(_emailController.text) != null) 'email',
+    if (_validatePassword(_passwordController.text) != null) 'password',
+    if (_validateConfirmPassword(_confirmPasswordController.text) != null)
+      'confirm_password',
+  ].join(',');
+
   Future<void> _handleRegister() async {
     final analytics = ref.read(analyticsServiceProvider);
     // Before the validation gate on purpose. Everything downstream fires
@@ -68,7 +96,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       FunnelEvents.registerSubmitTapped,
       props: {'method': AuthMethod.email},
     );
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      analytics.track(
+        FunnelEvents.registerValidationFailed,
+        props: {'method': AuthMethod.email, 'fields': _invalidFields()},
+      );
+      return;
+    }
     final email = _emailController.text.trim();
     analytics.track(
       FunnelEvents.registerStarted,
@@ -266,10 +300,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         hintText: l10n.fullName,
                         prefixIcon: const Icon(Icons.person_outline_rounded),
                       ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return l10n.enterName;
-                        return null;
-                      },
+                      validator: _validateName,
                     ),
 
                     const SizedBox(height: 20),
@@ -285,11 +316,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         hintText: l10n.emailHint,
                         prefixIcon: const Icon(Icons.email_outlined),
                       ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return l10n.enterEmail;
-                        if (!v.contains('@')) return l10n.validEmail;
-                        return null;
-                      },
+                      validator: _validateEmail,
                     ),
 
                     const SizedBox(height: 20),
@@ -315,11 +342,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                         ),
                       ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return l10n.enterPassword;
-                        if (v.length < 6) return l10n.passwordMinLength;
-                        return null;
-                      },
+                      validator: _validatePassword,
                     ),
 
                     const SizedBox(height: 20),
@@ -335,12 +358,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         hintText: '••••••••',
                         prefixIcon: Icon(Icons.lock_outline_rounded),
                       ),
-                      validator: (v) {
-                        if (v != _passwordController.text) {
-                          return l10n.passwordsDoNotMatch;
-                        }
-                        return null;
-                      },
+                      validator: _validateConfirmPassword,
                     ),
 
                     const SizedBox(height: 32),
