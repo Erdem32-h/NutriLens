@@ -63,3 +63,7 @@ android/.kotlin/
 #   .graphify_root holds the absolute path of whoever generated it (machine-local)
 # Tracking it rewrote hundreds of files on every commit and left the tree dirty.
 graphify-out/
+
+# AI eval photos: mostly CC BY-SA from Wikimedia Commons, re-downloadable from
+# tools/ai_eval/eval_set/sources.json. Keeps the repo small and attribution off it.
+tools/ai_eval/eval_set/*.jpg

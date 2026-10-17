@@ -1,0 +1,12 @@
+154 calls: 7 models x 11 images x 2 runs
+
+model                                ok   dish    src  strict  p50 s  p90 s  max s    $/call  in tok  out tok
+google/gemini-2.5-flash          22/22   22/22  22/22   18/22    3.3    4.0    5.8   0.00123    2688      261
+google/gemini-2.5-flash-lite     22/22   22/22  22/22   20/22    2.5    3.4    4.9   0.00034    2688      248
+google/gemini-3.5-flash-lite     22/22   22/22  22/22   19/22    2.4    3.3    5.2   0.00122    2006      246
+anthropic/claude-haiku-5.5       22/22   22/22  22/22   16/22    3.9    5.6    7.2   0.00062    4299      388
+openai/gpt-5-nano                22/22   11/22  19/22   20/22    3.9    5.4    6.5   0.00028    4204      289
+qwen/qwen3.7-flash               22/22   21/22  22/22   17/22   13.1   19.3   20.0   0.00015    3049      544
+google/gemma-4-26b-a4b-it        22/22   21/22  22/22   19/22    7.7   18.2   54.1   0.00015    1244      231
+
+Per-call records: C:/Users/m_fat/AppData/Local/Temp/claude/C--Users-m-fat-OneDrive-Desktop-Github-NutriLens/47e167d8-a612-4f9c-88b6-8563e3080cd5/scratchpad/eval_set_results.jsonl

@@ -1,0 +1,121 @@
+{
+ "01_mercimek_corbasi": {
+  "label": "mercimek çorbası",
+  "accept": [
+   "mercimek",
+   "lentil"
+  ],
+  "food_source": [
+   "homemade",
+   "restaurant"
+  ]
+ },
+ "02_lahmacun": {
+  "label": "lahmacun",
+  "accept": [
+   "lahmacun"
+  ],
+  "food_source": [
+   "restaurant",
+   "homemade"
+  ]
+ },
+ "03_karniyarik_menu": {
+  "label": "karnıyarık + pilav + salata + cacık",
+  "accept": [
+   "karnıyarık",
+   "karniyarik",
+   "patlıcan",
+   "imam"
+  ],
+  "food_source": [
+   "restaurant"
+  ]
+ },
+ "04_iskender": {
+  "label": "İskender kebap",
+  "accept": [
+   "iskender",
+   "i̇skender",
+   "döner"
+  ],
+  "food_source": [
+   "restaurant"
+  ]
+ },
+ "05_kuru_fasulye_pilav": {
+  "label": "kuru fasulye + şehriyeli pilav",
+  "accept": [
+   "fasulye"
+  ],
+  "food_source": [
+   "homemade"
+  ]
+ },
+ "06_manti": {
+  "label": "mantı (büyük) + peynir + salata",
+  "accept": [
+   "mantı",
+   "manti",
+   "dumpling"
+  ],
+  "food_source": [
+   "restaurant",
+   "homemade"
+  ]
+ },
+ "07_baklava": {
+  "label": "baklava",
+  "accept": [
+   "baklava"
+  ],
+  "food_source": [
+   "homemade",
+   "restaurant"
+  ]
+ },
+ "08_serpme_kahvalti": {
+  "label": "serpme Türk kahvaltısı (paylaşımlı)",
+  "accept": [
+   "kahvalt",
+   "breakfast"
+  ],
+  "food_source": [
+   "homemade",
+   "restaurant"
+  ]
+ },
+ "09_lahmacun_ayran_salata": {
+  "label": "lahmacun + çoban salatası + ayran",
+  "accept": [
+   "lahmacun"
+  ],
+  "food_source": [
+   "restaurant"
+  ]
+ },
+ "10_makarna_bolonez": {
+  "label": "kıymalı makarna (bolonez)",
+  "accept": [
+   "makarna",
+   "penne",
+   "bolonez",
+   "bolognese",
+   "kıymalı"
+  ],
+  "food_source": [
+   "homemade"
+  ]
+ },
+ "11_paketli_cips": {
+  "label": "paketli patates cipsi (Ruffles)",
+  "accept": [
+   "cips",
+   "chips",
+   "ruffles"
+  ],
+  "food_source": [
+   "packaged"
+  ]
+ }
+}

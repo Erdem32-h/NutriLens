@@ -1,256 +1,260 @@
 #!/usr/bin/env python3
 """Vision meal-analysis model bake-off for NutriLens.
 
-Runs the SAME meal-analysis prompt used in production
-(`AnthropicAiService._mealAnalysisPrompt`) against several candidate
-OpenRouter vision models plus Claude, on a folder of real food photos, and
-prints food_name / portion / kcal / confidence side by side so you can pick
-the cheapest model whose recognition quality holds.
+Sends the production meal-analysis request to each candidate OpenRouter model:
+the prompt is read straight out of supabase/functions/gemini-proxy/index.ts
+(mealAnalysisPrompt), and the message shape + params mirror
+handleOpenRouterAction, so the eval can never drift from what users get.
+Reports latency, OpenRouter-billed cost, JSON validity and the parsed answer
+for every call.
 
 Usage:
-    python tools/ai_eval/compare_vision.py <image_dir> [tr|en]
+    python tools/ai_eval/compare_vision.py <image_dir> [--lang tr] [--runs 2]
+        [--models id1,id2] [--workers 6] [--out results.jsonl]
+
+Scoring: if <image_dir>/ground_truth.json exists
+({stem: {"label": str, "accept": [keywords], "food_source": [allowed]}}),
+each answer is scored for dish recognition (any keyword in food_name or
+description) and food_source match.
 
 Requirements:
-    - OPENROUTER_API_KEY in tools/ai_eval/.env   (free at openrouter.ai)
-    - ANTHROPIC_API_KEY in tools/ai_eval/.env    (the Claude baseline; optional)
+    - OPENROUTER_API_KEY in tools/ai_eval/.env
     Stdlib only, no pip installs.
 
     Deliberately NOT the project-root .env: pubspec.yaml bundles that file as
-    a Flutter asset (for SUPABASE_URL/ANON_KEY etc., which are meant to ship),
-    so anything added there ends up readable inside the built APK/IPA. These
-    two keys are eval-only and must never live in a bundled asset.
+    a Flutter asset, so anything added there ends up readable inside the
+    built APK/IPA. The eval key must never live in a bundled asset.
 """
 
+import argparse
 import base64
 import json
-import mimetypes
-import os
-import sys
+import random
+import re
+import statistics
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[2]
+PROXY_SRC = REPO / "supabase" / "functions" / "gemini-proxy" / "index.ts"
+ENV_PATH = Path(__file__).resolve().parent / ".env"
 
 # ── Candidate models ──────────────────────────────────────────────────
-# OpenRouter ids (OpenAI-compatible chat/completions). Edit freely.
-OPENROUTER_MODELS = [
-    "meta-llama/llama-4-scout",
-    "qwen/qwen3-vl-8b-instruct",
-    "amazon/nova-lite-v1",
-    "openai/gpt-4.1-nano",
+# First entry is the production baseline. Edit freely.
+DEFAULT_MODELS = [
+    "google/gemini-2.5-flash",
+    "google/gemini-2.5-flash-lite",
+    "google/gemini-3.5-flash-lite",
+    "anthropic/claude-haiku-5.5",
+    "openai/gpt-5-nano",
+    "qwen/qwen3.7-flash",
+    "google/gemma-4-26b-a4b-it",
 ]
-# Claude baseline (direct Anthropic Messages API). Set to None to skip.
-ANTHROPIC_MODEL = "claude-sonnet-4-0"
+# Per-model request tweaks on top of the production params; a None value
+# drops the key. Measured 2026-10-17 with production params unchanged: both
+# reasoning models below spent the whole 1000-token budget thinking and
+# returned EMPTY content (Haiku 5.5: 1000/1000 reasoning tokens, 10 s;
+# gpt-5-nano: 960/1000, 20 s). In production that silently falls through to
+# the direct-Gemini fallback — switching either in via OPENROUTER_MEAL_MODEL
+# alone would look like it works while serving Gemini.
+MODEL_OVERRIDES: dict = {
+    "anthropic/claude-haiku-5.5": {"reasoning": {"enabled": False}},
+    "openai/gpt-5-nano": {"reasoning": {"effort": "minimal"}},
+}
 
+# Mirrors handleOpenRouterAction + callOpenRouter for action=meal_analysis.
+PRODUCTION_PARAMS = {
+    "max_tokens": 1000,
+    "temperature": 0.2,
+    "response_format": {"type": "json_object"},
+    "usage": {"include": True},
+}
+LANGS = {"tr": "Turkish", "en": "English", "de": "German", "fr": "French",
+         "es": "Spanish", "ar": "Arabic"}
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 TIMEOUT = 90
+FOOD_SOURCES = {"homemade", "packaged", "restaurant"}
 
 
-def language_name(code: str) -> str:
-    return {"en": "English", "tr": "Turkish"}.get(code, "Turkish")
+def meal_prompt(lang: str) -> str:
+    """The production prompt, extracted from the edge function source."""
+    src = PROXY_SRC.read_text(encoding="utf-8")
+    m = re.search(r"function mealAnalysisPrompt\([^)]*\)[^{]*\{.*?return `(.*?)`;",
+                  src, re.S)
+    if not m:
+        raise SystemExit(f"mealAnalysisPrompt not found in {PROXY_SRC}")
+    return m.group(1).replace("${ln}", LANGS.get(lang, "Turkish"))
 
 
-def meal_prompt(code: str) -> str:
-    """Kept in sync with AnthropicAiService._mealAnalysisPrompt."""
-    ln = language_name(code)
-    return f"""Bu görseldeki öğünü analiz et. Amacın TEK KİŞİNİN yediği porsiyonu
-gramaj + besin değeri olarak döndürmek.
-
-Yanıt dili: {ln}. `food_name`, `ingredients_text` ve
-`description` alanlarını {ln} dilinde yaz (yemek adını da bu dile
-çevir; örn. İngilizce için "Etli Pilav" -> "Rice with Meat").
-
-Önce şu kararı ver:
-1. BİREYSEL porsiyon mu? (Bir kişinin önünde duran, tek başına yeneceği
-   bir kase/tabak.)
-2. PAYLAŞIMLI tabak/tencere mi? (Ortaya konmuş büyük servis tabağı.)
-
-PAYLAŞIMLI ise: Sadece BİR kişinin alacağı tipik porsiyonu hesapla
-(yaklaşık 150-250 g). Tabaktaki toplam yemeği DEĞİL.
-BİREYSEL ise: Görseldeki gerçek miktarı tahmin et.
-
-Sert kurallar:
-- 50 g'dan az veya 350 g'dan fazla TEK KİŞİLİK porsiyon DÖNDÜRME.
-- Default olarak 100 g sabiti KULLANMA. Fotoğrafa ve yemek tipine bak.
-- `portion_grams`: bir kişinin yediği toplam gramaj.
-- `nutrition`: o porsiyonun TOPLAM besin değerleri (100 g için değil).
-- İçindekileri ({ln}) düz metin olarak yaz.
-- Belirsizse yine en iyi tahmini yap, `confidence` düşük olur.
-- Bulamadığın besin değerlerini 0 döndür.
-- Sadece JSON döndür, açıklama veya markdown yazma.
-
-Şema:
-{{
-  "food_name": string,
-  "portion_grams": number,
-  "ingredients_text": string,
-  "nutrition": {{"energy_kcal": number, "fat": number, "saturated_fat": number,
-    "trans_fat": number, "carbohydrates": number, "sugars": number,
-    "salt": number, "fiber": number, "protein": number}},
-  "confidence": number,
-  "description": string
-}}"""
+def load_key() -> str:
+    for line in ENV_PATH.read_text(encoding="utf-8").splitlines():
+        if line.startswith("OPENROUTER_API_KEY="):
+            return line.split("=", 1)[1].strip().strip('"').strip("'")
+    raise SystemExit(f"OPENROUTER_API_KEY missing in {ENV_PATH}")
 
 
-def load_env(path: str = "tools/ai_eval/.env") -> dict:
-    env = {}
-    if not os.path.exists(path):
-        return env
-    with open(path, encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, v = line.split("=", 1)
-            env[k.strip()] = v.strip().strip('"').strip("'")
-    return env
+def build_payload(model: str, prompt: str, b64: str) -> dict:
+    payload = {"model": model, **PRODUCTION_PARAMS, "messages": [{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": prompt},
+            {"type": "image_url",
+             "image_url": {"url": f"data:image/jpeg;base64,{b64}"}},
+        ],
+    }]}
+    for k, v in MODEL_OVERRIDES.get(model, {}).items():
+        if v is None:
+            payload.pop(k, None)
+        else:
+            payload[k] = v
+    return payload
 
 
-def extract_json(text: str):
+def extract_json(text: str) -> dict:
     t = text.strip()
-    if "```" in t:
-        # strip ```json ... ``` fences
-        import re
-
-        m = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", t)
-        if m:
-            t = m.group(1).strip()
-    start = t.find("{")
-    end = t.rfind("}")
-    if start != -1 and end != -1:
-        t = t[start : end + 1]
-    return json.loads(t)
+    fence = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", t)
+    if fence:
+        t = fence.group(1)
+    start, end = t.find("{"), t.rfind("}")
+    if start == -1 or end == -1:
+        raise ValueError("no JSON object")
+    return json.loads(t[start:end + 1])
 
 
-def post(url: str, headers: dict, payload: dict):
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
-        return json.loads(resp.read().decode("utf-8"))
-
-
-def call_openrouter(model, key, b64, media, prompt):
-    headers = {
-        "Authorization": f"Bearer {key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://nutrilenshq.com",
-        "X-Title": "NutriLens model eval",
-    }
-    payload = {
-        "model": model,
-        "max_tokens": 1000,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": prompt},
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:{media};base64,{b64}"},
-                    },
-                ],
-            }
-        ],
-    }
-    resp = post(OPENROUTER_URL, headers, payload)
-    return resp["choices"][0]["message"]["content"]
-
-
-def call_anthropic(model, key, b64, media, prompt):
-    headers = {
-        "x-api-key": key,
-        "anthropic-version": "2023-06-01",
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "model": model,
-        "max_tokens": 1000,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {"type": "base64", "media_type": media, "data": b64},
-                    },
-                    {"type": "text", "text": prompt},
-                ],
-            }
-        ],
-    }
-    resp = post(ANTHROPIC_URL, headers, payload)
-    return resp["content"][0]["text"]
-
-
-def summarize(raw_text):
+def num(v):
     try:
-        j = extract_json(raw_text)
-        n = j.get("nutrition", {}) or {}
-        return {
-            "food": str(j.get("food_name", "?"))[:34],
-            "g": j.get("portion_grams", "?"),
-            "kcal": n.get("energy_kcal", "?"),
-            "conf": j.get("confidence", "?"),
-        }
-    except Exception as e:  # noqa: BLE001
-        return {"food": f"[parse-fail: {str(e)[:24]}]", "g": "", "kcal": "", "conf": ""}
+        return float(v)
+    except (TypeError, ValueError):
+        return None
 
 
-def main():
-    if len(sys.argv) < 2:
-        print(__doc__)
-        sys.exit(1)
-    image_dir = sys.argv[1]
-    lang = sys.argv[2] if len(sys.argv) > 2 else "tr"
-    prompt = meal_prompt(lang)
+def judge(answer: dict, truth: dict | None) -> dict:
+    """App-valid mirrors the tolerant Dart parser; strict checks the schema."""
+    n = answer.get("nutrition") or {}
+    kcal, conf = num(n.get("energy_kcal")), num(answer.get("confidence"))
+    grams = num(answer.get("portion_grams"))
+    src = str(answer.get("food_source", "")).strip().lower()
+    out = {
+        "app_valid": bool(answer.get("food_name")) and bool(kcal and kcal > 0),
+        "strict": (conf is not None and 0 <= conf <= 1 and src in FOOD_SOURCES
+                   and grams is not None and 50 <= grams <= 350),
+    }
+    if truth:
+        hay = f"{answer.get('food_name', '')} {answer.get('description', '')}".casefold()
+        out["dish_ok"] = any(k.casefold() in hay for k in truth["accept"])
+        out["source_ok"] = src in truth["food_source"]
+    return out
 
-    env = load_env()
-    or_key = env.get("OPENROUTER_API_KEY", "")
-    an_key = env.get("ANTHROPIC_API_KEY", "")
-    if not or_key:
-        print("!! OPENROUTER_API_KEY missing in .env")
-    if not an_key:
-        print("!! ANTHROPIC_API_KEY missing in .env (Claude baseline skipped)")
 
-    exts = (".jpg", ".jpeg", ".png", ".webp")
-    images = sorted(
-        f for f in os.listdir(image_dir) if f.lower().endswith(exts)
+def call(task: dict, key: str, prompt: str) -> dict:
+    model, img = task["model"], task["image"]
+    b64 = base64.standard_b64encode(img.read_bytes()).decode("ascii")
+    body = json.dumps(build_payload(model, prompt, b64)).encode("utf-8")
+    req = urllib.request.Request(OPENROUTER_URL, data=body, method="POST", headers={
+        "Authorization": f"Bearer {key}", "Content-Type": "application/json",
+        "HTTP-Referer": "https://nutrilenshq.com", "X-Title": "NutriLens model eval",
+    })
+    rec = {"model": model, "image": img.stem, "run": task["run"]}
+    t0 = time.time()
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            resp = json.loads(r.read().decode("utf-8"))
+        rec["seconds"] = round(time.time() - t0, 2)
+    except urllib.error.HTTPError as e:
+        rec.update(seconds=round(time.time() - t0, 2), error=f"HTTP {e.code}: "
+                   + e.read().decode("utf-8", "ignore")[:200])
+        return rec
+    except Exception as e:  # noqa: BLE001 - every failure is a data point
+        rec.update(seconds=round(time.time() - t0, 2), error=str(e)[:200])
+        return rec
+    usage = resp.get("usage") or {}
+    rec.update(
+        provider=resp.get("provider"),
+        cost=usage.get("cost"),
+        prompt_tokens=usage.get("prompt_tokens"),
+        completion_tokens=usage.get("completion_tokens"),
+        reasoning_tokens=(usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
     )
-    if not images:
-        print(f"No images ({', '.join(exts)}) found in {image_dir}")
-        sys.exit(1)
+    text = ((resp.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
+    try:
+        answer = extract_json(text)
+    except Exception as e:  # noqa: BLE001
+        rec.update(error=f"parse: {e}", raw=text[:200])
+        return rec
+    n = answer.get("nutrition") or {}
+    rec.update(answer={
+        "food_name": answer.get("food_name"), "grams": answer.get("portion_grams"),
+        "kcal": n.get("energy_kcal"), "protein": n.get("protein"),
+        "carbs": n.get("carbohydrates"), "fat": n.get("fat"),
+        "confidence": answer.get("confidence"), "food_source": answer.get("food_source"),
+    }, **judge(answer, task.get("truth")))
+    return rec
 
-    runners = []
-    if an_key and ANTHROPIC_MODEL:
-        runners.append(("CLAUDE " + ANTHROPIC_MODEL, lambda b, m: call_anthropic(ANTHROPIC_MODEL, an_key, b, m, prompt)))
-    for mid in OPENROUTER_MODELS:
-        if or_key:
-            runners.append((mid, (lambda model: lambda b, m: call_openrouter(model, or_key, b, m, prompt))(mid)))
 
-    for img in images:
-        path = os.path.join(image_dir, img)
-        with open(path, "rb") as fh:
-            b64 = base64.standard_b64encode(fh.read()).decode("ascii")
-        media = mimetypes.guess_type(path)[0] or "image/jpeg"
-        print("\n" + "=" * 78)
-        print(f"IMAGE: {img}")
-        print("-" * 78)
-        print(f"{'model':<34}{'food':<36}{'g':>5}{'kcal':>6}{'conf':>6}  {'s':>5}")
-        for name, fn in runners:
-            t0 = time.time()
-            try:
-                raw = fn(b64, media)
-                s = summarize(raw)
-                dt = time.time() - t0
-                print(
-                    f"{name[:33]:<34}{str(s['food']):<36}{str(s['g']):>5}"
-                    f"{str(s['kcal']):>6}{str(s['conf']):>6}  {dt:5.1f}"
-                )
-            except urllib.error.HTTPError as e:
-                body = e.read().decode("utf-8", "ignore")[:80]
-                print(f"{name[:33]:<34}HTTP {e.code}: {body}")
-            except Exception as e:  # noqa: BLE001
-                print(f"{name[:33]:<34}ERROR: {str(e)[:60]}")
+def pct(values: list, q: float):
+    if not values:
+        return None
+    s = sorted(values)
+    return s[min(len(s) - 1, int(round(q * (len(s) - 1))))]
+
+
+def summarize(records: list, models: list) -> None:
+    print(f"\n{'model':<32}{'ok':>7}{'dish':>7}{'src':>7}{'strict':>8}"
+          f"{'p50 s':>7}{'p90 s':>7}{'max s':>7}{'$/call':>10}{'in tok':>8}{'out tok':>9}")
+    for m in models:
+        rs = [r for r in records if r["model"] == m]
+        ok = [r for r in rs if "answer" in r]
+        secs = [r["seconds"] for r in ok]
+        costs = [r["cost"] for r in ok if r.get("cost") is not None]
+        def rate(key):
+            scored = [r for r in ok if key in r]
+            return f"{sum(r[key] for r in scored)}/{len(scored)}" if scored else "-"
+        mean = lambda xs: statistics.mean(xs) if xs else 0  # noqa: E731
+        print(f"{m[:31]:<32}{len(ok):>3}/{len(rs):<3}{rate('dish_ok'):>7}"
+              f"{rate('source_ok'):>7}{rate('strict'):>8}"
+              f"{pct(secs, .5) or 0:>7.1f}{pct(secs, .9) or 0:>7.1f}{max(secs or [0]):>7.1f}"
+              f"{mean(costs):>10.5f}{mean([r['prompt_tokens'] or 0 for r in ok]):>8.0f}"
+              f"{mean([r['completion_tokens'] or 0 for r in ok]):>9.0f}")
+    errors = [r for r in records if "error" in r]
+    if errors:
+        print("\nErrors:")
+        for r in errors:
+            print(f"  {r['model']:<32}{r['image']:<26}{r['error'][:110]}")
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("image_dir")
+    ap.add_argument("--lang", default="tr")
+    ap.add_argument("--runs", type=int, default=2)
+    ap.add_argument("--models", default=",".join(DEFAULT_MODELS))
+    ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--out", default="results.jsonl")
+    args = ap.parse_args()
+
+    image_dir = Path(args.image_dir)
+    images = sorted(p for p in image_dir.iterdir()
+                    if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp"))
+    truth_path = image_dir / "ground_truth.json"
+    truth = json.loads(truth_path.read_text(encoding="utf-8")) if truth_path.exists() else {}
+    models = args.models.split(",")
+    key, prompt = load_key(), meal_prompt(args.lang)
+
+    tasks = [{"model": m, "image": img, "run": r, "truth": truth.get(img.stem)}
+             for m in models for img in images for r in range(args.runs)]
+    random.shuffle(tasks)  # spread each model's calls over the whole run
+    print(f"{len(tasks)} calls: {len(models)} models x {len(images)} images x {args.runs} runs")
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        records = list(pool.map(lambda t: call(t, key, prompt), tasks))
+
+    with open(args.out, "w", encoding="utf-8") as fh:
+        for r in records:
+            fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+    summarize(records, models)
+    print(f"\nPer-call records: {args.out}")
 
 
 if __name__ == "__main__":

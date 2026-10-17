@@ -1,8 +1,10 @@
 # AI vision model bake-off
 
-Compare candidate OpenRouter vision models against the Claude baseline for the
-meal-analysis use case, using the **same prompt as production**
-(`AnthropicAiService._mealAnalysisPrompt`).
+Compare candidate OpenRouter vision models for meal analysis using the
+**exact production request**: the prompt is read straight out of
+`supabase/functions/gemini-proxy/index.ts` (`mealAnalysisPrompt`) and the
+message shape + params mirror `handleOpenRouterAction`, so the eval cannot
+drift from what users get.
 
 ## Setup
 
@@ -11,40 +13,53 @@ into the app as a Flutter asset via `pubspec.yaml`, so anything added there
 ships inside the APK/IPA):
 
 ```
-OPENROUTER_API_KEY=sk-or-...
-ANTHROPIC_API_KEY=sk-ant-...   # the Claude baseline; optional
+OPENROUTER_API_KEY=sk-or-...   # a separate, spend-limited eval key
 ```
 
 ## Run
 
 ```bash
-# put 3-5 real food photos in a folder, then:
-python tools/ai_eval/compare_vision.py path/to/photos tr
-# or English prompt:
-python tools/ai_eval/compare_vision.py path/to/photos en
+# a folder of food photos (resize like the app: 2048 px long edge, JPEG q90)
+python tools/ai_eval/compare_vision.py path/to/photos --runs 2 --out results.jsonl
+# subset of models:
+python tools/ai_eval/compare_vision.py path/to/photos --models google/gemini-2.5-flash,google/gemini-2.5-flash-lite
 ```
 
-Output is a per-image table: `model | food_name | grams | kcal | confidence | seconds`.
+Optional `ground_truth.json` in the photo folder scores every answer:
+
+```json
+{"04_iskender": {"label": "İskender kebap", "accept": ["iskender"], "food_source": ["restaurant"]}}
+```
+
+Output: per-model summary (ok, dish recognised, food_source match, strict
+schema, p50/p90/max latency, OpenRouter-billed $/call, tokens) plus a JSONL
+record per call.
 
 ## How to read it
 
-- **Food name correct?** The whole feature rides on recognising the dish.
-- **kcal sane?** Compare against Claude's number and reality.
-- **Parse-fail?** A model that can't return clean JSON is unusable regardless
-  of price — it breaks the app's parser.
-- **Latency (s)?** Anything > ~25 s hurts UX.
+- **dish** — the whole feature rides on recognising the dish.
+- **ok** — a model that returns no usable JSON is unusable regardless of price
+  (in production it silently falls through to the direct-Gemini fallback).
+- **p90 s** — the tail is what users feel.
+- **$/call** — billed by OpenRouter (`usage.cost`), not estimated.
 
-Pick the cheapest model that gets the dish right and returns valid JSON on every
-photo. That model id goes into the edge-function proxy (server-side, key-safe).
+## Gotcha: reasoning models
 
-## Candidates
+With production params unchanged (`max_tokens: 1000`), reasoning models can
+spend the entire budget thinking and return empty content (measured
+2026-10-17: Claude Haiku 5.5 1000/1000 reasoning tokens, gpt-5-nano 960/1000).
+`MODEL_OVERRIDES` in the script turns reasoning off for those; switching such
+a model into production needs the same change in the edge function, not just
+`OPENROUTER_MEAL_MODEL`.
 
-Edit `OPENROUTER_MODELS` in `compare_vision.py`. Current shortlist:
-`meta-llama/llama-4-scout`, `qwen/qwen3-vl-8b-instruct`, `amazon/nova-lite-v1`,
-`openai/gpt-4.1-nano`. Refresh the full live list any time with:
+## Eval set
 
-```bash
-curl -s https://openrouter.ai/api/v1/models | python -c "import json,sys; \
-[print(m['id']) for m in json.load(sys.stdin)['data'] \
-if 'image' in (m.get('architecture',{}).get('input_modalities') or [])]"
-```
+`eval_set/` holds `ground_truth.json`, `sources.json` and the dated results.
+The photos themselves are git-ignored (mostly CC BY-SA, Wikimedia Commons):
+download each from its `page` in `sources.json` and save it as
+`<key>.jpg`; `10_makarna_bolonez` is a copy of
+`assets/images/onboarding_meal.jpg`.
+
+## Results
+
+- 2026-10-17 (11 photos x 2 runs): see NutriLens decisions log in the vault.
