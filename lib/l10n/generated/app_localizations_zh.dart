@@ -2194,4 +2194,32 @@ class AppLocalizationsZh extends AppLocalizations {
   String completedFastCountUnit(int count) {
     return '$count 次禁食';
   }
+
+  @override
+  String get authErrorPasswordPwned => '该密码曾出现在数据泄露中，容易被猜到。请换一个密码。';
+
+  @override
+  String get authErrorPasswordWeak => '密码强度太弱。请使用更长并混合字母、数字和符号的密码。';
+
+  @override
+  String get authErrorInvalidCredentials => '邮箱或密码不正确。';
+
+  @override
+  String get authErrorEmailNotConfirmed => '请先验证邮箱——点击我们发送到收件箱的链接（也请检查垃圾邮件）。';
+
+  @override
+  String get authErrorRateLimited => '尝试次数过多。请等待几分钟后重试。';
+
+  @override
+  String get authErrorSamePassword => '新密码不能与当前密码相同。';
+
+  @override
+  String get authErrorNetwork => '无法连接。请检查网络连接后重试。';
+
+  @override
+  String get authErrorAppleSignIn =>
+      '无法完成 Apple 登录。请确认已在“设置”中登录 iCloud 后重试，或使用 Google 或邮箱继续。';
+
+  @override
+  String get authErrorGeneric => '出了点问题，请重试。';
 }

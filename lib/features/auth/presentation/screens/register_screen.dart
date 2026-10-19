@@ -12,6 +12,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/cozy_header.dart';
 import '../../../../core/widgets/cozy_tile.dart';
+import '../auth_failure_message.dart';
 import '../providers/auth_provider.dart';
 import '../providers/social_auth_tracking.dart';
 import '../widgets/post_auth_flow.dart';
@@ -39,6 +40,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   /// leaving the user staring at an unchanged form.
   String? _pendingConfirmationEmail;
   bool _resending = false;
+
+  /// Supabase's verdict on the password itself (e.g. found in a breach).
+  /// Shown on the field, not in a snackbar: people retried the same weak
+  /// password dozens of times while the English snackbar flashed and went.
+  String? _passwordRejection;
 
   @override
   void initState() {
@@ -143,11 +149,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
       return;
     }
+    if (isWeakPasswordFailure(failure)) {
+      setState(
+        () => _passwordRejection = authFailureMessage(context.l10n, failure),
+      );
+      return;
+    }
     if (failure != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(failure.message),
+          content: Text(authFailureMessage(context.l10n, failure)),
           backgroundColor: context.colors.error,
+          duration: const Duration(seconds: 6),
         ),
       );
       return;
@@ -162,8 +175,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // If confirmation is OFF, a session lands immediately, the
     // listener in build() picks it up and routes to /meals. We skip
     // showing the banner in that case.
-    final hasSession =
-        Supabase.instance.client.auth.currentSession != null;
+    final hasSession = Supabase.instance.client.auth.currentSession != null;
     // `awaiting_confirmation` is the whole reason this event carries a prop.
     // A registration that lands here without a session has created a row in
     // auth.users — so it counts as an account in every server-side tally —
@@ -171,10 +183,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     // Without this flag those two very different outcomes are indistinguishable.
     analytics.track(
       FunnelEvents.registerSucceeded,
-      props: {
-        'method': AuthMethod.email,
-        'awaiting_confirmation': !hasSession,
-      },
+      props: {'method': AuthMethod.email, 'awaiting_confirmation': !hasSession},
     );
     if (!hasSession) {
       setState(() => _pendingConfirmationEmail = email);
@@ -201,7 +210,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.emailSendFailed(e))),
+        SnackBar(
+          content: Text(authFailureMessage(context.l10n, e)),
+          backgroundColor: context.colors.error,
+        ),
       );
     } finally {
       if (mounted) setState(() => _resending = false);
@@ -245,186 +257,204 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       onResend: _resendConfirmation,
                     )
                   : Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
 
-                    // The same back chip every pushed cozy screen wears,
-                    // rather than a bare IconButton.
-                    CozyHeaderAction(
-                      icon: Icons.arrow_back_rounded,
-                      tooltip: MaterialLocalizations.of(
-                        context,
-                      ).backButtonTooltip,
-                      onPressed: () => context.go('/login'),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Heading
-                    Text(
-                      l10n.createAccount,
-                      style: textTheme.displaySmall?.copyWith(
-                        color: context.colors.textPrimary,
-                        fontWeight: FontWeight.w800,
-                        height: 1.1,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      l10n.startHealthyJourney,
-                      style: textTheme.bodyLarge?.copyWith(
-                        color: context.colors.cozy.bodyOnTint,
-                        height: 1.35,
-                      ),
-                    ),
-
-                    const SizedBox(height: 36),
-
-                    // Full name
-                    _buildLabel(l10n.fullName),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _nameController,
-                      keyboardType: TextInputType.name,
-                      textCapitalization: TextCapitalization.words,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      style: TextStyle(
-                        color: context.colors.textPrimary,
-                        fontFamilyFallback: const ['Roboto', 'sans-serif'],
-                      ),
-                      decoration: InputDecoration(
-                        hintText: l10n.fullName,
-                        prefixIcon: const Icon(Icons.person_outline_rounded),
-                      ),
-                      validator: _validateName,
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Email
-                    _buildLabel(l10n.email),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(color: context.colors.textPrimary),
-                      decoration: InputDecoration(
-                        hintText: l10n.emailHint,
-                        prefixIcon: const Icon(Icons.email_outlined),
-                      ),
-                      validator: _validateEmail,
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Password
-                    _buildLabel(l10n.password),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      style: TextStyle(color: context.colors.textPrimary),
-                      decoration: InputDecoration(
-                        hintText: '••••••••',
-                        prefixIcon: const Icon(Icons.lock_outline_rounded),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
+                          // The same back chip every pushed cozy screen wears,
+                          // rather than a bare IconButton.
+                          CozyHeaderAction(
+                            icon: Icons.arrow_back_rounded,
+                            tooltip: MaterialLocalizations.of(
+                              context,
+                            ).backButtonTooltip,
+                            onPressed: () => context.go('/login'),
                           ),
-                          onPressed: () => setState(
-                            () => _obscurePassword = !_obscurePassword,
-                          ),
-                        ),
-                      ),
-                      validator: _validatePassword,
-                    ),
 
-                    const SizedBox(height: 20),
+                          const SizedBox(height: 24),
 
-                    // Confirm password
-                    _buildLabel(l10n.confirmPassword),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _confirmPasswordController,
-                      obscureText: true,
-                      style: TextStyle(color: context.colors.textPrimary),
-                      decoration: const InputDecoration(
-                        hintText: '••••••••',
-                        prefixIcon: Icon(Icons.lock_outline_rounded),
-                      ),
-                      validator: _validateConfirmPassword,
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Register button
-                    AppButton(
-                      label: l10n.signUp,
-                      isLoading: isLoading,
-                      onPressed: _handleRegister,
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Divider
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: context.colors.border)),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            l10n.orSeparator,
-                            style: TextStyle(
-                              color: context.colors.textMuted,
-                              fontSize: 13,
+                          // Heading
+                          Text(
+                            l10n.createAccount,
+                            style: textTheme.displaySmall?.copyWith(
+                              color: context.colors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                              height: 1.1,
                             ),
                           ),
-                        ),
-                        Expanded(child: Divider(color: context.colors.border)),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    const SocialLoginButtons(),
-
-                    const SizedBox(height: 32),
-
-                    // Login link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          l10n.alreadyHaveAccount,
-                          style: TextStyle(
-                            color: context.colors.textMuted,
-                            fontSize: 14,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => context.go('/login'),
-                          child: Text(
-                            l10n.signIn,
-                            style: TextStyle(
-                              color: context.colors.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(height: 10),
+                          Text(
+                            l10n.startHealthyJourney,
+                            style: textTheme.bodyLarge?.copyWith(
+                              color: context.colors.cozy.bodyOnTint,
+                              height: 1.35,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
 
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
+                          const SizedBox(height: 36),
+
+                          // Full name
+                          _buildLabel(l10n.fullName),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _nameController,
+                            keyboardType: TextInputType.name,
+                            textCapitalization: TextCapitalization.words,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            style: TextStyle(
+                              color: context.colors.textPrimary,
+                              fontFamilyFallback: const [
+                                'Roboto',
+                                'sans-serif',
+                              ],
+                            ),
+                            decoration: InputDecoration(
+                              hintText: l10n.fullName,
+                              prefixIcon: const Icon(
+                                Icons.person_outline_rounded,
+                              ),
+                            ),
+                            validator: _validateName,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Email
+                          _buildLabel(l10n.email),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            style: TextStyle(color: context.colors.textPrimary),
+                            decoration: InputDecoration(
+                              hintText: l10n.emailHint,
+                              prefixIcon: const Icon(Icons.email_outlined),
+                            ),
+                            validator: _validateEmail,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Password
+                          _buildLabel(l10n.password),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            style: TextStyle(color: context.colors.textPrimary),
+                            onChanged: (_) {
+                              if (_passwordRejection != null) {
+                                setState(() => _passwordRejection = null);
+                              }
+                            },
+                            decoration: InputDecoration(
+                              hintText: '••••••••',
+                              errorText: _passwordRejection,
+                              errorMaxLines: 3,
+                              prefixIcon: const Icon(
+                                Icons.lock_outline_rounded,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                ),
+                                onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword,
+                                ),
+                              ),
+                            ),
+                            validator: _validatePassword,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Confirm password
+                          _buildLabel(l10n.confirmPassword),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _confirmPasswordController,
+                            obscureText: true,
+                            style: TextStyle(color: context.colors.textPrimary),
+                            decoration: const InputDecoration(
+                              hintText: '••••••••',
+                              prefixIcon: Icon(Icons.lock_outline_rounded),
+                            ),
+                            validator: _validateConfirmPassword,
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          // Register button
+                          AppButton(
+                            label: l10n.signUp,
+                            isLoading: isLoading,
+                            onPressed: _handleRegister,
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          // Divider
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Divider(color: context.colors.border),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Text(
+                                  l10n.orSeparator,
+                                  style: TextStyle(
+                                    color: context.colors.textMuted,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(color: context.colors.border),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          const SocialLoginButtons(),
+
+                          const SizedBox(height: 32),
+
+                          // Login link
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                l10n.alreadyHaveAccount,
+                                style: TextStyle(
+                                  color: context.colors.textMuted,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => context.go('/login'),
+                                child: Text(
+                                  l10n.signIn,
+                                  style: TextStyle(
+                                    color: context.colors.primary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
             ),
           ),
         ],

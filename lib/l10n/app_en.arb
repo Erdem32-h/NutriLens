@@ -955,5 +955,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "authErrorPasswordPwned": "This password has shown up in data leaks and is easy to guess. Please choose a different one.",
+  "authErrorPasswordWeak": "This password is too weak. Choose a longer one that mixes letters, numbers and symbols.",
+  "authErrorInvalidCredentials": "Email or password is incorrect.",
+  "authErrorEmailNotConfirmed": "Please confirm your email first — tap the link we sent to your inbox (check spam too).",
+  "authErrorRateLimited": "Too many attempts. Please wait a few minutes and try again.",
+  "authErrorSamePassword": "Your new password must be different from your current one.",
+  "authErrorNetwork": "Couldn't connect. Check your internet connection and try again.",
+  "authErrorAppleSignIn": "Sign in with Apple couldn't be completed. Make sure you're signed in to iCloud in Settings and try again, or continue with Google or email.",
+  "authErrorGeneric": "Something went wrong. Please try again."
 }

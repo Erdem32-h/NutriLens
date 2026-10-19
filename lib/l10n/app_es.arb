@@ -955,5 +955,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "authErrorPasswordPwned": "Esta contraseña ha aparecido en filtraciones de datos y es fácil de adivinar. Elige otra, por favor.",
+  "authErrorPasswordWeak": "Esta contraseña es demasiado débil. Elige una más larga que combine letras, números y símbolos.",
+  "authErrorInvalidCredentials": "El correo o la contraseña son incorrectos.",
+  "authErrorEmailNotConfirmed": "Primero confirma tu correo: toca el enlace que te enviamos (revisa también el spam).",
+  "authErrorRateLimited": "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+  "authErrorSamePassword": "La nueva contraseña debe ser distinta de la actual.",
+  "authErrorNetwork": "No se pudo conectar. Comprueba tu conexión a internet e inténtalo de nuevo.",
+  "authErrorAppleSignIn": "No se pudo completar el inicio de sesión con Apple. Asegúrate de haber iniciado sesión en iCloud en Ajustes e inténtalo de nuevo, o continúa con Google o correo.",
+  "authErrorGeneric": "Algo salió mal. Inténtalo de nuevo."
 }

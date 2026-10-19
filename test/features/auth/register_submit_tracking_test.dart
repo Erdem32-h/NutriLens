@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nutrilens/core/analytics/analytics_event.dart';
 import 'package:nutrilens/core/analytics/analytics_provider.dart';
 import 'package:nutrilens/core/analytics/analytics_service.dart';
+import 'package:nutrilens/core/error/failures.dart';
 import 'package:nutrilens/core/theme/app_colors.dart';
 import 'package:nutrilens/core/widgets/app_button.dart';
 import 'package:nutrilens/features/auth/domain/entities/user_entity.dart';
@@ -123,5 +125,51 @@ void main() {
 
     final tapped = analytics.propsFor(FunnelEvents.registerSubmitTapped);
     expect(tapped.single['method'], 'email');
+  });
+
+  testWidgets('a password Supabase rejects stays written on the field until '
+      'it is changed', (tester) async {
+    when(
+      () => repository.signUpWithEmail(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+        displayName: any(named: 'displayName'),
+      ),
+    ).thenAnswer(
+      (_) async => const Left(
+        AuthFailure(
+          'Password is known to be weak and easy to guess',
+          code: 'weak_password',
+          reasons: ['pwned'],
+        ),
+      ),
+    );
+    await tester.pumpWidget(subject());
+    await tester.pump();
+
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.at(0), 'Ayşe');
+    await tester.enterText(fields.at(1), 'ayse@example.com');
+    await tester.enterText(fields.at(2), '123456');
+    await tester.enterText(fields.at(3), '123456');
+    final submit = find.byType(AppButton).first;
+    await tester.ensureVisible(submit);
+    await tester.pumpAndSettle();
+    await tester.tap(submit);
+    await tester.pumpAndSettle();
+
+    final l10n = lookupAppLocalizations(const Locale('tr'));
+    // On the field, in the user's language — not Supabase's English sentence
+    // in a snackbar that is gone before anyone reads it.
+    expect(find.text(l10n.authErrorPasswordPwned), findsOneWidget);
+    expect(find.byType(SnackBar), findsNothing);
+    expect(
+      analytics.propsFor(FunnelEvents.registerFailed).single['reason'],
+      'weak_password',
+    );
+
+    await tester.enterText(fields.at(2), 'a-much-better-passphrase');
+    await tester.pump();
+    expect(find.text(l10n.authErrorPasswordPwned), findsNothing);
   });
 }

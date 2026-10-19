@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -23,7 +25,8 @@ import '../../domain/entities/user_entity.dart';
 ///
 /// The code and message are pinned by url_launcher_ios for compatibility.
 bool isInAppBrowserLoadFailure(PlatformException e) =>
-    e.code == 'Error' && (e.message?.startsWith('Error while launching') ?? false);
+    e.code == 'Error' &&
+    (e.message?.startsWith('Error while launching') ?? false);
 
 abstract interface class AuthRemoteDataSource {
   Future<UserEntity> signInWithEmail({
@@ -122,11 +125,17 @@ final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         // Apple signs the hash; Supabase is given the raw value to compare.
         nonce: sha256.convert(utf8.encode(rawNonce)).toString(),
       );
-    } on SignInWithAppleAuthorizationException catch (e) {
+    } on SignInWithAppleAuthorizationException catch (e, st) {
       if (e.code == AuthorizationErrorCode.canceled) {
         throw const SignInCancelledException();
       }
-      rethrow;
+      // The sheet fails before any request reaches Supabase, so this report
+      // is the only place the underlying NSError (e.g. 1000) ends up.
+      unawaited(Sentry.captureException(e, stackTrace: st));
+      throw NativeSignInException(e.code.name);
+    } on PlatformException catch (e, st) {
+      unawaited(Sentry.captureException(e, stackTrace: st));
+      throw NativeSignInException('platform_${e.code}');
     }
 
     final idToken = credential.identityToken;
@@ -141,10 +150,10 @@ final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     // Apple shares the name once, on the first authorisation, and never in
     // the token — keep it now or never.
-    final name = [credential.givenName, credential.familyName]
-        .whereType<String>()
-        .join(' ')
-        .trim();
+    final name = [
+      credential.givenName,
+      credential.familyName,
+    ].whereType<String>().join(' ').trim();
     if (name.isEmpty) return;
     try {
       await _client.auth.updateUser(

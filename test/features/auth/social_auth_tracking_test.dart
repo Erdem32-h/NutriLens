@@ -123,6 +123,32 @@ void main() {
       expect(scope.read(pendingSocialAuthProvider), isNull);
     });
 
+    testWidgets('a failed sign-in tells the user why instead of doing '
+        'nothing', (tester) async {
+      when(
+        () => repository.signInWithGoogle(),
+      ).thenAnswer((_) async => const Left(NetworkFailure()));
+
+      await tester.pumpWidget(subject());
+      await tester.tap(find.byType(AppButton));
+      await tester.pumpAndSettle();
+
+      final l10n = lookupAppLocalizations(const Locale('tr'));
+      expect(find.text(l10n.authErrorNetwork), findsOneWidget);
+    });
+
+    testWidgets('a dismissed sheet shows no error', (tester) async {
+      when(
+        () => repository.signInWithGoogle(),
+      ).thenAnswer((_) async => const Left(SignInCancelledFailure()));
+
+      await tester.pumpWidget(subject());
+      await tester.tap(find.byType(AppButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
     testWidgets('a launched sign-in stays pending until the session lands', (
       tester,
     ) async {
@@ -208,7 +234,8 @@ void main() {
         isInAppBrowserLoadFailure(
           PlatformException(
             code: 'Error',
-            message: 'Error while launching https://x.supabase.co/auth/v1/'
+            message:
+                'Error while launching https://x.supabase.co/auth/v1/'
                 'authorize?provider=apple',
           ),
         ),
@@ -219,7 +246,10 @@ void main() {
     test('lets launches that never opened a browser fail', () {
       for (final e in [
         PlatformException(code: 'no_ui_available'),
-        PlatformException(code: 'argument_error', message: 'Unable to parse URL'),
+        PlatformException(
+          code: 'argument_error',
+          message: 'Unable to parse URL',
+        ),
         PlatformException(code: 'Error'),
       ]) {
         expect(isInAppBrowserLoadFailure(e), isFalse, reason: e.code);

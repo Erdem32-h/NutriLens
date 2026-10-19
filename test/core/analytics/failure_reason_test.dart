@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nutrilens/core/analytics/failure_reason.dart';
+import 'package:nutrilens/core/error/failures.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class _AlreadyRegisteredFailure implements Exception {}
@@ -58,6 +59,20 @@ void main() {
     test('bounds the length of whatever it returns', () {
       final reason = authFailureReason(AuthApiException('x', code: 'a' * 200));
       expect(reason.length, lessThanOrEqualTo(48));
+    });
+  });
+
+  group('authFailureDetail', () {
+    test('carries the native sheet error code', () {
+      expect(
+        authFailureDetail(const NativeSignInFailure('notHandled')),
+        'nothandled',
+      );
+    });
+
+    test('is absent for failures that already say enough', () {
+      expect(authFailureDetail(const ServerFailure('boom')), isNull);
+      expect(authFailureDetail(null), isNull);
     });
   });
 }

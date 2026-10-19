@@ -44,8 +44,18 @@ final class RateLimitFailure extends Failure {
   ]) : super(message);
 }
 
+/// [message] is Supabase's English text — for logs only. UI layers map
+/// [code] (e.g. `weak_password`, `invalid_credentials`) to localized text.
 final class AuthFailure extends Failure {
-  const AuthFailure(super.message);
+  final String? code;
+
+  /// Why a `weak_password` was rejected: `length`, `characters`, `pwned`.
+  final List<String> reasons;
+
+  const AuthFailure(super.message, {this.code, this.reasons = const []});
+
+  @override
+  List<Object?> get props => [message, code, reasons];
 }
 
 /// Signup attempted with an email that already has a confirmed account.
@@ -56,6 +66,17 @@ final class AlreadyRegisteredFailure extends Failure {
     String message =
         "This email is already registered — try signing in or 'Forgot password'.",
   ]) : super(message);
+}
+
+/// A native sign-in sheet failed before reaching our server. [code] is the
+/// platform's error code; analytics reports it as the event's `detail`.
+final class NativeSignInFailure extends Failure {
+  final String code;
+
+  const NativeSignInFailure(this.code) : super('Sign-in failed ($code).');
+
+  @override
+  List<Object?> get props => [message, code];
 }
 
 /// The user closed a native sign-in sheet without finishing. Nothing to show

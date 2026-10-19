@@ -46,7 +46,7 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
         .read(authRepositoryProvider)
         .signInWithEmail(email: email, password: password);
     state = result.fold(
-      (failure) => AsyncError(failure.message, StackTrace.current),
+      (failure) => AsyncError(failure, StackTrace.current),
       (user) => AsyncData(user),
     );
     if (state.value != null) {
@@ -73,7 +73,7 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
           displayName: displayName,
         );
     state = result.fold(
-      (failure) => AsyncError(failure.message, StackTrace.current),
+      (failure) => AsyncError(failure, StackTrace.current),
       (user) => AsyncData(user),
     );
     return result.fold((failure) => failure, (_) => null);
@@ -91,7 +91,7 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
   Future<Failure?> signInWithGoogle() async {
     final result = await ref.read(authRepositoryProvider).signInWithGoogle();
     result.fold(
-      (failure) => state = AsyncError(failure.message, StackTrace.current),
+      (failure) => state = AsyncError(failure, StackTrace.current),
       (_) {},
     );
     return result.fold((failure) => failure, (_) => null);
@@ -101,29 +101,29 @@ class AuthNotifier extends AsyncNotifier<UserEntity?> {
   Future<Failure?> signInWithApple() async {
     final result = await ref.read(authRepositoryProvider).signInWithApple();
     result.fold(
-      (failure) => state = AsyncError(failure.message, StackTrace.current),
+      (failure) => state = AsyncError(failure, StackTrace.current),
       (_) {},
     );
     return result.fold((failure) => failure, (_) => null);
   }
 
-  /// Returns `null` on success, or an error message on failure.
+  /// Returns `null` on success, or the [Failure] on failure.
   /// Does NOT touch `state` — the UI handles its own loading flag for
   /// this transient action (we don't want to flip the global auth state
   /// to loading/error just because the user typed a wrong email).
-  Future<String?> sendPasswordResetEmail(String email) async {
+  Future<Failure?> sendPasswordResetEmail(String email) async {
     final result = await ref
         .read(authRepositoryProvider)
         .sendPasswordResetEmail(email);
-    return result.fold((failure) => failure.message, (_) => null);
+    return result.fold((failure) => failure, (_) => null);
   }
 
-  /// Returns `null` on success, or an error message on failure.
-  Future<String?> updatePassword(String newPassword) async {
+  /// Returns `null` on success, or the [Failure] on failure.
+  Future<Failure?> updatePassword(String newPassword) async {
     final result = await ref
         .read(authRepositoryProvider)
         .updatePassword(newPassword);
-    return result.fold((failure) => failure.message, (_) => null);
+    return result.fold((failure) => failure, (_) => null);
   }
 
   Future<void> signOut() async {

@@ -955,5 +955,14 @@
         "type": "int"
       }
     }
-  }
+  },
+  "authErrorPasswordPwned": "Esta senha apareceu em vazamentos de dados e é fácil de adivinhar. Escolha outra, por favor.",
+  "authErrorPasswordWeak": "Esta senha é fraca demais. Escolha uma mais longa, com letras, números e símbolos.",
+  "authErrorInvalidCredentials": "E-mail ou senha incorretos.",
+  "authErrorEmailNotConfirmed": "Confirme seu e-mail primeiro — toque no link que enviamos (verifique também o spam).",
+  "authErrorRateLimited": "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+  "authErrorSamePassword": "A nova senha precisa ser diferente da atual.",
+  "authErrorNetwork": "Não foi possível conectar. Verifique sua conexão com a internet e tente novamente.",
+  "authErrorAppleSignIn": "Não foi possível concluir o login com a Apple. Verifique se você entrou no iCloud em Ajustes e tente novamente, ou continue com Google ou e-mail.",
+  "authErrorGeneric": "Algo deu errado. Tente novamente."
 }

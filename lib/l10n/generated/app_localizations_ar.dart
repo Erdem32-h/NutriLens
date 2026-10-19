@@ -2243,4 +2243,39 @@ class AppLocalizationsAr extends AppLocalizations {
   String completedFastCountUnit(int count) {
     return '$count صيام';
   }
+
+  @override
+  String get authErrorPasswordPwned =>
+      'ظهرت كلمة المرور هذه في تسريبات بيانات ويسهل تخمينها. يرجى اختيار كلمة مرور أخرى.';
+
+  @override
+  String get authErrorPasswordWeak =>
+      'كلمة المرور ضعيفة جداً. اختر كلمة أطول تجمع بين الحروف والأرقام والرموز.';
+
+  @override
+  String get authErrorInvalidCredentials =>
+      'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'يرجى تأكيد بريدك الإلكتروني أولاً — اضغط على الرابط الذي أرسلناه إليك (وتحقق من مجلد الرسائل غير المرغوب فيها).';
+
+  @override
+  String get authErrorRateLimited =>
+      'محاولات كثيرة جداً. انتظر بضع دقائق ثم حاول مرة أخرى.';
+
+  @override
+  String get authErrorSamePassword =>
+      'يجب أن تختلف كلمة المرور الجديدة عن الحالية.';
+
+  @override
+  String get authErrorNetwork =>
+      'تعذّر الاتصال. تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.';
+
+  @override
+  String get authErrorAppleSignIn =>
+      'تعذّر إكمال تسجيل الدخول باستخدام Apple. تأكد من تسجيل الدخول إلى iCloud في الإعدادات ثم حاول مرة أخرى، أو تابع باستخدام Google أو البريد الإلكتروني.';
+
+  @override
+  String get authErrorGeneric => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
 }

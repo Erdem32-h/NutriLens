@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../error/failures.dart';
+
 /// Collapses an auth failure into a short, bounded machine code suitable for
 /// an analytics prop.
 ///
@@ -12,10 +14,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// is otherwise entirely anonymous.
 String authFailureReason(Object? error) {
   if (error == null) return 'unknown';
+  // Supabase's own codes are short and stable; prefer them wherever they
+  // survived — on the raw exception or carried by an AuthFailure.
+  final supabaseCode = switch (error) {
+    AuthFailure(:final code) => code,
+    AuthException(:final code) => code,
+    _ => null,
+  };
+  if (supabaseCode != null && supabaseCode.isNotEmpty) {
+    return _sanitize(supabaseCode);
+  }
   if (error is AuthApiException) {
-    final code = error.code;
-    // Supabase's own codes are already short and stable; prefer them.
-    if (code != null && code.isNotEmpty) return _sanitize(code);
     return 'auth_${error.statusCode ?? 'error'}';
   }
   if (error is AuthRetryableFetchException) return 'network_retryable';
@@ -35,6 +44,13 @@ String authFailureReason(Object? error) {
   // which is exactly the distinction that tells a UX problem from an outage.
   return _sanitize(_snakeCase(error.runtimeType.toString()));
 }
+
+/// The finer cause behind [authFailureReason], when the failure carries one;
+/// sent as the event's `detail` prop. Null when the reason already says it all.
+String? authFailureDetail(Object? error) => switch (error) {
+  NativeSignInFailure(:final code) => _sanitize(code),
+  _ => null,
+};
 
 String _snakeCase(String input) => input
     .replaceAllMapped(RegExp(r'(?<=[a-z0-9])([A-Z])'), (m) => '_${m[1]}')

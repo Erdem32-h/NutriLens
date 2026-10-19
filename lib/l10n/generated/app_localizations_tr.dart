@@ -2257,4 +2257,39 @@ class AppLocalizationsTr extends AppLocalizations {
   String completedFastCountUnit(int count) {
     return '$count oruç';
   }
+
+  @override
+  String get authErrorPasswordPwned =>
+      'Bu şifre veri sızıntılarında görülmüş ve tahmin edilmesi kolay. Lütfen farklı bir şifre seçin.';
+
+  @override
+  String get authErrorPasswordWeak =>
+      'Bu şifre çok zayıf. Harf, rakam ve sembol karışık, daha uzun bir şifre seçin.';
+
+  @override
+  String get authErrorInvalidCredentials => 'E-posta veya şifre hatalı.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Önce e-postanızı doğrulayın — gelen kutunuza gönderdiğimiz bağlantıya dokunun (spam klasörüne de bakın).';
+
+  @override
+  String get authErrorRateLimited =>
+      'Çok fazla deneme yapıldı. Birkaç dakika bekleyip tekrar deneyin.';
+
+  @override
+  String get authErrorSamePassword =>
+      'Yeni şifreniz mevcut şifrenizden farklı olmalı.';
+
+  @override
+  String get authErrorNetwork =>
+      'Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.';
+
+  @override
+  String get authErrorAppleSignIn =>
+      'Apple ile giriş tamamlanamadı. Ayarlar\'da iCloud\'a giriş yaptığınızdan emin olup tekrar deneyin ya da Google veya e-postayla devam edin.';
+
+  @override
+  String get authErrorGeneric =>
+      'Bir şeyler ters gitti. Lütfen tekrar deneyin.';
 }

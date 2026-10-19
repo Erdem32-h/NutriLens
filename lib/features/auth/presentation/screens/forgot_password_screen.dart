@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../auth_failure_message.dart';
 import '../providers/auth_provider.dart';
 import '../../../../core/widgets/app_button.dart';
 
@@ -44,9 +45,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       _sent = error == null;
     });
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authFailureMessage(context.l10n, error)),
+          backgroundColor: context.colors.error,
+          duration: const Duration(seconds: 6),
+        ),
+      );
     }
   }
 

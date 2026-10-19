@@ -4227,6 +4227,60 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{count} oruç'**
   String completedFastCountUnit(int count);
+
+  /// No description provided for @authErrorPasswordPwned.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu şifre veri sızıntılarında görülmüş ve tahmin edilmesi kolay. Lütfen farklı bir şifre seçin.'**
+  String get authErrorPasswordPwned;
+
+  /// No description provided for @authErrorPasswordWeak.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu şifre çok zayıf. Harf, rakam ve sembol karışık, daha uzun bir şifre seçin.'**
+  String get authErrorPasswordWeak;
+
+  /// No description provided for @authErrorInvalidCredentials.
+  ///
+  /// In tr, this message translates to:
+  /// **'E-posta veya şifre hatalı.'**
+  String get authErrorInvalidCredentials;
+
+  /// No description provided for @authErrorEmailNotConfirmed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önce e-postanızı doğrulayın — gelen kutunuza gönderdiğimiz bağlantıya dokunun (spam klasörüne de bakın).'**
+  String get authErrorEmailNotConfirmed;
+
+  /// No description provided for @authErrorRateLimited.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çok fazla deneme yapıldı. Birkaç dakika bekleyip tekrar deneyin.'**
+  String get authErrorRateLimited;
+
+  /// No description provided for @authErrorSamePassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni şifreniz mevcut şifrenizden farklı olmalı.'**
+  String get authErrorSamePassword;
+
+  /// No description provided for @authErrorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.'**
+  String get authErrorNetwork;
+
+  /// No description provided for @authErrorAppleSignIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apple ile giriş tamamlanamadı. Ayarlar\'da iCloud\'a giriş yaptığınızdan emin olup tekrar deneyin ya da Google veya e-postayla devam edin.'**
+  String get authErrorAppleSignIn;
+
+  /// No description provided for @authErrorGeneric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir şeyler ters gitti. Lütfen tekrar deneyin.'**
+  String get authErrorGeneric;
 }
 
 class _AppLocalizationsDelegate

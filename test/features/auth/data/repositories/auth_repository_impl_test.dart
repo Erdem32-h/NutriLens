@@ -6,7 +6,8 @@ import 'package:nutrilens/core/error/failures.dart';
 import 'package:nutrilens/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:nutrilens/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:nutrilens/features/auth/domain/entities/user_entity.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show AuthException, AuthWeakPasswordException;
 
 class MockAuthRemoteDataSource extends Mock implements AuthRemoteDataSource {}
 
@@ -207,6 +208,52 @@ void main() {
       // The funnel reads the type: a ServerFailure here would put every
       // change of mind back under `server_failure`.
       expect(result, const Left<Failure, void>(SignInCancelledFailure()));
+    });
+
+    test('a failing native sheet keeps its error code', () async {
+      when(
+        () => mockDataSource.signInWithApple(),
+      ).thenThrow(const NativeSignInException('unknown'));
+
+      final result = await repository.signInWithApple();
+
+      // Without the code every broken sheet reads as `server_failure`, and
+      // the funnel cannot tell a missing entitlement from a signed-out iCloud.
+      expect(result, const Left<Failure, void>(NativeSignInFailure('unknown')));
+    });
+
+    test('keeps the Supabase code and weak password reasons', () async {
+      when(
+        () => mockDataSource.signUpWithEmail(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+          displayName: any(named: 'displayName'),
+        ),
+      ).thenThrow(
+        AuthWeakPasswordException(
+          message: 'Password is known to be weak',
+          statusCode: '422',
+          reasons: ['pwned'],
+        ),
+      );
+
+      final result = await repository.signUpWithEmail(
+        email: 'a@b.co',
+        password: '123456',
+      );
+
+      // The code is what lets the form say "this password is too easy"
+      // instead of flashing Supabase's English sentence.
+      expect(
+        result,
+        const Left<Failure, UserEntity>(
+          AuthFailure(
+            'Password is known to be weak',
+            code: 'weak_password',
+            reasons: ['pwned'],
+          ),
+        ),
+      );
     });
 
     test('returns AuthFailure on AuthException', () async {

@@ -59,6 +59,18 @@ class RateLimitException implements Exception {
   String toString() => 'RateLimitException: $message';
 }
 
+/// Thrown when a native sign-in sheet fails for a reason other than the user
+/// closing it. [code] is the platform's error code (e.g. Apple's
+/// `AuthorizationErrorCode` name), kept so the funnel can tell causes apart.
+class NativeSignInException implements Exception {
+  final String code;
+
+  const NativeSignInException(this.code);
+
+  @override
+  String toString() => 'NativeSignInException: $code';
+}
+
 /// Thrown when the user backs out of a native sign-in sheet. Not an error:
 /// kept apart so the funnel can tell a change of mind from a broken flow.
 class SignInCancelledException implements Exception {

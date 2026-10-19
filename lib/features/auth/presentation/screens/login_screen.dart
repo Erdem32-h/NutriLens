@@ -10,6 +10,7 @@ import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/cozy_header.dart';
+import '../auth_failure_message.dart';
 import '../providers/auth_provider.dart';
 import '../providers/social_auth_tracking.dart';
 import '../widgets/post_auth_flow.dart';
@@ -77,9 +78,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             'reason': authFailureReason(authState.error),
           },
         );
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(authState.error.toString())));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authFailureMessage(context.l10n, authState.error)),
+            backgroundColor: context.colors.error,
+          ),
+        );
       } else {
         analytics.track(
           FunnelEvents.loginSucceeded,

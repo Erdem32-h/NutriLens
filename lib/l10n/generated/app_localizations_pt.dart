@@ -2262,4 +2262,38 @@ class AppLocalizationsPt extends AppLocalizations {
   String completedFastCountUnit(int count) {
     return '$count jejuns';
   }
+
+  @override
+  String get authErrorPasswordPwned =>
+      'Esta senha apareceu em vazamentos de dados e é fácil de adivinhar. Escolha outra, por favor.';
+
+  @override
+  String get authErrorPasswordWeak =>
+      'Esta senha é fraca demais. Escolha uma mais longa, com letras, números e símbolos.';
+
+  @override
+  String get authErrorInvalidCredentials => 'E-mail ou senha incorretos.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Confirme seu e-mail primeiro — toque no link que enviamos (verifique também o spam).';
+
+  @override
+  String get authErrorRateLimited =>
+      'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+
+  @override
+  String get authErrorSamePassword =>
+      'A nova senha precisa ser diferente da atual.';
+
+  @override
+  String get authErrorNetwork =>
+      'Não foi possível conectar. Verifique sua conexão com a internet e tente novamente.';
+
+  @override
+  String get authErrorAppleSignIn =>
+      'Não foi possível concluir o login com a Apple. Verifique se você entrou no iCloud em Ajustes e tente novamente, ou continue com Google ou e-mail.';
+
+  @override
+  String get authErrorGeneric => 'Algo deu errado. Tente novamente.';
 }

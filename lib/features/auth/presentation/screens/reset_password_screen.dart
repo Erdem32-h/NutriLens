@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../auth_failure_message.dart';
 import '../providers/auth_provider.dart';
 import '../../../../core/widgets/app_button.dart';
 
@@ -27,6 +28,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   bool _obscureConfirm = true;
   bool _isLoading = false;
 
+  /// Supabase's verdict on the password itself (e.g. found in a breach).
+  /// Shown on the field, not in a snackbar, so it stays until it is fixed.
+  String? _passwordRejection;
+
   @override
   void dispose() {
     _passwordController.dispose();
@@ -42,10 +47,20 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         .updatePassword(_passwordController.text);
     if (!mounted) return;
     setState(() => _isLoading = false);
+    if (isWeakPasswordFailure(error)) {
+      setState(
+        () => _passwordRejection = authFailureMessage(context.l10n, error),
+      );
+      return;
+    }
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authFailureMessage(context.l10n, error)),
+          backgroundColor: context.colors.error,
+          duration: const Duration(seconds: 6),
+        ),
+      );
       return;
     }
     ScaffoldMessenger.of(
@@ -96,8 +111,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   style: TextStyle(color: context.colors.textPrimary),
+                  onChanged: (_) {
+                    if (_passwordRejection != null) {
+                      setState(() => _passwordRejection = null);
+                    }
+                  },
                   decoration: InputDecoration(
                     hintText: '••••••••',
+                    errorText: _passwordRejection,
+                    errorMaxLines: 3,
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
                       icon: Icon(

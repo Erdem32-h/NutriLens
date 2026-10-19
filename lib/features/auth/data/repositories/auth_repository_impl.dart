@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show AuthException, AuthWeakPasswordException;
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
@@ -56,9 +57,7 @@ final class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, void>> updatePassword(String newPassword) async {
-    return _handleAuthVoid(
-      () => _remoteDataSource.updatePassword(newPassword),
-    );
+    return _handleAuthVoid(() => _remoteDataSource.updatePassword(newPassword));
   }
 
   @override
@@ -67,7 +66,7 @@ final class AuthRepositoryImpl implements AuthRepository {
       await _remoteDataSource.signOut();
       return const Right(null);
     } on AuthException catch (e) {
-      return Left(AuthFailure(e.message));
+      return Left(_authFailure(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -90,7 +89,7 @@ final class AuthRepositoryImpl implements AuthRepository {
     } on EmailAlreadyRegisteredException catch (e) {
       return Left(AlreadyRegisteredFailure(e.message));
     } on AuthException catch (e) {
-      return Left(AuthFailure(e.message));
+      return Left(_authFailure(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -104,10 +103,19 @@ final class AuthRepositoryImpl implements AuthRepository {
       return const Right(null);
     } on SignInCancelledException {
       return const Left(SignInCancelledFailure());
+    } on NativeSignInException catch (e) {
+      return Left(NativeSignInFailure(e.code));
     } on AuthException catch (e) {
-      return Left(AuthFailure(e.message));
+      return Left(_authFailure(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  /// Keeps Supabase's error code so the UI can say what actually went wrong.
+  static AuthFailure _authFailure(AuthException e) => AuthFailure(
+    e.message,
+    code: e.code,
+    reasons: e is AuthWeakPasswordException ? e.reasons : const [],
+  );
 }

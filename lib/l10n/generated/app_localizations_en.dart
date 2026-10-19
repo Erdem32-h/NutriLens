@@ -2253,4 +2253,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String completedFastCountUnit(int count) {
     return '$count fasts';
   }
+
+  @override
+  String get authErrorPasswordPwned =>
+      'This password has shown up in data leaks and is easy to guess. Please choose a different one.';
+
+  @override
+  String get authErrorPasswordWeak =>
+      'This password is too weak. Choose a longer one that mixes letters, numbers and symbols.';
+
+  @override
+  String get authErrorInvalidCredentials => 'Email or password is incorrect.';
+
+  @override
+  String get authErrorEmailNotConfirmed =>
+      'Please confirm your email first — tap the link we sent to your inbox (check spam too).';
+
+  @override
+  String get authErrorRateLimited =>
+      'Too many attempts. Please wait a few minutes and try again.';
+
+  @override
+  String get authErrorSamePassword =>
+      'Your new password must be different from your current one.';
+
+  @override
+  String get authErrorNetwork =>
+      'Couldn\'t connect. Check your internet connection and try again.';
+
+  @override
+  String get authErrorAppleSignIn =>
+      'Sign in with Apple couldn\'t be completed. Make sure you\'re signed in to iCloud in Settings and try again, or continue with Google or email.';
+
+  @override
+  String get authErrorGeneric => 'Something went wrong. Please try again.';
 }
