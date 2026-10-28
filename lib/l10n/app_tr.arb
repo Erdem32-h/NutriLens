@@ -336,6 +336,8 @@
   "aiPackagedTitle": "Paketli Ürün Algılandı",
   "aiPackagedBody": "Bu bir paketli market ürünü gibi görünüyor. Doğru sağlık puanı için barkodunu okutmanı öneririz. Yine de yemek olarak analiz etmek istersen devam edebilirsin.",
   "aiAnalyzeAnyway": "Yine de analiz et",
+  "aiNotFoodTitle": "Yemek bulunamadı",
+  "aiNotFoodBody": "Bu fotoğrafta yiyecek ya da içecek göremedik, bu yüzden öğün olarak kaydetmiyoruz. Tabağını çerçeveye alıp tekrar çek.",
   "carbohydrates": "Karbonhidrat",
   "description": "Açıklama",
   "turkishCodex": "Türk Kodeksi",

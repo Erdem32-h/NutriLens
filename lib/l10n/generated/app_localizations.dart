@@ -1936,6 +1936,18 @@ abstract class AppLocalizations {
   /// **'Yine de analiz et'**
   String get aiAnalyzeAnyway;
 
+  /// No description provided for @aiNotFoodTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yemek bulunamadı'**
+  String get aiNotFoodTitle;
+
+  /// No description provided for @aiNotFoodBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu fotoğrafta yiyecek ya da içecek göremedik, bu yüzden öğün olarak kaydetmiyoruz. Tabağını çerçeveye alıp tekrar çek.'**
+  String get aiNotFoodBody;
+
   /// No description provided for @carbohydrates.
   ///
   /// In tr, this message translates to:

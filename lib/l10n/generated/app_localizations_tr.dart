@@ -973,6 +973,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get aiAnalyzeAnyway => 'Yine de analiz et';
 
   @override
+  String get aiNotFoodTitle => 'Yemek bulunamadı';
+
+  @override
+  String get aiNotFoodBody =>
+      'Bu fotoğrafta yiyecek ya da içecek göremedik, bu yüzden öğün olarak kaydetmiyoruz. Tabağını çerçeveye alıp tekrar çek.';
+
+  @override
   String get carbohydrates => 'Karbonhidrat';
 
   @override

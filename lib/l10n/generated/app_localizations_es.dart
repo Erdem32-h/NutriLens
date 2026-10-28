@@ -976,6 +976,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get aiAnalyzeAnyway => 'Analyze anyway';
 
   @override
+  String get aiNotFoodTitle => 'No se encontró comida';
+
+  @override
+  String get aiNotFoodBody =>
+      'No vimos comida ni bebida en esta foto, así que no la guardaremos como comida. Encuadra tu plato y toma otra foto.';
+
+  @override
   String get carbohydrates => 'Carbohydrates';
 
   @override

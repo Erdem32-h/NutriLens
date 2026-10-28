@@ -59,6 +59,18 @@ class MealAnalysisResult {
   /// the UI steers the user to barcode scanning instead.
   bool get isPackagedProduct => foodSource == MealFoodSource.packaged;
 
+  /// Model's verdict that the photo shows something edible. Defaults to true
+  /// when the field is missing (older prompt).
+  final bool isFood;
+
+  /// The photo is not a meal (a vacuum hose, a desk, a blurry frame), so the
+  /// UI must not offer to save it. Besides the explicit `is_food: false`, a
+  /// near-zero confidence with zero calories is how models answer "I can't
+  /// see food" when they ignore the field — a real but blurry meal still
+  /// gets calories, and water/tea come back with high confidence.
+  bool get isNotFood =>
+      !isFood || (confidence < 0.2 && (nutriments.energyKcal ?? 0) <= 0);
+
   const MealAnalysisResult({
     required this.foodName,
     required this.portionGrams,
@@ -68,6 +80,7 @@ class MealAnalysisResult {
     required this.description,
     required this.rawJson,
     this.foodSource = MealFoodSource.homemade,
+    this.isFood = true,
   });
 }
 
@@ -458,6 +471,7 @@ class AnthropicAiService {
         description: _safeString(json['description'], ''),
         rawJson: jsonStr,
         foodSource: _parseFoodSource(json),
+        isFood: !json.containsKey('is_food') || _safeBool(json['is_food']),
       );
     } catch (e) {
       debugPrint('[AnthropicAI] meal JSON parse failed: $e');
@@ -753,6 +767,12 @@ Yanıt dili: $languageName. `food_name`, `ingredients_text` ve
 `description` alanlarını $languageName dilinde yaz (yemek adını da bu dile
 çevir; örn. İngilizce için "Etli Pilav" → "Rice with Meat").
 
+EN ÖNCE: Görselde yenebilir bir yiyecek veya içecek var mı? Yoksa (eşya,
+ev aleti, insan, hayvan, manzara, ekran, boş tabak, bulanık/karanlık kare)
+"is_food": false döndür; food_name'e gördüğün şeyi yaz, portion_grams ve
+tüm nutrition değerleri 0, confidence 0 olsun. Yiyecek/içecek varsa
+"is_food": true.
+
 ÖNEMLİ — önce yemeğin KAYNAĞINI belirle ve `food_source` alanına yaz:
 - "homemade": evde pişmiş/hazırlanmış ev yapımı yemek.
 - "packaged": paketli/markalı market ürünü (kutu, paket, şişe, teneke,
@@ -807,6 +827,7 @@ Sert kurallar:
 
 Şema:
 {
+  "is_food": boolean,
   "food_name": string,
   "portion_grams": number,
   "ingredients_text": string,

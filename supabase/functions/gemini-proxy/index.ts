@@ -95,6 +95,12 @@ Yanıt dili: ${ln}. food_name, ingredients_text ve description alanlarını
 ${ln} dilinde yaz (yemek adını da bu dile çevir; örn. İngilizce için
 "Etli Pilav" -> "Rice with Meat").
 
+EN ÖNCE: Görselde yenebilir bir yiyecek veya içecek var mı? Yoksa (eşya,
+ev aleti, insan, hayvan, manzara, ekran, boş tabak, bulanık/karanlık kare)
+"is_food": false döndür; food_name'e gördüğün şeyi yaz, portion_grams ve
+tüm nutrition değerleri 0, confidence 0 olsun. Yiyecek/içecek varsa
+"is_food": true.
+
 ÖNEMLİ — önce yemeğin KAYNAĞINI belirle ve "food_source" alanına yaz:
 - "homemade": evde pişmiş/hazırlanmış ev yapımı yemek.
 - "packaged": paketli/markalı market ürünü (kutu, paket, şişe, teneke,
@@ -141,6 +147,7 @@ Sert kurallar:
 
 Şema:
 {
+  "is_food": boolean,
   "food_name": string,
   "portion_grams": number,
   "ingredients_text": string,

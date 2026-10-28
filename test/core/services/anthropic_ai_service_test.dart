@@ -120,6 +120,45 @@ Alerjenler: Gluten, fındık, süt.
       expect(result.ingredientsText, isNull);
     });
 
+    test('flags non-food photos so the meal is not saved', () {
+      MealAnalysisResult parse(String json) =>
+          AnthropicAiService.parseMealAnalysisResponseText(json)!;
+
+      // Explicit model verdict.
+      expect(
+        parse('{"is_food":false,"food_name":"Süpürge hortumu"}').isNotFood,
+        isTrue,
+      );
+      expect(
+        parse('{"is_food":true,"food_name":"Mercimek","confidence":0.8,'
+                '"nutrition":{"energy_kcal":180}}')
+            .isNotFood,
+        isFalse,
+      );
+      // Older prompt without is_food: a near-zero-confidence, zero-calorie
+      // answer is the model labelling an object it could not read as food.
+      expect(
+        parse('{"food_name":"Süpürge hortumu","confidence":0.1,'
+                '"nutrition":{"energy_kcal":0}}')
+            .isNotFood,
+        isTrue,
+      );
+      // Low confidence alone is not enough — a blurry real meal stays.
+      expect(
+        parse('{"food_name":"Pilav","confidence":0.1,'
+                '"nutrition":{"energy_kcal":250}}')
+            .isNotFood,
+        isFalse,
+      );
+      // Water and plain tea are real 0 kcal drinks the model is sure about.
+      expect(
+        parse('{"food_name":"Su","confidence":0.9,'
+                '"nutrition":{"energy_kcal":0}}')
+            .isNotFood,
+        isFalse,
+      );
+    });
+
     test('folds percentage / over-scaled confidence into 0..1', () {
       // gpt-4.1-nano returned confidence as 70 (a percent), which the UI then
       // rendered as "%7000". The parser must fold any scale back to 0..1.

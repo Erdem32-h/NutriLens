@@ -336,6 +336,8 @@
   "aiPackagedTitle": "Packaged Product Detected",
   "aiPackagedBody": "This looks like a packaged retail product. For an accurate health score, scan its barcode instead. You can still continue to analyze it as a meal.",
   "aiAnalyzeAnyway": "Analyze anyway",
+  "aiNotFoodTitle": "未识别到食物",
+  "aiNotFoodBody": "这张照片中没有看到食物或饮料，因此不会保存为餐食。请将餐盘置于取景框内后重新拍摄。",
   "carbohydrates": "Carbohydrates",
   "description": "Description",
   "turkishCodex": "Turkish Codex",

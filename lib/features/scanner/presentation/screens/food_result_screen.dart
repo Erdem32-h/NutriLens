@@ -163,6 +163,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         props: {
           'low_confidence': result.confidence < 0.6,
           'packaged': result.isPackagedProduct,
+          'not_food': result.isNotFood,
           'duration_ms': elapsed.elapsedMilliseconds,
           'abandoned': !mounted,
         },
@@ -184,7 +185,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       // Packaged retail product photographed in the AI tab → the meal
       // estimate is meaningless for it (wrong name + harsh score). Steer the
       // user to barcode scanning, but let them analyze anyway if they insist.
-      if (result.isPackagedProduct) {
+      if (result.isPackagedProduct && !result.isNotFood) {
         _showPackagedProductDialog();
       }
     } on GeminiServiceException catch (e, st) {
@@ -379,7 +380,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   }
 
   Future<void> _saveMeal() async {
-    if (_result == null || _saving) return;
+    if (_result == null || _result!.isNotFood || _saving) return;
 
     // Set before the fast check so a second tap during its awaits is ignored;
     // every early return below resets it via the finally.
@@ -646,6 +647,12 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     }
   }
 
+  /// A finished analysis that is actually a meal. A non-food photo (vacuum
+  /// hose, desk, blurry frame) gets no save bar and no share button, so it
+  /// can never end up in the meal log.
+  bool get _hasMeal =>
+      !_loading && _error == null && _result != null && !_result!.isNotFood;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -657,7 +664,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         title: Text(l10n.aiAnalysisResult),
         backgroundColor: Colors.transparent,
         actions: [
-          if (!_loading && _error == null && _result != null)
+          if (_hasMeal)
             IconButton(
               tooltip: l10n.share,
               icon: const Icon(Icons.ios_share_rounded),
@@ -669,6 +676,8 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
           ? _buildLoading(l10n, colors)
           : _error != null
           ? _buildError(l10n, colors)
+          : _result!.isNotFood
+          ? _buildNotFood(l10n, colors)
           : _buildResult(l10n, colors),
       // Sticky save CTA. It used to be the last widget of a long scroll —
       // below the photo, the name/brand fields, the macro grid, the portion
@@ -679,7 +688,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       // exactly 1 reached `meal_added`. As a `bottomNavigationBar` the
       // Scaffold lays the body out above it, so the action is on screen from
       // the first frame and nothing gets covered.
-      bottomNavigationBar: (!_loading && _error == null && _result != null)
+      bottomNavigationBar: _hasMeal
           ? MealSaveBar(
               onSave: _saveMeal,
               saving: _saving,
@@ -772,6 +781,47 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildNotFood(AppLocalizations l10n, AppColorsExtension colors) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.memory(widget.imageBytes, fit: BoxFit.cover),
+            ),
+          ),
+          const SizedBox(height: 32),
+          Icon(Icons.no_food_outlined, size: 64, color: colors.warning),
+          const SizedBox(height: 16),
+          Text(
+            l10n.aiNotFoodTitle,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.aiNotFoodBody,
+            style: TextStyle(fontSize: 15, color: colors.textSecondary),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          FilledButton.icon(
+            onPressed: () => context.pop(),
+            icon: const Icon(Icons.camera_alt_rounded),
+            label: Text(l10n.aiRetake),
+          ),
+        ],
       ),
     );
   }

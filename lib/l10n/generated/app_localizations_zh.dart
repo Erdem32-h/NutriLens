@@ -957,6 +957,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aiAnalyzeAnyway => 'Analyze anyway';
 
   @override
+  String get aiNotFoodTitle => '未识别到食物';
+
+  @override
+  String get aiNotFoodBody => '这张照片中没有看到食物或饮料，因此不会保存为餐食。请将餐盘置于取景框内后重新拍摄。';
+
+  @override
   String get carbohydrates => 'Carbohydrates';
 
   @override
