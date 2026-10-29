@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../supabase/supabase_config.dart';
 import '../../core/session/app_session.dart';
+import '../../core/utils/gs1_digital_link.dart';
 import '../../features/app_shell/app_shell_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
@@ -194,7 +195,11 @@ GoRouter createRouter(WidgetRef ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final barcode = state.pathParameters['barcode']!;
-          return ProductDetailScreen(barcode: barcode);
+          final extra = state.extra;
+          return ProductDetailScreen(
+            barcode: barcode,
+            digitalLink: extra is Gs1DigitalLink ? extra : null,
+          );
         },
       ),
       GoRoute(

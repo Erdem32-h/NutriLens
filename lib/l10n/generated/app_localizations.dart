@@ -4293,6 +4293,36 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bir şeyler ters gitti. Lütfen tekrar deneyin.'**
   String get authErrorGeneric;
+
+  /// No description provided for @digitalLinkLot.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parti: {lot}'**
+  String digitalLinkLot(String lot);
+
+  /// No description provided for @digitalLinkExpiry.
+  ///
+  /// In tr, this message translates to:
+  /// **'SKT: {date}'**
+  String digitalLinkExpiry(String date);
+
+  /// No description provided for @digitalLinkExpired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süresi geçmiş'**
+  String get digitalLinkExpired;
+
+  /// No description provided for @digitalLinkProducerPage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Üretici sayfası'**
+  String get digitalLinkProducerPage;
+
+  /// No description provided for @digitalLinkOpenFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı açılamadı'**
+  String get digitalLinkOpenFailed;
 }
 
 class _AppLocalizationsDelegate

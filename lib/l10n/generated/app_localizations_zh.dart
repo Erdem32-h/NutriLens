@@ -2228,4 +2228,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get authErrorGeneric => '出了点问题，请重试。';
+
+  @override
+  String digitalLinkLot(String lot) {
+    return '批号：$lot';
+  }
+
+  @override
+  String digitalLinkExpiry(String date) {
+    return '保质期至：$date';
+  }
+
+  @override
+  String get digitalLinkExpired => '已过期';
+
+  @override
+  String get digitalLinkProducerPage => '生产商页面';
+
+  @override
+  String get digitalLinkOpenFailed => '无法打开链接';
 }

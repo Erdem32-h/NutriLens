@@ -2285,4 +2285,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get authErrorGeneric => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String digitalLinkLot(String lot) {
+    return 'التشغيلة: $lot';
+  }
+
+  @override
+  String digitalLinkExpiry(String date) {
+    return 'تاريخ الانتهاء: $date';
+  }
+
+  @override
+  String get digitalLinkExpired => 'منتهي الصلاحية';
+
+  @override
+  String get digitalLinkProducerPage => 'صفحة المنتج';
+
+  @override
+  String get digitalLinkOpenFailed => 'تعذّر فتح الرابط';
 }

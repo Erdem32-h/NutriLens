@@ -966,5 +966,10 @@
   "authErrorSamePassword": "A nova senha precisa ser diferente da atual.",
   "authErrorNetwork": "Não foi possível conectar. Verifique sua conexão com a internet e tente novamente.",
   "authErrorAppleSignIn": "Não foi possível concluir o login com a Apple. Verifique se você entrou no iCloud em Ajustes e tente novamente, ou continue com Google ou e-mail.",
-  "authErrorGeneric": "Algo deu errado. Tente novamente."
+  "authErrorGeneric": "Algo deu errado. Tente novamente.",
+  "digitalLinkLot": "Lote: {lot}",
+  "digitalLinkExpiry": "Validade: {date}",
+  "digitalLinkExpired": "Vencido",
+  "digitalLinkProducerPage": "Página do produtor",
+  "digitalLinkOpenFailed": "Não foi possível abrir o link"
 }

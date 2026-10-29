@@ -2303,4 +2303,23 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get authErrorGeneric => 'Algo deu errado. Tente novamente.';
+
+  @override
+  String digitalLinkLot(String lot) {
+    return 'Lote: $lot';
+  }
+
+  @override
+  String digitalLinkExpiry(String date) {
+    return 'Validade: $date';
+  }
+
+  @override
+  String get digitalLinkExpired => 'Vencido';
+
+  @override
+  String get digitalLinkProducerPage => 'Página do produtor';
+
+  @override
+  String get digitalLinkOpenFailed => 'Não foi possível abrir o link';
 }

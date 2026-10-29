@@ -2299,4 +2299,23 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get authErrorGeneric =>
       'Bir şeyler ters gitti. Lütfen tekrar deneyin.';
+
+  @override
+  String digitalLinkLot(String lot) {
+    return 'Parti: $lot';
+  }
+
+  @override
+  String digitalLinkExpiry(String date) {
+    return 'SKT: $date';
+  }
+
+  @override
+  String get digitalLinkExpired => 'Süresi geçmiş';
+
+  @override
+  String get digitalLinkProducerPage => 'Üretici sayfası';
+
+  @override
+  String get digitalLinkOpenFailed => 'Bağlantı açılamadı';
 }

@@ -966,5 +966,10 @@
   "authErrorSamePassword": "La nueva contraseña debe ser distinta de la actual.",
   "authErrorNetwork": "No se pudo conectar. Comprueba tu conexión a internet e inténtalo de nuevo.",
   "authErrorAppleSignIn": "No se pudo completar el inicio de sesión con Apple. Asegúrate de haber iniciado sesión en iCloud en Ajustes e inténtalo de nuevo, o continúa con Google o correo.",
-  "authErrorGeneric": "Algo salió mal. Inténtalo de nuevo."
+  "authErrorGeneric": "Algo salió mal. Inténtalo de nuevo.",
+  "digitalLinkLot": "Lote: {lot}",
+  "digitalLinkExpiry": "Consumir antes de: {date}",
+  "digitalLinkExpired": "Caducado",
+  "digitalLinkProducerPage": "Página del productor",
+  "digitalLinkOpenFailed": "No se pudo abrir el enlace"
 }

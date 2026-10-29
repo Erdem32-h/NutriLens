@@ -33,11 +33,20 @@ import '../widgets/dietary_suitability_section.dart';
 import '../widgets/score_breakdown_card.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 import '../../../../core/widgets/premium_blur_gate.dart';
+import '../widgets/digital_link_card.dart';
+import '../../../../core/utils/gs1_digital_link.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String barcode;
 
-  const ProductDetailScreen({super.key, required this.barcode});
+  /// Set when the product was opened from a GS1 Digital Link QR.
+  final Gs1DigitalLink? digitalLink;
+
+  const ProductDetailScreen({
+    super.key,
+    required this.barcode,
+    this.digitalLink,
+  });
 
   @override
   ConsumerState<ProductDetailScreen> createState() =>
@@ -335,6 +344,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             barcode: widget.barcode,
             brand: product.brands,
           ),
+          if (widget.digitalLink != null)
+            DigitalLinkCard(link: widget.digitalLink!),
           _buildBlacklistedBanner(),
           _buildFilterWarningBanner(product),
           PillTabBar(

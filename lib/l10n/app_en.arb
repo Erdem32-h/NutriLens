@@ -966,5 +966,10 @@
   "authErrorSamePassword": "Your new password must be different from your current one.",
   "authErrorNetwork": "Couldn't connect. Check your internet connection and try again.",
   "authErrorAppleSignIn": "Sign in with Apple couldn't be completed. Make sure you're signed in to iCloud in Settings and try again, or continue with Google or email.",
-  "authErrorGeneric": "Something went wrong. Please try again."
+  "authErrorGeneric": "Something went wrong. Please try again.",
+  "digitalLinkLot": "Lot: {lot}",
+  "digitalLinkExpiry": "Best before: {date}",
+  "digitalLinkExpired": "Expired",
+  "digitalLinkProducerPage": "Producer page",
+  "digitalLinkOpenFailed": "Couldn't open the link"
 }

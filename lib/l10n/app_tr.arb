@@ -1001,5 +1001,20 @@
   "authErrorSamePassword": "Yeni şifreniz mevcut şifrenizden farklı olmalı.",
   "authErrorNetwork": "Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",
   "authErrorAppleSignIn": "Apple ile giriş tamamlanamadı. Ayarlar'da iCloud'a giriş yaptığınızdan emin olup tekrar deneyin ya da Google veya e-postayla devam edin.",
-  "authErrorGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+  "authErrorGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+  "digitalLinkLot": "Parti: {lot}",
+  "digitalLinkExpiry": "SKT: {date}",
+  "digitalLinkExpired": "Süresi geçmiş",
+  "digitalLinkProducerPage": "Üretici sayfası",
+  "digitalLinkOpenFailed": "Bağlantı açılamadı",
+  "@digitalLinkLot": {
+    "placeholders": {
+      "lot": { "type": "String" }
+    }
+  },
+  "@digitalLinkExpiry": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  }
 }

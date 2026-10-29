@@ -11,6 +11,7 @@ import '../../../../core/analytics/analytics_event.dart';
 import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/barcode_validator.dart';
+import '../../../../core/utils/gs1_digital_link.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/monetization_provider.dart';
 import '../../../../core/services/camera_priming_store.dart';
@@ -877,8 +878,13 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     }
   }
 
-  Future<void> _processBarcode(String value) async {
+  Future<void> _processBarcode(String scanned) async {
     if (_isNavigating) return;
+
+    // A GS1 Digital Link QR carries the GTIN inside a URL; route by the GTIN
+    // and hand the parsed link (lot, expiry, producer page) to the product page.
+    final link = Gs1DigitalLink.tryParse(scanned);
+    final value = link?.gtin ?? scanned;
 
     // Reject URLs and non-barcode values that would break routing.
     // Logic lives in `BarcodeValidator` so it can be unit-tested.
@@ -905,10 +911,15 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     final analytics = ref.read(analyticsServiceProvider);
     // No barcode value in the props: joined to a device hash it would turn
     // an anonymous funnel table into a per-device consumption profile, and
-    // the funnel only needs to know that a scan resolved.
+    // the funnel only needs to know that a scan resolved. Same for the
+    // Digital Link URL: only the fact that one was scanned is recorded.
     analytics.track(
       FunnelEvents.scanBarcodeDetected,
-      props: {'mode': 'barcode', 'guest': ref.read(isGuestProvider)},
+      props: {
+        'mode': 'barcode',
+        'guest': ref.read(isGuestProvider),
+        if (link != null) 'source': 'digital_link',
+      },
     );
 
     // Guest mode has its own lifetime cap (5 scans), now enforced
@@ -964,7 +975,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
     await _stopScanning();
     if (!mounted) return;
     try {
-      await context.push('/product/$value');
+      await context.push('/product/$value', extra: link);
     } finally {
       if (mounted) {
         // Allow pop to update the route tree before rebuilding the preview.

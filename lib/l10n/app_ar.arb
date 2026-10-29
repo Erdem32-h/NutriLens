@@ -966,5 +966,10 @@
   "authErrorSamePassword": "يجب أن تختلف كلمة المرور الجديدة عن الحالية.",
   "authErrorNetwork": "تعذّر الاتصال. تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "authErrorAppleSignIn": "تعذّر إكمال تسجيل الدخول باستخدام Apple. تأكد من تسجيل الدخول إلى iCloud في الإعدادات ثم حاول مرة أخرى، أو تابع باستخدام Google أو البريد الإلكتروني.",
-  "authErrorGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+  "authErrorGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "digitalLinkLot": "التشغيلة: {lot}",
+  "digitalLinkExpiry": "تاريخ الانتهاء: {date}",
+  "digitalLinkExpired": "منتهي الصلاحية",
+  "digitalLinkProducerPage": "صفحة المنتج",
+  "digitalLinkOpenFailed": "تعذّر فتح الرابط"
 }

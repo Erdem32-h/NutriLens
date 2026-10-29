@@ -966,5 +966,10 @@
   "authErrorSamePassword": "新密码不能与当前密码相同。",
   "authErrorNetwork": "无法连接。请检查网络连接后重试。",
   "authErrorAppleSignIn": "无法完成 Apple 登录。请确认已在“设置”中登录 iCloud 后重试，或使用 Google 或邮箱继续。",
-  "authErrorGeneric": "出了点问题，请重试。"
+  "authErrorGeneric": "出了点问题，请重试。",
+  "digitalLinkLot": "批号：{lot}",
+  "digitalLinkExpiry": "保质期至：{date}",
+  "digitalLinkExpired": "已过期",
+  "digitalLinkProducerPage": "生产商页面",
+  "digitalLinkOpenFailed": "无法打开链接"
 }
