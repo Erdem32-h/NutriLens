@@ -16,7 +16,7 @@ workflows:
         # The widget extension profile is fetched in an explicit script
         # step below, using the cert that this integration provisioned.
         bundle_identifier: app.nutrilens.ios
-      flutter: stable
+      flutter: 3.41.5  # local ile ayni; stable kayinca pub get kiriliyor (freezed 3 ↔ yeni test_api)
       xcode: latest
       cocoapods: default
       vars:
@@ -207,7 +207,7 @@ workflows:
         - MyGroup
       android_signing:
         - nutrilens_keystore
-      flutter: stable
+      flutter: 3.41.5  # local ile ayni; stable kayinca pub get kiriliyor (freezed 3 ↔ yeni test_api)
       vars:
         BUNDLE_ID: com.nutrilensapp.android
     scripts:
@@ -256,7 +256,7 @@ workflows:
     environment:
       groups:
         - MyGroup
-      flutter: stable
+      flutter: 3.41.5  # local ile ayni; stable kayinca pub get kiriliyor (freezed 3 ↔ yeni test_api)
       vars:
         # Required: a dedicated test account in Supabase auth — does not
         # need premium, just real credentials the app can log in with.
