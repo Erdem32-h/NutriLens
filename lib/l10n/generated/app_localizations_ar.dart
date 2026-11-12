@@ -2031,10 +2031,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get waterReminderSwitch => 'تذكيرات شرب الماء';
 
   @override
-  String get waterReminderSchedule => 'كل ساعتين، 09:00–21:00';
+  String get waterReminderSchedule =>
+      'حتى 4 مرات يوميًا إذا تأخرت (10:00–19:00)';
 
   @override
-  String get waterReminderPrompt => 'هل أذكّرك كل ساعتين؟';
+  String get waterReminderPrompt => 'هل أذكّرك إذا تأخرت؟';
 
   @override
   String get waterReminderEnable => 'تفعيل';
@@ -2304,4 +2305,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get digitalLinkOpenFailed => 'تعذّر فتح الرابط';
+
+  @override
+  String get todayTitle => 'اليوم';
+
+  @override
+  String todayMealCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count وجبات',
+      one: 'وجبة واحدة',
+      zero: 'لا وجبات اليوم بعد',
+    );
+    return '$_temp0';
+  }
 }

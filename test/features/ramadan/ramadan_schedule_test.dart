@@ -70,9 +70,9 @@ void main() {
   });
 
   group('ramadanWaterTimes per-day mix', () {
-    test('today not Ramadan (null): normal 09-21 hours today, Ramadan tomorrow', () {
+    test('today not Ramadan (null): normal hours today, Ramadan tomorrow', () {
       final r = ramadanWaterTimes(
-        now: DateTime(2027, 2, 7, 20),
+        now: DateTime(2027, 2, 7, 18),
         today: null,
         tomorrow: t,
         lastGlassAt: null,
@@ -80,7 +80,7 @@ void main() {
         goal: 10,
       );
       expect(r, [
-        DateTime(2027, 2, 7, 21),
+        DateTime(2027, 2, 7, 19),
         DateTime(2027, 2, 8, 18, 53),
         DateTime(2027, 2, 8, 20, 53),
         DateTime(2027, 2, 8, 22, 53),
@@ -97,7 +97,7 @@ void main() {
         goal: 10,
       );
       expect(r.where((d) => d.day == 9), [
-        for (final h in [9, 11, 13, 15, 17, 19, 21]) DateTime(2027, 2, 9, h),
+        for (final h in [10, 13, 16, 19]) DateTime(2027, 2, 9, h),
       ]);
     });
   });

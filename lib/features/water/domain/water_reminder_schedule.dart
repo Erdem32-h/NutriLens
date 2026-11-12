@@ -1,4 +1,11 @@
-const waterReminderHours = [9, 11, 13, 15, 17, 19, 21];
+/// At most four nudges a day. Fewer, well-spaced slots are a reminder, not
+/// pressure; today's slots are further cut by [expectedGlassesBy].
+const waterReminderHours = [10, 13, 16, 19];
+
+/// Glasses a steady drinker would have had by [hour], spreading [goal]
+/// over 08:00–20:00. A slot only fires for someone below this, so a user
+/// who is on pace is left alone.
+int expectedGlassesBy(int hour, int goal) => (goal * (hour - 8) / 12).ceil();
 
 /// Minimum quiet time after a glass before the next reminder slot.
 const waterReminderGap = Duration(hours: 2);
@@ -26,7 +33,9 @@ bool Function(DateTime slot) todaySlotFilter({
   };
 }
 
-/// Reminder times for today (remaining) and tomorrow (all slots).
+/// Reminder times for today (remaining, behind-pace only) and tomorrow
+/// (all slots). Nothing past tomorrow is armed: someone who stops opening
+/// the app stops getting reminders after one day.
 ///
 /// Wall-clock values built with the `DateTime` constructor — never
 /// `add(Duration(days: 1))` — so a DST night still yields 09:00..21:00.
@@ -39,12 +48,12 @@ List<DateTime> waterReminderTimes({
 }) {
   final isTodaySlot = todaySlotFilter(now: now, lastGlassAt: lastGlassAt);
 
-  final today =
-      <DateTime>[
-        if (glassesToday < goal)
-          for (final hour in waterReminderHours)
-            DateTime(now.year, now.month, now.day, hour),
-      ].where(isTodaySlot);
+  final today = <DateTime>[
+    if (glassesToday < goal)
+      for (final hour in waterReminderHours)
+        if (glassesToday < expectedGlassesBy(hour, goal))
+          DateTime(now.year, now.month, now.day, hour),
+  ].where(isTodaySlot);
 
   final tomorrow = [
     for (final hour in waterReminderHours)

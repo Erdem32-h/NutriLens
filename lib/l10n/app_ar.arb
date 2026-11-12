@@ -764,8 +764,8 @@
   "waterIncreaseGoal": "رفع الهدف",
   "waterGoalFromWeight": "اضبط حسب وزني",
   "waterReminderSwitch": "تذكيرات شرب الماء",
-  "waterReminderSchedule": "كل ساعتين، 09:00–21:00",
-  "waterReminderPrompt": "هل أذكّرك كل ساعتين؟",
+  "waterReminderSchedule": "حتى 4 مرات يوميًا إذا تأخرت (10:00–19:00)",
+  "waterReminderPrompt": "هل أذكّرك إذا تأخرت؟",
   "waterReminderEnable": "تفعيل",
   "waterPermissionDenied": "الإشعارات متوقفة. يمكنك السماح بها من الإعدادات.",
   "waterReminderTitle": "حان وقت شرب الماء",
@@ -971,5 +971,7 @@
   "digitalLinkExpiry": "تاريخ الانتهاء: {date}",
   "digitalLinkExpired": "منتهي الصلاحية",
   "digitalLinkProducerPage": "صفحة المنتج",
-  "digitalLinkOpenFailed": "تعذّر فتح الرابط"
+  "digitalLinkOpenFailed": "تعذّر فتح الرابط",
+  "todayTitle": "اليوم",
+  "todayMealCount": "{count, plural, =0{لا وجبات اليوم بعد} =1{وجبة واحدة} other{{count} وجبات}}"
 }

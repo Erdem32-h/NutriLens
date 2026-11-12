@@ -2046,10 +2046,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get waterReminderSwitch => 'Su hatırlatıcısı';
 
   @override
-  String get waterReminderSchedule => '09:00–21:00 arası, 2 saatte bir';
+  String get waterReminderSchedule =>
+      'Gerideysen günde en fazla 4 kez (10:00–19:00)';
 
   @override
-  String get waterReminderPrompt => '2 saatte bir hatırlatayım mı?';
+  String get waterReminderPrompt => 'Gerideysen hatırlatayım mı?';
 
   @override
   String get waterReminderEnable => 'Aç';
@@ -2318,4 +2319,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get digitalLinkOpenFailed => 'Bağlantı açılamadı';
+
+  @override
+  String get todayTitle => 'Bugün';
+
+  @override
+  String todayMealCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count öğün',
+      one: '1 öğün',
+      zero: 'Bugün henüz öğün yok',
+    );
+    return '$_temp0';
+  }
 }

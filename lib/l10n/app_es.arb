@@ -764,8 +764,8 @@
   "waterIncreaseGoal": "Aumentar meta",
   "waterGoalFromWeight": "Ajustar según mi peso",
   "waterReminderSwitch": "Recordatorios de agua",
-  "waterReminderSchedule": "Cada 2 horas, 09:00–21:00",
-  "waterReminderPrompt": "¿Te lo recuerdo cada 2 horas?",
+  "waterReminderSchedule": "Hasta 4 veces al día si vas atrasado (10:00–19:00)",
+  "waterReminderPrompt": "¿Te lo recuerdo si te quedas atrás?",
   "waterReminderEnable": "Activar",
   "waterPermissionDenied": "Las notificaciones están desactivadas. Puedes permitirlas en Ajustes.",
   "waterReminderTitle": "Hora de beber agua",
@@ -971,5 +971,7 @@
   "digitalLinkExpiry": "Consumir antes de: {date}",
   "digitalLinkExpired": "Caducado",
   "digitalLinkProducerPage": "Página del productor",
-  "digitalLinkOpenFailed": "No se pudo abrir el enlace"
+  "digitalLinkOpenFailed": "No se pudo abrir el enlace",
+  "todayTitle": "Hoy",
+  "todayMealCount": "{count, plural, =0{Aún no hay comidas hoy} =1{1 comida} other{{count} comidas}}"
 }

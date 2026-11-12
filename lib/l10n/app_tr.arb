@@ -799,8 +799,8 @@
   "waterIncreaseGoal": "Hedefi artır",
   "waterGoalFromWeight": "Kiloma göre ayarla",
   "waterReminderSwitch": "Su hatırlatıcısı",
-  "waterReminderSchedule": "09:00–21:00 arası, 2 saatte bir",
-  "waterReminderPrompt": "2 saatte bir hatırlatayım mı?",
+  "waterReminderSchedule": "Gerideysen günde en fazla 4 kez (10:00–19:00)",
+  "waterReminderPrompt": "Gerideysen hatırlatayım mı?",
   "waterReminderEnable": "Aç",
   "waterPermissionDenied": "Bildirim izni verilmedi. Ayarlardan açabilirsin.",
   "waterReminderTitle": "Su içme zamanı",
@@ -1015,6 +1015,15 @@
   "@digitalLinkExpiry": {
     "placeholders": {
       "date": { "type": "String" }
+    }
+  },
+  "todayTitle": "Bugün",
+  "todayMealCount": "{count, plural, =0{Bugün henüz öğün yok} =1{1 öğün} other{{count} öğün}}",
+  "@todayMealCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
     }
   }
 }

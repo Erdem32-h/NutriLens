@@ -249,7 +249,9 @@ void main() {
                 ),
               ).captured.last
               as List<DateTime>;
-      expect(times.where((d) => d.day == 7), [DateTime(2027, 2, 7, 21)]);
+      // 20:00: the last normal slot (19:00) has passed, so nothing is left
+      // today; the per-day mix itself is pinned in ramadan_schedule_test.
+      expect(times.where((d) => d.day == 7), isEmpty);
       expect(times.where((d) => d.day == 8).first, DateTime(2027, 2, 8, 18, 53));
     },
   );

@@ -2048,10 +2048,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get waterReminderSwitch => 'Lembretes de água';
 
   @override
-  String get waterReminderSchedule => 'A cada 2 horas, 09:00–21:00';
+  String get waterReminderSchedule =>
+      'Até 4 vezes por dia se estiver atrasado (10:00–19:00)';
 
   @override
-  String get waterReminderPrompt => 'Quer um lembrete a cada 2 horas?';
+  String get waterReminderPrompt => 'Quer um lembrete se ficar para trás?';
 
   @override
   String get waterReminderEnable => 'Ativar';
@@ -2322,4 +2323,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get digitalLinkOpenFailed => 'Não foi possível abrir o link';
+
+  @override
+  String get todayTitle => 'Hoje';
+
+  @override
+  String todayMealCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count refeições',
+      one: '1 refeição',
+      zero: 'Nenhuma refeição hoje',
+    );
+    return '$_temp0';
+  }
 }

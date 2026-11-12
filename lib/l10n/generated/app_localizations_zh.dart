@@ -1988,10 +1988,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get waterReminderSwitch => '喝水提醒';
 
   @override
-  String get waterReminderSchedule => '09:00–21:00，每 2 小时';
+  String get waterReminderSchedule => '落后时每天最多 4 次（10:00–19:00）';
 
   @override
-  String get waterReminderPrompt => '每 2 小时提醒你？';
+  String get waterReminderPrompt => '落后时提醒你？';
 
   @override
   String get waterReminderEnable => '开启';
@@ -2247,4 +2247,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get digitalLinkOpenFailed => '无法打开链接';
+
+  @override
+  String get todayTitle => '今天';
+
+  @override
+  String todayMealCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 餐',
+      zero: '今天还没有记录饮食',
+    );
+    return '$_temp0';
+  }
 }

@@ -764,8 +764,8 @@
   "waterIncreaseGoal": "Increase goal",
   "waterGoalFromWeight": "Set from my weight",
   "waterReminderSwitch": "Water reminders",
-  "waterReminderSchedule": "Every 2 hours, 09:00–21:00",
-  "waterReminderPrompt": "Remind you every 2 hours?",
+  "waterReminderSchedule": "Up to 4 times a day if you're behind (10:00–19:00)",
+  "waterReminderPrompt": "Remind you if you fall behind?",
   "waterReminderEnable": "Turn on",
   "waterPermissionDenied": "Notifications are off. You can allow them in Settings.",
   "waterReminderTitle": "Time for water",
@@ -971,5 +971,7 @@
   "digitalLinkExpiry": "Best before: {date}",
   "digitalLinkExpired": "Expired",
   "digitalLinkProducerPage": "Producer page",
-  "digitalLinkOpenFailed": "Couldn't open the link"
+  "digitalLinkOpenFailed": "Couldn't open the link",
+  "todayTitle": "Today",
+  "todayMealCount": "{count, plural, =0{No meals yet today} =1{1 meal} other{{count} meals}}"
 }

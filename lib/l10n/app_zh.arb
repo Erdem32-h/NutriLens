@@ -764,8 +764,8 @@
   "waterIncreaseGoal": "提高目标",
   "waterGoalFromWeight": "按体重设置",
   "waterReminderSwitch": "喝水提醒",
-  "waterReminderSchedule": "09:00–21:00，每 2 小时",
-  "waterReminderPrompt": "每 2 小时提醒你？",
+  "waterReminderSchedule": "落后时每天最多 4 次（10:00–19:00）",
+  "waterReminderPrompt": "落后时提醒你？",
   "waterReminderEnable": "开启",
   "waterPermissionDenied": "通知已关闭，可在设置中开启。",
   "waterReminderTitle": "该喝水了",
@@ -971,5 +971,7 @@
   "digitalLinkExpiry": "保质期至：{date}",
   "digitalLinkExpired": "已过期",
   "digitalLinkProducerPage": "生产商页面",
-  "digitalLinkOpenFailed": "无法打开链接"
+  "digitalLinkOpenFailed": "无法打开链接",
+  "todayTitle": "今天",
+  "todayMealCount": "{count, plural, =0{今天还没有记录饮食} other{{count} 餐}}"
 }

@@ -3895,13 +3895,13 @@ abstract class AppLocalizations {
   /// No description provided for @waterReminderSchedule.
   ///
   /// In tr, this message translates to:
-  /// **'09:00–21:00 arası, 2 saatte bir'**
+  /// **'Gerideysen günde en fazla 4 kez (10:00–19:00)'**
   String get waterReminderSchedule;
 
   /// No description provided for @waterReminderPrompt.
   ///
   /// In tr, this message translates to:
-  /// **'2 saatte bir hatırlatayım mı?'**
+  /// **'Gerideysen hatırlatayım mı?'**
   String get waterReminderPrompt;
 
   /// No description provided for @waterReminderEnable.
@@ -4323,6 +4323,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bağlantı açılamadı'**
   String get digitalLinkOpenFailed;
+
+  /// No description provided for @todayTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün'**
+  String get todayTitle;
+
+  /// No description provided for @todayMealCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count, plural, =0{Bugün henüz öğün yok} =1{1 öğün} other{{count} öğün}}'**
+  String todayMealCount(int count);
 }
 
 class _AppLocalizationsDelegate
