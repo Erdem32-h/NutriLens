@@ -80,7 +80,20 @@ class NotificationService {
   /// regardless of call count — callers still gate this behind their own
   /// one-shot flag (see `NotificationPromptStore`) so the ask happens at a
   /// deliberate moment rather than on every app launch.
-  Future<bool> requestPermission() async {
+  ///
+  /// Concurrent calls share the request already in flight: the plugin throws
+  /// `permissionRequestInProgress` on a second ask while the first dialog is
+  /// open (NUTRILENS-14). Once it settles — success or error — the next call
+  /// asks the OS again.
+  Future<bool> requestPermission() {
+    return _permissionRequest ??= _requestPermissionOnce().whenComplete(() {
+      _permissionRequest = null;
+    });
+  }
+
+  Future<bool>? _permissionRequest;
+
+  Future<bool> _requestPermissionOnce() async {
     final android = _plugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
