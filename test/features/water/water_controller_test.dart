@@ -92,6 +92,18 @@ void main() {
     },
   );
 
+  test('+1 kaynagi olaya yazar', () async {
+    final c = await makeContainer();
+
+    await c
+        .read(waterControllerProvider)
+        .addGlass(_copy, source: 'card_button');
+
+    expect(analytics.props[FunnelEvents.waterGlassAdded], {
+      'source': 'card_button',
+    });
+  });
+
   test('hatirlatma acikken 10:30 bardagi 11:00i atlatir', () async {
     final c = await makeContainer();
     final controller = c.read(waterControllerProvider);
@@ -113,42 +125,36 @@ void main() {
     expect(analytics.names, contains(FunnelEvents.waterReminderEnabled));
   });
 
-  test(
-    'Ramazan gununde konum kayitli ama mod kapali: tam olarak '
-    'waterReminderTimes listesi kullanilir',
-    () async {
-      now = DateTime(2027, 2, 10, 10, 30);
-      final c = await makeContainer(ramadanNow: () => now);
-      await c.read(ramadanSettingsProvider.notifier).setLocation(
-        lat: 39.9334,
-        lng: 32.8597,
-        label: 'Ankara',
-        plate: 6,
-      );
-      final controller = c.read(waterControllerProvider);
+  test('Ramazan gununde konum kayitli ama mod kapali: tam olarak '
+      'waterReminderTimes listesi kullanilir', () async {
+    now = DateTime(2027, 2, 10, 10, 30);
+    final c = await makeContainer(ramadanNow: () => now);
+    await c
+        .read(ramadanSettingsProvider.notifier)
+        .setLocation(lat: 39.9334, lng: 32.8597, label: 'Ankara', plate: 6);
+    final controller = c.read(waterControllerProvider);
 
-      await controller.setReminderEnabled(true, _copy);
+    await controller.setReminderEnabled(true, _copy);
 
-      final times =
-          verify(
-                () => notifications.rescheduleWaterReminders(
-                  times: captureAny(named: 'times'),
-                  title: 't',
-                  body: 'b',
-                ),
-              ).captured.last
-              as List<DateTime>;
-      expect(
-        times,
-        waterReminderTimes(
-          now: now,
-          lastGlassAt: null,
-          glassesToday: 0,
-          goal: 10,
-        ),
-      );
-    },
-  );
+    final times =
+        verify(
+              () => notifications.rescheduleWaterReminders(
+                times: captureAny(named: 'times'),
+                title: 't',
+                body: 'b',
+              ),
+            ).captured.last
+            as List<DateTime>;
+    expect(
+      times,
+      waterReminderTimes(
+        now: now,
+        lastGlassAt: null,
+        glassesToday: 0,
+        goal: 10,
+      ),
+    );
+  });
 
   test('izin reddedilirse false doner ve kapali kalir', () async {
     final c = await makeContainer(permission: false);

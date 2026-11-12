@@ -60,16 +60,27 @@ class MealsScreen extends ConsumerWidget {
                 subtitle: context.l10n.mealsSubtitle,
               ),
             ),
-            SliverToBoxAdapter(
+            // "Today" first on purpose: new guests land on this tab, and
+            // water is the habit that brings people back — further down,
+            // most never scrolled to it. Water and meals sit together so
+            // the day's progress reads at a glance.
+            const SliverToBoxAdapter(child: _TodayHeading()),
+            const SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 18),
-                child: _CalorieInsights(),
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                child: WaterCard(),
               ),
             ),
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 18),
                 child: _DailyTargetSummary(),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
+                child: _CalorieInsights(),
               ),
             ),
             const SliverToBoxAdapter(
@@ -88,12 +99,6 @@ class MealsScreen extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                 child: FastingCard(),
-              ),
-            ),
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 18),
-                child: WaterCard(),
               ),
             ),
             mealsAsync.when(
@@ -390,6 +395,42 @@ class _CalorieInsights extends ConsumerWidget {
   }
 }
 
+/// "Bugün · 12 Kasım Perşembe" above the day's water and meal cards.
+class _TodayHeading extends StatelessWidget {
+  const _TodayHeading();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 20, 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Text(
+            context.l10n.todayTitle,
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: colors.textPrimary,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              DateFormat.MMMMEEEEd(locale).format(DateTime.now()),
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 13, color: colors.textMuted),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Günün toplam alınan kalorisi / günlük hedef özeti + ilerleme çubuğu.
 /// Öğün listesinin başlığının üstünde yaşar — [_CalorieInsights]'taki
 /// grafik hangi dönem sekmesinde olursa olsun (Gün/Hafta/Ay/Yıl) bu satır
@@ -408,6 +449,13 @@ class _DailyTargetSummary extends ConsumerWidget {
     final l10n = context.l10n;
     final totalAsync = ref.watch(todayCalorieTotalProvider);
     final target = ref.watch(dailyCalorieTargetProvider);
+    final meals = ref.watch(mealsProvider).value ?? const <MealEntryEntity>[];
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final mealsToday = meals
+        .where((m) => !m.capturedAt.isBefore(startOfDay))
+        .length;
+    final hasEarlierMeals = meals.length > mealsToday;
 
     return totalAsync.when(
       data: (total) {
@@ -423,13 +471,29 @@ class _DailyTargetSummary extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.dailyCalorieSummary(consumed, target),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
-                ),
+              Row(
+                children: [
+                  Icon(Icons.restaurant_rounded, color: colors.cozy.mint.ink),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.todayMealCount(mealsToday),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    l10n.dailyCalorieSummary(consumed, target),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               ClipRRect(
@@ -450,6 +514,21 @@ class _DailyTargetSummary extends ConsumerWidget {
                     fontWeight: FontWeight.w600,
                     color: colors.error,
                   ),
+                ),
+              ],
+              // A returning user with nothing logged today gets the way in
+              // right here; a brand-new user already sees the same button
+              // in the empty state below, so it isn't shown twice.
+              if (mealsToday == 0 && hasEarlierMeals) ...[
+                const SizedBox(height: 10),
+                FilledButton.tonalIcon(
+                  key: const ValueKey('today-add-meal'),
+                  onPressed: () {
+                    ref.read(pendingScannerModeProvider.notifier).state = 1;
+                    context.goNamed(RouteNames.scanner);
+                  },
+                  icon: const Icon(Icons.center_focus_strong_rounded),
+                  label: Text(l10n.scanFood),
                 ),
               ],
               const SizedBox(height: 6),

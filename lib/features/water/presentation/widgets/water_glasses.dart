@@ -44,7 +44,7 @@ class WaterGlasses extends ConsumerWidget {
             plus: colors.cozy.sky.ink,
             semanticLabel: i == glasses ? l10n.waterAddGlass : null,
             onTap: i == glasses
-                ? () => addWaterGlass(context, ref)
+                ? () => addWaterGlass(context, ref, source: 'glass')
                 : i == glasses - 1
                 ? () => removeWaterGlass(context, ref)
                 : null,
@@ -136,10 +136,7 @@ class _GlassPainter extends CustomPainter {
       final top = h - (h * 0.82 * level);
       canvas.save();
       canvas.clipPath(body);
-      canvas.drawRect(
-        Rect.fromLTRB(0, top, w, h),
-        Paint()..color = water,
-      );
+      canvas.drawRect(Rect.fromLTRB(0, top, w, h), Paint()..color = water);
       canvas.restore();
     }
 

@@ -55,6 +55,17 @@ class WaterCard extends ConsumerWidget {
                       : null,
                   icon: const Icon(Icons.remove_rounded),
                 ),
+                // The glass row also adds on tap, but nothing says so; this is
+                // the obvious one-tap control a first-time user looks for.
+                FilledButton.tonal(
+                  onPressed: () =>
+                      addWaterGlass(context, ref, source: 'card_button'),
+                  style: FilledButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                  ),
+                  child: Text(l10n.waterAddGlass),
+                ),
               ],
             ),
             const SizedBox(height: 4),

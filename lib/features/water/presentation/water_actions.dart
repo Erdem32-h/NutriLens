@@ -8,11 +8,15 @@ import 'providers/water_provider.dart';
 WaterReminderCopy waterReminderCopy(AppLocalizations l10n) =>
     (title: l10n.waterReminderTitle, body: l10n.waterReminderBody);
 
-Future<void> addWaterGlass(BuildContext context, WidgetRef ref) async {
+Future<void> addWaterGlass(
+  BuildContext context,
+  WidgetRef ref, {
+  required String source,
+}) async {
   final l10n = context.l10n;
   final messenger = ScaffoldMessenger.of(context);
   final controller = ref.read(waterControllerProvider);
-  await controller.addGlass(waterReminderCopy(l10n));
+  await controller.addGlass(waterReminderCopy(l10n), source: source);
 
   // One-shot discovery: the switch lives on the water screen, which most
   // users never open before the habit forms.

@@ -149,7 +149,13 @@ class WaterController {
     return _ref.read(waterGoalProvider);
   }
 
-  Future<WaterDay?> addGlass(WaterReminderCopy copy) async {
+  /// [source] says which control logged it (`card_button` | `glass` |
+  /// `screen_button`) so the funnel can tell whether the card button is
+  /// what got new users started.
+  Future<WaterDay?> addGlass(
+    WaterReminderCopy copy, {
+    String source = 'glass',
+  }) async {
     final userId = _ref.read(effectiveUserIdProvider);
     if (userId == null) {
       await rescheduleReminders(copy);
@@ -161,7 +167,9 @@ class WaterController {
       goal: await _resolvedGoal(),
     );
     _invalidate();
-    _ref.read(analyticsServiceProvider).track(FunnelEvents.waterGlassAdded);
+    _ref
+        .read(analyticsServiceProvider)
+        .track(FunnelEvents.waterGlassAdded, props: {'source': source});
     await rescheduleReminders(copy);
     return day;
   }

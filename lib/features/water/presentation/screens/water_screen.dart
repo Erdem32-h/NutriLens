@@ -70,7 +70,8 @@ class WaterScreen extends ConsumerWidget {
               ),
               const SizedBox(width: 16),
               FilledButton(
-                onPressed: () => addWaterGlass(context, ref),
+                onPressed: () =>
+                    addWaterGlass(context, ref, source: 'screen_button'),
                 child: Text(l10n.waterAddGlass),
               ),
             ],

@@ -15,6 +15,7 @@ import 'package:nutrilens/features/meals/presentation/widgets/calorie_stacked_ba
 import 'package:nutrilens/features/product/domain/entities/nutriments_entity.dart';
 import 'package:nutrilens/features/product/presentation/providers/product_provider.dart';
 import 'package:nutrilens/features/profile/presentation/providers/user_metrics_provider.dart';
+import 'package:nutrilens/features/water/presentation/widgets/water_card.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,6 +61,96 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     _prefs = await SharedPreferences.getInstance();
+  });
+
+  testWidgets('su kartı kalori grafiğinin üstünde', (tester) async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(db.close);
+
+    await tester.pumpWidget(wrap(db));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getTopLeft(find.byType(WaterCard)).dy,
+      lessThan(tester.getTopLeft(find.text('Hafta')).dy),
+    );
+  });
+
+  group('Bugün bölümü', () {
+    MealEntryEntity meal(String id, DateTime at) => MealEntryEntity(
+      id: id,
+      userId: 'user-1',
+      mealName: 'Kahvaltı',
+      brand: 'Ev yapımı',
+      mealType: MealType.breakfast,
+      capturedAt: at,
+      ingredientsText: 'Yumurta',
+      nutriments: const NutrimentsEntity(energyKcal: 400, proteins: 20),
+      calories: 400,
+      hpScore: 82,
+      confidence: 0.8,
+      aiRawJson: '{}',
+    );
+
+    testWidgets('başlık, su ve kalori özeti grafiğin üstünde', (tester) async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+
+      await tester.pumpWidget(wrap(db));
+      await tester.pumpAndSettle();
+
+      final chartTop = tester.getTopLeft(find.text('Hafta')).dy;
+      final heading = find.text('Bugün');
+      expect(heading, findsOneWidget);
+      expect(tester.getTopLeft(heading).dy, lessThan(chartTop));
+      expect(
+        tester.getTopLeft(find.textContaining('/ 2000 kcal')).dy,
+        lessThan(chartTop),
+      );
+    });
+
+    testWidgets('bugünkü öğün sayısı ve kalori görünür', (tester) async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      final ds = MealLocalDataSourceImpl(db);
+      await ds.saveMeal(meal('a', DateTime.now()));
+      await ds.saveMeal(meal('b', DateTime.now()));
+
+      await tester.pumpWidget(wrap(db));
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 öğün'), findsOneWidget);
+      expect(find.text('800 / 2000 kcal'), findsOneWidget);
+      expect(find.byKey(const ValueKey('today-add-meal')), findsNothing);
+    });
+
+    testWidgets('dün kayıt var, bugün yoksa "Yemek Tara" butonu çıkar', (
+      tester,
+    ) async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      await MealLocalDataSourceImpl(
+        db,
+      ).saveMeal(meal('y', DateTime.now().subtract(const Duration(days: 1))));
+
+      await tester.pumpWidget(wrap(db));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Bugün henüz öğün yok'), findsOneWidget);
+      expect(find.byKey(const ValueKey('today-add-meal')), findsOneWidget);
+    });
+
+    testWidgets('hiç öğün yoksa buton tekrarlanmaz (boş ekranda zaten var)', (
+      tester,
+    ) async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+
+      await tester.pumpWidget(wrap(db));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('today-add-meal')), findsNothing);
+    });
   });
 
   testWidgets('boş veri: dönem seçici + boş mesaj görünür', (tester) async {
