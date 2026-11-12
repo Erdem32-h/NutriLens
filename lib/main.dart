@@ -331,12 +331,6 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
     _router = createRouter(ref);
     unawaited(_resumeAccountCleanup());
 
-    // One-time plugin setup for the daily meal reminder. Cheap and has no
-    // user-visible effect on its own (no permission dialog, no scheduling)
-    // — it just registers the native channel so later `zonedSchedule`
-    // calls have somewhere to land.
-    unawaited(ref.read(notificationServiceProvider).init());
-
     // Top of the activation funnel. Every later step is read as a fraction
     // of this, so it has to fire before anything can redirect or fail.
     final analytics = ref.read(analyticsServiceProvider);
@@ -346,6 +340,20 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
         'first_launch': !ref.read(hasSeenOnboardingProvider),
         'session_state': ref.read(appSessionProvider).name,
       },
+    );
+
+    // One-time plugin setup for the reminders. Cheap and has no
+    // user-visible effect on its own (no permission dialog, no scheduling).
+    // Runs after app_opened so a reminder tap is read as "came back via it".
+    unawaited(
+      ref
+          .read(notificationServiceProvider)
+          .init(
+            onOpened: (type) => analytics.track(
+              FunnelEvents.notificationOpened,
+              props: {'type': type},
+            ),
+          ),
     );
 
     // Backgrounding is the most common way a session ends, and it's the last

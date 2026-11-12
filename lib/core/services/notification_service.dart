@@ -28,7 +28,7 @@ class NotificationService {
   static const _waterChannelName = 'Su Hatırlatma';
   static const _waterBaseId = 2000;
 
-  /// Today's remaining slots + tomorrow's 7 (see `waterReminderTimes`).
+  /// Upper bound shared with Ramadan slots (normal days arm at most 8).
   static const _waterMaxCount = 14;
 
   static const _ramadanChannelId = 'ramadan_reminder';
@@ -47,7 +47,23 @@ class NotificationService {
 
   NotificationService(this._plugin);
 
-  Future<void> init() async {
+  /// Which reminder a notification id belongs to, for the open event. The
+  /// id ranges are the ones each scheduler above uses, so no payload is
+  /// needed and notifications armed by older builds are counted too.
+  static String typeForId(int? id) {
+    if (id == null) return 'other';
+    if (id == _reminderId) return 'meal';
+    if (id >= _waterBaseId && id < _waterBaseId + _waterMaxCount) {
+      return 'water';
+    }
+    if (id >= 3000 && id < 3010 + _ramadanIftarIdRange) return 'ramadan';
+    if (id == _fastingTargetId) return 'fasting';
+    return 'other';
+  }
+
+  /// [onOpened] gets the [typeForId] of a tapped notification, both while
+  /// the app is running and when the tap is what launched it.
+  Future<void> init({void Function(String type)? onOpened}) async {
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
     await _plugin.initialize(
@@ -55,7 +71,15 @@ class NotificationService {
         android: androidInit,
         iOS: iosInit,
       ),
+      onDidReceiveNotificationResponse: onOpened == null
+          ? null
+          : (response) => onOpened(typeForId(response.id)),
     );
+    if (onOpened == null) return;
+    final launch = await _plugin.getNotificationAppLaunchDetails();
+    if (launch != null && launch.didNotificationLaunchApp) {
+      onOpened(typeForId(launch.notificationResponse?.id));
+    }
   }
 
   /// idempotent — safe to call from every code path that needs a correct

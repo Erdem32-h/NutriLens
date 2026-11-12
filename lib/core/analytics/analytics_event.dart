@@ -273,6 +273,11 @@ abstract final class FunnelEvents {
   static const waterGlassAdded = 'water_glass_added';
   static const waterReminderEnabled = 'water_reminder_enabled';
 
+  /// A reminder notification was tapped. props: `type` (water | meal |
+  /// ramadan | fasting | other). The only signal that a reminder brought
+  /// someone back.
+  static const notificationOpened = 'notification_opened';
+
   // --- Ramadan ----------------------------------------------------------
   static const ramadanOfferShown = 'ramadan_offer_shown';
   static const ramadanOfferDismissed = 'ramadan_offer_dismissed';
