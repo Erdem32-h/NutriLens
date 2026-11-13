@@ -973,5 +973,13 @@
   "digitalLinkProducerPage": "صفحة المنتج",
   "digitalLinkOpenFailed": "تعذّر فتح الرابط",
   "todayTitle": "اليوم",
-  "todayMealCount": "{count, plural, =0{لا وجبات اليوم بعد} =1{وجبة واحدة} other{{count} وجبات}}"
+  "todayMealCount": "{count, plural, =0{لا وجبات اليوم بعد} =1{وجبة واحدة} other{{count} وجبات}}",
+  "reportProduct": "الإبلاغ عن خطأ أو محتوى غير لائق",
+  "reportProductTitle": "الإبلاغ عن هذا المنتج",
+  "reportProductBody": "هل معلومات هذا المنتج خاطئة أو مضللة أو غير لائقة؟ ستتم مراجعة بلاغك، وتُخفى المنتجات التي تتلقى بلاغات كافية تلقائيًا.",
+  "reportProductConfirm": "إبلاغ",
+  "reportProductThanks": "شكرًا، تم استلام بلاغك.",
+  "reportProductAlready": "لقد أبلغت عن هذا المنتج من قبل.",
+  "reportProductUnavailable": "هذا المنتج من قاعدة بيانات خارجية؛ يمكنك التواصل معنا عبر صفحة الدعم لتصحيحه.",
+  "reportProductFailed": "تعذر إرسال البلاغ. يرجى المحاولة مرة أخرى."
 }

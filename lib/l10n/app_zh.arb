@@ -973,5 +973,13 @@
   "digitalLinkProducerPage": "生产商页面",
   "digitalLinkOpenFailed": "无法打开链接",
   "todayTitle": "今天",
-  "todayMealCount": "{count, plural, =0{今天还没有记录饮食} other{{count} 餐}}"
+  "todayMealCount": "{count, plural, =0{今天还没有记录饮食} other{{count} 餐}}",
+  "reportProduct": "举报错误或不当内容",
+  "reportProductTitle": "举报此产品",
+  "reportProductBody": "此产品信息有误、具有误导性或不当？我们会审核你的举报；被举报次数足够的产品会自动隐藏。",
+  "reportProductConfirm": "举报",
+  "reportProductThanks": "谢谢，已收到你的举报。",
+  "reportProductAlready": "你已经举报过此产品。",
+  "reportProductUnavailable": "此产品来自外部数据库；你可以通过我们的支持页面联系我们进行更正。",
+  "reportProductFailed": "举报发送失败，请重试。"
 }

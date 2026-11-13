@@ -2338,4 +2338,31 @@ class AppLocalizationsPt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get reportProduct => 'Denunciar incorreto ou impróprio';
+
+  @override
+  String get reportProductTitle => 'Denunciar este produto';
+
+  @override
+  String get reportProductBody =>
+      'As informações deste produto estão erradas, enganosas ou impróprias? Sua denúncia será analisada; produtos com denúncias suficientes são ocultados automaticamente.';
+
+  @override
+  String get reportProductConfirm => 'Denunciar';
+
+  @override
+  String get reportProductThanks => 'Obrigado, recebemos sua denúncia.';
+
+  @override
+  String get reportProductAlready => 'Você já denunciou este produto.';
+
+  @override
+  String get reportProductUnavailable =>
+      'Este produto vem de um banco de dados externo; fale conosco pela página de suporte para corrigi-lo.';
+
+  @override
+  String get reportProductFailed =>
+      'Não foi possível enviar a denúncia. Tente novamente.';
 }

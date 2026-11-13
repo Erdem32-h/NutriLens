@@ -4335,6 +4335,54 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{count, plural, =0{Bugün henüz öğün yok} =1{1 öğün} other{{count} öğün}}'**
   String todayMealCount(int count);
+
+  /// No description provided for @reportProduct.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatalı veya uygunsuz bildir'**
+  String get reportProduct;
+
+  /// No description provided for @reportProductTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ürünü bildir'**
+  String get reportProductTitle;
+
+  /// No description provided for @reportProductBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ürün bilgisi hatalı, yanıltıcı ya da uygunsuz mu? Bildirimin incelemeye alınır; yeterince bildirilen ürün otomatik olarak gizlenir.'**
+  String get reportProductBody;
+
+  /// No description provided for @reportProductConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildir'**
+  String get reportProductConfirm;
+
+  /// No description provided for @reportProductThanks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Teşekkürler, bildirimin alındı.'**
+  String get reportProductThanks;
+
+  /// No description provided for @reportProductAlready.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ürünü zaten bildirmiştin.'**
+  String get reportProductAlready;
+
+  /// No description provided for @reportProductUnavailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ürün harici bir veritabanından geliyor; düzeltme için destek sayfamızdan bize yazabilirsin.'**
+  String get reportProductUnavailable;
+
+  /// No description provided for @reportProductFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim gönderilemedi. Lütfen tekrar dene.'**
+  String get reportProductFailed;
 }
 
 class _AppLocalizationsDelegate

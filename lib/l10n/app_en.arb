@@ -973,5 +973,13 @@
   "digitalLinkProducerPage": "Producer page",
   "digitalLinkOpenFailed": "Couldn't open the link",
   "todayTitle": "Today",
-  "todayMealCount": "{count, plural, =0{No meals yet today} =1{1 meal} other{{count} meals}}"
+  "todayMealCount": "{count, plural, =0{No meals yet today} =1{1 meal} other{{count} meals}}",
+  "reportProduct": "Report incorrect or inappropriate",
+  "reportProductTitle": "Report this product",
+  "reportProductBody": "Is this product's information wrong, misleading or inappropriate? Your report will be reviewed; products that get enough reports are hidden automatically.",
+  "reportProductConfirm": "Report",
+  "reportProductThanks": "Thanks, your report was received.",
+  "reportProductAlready": "You have already reported this product.",
+  "reportProductUnavailable": "This product comes from an external database; you can reach us through our support page to get it fixed.",
+  "reportProductFailed": "Couldn't send the report. Please try again."
 }

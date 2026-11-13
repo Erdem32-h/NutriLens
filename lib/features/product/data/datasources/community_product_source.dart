@@ -6,6 +6,27 @@ import '../../domain/entities/product_entity.dart';
 import '../models/product_dto.dart';
 import 'product_source.dart';
 
+/// A community row with at least this many distinct "report_wrong" votes is
+/// hidden from scans and alternatives until someone reviews it.
+const int kCommunityReportHideThreshold = 3;
+
+/// Result of a user's "Report" tap on the product screen.
+enum ReportOutcome { reported, alreadyReported, notFound }
+
+/// True when [row] has collected enough reports to be hidden.
+bool isHiddenByReports(Map<String, dynamic> row) {
+  final raw = row['reported_count'];
+  final count = raw is num ? raw.toInt() : int.tryParse('$raw') ?? 0;
+  return count >= kCommunityReportHideThreshold;
+}
+
+/// Maps a `community_products` row to an entity, or `null` when there is no
+/// row or the row is hidden by reports.
+ProductEntity? visibleCommunityProduct(Map<String, dynamic>? row) {
+  if (row == null || isHiddenByReports(row)) return null;
+  return ProductDto.fromCommunityRow(row);
+}
+
 class CommunityProductSource implements ProductSource {
   final SupabaseClient _client;
   final _logger = Logger();
@@ -30,9 +51,7 @@ class CommunityProductSource implements ProductSource {
           .eq('barcode', barcode)
           .maybeSingle();
 
-      if (response == null) return null;
-
-      return ProductDto.fromCommunityRow(response);
+      return visibleCommunityProduct(response);
     } catch (e) {
       _logger.w('CommunityProductSource error: $e');
       return null;
@@ -96,6 +115,7 @@ class CommunityProductSource implements ProductSource {
           .eq('category', category)
           .neq('barcode', selfBarcode)
           .gt('hp_score', currentHpScore)
+          .lt('reported_count', kCommunityReportHideThreshold)
           .order('hp_score', ascending: false)
           .limit(limit);
       return (rows as List)
@@ -168,6 +188,40 @@ class CommunityProductSource implements ProductSource {
       _logger.w('autoImportFromApi failed for ${product.barcode}: $e');
       return false;
     }
+  }
+
+  /// Records one "report_wrong" vote from [userId] for the community row of
+  /// [barcode]. A plain insert (not upsert): product_reports has no UPDATE
+  /// policy, so a repeat vote hits the (user_id, product_id) unique index and
+  /// comes back as [ReportOutcome.alreadyReported].
+  Future<ReportOutcome> reportByBarcode({
+    required String barcode,
+    required String userId,
+  }) async {
+    final row = await _client
+        .from('community_products')
+        .select('id')
+        .eq('barcode', barcode)
+        .maybeSingle();
+    if (row == null) return ReportOutcome.notFound;
+    final productId = row['id'] as String;
+
+    try {
+      await _client.from('product_reports').insert({
+        'product_id': productId,
+        'user_id': userId,
+        'action': 'report_wrong',
+      });
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') return ReportOutcome.alreadyReported;
+      rethrow;
+    }
+
+    await _client.rpc(
+      'increment_reported_count',
+      params: {'product_id_param': productId},
+    );
+    return ReportOutcome.reported;
   }
 
   /// Report or verify a community product.

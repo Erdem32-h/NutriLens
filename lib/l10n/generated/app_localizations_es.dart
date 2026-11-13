@@ -2341,4 +2341,31 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get reportProduct => 'Reportar incorrecto o inapropiado';
+
+  @override
+  String get reportProductTitle => 'Reportar este producto';
+
+  @override
+  String get reportProductBody =>
+      '¿La información de este producto es incorrecta, engañosa o inapropiada? Revisaremos tu reporte; los productos con suficientes reportes se ocultan automáticamente.';
+
+  @override
+  String get reportProductConfirm => 'Reportar';
+
+  @override
+  String get reportProductThanks => 'Gracias, recibimos tu reporte.';
+
+  @override
+  String get reportProductAlready => 'Ya reportaste este producto.';
+
+  @override
+  String get reportProductUnavailable =>
+      'Este producto proviene de una base de datos externa; puedes escribirnos desde nuestra página de soporte para corregirlo.';
+
+  @override
+  String get reportProductFailed =>
+      'No se pudo enviar el reporte. Inténtalo de nuevo.';
 }

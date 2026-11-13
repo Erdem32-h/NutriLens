@@ -2320,4 +2320,31 @@ class AppLocalizationsAr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get reportProduct => 'الإبلاغ عن خطأ أو محتوى غير لائق';
+
+  @override
+  String get reportProductTitle => 'الإبلاغ عن هذا المنتج';
+
+  @override
+  String get reportProductBody =>
+      'هل معلومات هذا المنتج خاطئة أو مضللة أو غير لائقة؟ ستتم مراجعة بلاغك، وتُخفى المنتجات التي تتلقى بلاغات كافية تلقائيًا.';
+
+  @override
+  String get reportProductConfirm => 'إبلاغ';
+
+  @override
+  String get reportProductThanks => 'شكرًا، تم استلام بلاغك.';
+
+  @override
+  String get reportProductAlready => 'لقد أبلغت عن هذا المنتج من قبل.';
+
+  @override
+  String get reportProductUnavailable =>
+      'هذا المنتج من قاعدة بيانات خارجية؛ يمكنك التواصل معنا عبر صفحة الدعم لتصحيحه.';
+
+  @override
+  String get reportProductFailed =>
+      'تعذر إرسال البلاغ. يرجى المحاولة مرة أخرى.';
 }

@@ -2261,4 +2261,28 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get reportProduct => '举报错误或不当内容';
+
+  @override
+  String get reportProductTitle => '举报此产品';
+
+  @override
+  String get reportProductBody => '此产品信息有误、具有误导性或不当？我们会审核你的举报；被举报次数足够的产品会自动隐藏。';
+
+  @override
+  String get reportProductConfirm => '举报';
+
+  @override
+  String get reportProductThanks => '谢谢，已收到你的举报。';
+
+  @override
+  String get reportProductAlready => '你已经举报过此产品。';
+
+  @override
+  String get reportProductUnavailable => '此产品来自外部数据库；你可以通过我们的支持页面联系我们进行更正。';
+
+  @override
+  String get reportProductFailed => '举报发送失败，请重试。';
 }

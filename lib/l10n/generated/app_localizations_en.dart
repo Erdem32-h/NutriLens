@@ -2329,4 +2329,31 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get reportProduct => 'Report incorrect or inappropriate';
+
+  @override
+  String get reportProductTitle => 'Report this product';
+
+  @override
+  String get reportProductBody =>
+      'Is this product\'s information wrong, misleading or inappropriate? Your report will be reviewed; products that get enough reports are hidden automatically.';
+
+  @override
+  String get reportProductConfirm => 'Report';
+
+  @override
+  String get reportProductThanks => 'Thanks, your report was received.';
+
+  @override
+  String get reportProductAlready => 'You have already reported this product.';
+
+  @override
+  String get reportProductUnavailable =>
+      'This product comes from an external database; you can reach us through our support page to get it fixed.';
+
+  @override
+  String get reportProductFailed =>
+      'Couldn\'t send the report. Please try again.';
 }

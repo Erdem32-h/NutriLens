@@ -1025,5 +1025,13 @@
         "type": "int"
       }
     }
-  }
+  },
+  "reportProduct": "Hatalı veya uygunsuz bildir",
+  "reportProductTitle": "Bu ürünü bildir",
+  "reportProductBody": "Ürün bilgisi hatalı, yanıltıcı ya da uygunsuz mu? Bildirimin incelemeye alınır; yeterince bildirilen ürün otomatik olarak gizlenir.",
+  "reportProductConfirm": "Bildir",
+  "reportProductThanks": "Teşekkürler, bildirimin alındı.",
+  "reportProductAlready": "Bu ürünü zaten bildirmiştin.",
+  "reportProductUnavailable": "Bu ürün harici bir veritabanından geliyor; düzeltme için destek sayfamızdan bize yazabilirsin.",
+  "reportProductFailed": "Bildirim gönderilemedi. Lütfen tekrar dene."
 }

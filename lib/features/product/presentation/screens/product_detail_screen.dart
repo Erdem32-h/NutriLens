@@ -29,6 +29,7 @@ import '../widgets/editorial_header.dart';
 import '../widgets/editorial_nutrient_table.dart';
 import '../widgets/health_score_bar.dart';
 import '../widgets/pill_tab_bar.dart';
+import '../widgets/report_product_button.dart';
 import '../widgets/dietary_suitability_section.dart';
 import '../widgets/score_breakdown_card.dart';
 import '../../../../core/widgets/app_tap_card.dart';
@@ -243,6 +244,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       }
                     },
                   ),
+                ),
+                ReportProductButton(
+                  canProceed: () => ref.requireAuthOr(
+                    context,
+                    feature: l10n.reportProduct,
+                  ),
+                  onReport: () {
+                    final userId =
+                        ref.read(supabaseClientProvider).auth.currentUser?.id;
+                    if (userId == null) {
+                      throw StateError('report without a signed-in user');
+                    }
+                    return ref
+                        .read(communityProductSourceProvider)
+                        .reportByBarcode(
+                          barcode: widget.barcode,
+                          userId: userId,
+                        );
+                  },
                 ),
               ]
             : null,

@@ -973,5 +973,13 @@
   "digitalLinkProducerPage": "Página do produtor",
   "digitalLinkOpenFailed": "Não foi possível abrir o link",
   "todayTitle": "Hoje",
-  "todayMealCount": "{count, plural, =0{Nenhuma refeição hoje} =1{1 refeição} other{{count} refeições}}"
+  "todayMealCount": "{count, plural, =0{Nenhuma refeição hoje} =1{1 refeição} other{{count} refeições}}",
+  "reportProduct": "Denunciar incorreto ou impróprio",
+  "reportProductTitle": "Denunciar este produto",
+  "reportProductBody": "As informações deste produto estão erradas, enganosas ou impróprias? Sua denúncia será analisada; produtos com denúncias suficientes são ocultados automaticamente.",
+  "reportProductConfirm": "Denunciar",
+  "reportProductThanks": "Obrigado, recebemos sua denúncia.",
+  "reportProductAlready": "Você já denunciou este produto.",
+  "reportProductUnavailable": "Este produto vem de um banco de dados externo; fale conosco pela página de suporte para corrigi-lo.",
+  "reportProductFailed": "Não foi possível enviar a denúncia. Tente novamente."
 }

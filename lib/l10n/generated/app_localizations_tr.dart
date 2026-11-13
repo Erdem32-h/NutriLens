@@ -2334,4 +2334,31 @@ class AppLocalizationsTr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get reportProduct => 'Hatalı veya uygunsuz bildir';
+
+  @override
+  String get reportProductTitle => 'Bu ürünü bildir';
+
+  @override
+  String get reportProductBody =>
+      'Ürün bilgisi hatalı, yanıltıcı ya da uygunsuz mu? Bildirimin incelemeye alınır; yeterince bildirilen ürün otomatik olarak gizlenir.';
+
+  @override
+  String get reportProductConfirm => 'Bildir';
+
+  @override
+  String get reportProductThanks => 'Teşekkürler, bildirimin alındı.';
+
+  @override
+  String get reportProductAlready => 'Bu ürünü zaten bildirmiştin.';
+
+  @override
+  String get reportProductUnavailable =>
+      'Bu ürün harici bir veritabanından geliyor; düzeltme için destek sayfamızdan bize yazabilirsin.';
+
+  @override
+  String get reportProductFailed =>
+      'Bildirim gönderilemedi. Lütfen tekrar dene.';
 }
