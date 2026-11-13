@@ -244,7 +244,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       _startCameraForMode();
       return;
     }
-    if (context.canPop()) context.pop();
+    // Reached via go() (first-launch scan buttons, nav bar) there is nothing
+    // to pop; a camera-less black scanner is a poor landing, so fall back to
+    // the diary, which carries its own scan buttons.
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/meals');
+    }
   }
 
   /// Pulls the authoritative guest scan count from the server (device-hash

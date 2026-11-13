@@ -9,8 +9,14 @@ import '../../../../core/session/app_session.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/cozy_header.dart';
+import '../../../scanner/presentation/providers/scanner_mode_provider.dart';
 import '../widgets/onboarding_previews.dart';
 
+/// First-launch screen: one promise, two ways straight into the product.
+///
+/// Until 2026-11 this was a three-page intro ending on /meals. 98 of 289
+/// devices left on page 0 and only ~1/3 ever reached the scanner, so the
+/// pages went and the scan buttons moved here.
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -20,8 +26,6 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
-  final _pageController = PageController();
-  int _currentPage = 0;
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
@@ -29,9 +33,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   /// actually looked at it.
   final _openedAt = DateTime.now();
 
-  /// True once the visitor left through a door we already measure — the CTA,
-  /// the skip link, or the login link. Guards [_trackAbandoned] so the two
-  /// never both fire for the same exit.
+  /// True once the visitor left through a door we already measure — a scan
+  /// button, the skip link, or the login link. Guards [_trackAbandoned] so
+  /// the two never both fire for the same exit.
   bool _exitTracked = false;
 
   /// Held rather than read through `ref` on demand: [dispose] is one of the
@@ -51,41 +55,38 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     _animController.forward();
     final analytics = _analytics;
     analytics.track(FunnelEvents.onboardingShown);
-    // PageView.onPageChanged ilk sayfa için ateşlenmez, dolayısıyla sayfa 0
-    // bugüne kadar hiç ölçülmedi ve huni ancak onboarding_shown'dan çıkarım
-    // yapılarak okunabiliyordu. Karşılaştırma metriği değişmiyor (§3):
-    // öncesi/sonrası hâlâ page=1 / onboarding_shown üzerinden okunur.
+    // Single screen now; the page=0 event stays for dashboard continuity.
     analytics.track(FunnelEvents.onboardingPageViewed, props: {'page': 0});
   }
 
-  /// Finish the intro by dropping the visitor into the product as a
-  /// guest, not onto the login form. They get [GuestScanCounter
-  /// .lifetimeLimit] free scans before an account is required, which
-  /// is the moment the ask actually means something to them.
+  /// Drops the visitor into the product as a guest, not onto the login form.
+  /// They get [GuestScanCounter.lifetimeLimit] free scans before an account
+  /// is required.
   ///
-  /// Lands on /meals rather than /scanner on purpose. The scanner opens a
-  /// camera in initState, so routing there directly put an OS permission
-  /// dialog in front of someone who had not asked for the camera yet —
-  /// the very first interaction in the app was a system prompt. Both the
-  /// meal diary and the product history now carry a scan button, so the
-  /// prompt follows a deliberate tap.
+  /// [scanMode] null → /meals (the skip link). 1 = food, 0 = barcode →
+  /// straight into the scanner in that mode. Landing on /scanner used to be
+  /// avoided because it raised the OS camera prompt unasked; the scanner now
+  /// shows CameraRationaleSheet first, and this path is a deliberate tap.
   ///
-  /// [via] separates the two ways this is reached — the header "skip" link
-  /// and the final CTA. They mean different things: skipping at page 0 is a
-  /// visitor who never saw the value pitch, and if that turns out to be the
-  /// dominant path the pitch is what needs work, not the funnel below it.
-  Future<void> _startAsGuest({required String via}) async {
+  /// [via] (`cta_food` / `cta_barcode` / `skip`) records which door was used.
+  Future<void> _startAsGuest({required String via, int? scanMode}) async {
     _exitTracked = true;
     final analytics = ref.read(analyticsServiceProvider);
     analytics.track(
       FunnelEvents.onboardingCompleted,
-      props: {'via': via, 'page': _currentPage},
+      props: {'via': via, 'page': 0},
     );
     analytics.track(FunnelEvents.guestStarted, props: {'from': 'onboarding'});
     final session = ref.read(appSessionControllerProvider);
     await session.completeOnboarding();
     await session.enterGuestMode();
-    if (mounted) context.go('/meals');
+    if (!mounted) return;
+    if (scanMode == null) {
+      context.go('/meals');
+      return;
+    }
+    ref.read(pendingScannerModeProvider.notifier).state = scanMode;
+    context.go('/scanner');
   }
 
   /// Returning user who reinstalled or already registered elsewhere.
@@ -95,17 +96,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
         .read(analyticsServiceProvider)
         .track(
           FunnelEvents.onboardingSkipped,
-          props: {'to': 'login', 'page': _currentPage},
+          props: {'to': 'login', 'page': 0},
         );
     await ref.read(appSessionControllerProvider).completeOnboarding();
     if (mounted) context.go('/login');
-  }
-
-  void _nextPage() {
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOutCubic,
-    );
   }
 
   /// Records a departure that no other event covers.
@@ -119,7 +113,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     _analytics.track(
       FunnelEvents.onboardingAbandoned,
       props: {
-        'page': _currentPage,
+        'page': 0,
         'seconds': DateTime.now().difference(_openedAt).inSeconds,
         'reason': reason,
       },
@@ -144,7 +138,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     // Navigated away without using one of the measured doors.
     _trackAbandoned('disposed');
     WidgetsBinding.instance.removeObserver(this);
-    _pageController.dispose();
     _animController.dispose();
     super.dispose();
   }
@@ -153,219 +146,45 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    final pages = [
-      _PageData(
-        visual: (_) => const MealPreview(),
-        title: l10n.onboardingMealTitle,
-        description: l10n.onboardingMealBody,
-      ),
-      _PageData(
-        visual: (_) => const ScorePreview(),
-        title: l10n.onboardingBarcodeTitle,
-        description: l10n.onboardingBarcodeBody,
-      ),
-      _PageData(
-        visual: (_) => const FiltersPreview(),
-        title: l10n.onboardingFiltersTitle,
-        description: l10n.onboardingFiltersBody,
-      ),
-    ];
-
     return Scaffold(
       backgroundColor: context.colors.background,
       body: Stack(
         children: [
           const CozyGlowBackdrop(),
-
           SafeArea(
             child: Column(
               children: [
-                // Top bar
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Logo
-                      Row(
-                        children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              gradient: context.colors.primaryGradient,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.eco_rounded,
-                              color: Colors.black,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'NutriLens',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: context.colors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      TextButton(
-                        onPressed: () => _startAsGuest(via: 'skip'),
-                        child: Text(
-                          l10n.skip,
-                          style: TextStyle(
-                            color: context.colors.textMuted,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Pages
+                _TopBar(onSkip: () => _startAsGuest(via: 'skip')),
                 Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: pages.length,
-                    onPageChanged: (index) {
-                      setState(() => _currentPage = index);
-                      _animController.reset();
-                      _animController.forward();
-                      ref
-                          .read(analyticsServiceProvider)
-                          .track(
-                            FunnelEvents.onboardingPageViewed,
-                            props: {'page': index},
-                          );
-                    },
-                    itemBuilder: (context, index) {
-                      final page = pages[index];
-                      return FadeTransition(
-                        opacity: _fadeAnim,
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            // Metin görselden önce gelir.
-                            //
-                            // Önceki hâl kaydırma + minHeight idi. Taşma
-                            // hatası vermiyordu ama 640 dp'den kısa ekranlarda
-                            // başlığı cümlenin ortasında kesip açıklamayı
-                            // tamamen kadrajın altında bırakıyordu — üstelik
-                            // kaydırılabildiğine dair hiçbir ipucu olmadan.
-                            // Yani ekranın var oluş sebebi olan vaat, ilk
-                            // boyamada görünmüyordu ve hiçbir hata da düşmüyordu.
-                            //
-                            // Artık içerik tek parça hâlinde orantılı küçülüyor:
-                            // sığmayan şey görünmez olmak yerine ufalıyor.
-                            // scaleDown olduğu için uzun ekranlarda hiçbir şey
-                            // değişmez (ölçek 1'de kalır).
-                            //
-                            // SizedBox şart: FittedBox çocuğuna sınırsız
-                            // genişlik verir, önizlemelerdeki Row/Expanded ise
-                            // sınırsız genişlikte patlar.
-                            const hPad = 24.0;
-                            return Center(
-                              child: Padding(
-                                // Dikey pay olmadan ölçeklenen içerik alanı
-                                // sonuna kadar dolduruyor ve son satır dip
-                                // göstergelere yapışıyor.
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: hPad,
-                                  vertical: 8,
-                                ),
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: SizedBox(
-                                    width: constraints.maxWidth - hPad * 2,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        page.visual(context),
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          page.title,
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w800,
-                                            color: context.colors.textPrimary,
-                                            letterSpacing: -0.5,
-                                            height: 1.2,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          page.description,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w400,
-                                            // Body-on-wash, not textMuted:
-                                            // muted is mint-tinted in dark
-                                            // mode and clashes with the
-                                            // lilac/rose wash behind it.
-                                            color:
-                                                context.colors.cozy.bodyOnTint,
-                                            height: 1.5,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
+                  child: FadeTransition(
+                    opacity: _fadeAnim,
+                    child: _Promise(
+                      title: l10n.onboardingMealTitle,
+                      body: l10n.onboardingMealBody,
+                    ),
                   ),
                 ),
-
-                // Bottom bar
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 32),
+                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
                   child: Column(
                     children: [
-                      // Dot indicators
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(pages.length, (index) {
-                          final isActive = _currentPage == index;
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            height: 6,
-                            width: isActive ? 28 : 6,
-                            decoration: BoxDecoration(
-                              color: isActive
-                                  ? context.colors.primary
-                                  : context.colors.border,
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                          );
-                        }),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // CTA button
                       AppButton(
-                        label: _currentPage == pages.length - 1
-                            ? l10n.startFree
-                            : l10n.continueText,
-                        onPressed: _currentPage == pages.length - 1
-                            ? () => _startAsGuest(via: 'cta')
-                            : _nextPage,
+                        label: l10n.scanFood,
+                        icon: Icons.camera_alt_rounded,
+                        onPressed: () =>
+                            _startAsGuest(via: 'cta_food', scanMode: 1),
                       ),
-
+                      const SizedBox(height: 12),
+                      AppButton(
+                        label: l10n.scanBarcodeTitle,
+                        icon: Icons.qr_code_scanner_rounded,
+                        variant: AppButtonVariant.secondary,
+                        onPressed: () =>
+                            _startAsGuest(via: 'cta_barcode', scanMode: 0),
+                      ),
                       // Escape hatch for people who already have an
                       // account (reinstall, second device). Kept quiet
-                      // so it never competes with the primary CTA.
+                      // so it never competes with the scan buttons.
                       TextButton(
                         onPressed: _goToLogin,
                         child: Text(
@@ -389,16 +208,117 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   }
 }
 
-class _PageData {
-  /// Sayfanın görseli. Eskiden sabit bir `IconData` idi; üç sayfanın
-  /// görseli artık birbirinden farklı gerçek ürün önizlemeleri.
-  final WidgetBuilder visual;
-  final String title;
-  final String description;
+class _TopBar extends StatelessWidget {
+  final VoidCallback onSkip;
 
-  const _PageData({
-    required this.visual,
-    required this.title,
-    required this.description,
-  });
+  const _TopBar({required this.onSkip});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  gradient: context.colors.primaryGradient,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.eco_rounded,
+                  color: Colors.black,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'NutriLens',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: context.colors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          TextButton(
+            onPressed: onSkip,
+            child: Text(
+              context.l10n.skip,
+              style: TextStyle(
+                color: context.colors.textMuted,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Preview + one-line promise.
+///
+/// Scales down as one block on short screens so the promise is never cut off
+/// below the fold. The SizedBox is required: FittedBox gives its child
+/// unbounded width, and the preview's Row/Expanded break under that.
+class _Promise extends StatelessWidget {
+  final String title;
+  final String body;
+
+  const _Promise({required this.title, required this.body});
+
+  @override
+  Widget build(BuildContext context) {
+    const hPad = 24.0;
+    return LayoutBuilder(
+      builder: (context, constraints) => Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: hPad, vertical: 8),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: SizedBox(
+              width: constraints.maxWidth - hPad * 2,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const MealPreview(),
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: context.colors.textPrimary,
+                      letterSpacing: -0.5,
+                      height: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    body,
+                    style: TextStyle(
+                      fontSize: 15,
+                      // Body-on-wash, not textMuted: muted is mint-tinted in
+                      // dark mode and clashes with the wash behind it.
+                      color: context.colors.cozy.bodyOnTint,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -14,6 +14,7 @@ import 'package:nutrilens/core/widgets/app_button.dart';
 import 'package:nutrilens/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:nutrilens/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nutrilens/features/auth/presentation/widgets/onboarding_previews.dart';
+import 'package:nutrilens/features/scanner/presentation/providers/scanner_mode_provider.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -83,6 +84,10 @@ Future<ProviderContainer> _pumpOnboarding(
         path: '/login',
         builder: (_, _) => const Scaffold(body: Text('login')),
       ),
+      GoRoute(
+        path: '/scanner',
+        builder: (_, _) => const Scaffold(body: Text('scanner')),
+      ),
     ],
   );
   addTearDown(router.dispose);
@@ -134,17 +139,61 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('offers both a start CTA and a sign-in escape hatch', (
+  testWidgets('offers food scan, barcode scan and a sign-in escape hatch', (
     tester,
   ) async {
     await _pumpOnboarding(tester);
 
-    // The primary path (start free as a guest) and the returning-user path
-    // must both be reachable from the first page — a reinstalling user
-    // should not have to page through the intro to find sign-in.
-    expect(find.byType(AppButton), findsOneWidget);
+    // One screen, two ways straight into the product. A reinstalling user
+    // still finds sign-in without paging through anything.
+    expect(find.byType(AppButton), findsNWidgets(2));
+    expect(find.text('Yemek Tara'), findsOneWidget);
+    expect(find.text('Barkod Tara'), findsOneWidget);
     expect(find.text('Zaten hesabım var'), findsOneWidget);
     expect(find.text('Atla'), findsOneWidget);
+  });
+
+  testWidgets('"Yemek Tara" enters guest mode and opens the food scanner', (
+    tester,
+  ) async {
+    final container = await _pumpOnboarding(tester);
+
+    await tester.tap(find.text('Yemek Tara'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('scanner'), findsOneWidget);
+    expect(container.read(pendingScannerModeProvider), 1);
+    expect(container.read(appSessionProvider), AppSessionState.guest);
+    expect(container.read(hasSeenOnboardingProvider), isTrue);
+  });
+
+  testWidgets('"Barkod Tara" enters guest mode and opens the barcode reader', (
+    tester,
+  ) async {
+    final container = await _pumpOnboarding(tester);
+
+    await tester.tap(find.text('Barkod Tara'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('scanner'), findsOneWidget);
+    expect(container.read(pendingScannerModeProvider), 0);
+    expect(container.read(appSessionProvider), AppSessionState.guest);
+  });
+
+  testWidgets('completion reports which door was used', (tester) async {
+    final uploader = _RecordingUploader();
+    final container = await _pumpOnboarding(tester, uploader: uploader);
+
+    await tester.tap(find.text('Barkod Tara'));
+    await tester.pumpAndSettle();
+    await container.read(analyticsServiceProvider).flush();
+
+    final completed = uploader.batches
+        .expand((b) => b)
+        .where((e) => e['event'] == FunnelEvents.onboardingCompleted)
+        .toList();
+    expect(completed, hasLength(1));
+    expect((completed.single['props'] as Map)['via'], 'cta_barcode');
   });
 
   testWidgets('completing the intro enters guest mode', (tester) async {
@@ -214,30 +263,13 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('uc sayfa da kaydirilarak gezilebilir', (tester) async {
+  testWidgets('tek ekran: sayfa yok, tek vaat gorunur', (tester) async {
     await _pumpOnboarding(tester);
 
-    // Sayfa 0 (kaydirmadan once): bu dal ustunde artik eski barkod vaadi
-    // degil, MealPreview + yemek kopyasi gosterilmeli.
-    expect(find.text('Tabağını çek, gerisini biz sayalım.'), findsOneWidget);
+    // Ilk sayfada 98/289 cihaz cikiyordu (2026-11-12). Kaydirilacak sayfa
+    // yok; vaat ve eylem ayni ekranda.
+    expect(find.byType(PageView), findsNothing);
     expect(find.byType(MealPreview), findsOneWidget);
-
-    // Sayfa 0 -> 1
-    await tester.drag(find.byType(PageView), const Offset(-400, 0));
-    await tester.pumpAndSettle();
-    expect(
-      find.text('Katkı maddeleri, şeker ve tuz tek bakışta.'),
-      findsOneWidget,
-    );
-
-    // Sayfa 1 -> 2
-    await tester.drag(find.byType(PageView), const Offset(-400, 0));
-    await tester.pumpAndSettle();
-    expect(
-      find.text('Alerjenini ve diyetini seç, sakıncalıyı hemen gör.'),
-      findsOneWidget,
-    );
-    // Son sayfada birincil eylem "Ucretsiz basla" olur.
-    expect(find.text('Ücretsiz başla'), findsOneWidget);
+    expect(find.text('Tabağını çek, gerisini biz sayalım.'), findsOneWidget);
   });
 }
