@@ -12,6 +12,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/providers/monetization_provider.dart'
     show deviceIdServiceProvider, scanLimitServiceProvider;
+import '../../../../core/services/ai_failure_kind.dart';
 import '../../../../core/services/gemini_ai_service.dart'
     show GeminiServiceException, NutritionOcrResult;
 import '../../../../core/theme/app_colors.dart';
@@ -630,7 +631,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           } on GeminiServiceException catch (e) {
             debugPrint('[OCR] Gemini ingredients service failure: $e');
             if (!mounted) return;
-            _showAiUnavailableWarning();
+            _showAiFailure(e);
             return;
           }
 
@@ -699,7 +700,7 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
           } on GeminiServiceException catch (e) {
             debugPrint('[OCR] Gemini nutrition service failure: $e');
             if (!mounted) return;
-            _showAiUnavailableWarning();
+            _showAiFailure(e);
             return;
           }
 
@@ -1337,20 +1338,24 @@ class _EditProductScreenState extends ConsumerState<EditProductScreen> {
     );
   }
 
-  /// Shown when the AI service call failed. Since the refactor removed
-  /// the ML Kit fallback, the no-fallback copy ("try again in a minute") is
-  /// the honest message — "yedek tarama kullanılıyor" would be a lie now.
-  /// Warning colour + longer display so the user notices that nothing was
-  /// written to the form and they need to retry.
-  void _showAiUnavailableWarning() {
+  /// Shown when the AI call failed. The message depends on the failure kind
+  /// (quota / no connection / service down). Warning colour + longer display
+  /// so the user notices that nothing was written to the form.
+  void _showAiFailure(GeminiServiceException e) {
     if (!mounted) return;
+    final kind = AiFailureKind.of(e);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.cloud_off_rounded, color: Colors.white),
+            Icon(
+              kind == AiFailureKind.network
+                  ? Icons.wifi_off_rounded
+                  : Icons.cloud_off_rounded,
+              color: Colors.white,
+            ),
             const SizedBox(width: 12),
-            Expanded(child: Text(context.l10n.aiServiceUnavailableNoFallback)),
+            Expanded(child: Text(kind.message(context.l10n))),
           ],
         ),
         backgroundColor: const Color(0xFFFF9800),

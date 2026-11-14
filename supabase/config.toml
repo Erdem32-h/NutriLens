@@ -375,6 +375,11 @@ verify_jwt = false
 # Handler verifies Auth.getUser before any mutation (supports asymmetric JWTs).
 verify_jwt = false
 
+[functions.rc-webhook]
+# RevenueCat sends a shared secret (RC_WEBHOOK_AUTH_KEY), not a Supabase JWT;
+# the handler verifies it. With verify_jwt on, the gateway rejects every webhook.
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

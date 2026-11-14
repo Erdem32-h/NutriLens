@@ -1,5 +1,5 @@
 -- Rollback-only check for
--- 20261113190000_lock_entitlements_reports_daily_scans.sql.
+-- 20261114040500_lock_entitlements_reports_daily_scans.sql.
 -- Run in the Supabase SQL Editor AFTER applying the migration. It always ends
 -- with an ERROR whose text is the result; the error rolls everything back,
 -- nothing persists.

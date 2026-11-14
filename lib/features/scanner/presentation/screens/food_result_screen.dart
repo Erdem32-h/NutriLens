@@ -17,6 +17,7 @@ import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/providers/monetization_provider.dart';
+import '../../../../core/services/ai_failure_kind.dart';
 import '../../../../core/services/anthropic_ai_service.dart';
 import '../../../../core/services/gemini_ai_service.dart';
 import '../../../../core/services/metrics_prompt_store.dart';
@@ -191,11 +192,10 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     } on GeminiServiceException catch (e, st) {
       debugPrint('[FoodResult] proxy meal analysis failed: $e');
       unawaited(Sentry.captureException(e, stackTrace: st));
-      final quota = e.statusCode == 429;
-      // No status survives the transport retries only when no HTTP reply
-      // ever came back: the request never reached the proxy, so the service
-      // is not what failed.
-      final offline = e.statusCode == null;
+      // `network` = no status survived the transport retries, i.e. no HTTP
+      // reply ever came back: the request never reached the proxy, so the
+      // service is not what failed.
+      final kind = AiFailureKind.of(e);
       // Tracked BEFORE the mounted guard. The guard used to sit above this
       // call, so a user who backed out of a slow analysis took the failure
       // event with them — which is why meal_analysis_failed had never once
@@ -204,11 +204,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       analytics.track(
         FunnelEvents.mealAnalysisFailed,
         props: {
-          'reason': quota
-              ? 'quota'
-              : offline
-              ? 'network'
-              : 'service',
+          'reason': kind.name,
           if (e.statusCode != null) 'status': e.statusCode,
           'abandoned': !mounted,
           'duration_ms': elapsed.elapsedMilliseconds,
@@ -216,10 +212,10 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       );
       if (!mounted) return;
       setState(() {
-        _serviceUnavailable = !offline;
-        _connectionLost = offline;
+        _serviceUnavailable = kind != AiFailureKind.network;
+        _connectionLost = kind == AiFailureKind.network;
         // Proxy maps OpenRouter out-of-credit/rate-limit to HTTP 429.
-        _quotaExhausted = quota;
+        _quotaExhausted = kind == AiFailureKind.quota;
         _error = e.toString();
         _loading = false;
       });
