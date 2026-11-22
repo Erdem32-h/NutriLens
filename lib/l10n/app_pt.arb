@@ -981,5 +981,30 @@
   "reportProductThanks": "Obrigado, recebemos sua denúncia.",
   "reportProductAlready": "Você já denunciou este produto.",
   "reportProductUnavailable": "Este produto vem de um banco de dados externo; fale conosco pela página de suporte para corrigi-lo.",
-  "reportProductFailed": "Não foi possível enviar a denúncia. Tente novamente."
+  "reportProductFailed": "Não foi possível enviar a denúncia. Tente novamente.",
+  "nutrientGuideTitle": "Nutrient Guide",
+  "nutrientGuideSubtitle": "Vitamins, minerals and amino acids",
+  "nutrientTabVitamins": "Vitamins",
+  "nutrientTabMinerals": "Minerals",
+  "nutrientTabAminoAcids": "Amino acids",
+  "nutrientSearchHint": "Search nutrients",
+  "nutrientNoResults": "No results found",
+  "nutrientSectionFunction": "What it does",
+  "nutrientSectionDeficiency": "If you get too little",
+  "nutrientSectionExcess": "If you get too much",
+  "nutrientSectionSources": "Where to find it",
+  "nutrientSectionDailyNeed": "Daily need (adult)",
+  "nutrientUpperLimitLabel": "Upper limit",
+  "nutrientDisclaimer": "This information is for general education only and is not medical advice. See a doctor for health concerns.",
+  "nutrientSourceLabel": "Source: {source}",
+  "@nutrientSourceLabel": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "nutrientLoadError": "Could not load content",
+  "nutrientRetry": "Try again",
+  "nutrientNotFound": "Nutrient not found"
 }

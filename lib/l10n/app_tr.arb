@@ -1033,5 +1033,30 @@
   "reportProductThanks": "Teşekkürler, bildirimin alındı.",
   "reportProductAlready": "Bu ürünü zaten bildirmiştin.",
   "reportProductUnavailable": "Bu ürün harici bir veritabanından geliyor; düzeltme için destek sayfamızdan bize yazabilirsin.",
-  "reportProductFailed": "Bildirim gönderilemedi. Lütfen tekrar dene."
+  "reportProductFailed": "Bildirim gönderilemedi. Lütfen tekrar dene.",
+  "nutrientGuideTitle": "Besin Rehberi",
+  "nutrientGuideSubtitle": "Vitamin, mineral ve amino asitler",
+  "nutrientTabVitamins": "Vitaminler",
+  "nutrientTabMinerals": "Mineraller",
+  "nutrientTabAminoAcids": "Amino asitler",
+  "nutrientSearchHint": "Besin ara",
+  "nutrientNoResults": "Sonuç bulunamadı",
+  "nutrientSectionFunction": "Ne işe yarar",
+  "nutrientSectionDeficiency": "Eksikse",
+  "nutrientSectionExcess": "Fazlaysa",
+  "nutrientSectionSources": "Nerede bulunur",
+  "nutrientSectionDailyNeed": "Günlük ihtiyaç (yetişkin)",
+  "nutrientUpperLimitLabel": "Üst sınır",
+  "nutrientDisclaimer": "Bu bilgiler genel bilgilendirme amaçlıdır, tıbbi tavsiye değildir. Sağlık sorunları için bir hekime danışın.",
+  "nutrientSourceLabel": "Kaynak: {source}",
+  "@nutrientSourceLabel": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "nutrientLoadError": "İçerik yüklenemedi",
+  "nutrientRetry": "Tekrar dene",
+  "nutrientNotFound": "Bu besin bulunamadı"
 }

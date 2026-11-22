@@ -238,6 +238,13 @@ class ProfileScreen extends ConsumerWidget {
             tint: cozy.rose,
             onTap: () => context.goNamed(RouteNames.chemicalFilter),
           ),
+          _SettingsTile(
+            icon: Icons.menu_book_rounded,
+            title: l10n.nutrientGuideTitle,
+            subtitle: l10n.nutrientGuideSubtitle,
+            tint: cozy.lilac,
+            onTap: () => context.pushNamed(RouteNames.nutrientGuide),
+          ),
 
           // Ramadan — only while the latest period is still the relevant
           // one to show (see `ramadanRowVisible`).

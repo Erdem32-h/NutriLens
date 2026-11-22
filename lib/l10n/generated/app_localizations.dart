@@ -4383,6 +4383,114 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bildirim gönderilemedi. Lütfen tekrar dene.'**
   String get reportProductFailed;
+
+  /// No description provided for @nutrientGuideTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besin Rehberi'**
+  String get nutrientGuideTitle;
+
+  /// No description provided for @nutrientGuideSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vitamin, mineral ve amino asitler'**
+  String get nutrientGuideSubtitle;
+
+  /// No description provided for @nutrientTabVitamins.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vitaminler'**
+  String get nutrientTabVitamins;
+
+  /// No description provided for @nutrientTabMinerals.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mineraller'**
+  String get nutrientTabMinerals;
+
+  /// No description provided for @nutrientTabAminoAcids.
+  ///
+  /// In tr, this message translates to:
+  /// **'Amino asitler'**
+  String get nutrientTabAminoAcids;
+
+  /// No description provided for @nutrientSearchHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Besin ara'**
+  String get nutrientSearchHint;
+
+  /// No description provided for @nutrientNoResults.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuç bulunamadı'**
+  String get nutrientNoResults;
+
+  /// No description provided for @nutrientSectionFunction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ne işe yarar'**
+  String get nutrientSectionFunction;
+
+  /// No description provided for @nutrientSectionDeficiency.
+  ///
+  /// In tr, this message translates to:
+  /// **'Eksikse'**
+  String get nutrientSectionDeficiency;
+
+  /// No description provided for @nutrientSectionExcess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fazlaysa'**
+  String get nutrientSectionExcess;
+
+  /// No description provided for @nutrientSectionSources.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nerede bulunur'**
+  String get nutrientSectionSources;
+
+  /// No description provided for @nutrientSectionDailyNeed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük ihtiyaç (yetişkin)'**
+  String get nutrientSectionDailyNeed;
+
+  /// No description provided for @nutrientUpperLimitLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Üst sınır'**
+  String get nutrientUpperLimitLabel;
+
+  /// No description provided for @nutrientDisclaimer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu bilgiler genel bilgilendirme amaçlıdır, tıbbi tavsiye değildir. Sağlık sorunları için bir hekime danışın.'**
+  String get nutrientDisclaimer;
+
+  /// No description provided for @nutrientSourceLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaynak: {source}'**
+  String nutrientSourceLabel(String source);
+
+  /// No description provided for @nutrientLoadError.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik yüklenemedi'**
+  String get nutrientLoadError;
+
+  /// No description provided for @nutrientRetry.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar dene'**
+  String get nutrientRetry;
+
+  /// No description provided for @nutrientNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu besin bulunamadı'**
+  String get nutrientNotFound;
 }
 
 class _AppLocalizationsDelegate

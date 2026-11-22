@@ -1,0 +1,1613 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-11-23",
+  "nutrients": [
+    {
+      "id": "vitamin_a",
+      "category": "vitamin",
+      "name_tr": "A Vitamini",
+      "name_en": "Vitamin A",
+      "alt_name_tr": "Retinol",
+      "alt_name_en": "Retinol",
+      "function_tr": "Görmeye (özellikle loş ışıkta), bağışıklığa, cilt ve mukoza sağlığına ve hücre gelişimine yardımcı olan, yağda çözünen bir vitamindir.",
+      "function_en": "A fat-soluble vitamin that supports vision (especially in dim light), immunity, skin and mucosal health, and cell growth.",
+      "deficiency_tr": [
+        "Gece körlüğü",
+        "Gözlerde kuruluk",
+        "Sık enfeksiyon geçirme",
+        "Kuru, pul pul cilt"
+      ],
+      "deficiency_en": [
+        "Night blindness",
+        "Dry eyes",
+        "Frequent infections",
+        "Dry, scaly skin"
+      ],
+      "excess_tr": [
+        "Baş ağrısı ve bulantı",
+        "Cilt ve dudaklarda çatlama, saç dökülmesi",
+        "Karaciğer hasarı (uzun süre yüksek dozda)",
+        "Gebelikte doğum kusuru riski"
+      ],
+      "excess_en": [
+        "Headache and nausea",
+        "Cracked skin and lips, hair loss",
+        "Liver damage (long-term high doses)",
+        "Birth defect risk in pregnancy"
+      ],
+      "sources_tr": [
+        "Karaciğer",
+        "Havuç",
+        "Tatlı patates",
+        "Ispanak ve yeşil yapraklılar"
+      ],
+      "sources_en": [
+        "Liver",
+        "Carrots",
+        "Sweet potato",
+        "Spinach and leafy greens"
+      ],
+      "daily_need": "700–900 mcg RAE",
+      "upper_limit": "3000 mcg RAE",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_b1",
+      "category": "vitamin",
+      "name_tr": "B1 Vitamini",
+      "name_en": "Vitamin B1",
+      "alt_name_tr": "Tiamin",
+      "alt_name_en": "Thiamin",
+      "function_tr": "Besinlerdeki karbonhidratın enerjiye dönüşmesine ve sinir ile kas işleyişine yardımcı olan, suda çözünen bir vitamindir.",
+      "function_en": "A water-soluble vitamin that helps turn carbohydrates into energy and supports nerve and muscle function.",
+      "deficiency_tr": [
+        "Yorgunluk ve iştahsızlık",
+        "El ve ayaklarda uyuşma, karıncalanma",
+        "Kas zayıflığı",
+        "Şiddetli eksiklikte beriberi"
+      ],
+      "deficiency_en": [
+        "Fatigue and loss of appetite",
+        "Numbness or tingling in hands and feet",
+        "Muscle weakness",
+        "Beriberi in severe deficiency"
+      ],
+      "excess_tr": [
+        "Besinlerden alınan fazlalığın bilinen zararı yoktur; fazlası idrarla atılır"
+      ],
+      "excess_en": [
+        "No known harm from food sources; the excess is passed in urine"
+      ],
+      "sources_tr": [
+        "Tam tahıllar",
+        "Baklagiller",
+        "Et ürünleri",
+        "Ay çekirdeği"
+      ],
+      "sources_en": [
+        "Whole grains",
+        "Legumes",
+        "Meat",
+        "Sunflower seeds"
+      ],
+      "daily_need": "1.1–1.2 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_b2",
+      "category": "vitamin",
+      "name_tr": "B2 Vitamini",
+      "name_en": "Vitamin B2",
+      "alt_name_tr": "Riboflavin",
+      "alt_name_en": "Riboflavin",
+      "function_tr": "Enerji üretimine, hücrelerin büyümesine ve cilt ile göz sağlığına katkı sağlayan, suda çözünen bir vitamindir.",
+      "function_en": "A water-soluble vitamin that supports energy production, cell growth, and skin and eye health.",
+      "deficiency_tr": [
+        "Ağız köşelerinde çatlak",
+        "Dudak ve dilde yangı",
+        "Ciltte pullanma",
+        "Gözlerde kızarıklık ve ışığa hassasiyet"
+      ],
+      "deficiency_en": [
+        "Cracks at the corners of the mouth",
+        "Sore lips and tongue",
+        "Scaly skin",
+        "Red eyes and light sensitivity"
+      ],
+      "excess_tr": [
+        "Besinlerden alınan fazlalığın bilinen zararı yoktur",
+        "Fazlası idrarı parlak sarı renge boyar"
+      ],
+      "excess_en": [
+        "No known harm from food sources",
+        "Excess turns urine bright yellow"
+      ],
+      "sources_tr": [
+        "Süt ve yoğurt",
+        "Yumurta",
+        "Badem",
+        "Karaciğer"
+      ],
+      "sources_en": [
+        "Milk and yogurt",
+        "Eggs",
+        "Almonds",
+        "Liver"
+      ],
+      "daily_need": "1.1–1.3 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_b3",
+      "category": "vitamin",
+      "name_tr": "B3 Vitamini",
+      "name_en": "Vitamin B3",
+      "alt_name_tr": "Niasin",
+      "alt_name_en": "Niacin",
+      "function_tr": "Besinlerden enerji açığa çıkarmaya, sinir sistemine ve cilt sağlığına yardımcı olan, suda çözünen bir vitamindir.",
+      "function_en": "A water-soluble vitamin that helps release energy from food and supports the nervous system and skin health.",
+      "deficiency_tr": [
+        "Ciltte güneşe duyarlı döküntü",
+        "Sindirim sorunları (ishal)",
+        "Zihinsel bulanıklık",
+        "Şiddetli eksiklikte pellagra"
+      ],
+      "deficiency_en": [
+        "Sun-sensitive skin rash",
+        "Digestive problems (diarrhea)",
+        "Mental confusion",
+        "Pellagra in severe deficiency"
+      ],
+      "excess_tr": [
+        "Yüzde ve boyunda kızarma, kaşıntı (takviyeden)",
+        "Mide bulantısı",
+        "Yüksek dozda karaciğer hasarı"
+      ],
+      "excess_en": [
+        "Facial and neck flushing, itching (from supplements)",
+        "Nausea",
+        "Liver damage at high doses"
+      ],
+      "sources_tr": [
+        "Tavuk ve hindi",
+        "Ton balığı",
+        "Yer fıstığı",
+        "Tam tahıllar"
+      ],
+      "sources_en": [
+        "Chicken and turkey",
+        "Tuna",
+        "Peanuts",
+        "Whole grains"
+      ],
+      "daily_need": "14–16 mg NE",
+      "upper_limit": "35 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_b5",
+      "category": "vitamin",
+      "name_tr": "B5 Vitamini",
+      "name_en": "Vitamin B5",
+      "alt_name_tr": "Pantotenik asit",
+      "alt_name_en": "Pantothenic acid",
+      "function_tr": "Yağ, karbonhidrat ve proteinlerin enerjiye dönüşmesinde rol alan koenzim A'nın yapı taşıdır.",
+      "function_en": "A building block of coenzyme A, which is needed to turn fats, carbohydrates and proteins into energy.",
+      "deficiency_tr": [
+        "Yorgunluk",
+        "El ve ayaklarda yanma veya karıncalanma",
+        "Uykusuzluk ve sinirlilik",
+        "Mide rahatsızlığı"
+      ],
+      "deficiency_en": [
+        "Fatigue",
+        "Burning or tingling in hands and feet",
+        "Insomnia and irritability",
+        "Stomach upset"
+      ],
+      "excess_tr": [
+        "Besinlerden zararı bilinmiyor",
+        "Çok yüksek takviye dozlarında hafif ishal görülebilir"
+      ],
+      "excess_en": [
+        "No known harm from food",
+        "Very high supplement doses may cause mild diarrhea"
+      ],
+      "sources_tr": [
+        "Mantar",
+        "Avokado",
+        "Yumurta",
+        "Tavuk eti"
+      ],
+      "sources_en": [
+        "Mushrooms",
+        "Avocado",
+        "Eggs",
+        "Chicken"
+      ],
+      "daily_need": "5 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_b6",
+      "category": "vitamin",
+      "name_tr": "B6 Vitamini",
+      "name_en": "Vitamin B6",
+      "alt_name_tr": "Piridoksin",
+      "alt_name_en": "Pyridoxine",
+      "function_tr": "Protein ve amino asit metabolizmasında, kırmızı kan hücresi yapımında ve sinir iletiminde görev alır.",
+      "function_en": "Takes part in protein and amino acid metabolism, red blood cell production and nerve signaling.",
+      "deficiency_tr": [
+        "Kansızlık",
+        "Ağız köşelerinde çatlak, dilde yangı",
+        "Ruh hali değişimi, depresif his",
+        "El ve ayaklarda uyuşma"
+      ],
+      "deficiency_en": [
+        "Anemia",
+        "Cracks at the mouth corners, sore tongue",
+        "Mood changes, low mood",
+        "Numbness in hands and feet"
+      ],
+      "excess_tr": [
+        "Sinir hasarı: el ve ayaklarda uyuşma, denge sorunu (uzun süreli yüksek takviye)",
+        "Cilt lezyonları",
+        "Işığa duyarlılık"
+      ],
+      "excess_en": [
+        "Nerve damage: numbness in hands and feet, balance problems (long-term high supplements)",
+        "Skin lesions",
+        "Light sensitivity"
+      ],
+      "sources_tr": [
+        "Nohut",
+        "Ton balığı ve somon",
+        "Tavuk",
+        "Patates ve muz"
+      ],
+      "sources_en": [
+        "Chickpeas",
+        "Tuna and salmon",
+        "Chicken",
+        "Potatoes and bananas"
+      ],
+      "daily_need": "1.3–1.7 mg",
+      "upper_limit": "100 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_b7",
+      "category": "vitamin",
+      "name_tr": "B7 Vitamini",
+      "name_en": "Vitamin B7",
+      "alt_name_tr": "Biyotin",
+      "alt_name_en": "Biotin",
+      "function_tr": "Besinlerdeki yağ, karbonhidrat ve proteinin işlenmesine yardımcı olur; saç, cilt ve tırnak sağlığıyla ilişkilendirilir.",
+      "function_en": "Helps process fats, carbohydrates and proteins; linked to healthy hair, skin and nails.",
+      "deficiency_tr": [
+        "Saç incelmesi ve dökülmesi",
+        "Ağız çevresinde kırmızı, pullu döküntü",
+        "Kırılgan tırnaklar",
+        "Yorgunluk ve el ayaklarda karıncalanma"
+      ],
+      "deficiency_en": [
+        "Thinning hair and hair loss",
+        "Red, scaly rash around the mouth",
+        "Brittle nails",
+        "Fatigue and tingling in hands and feet"
+      ],
+      "excess_tr": [
+        "Besinlerden zararı bilinmiyor",
+        "Yüksek takviye dozu bazı kan testlerini (örneğin troponin, tiroid) yanıltabilir"
+      ],
+      "excess_en": [
+        "No known harm from food",
+        "High-dose supplements can distort some lab tests (e.g. troponin, thyroid)"
+      ],
+      "sources_tr": [
+        "Yumurta (pişmiş)",
+        "Somon",
+        "Badem",
+        "Tatlı patates"
+      ],
+      "sources_en": [
+        "Eggs (cooked)",
+        "Salmon",
+        "Almonds",
+        "Sweet potato"
+      ],
+      "daily_need": "30 mcg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_b9",
+      "category": "vitamin",
+      "name_tr": "B9 Vitamini",
+      "name_en": "Vitamin B9",
+      "alt_name_tr": "Folat",
+      "alt_name_en": "Folate (folic acid)",
+      "function_tr": "DNA ve yeni hücre yapımı, kırmızı kan hücresi oluşumu için gereklidir; gebelikte bebeğin sinir tüpü gelişimi için kritiktir.",
+      "function_en": "Needed to make DNA and new cells and red blood cells; critical for the baby's neural tube development in pregnancy.",
+      "deficiency_tr": [
+        "Megaloblastik kansızlık, halsizlik",
+        "Dilde yangı, ağız yaraları",
+        "Bulantı ve iştah kaybı",
+        "Gebelikte bebekte sinir tüpü defekti riski"
+      ],
+      "deficiency_en": [
+        "Megaloblastic anemia, weakness",
+        "Sore tongue, mouth ulcers",
+        "Nausea and loss of appetite",
+        "Neural tube defect risk for the baby in pregnancy"
+      ],
+      "excess_tr": [
+        "Yüksek folik asit takviyesi B12 eksikliğini maskeleyebilir",
+        "Besinlerdeki folattan zarar görülmez"
+      ],
+      "excess_en": [
+        "High folic acid supplements can mask B12 deficiency",
+        "Folate from food is not harmful"
+      ],
+      "sources_tr": [
+        "Mercimek ve nohut",
+        "Koyu yeşil yapraklılar",
+        "Kuşkonmaz",
+        "Zenginleştirilmiş tahıllar"
+      ],
+      "sources_en": [
+        "Lentils and chickpeas",
+        "Dark leafy greens",
+        "Asparagus",
+        "Fortified grains"
+      ],
+      "daily_need": "400 mcg DFE",
+      "upper_limit": "1000 mcg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_b12",
+      "category": "vitamin",
+      "name_tr": "B12 Vitamini",
+      "name_en": "Vitamin B12",
+      "alt_name_tr": "Kobalamin",
+      "alt_name_en": "Cobalamin",
+      "function_tr": "Sinir hücrelerinin sağlığı, DNA yapımı ve kırmızı kan hücresi oluşumu için gereklidir.",
+      "function_en": "Needed for healthy nerve cells, DNA synthesis and red blood cell formation.",
+      "deficiency_tr": [
+        "Yorgunluk, halsizlik",
+        "Kansızlık",
+        "El ve ayaklarda uyuşma, denge sorunu",
+        "Hafıza ve konsantrasyon sorunu",
+        "Dilde yangı"
+      ],
+      "deficiency_en": [
+        "Fatigue and weakness",
+        "Anemia",
+        "Numbness in hands and feet, balance problems",
+        "Memory and concentration problems",
+        "Sore tongue"
+      ],
+      "excess_tr": [
+        "Bilinen bir üst sınır yoktur; fazlası genellikle atılır",
+        "Çok nadiren cilt sivilceleri bildirilmiştir"
+      ],
+      "excess_en": [
+        "No established upper limit; excess is usually passed out",
+        "Acne-like skin reactions are rarely reported"
+      ],
+      "sources_tr": [
+        "Et ve karaciğer",
+        "Balık",
+        "Yumurta",
+        "Süt ürünleri"
+      ],
+      "sources_en": [
+        "Meat and liver",
+        "Fish",
+        "Eggs",
+        "Dairy"
+      ],
+      "daily_need": "2.4 mcg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_c",
+      "category": "vitamin",
+      "name_tr": "C Vitamini",
+      "name_en": "Vitamin C",
+      "alt_name_tr": "Askorbik asit",
+      "alt_name_en": "Ascorbic acid",
+      "function_tr": "Kolajen yapımına, bağışıklık hücrelerinin çalışmasına ve bitkisel kaynaklı demirin emilimine yardımcı olan, suda çözünen bir antioksidandır.",
+      "function_en": "A water-soluble antioxidant that helps the body make collagen, supports immune cells and improves absorption of plant-based iron.",
+      "deficiency_tr": [
+        "Yorgunluk ve halsizlik",
+        "Diş etlerinde şişme ve kanama",
+        "Yaraların geç iyileşmesi",
+        "Kolay morarma",
+        "Şiddetli eksiklikte iskorbüt"
+      ],
+      "deficiency_en": [
+        "Fatigue and weakness",
+        "Swollen, bleeding gums",
+        "Slow wound healing",
+        "Easy bruising",
+        "Scurvy in severe deficiency"
+      ],
+      "excess_tr": [
+        "Mide bulantısı ve kramp",
+        "İshal",
+        "Yüksek dozda böbrek taşı riskinde artış"
+      ],
+      "excess_en": [
+        "Nausea and cramps",
+        "Diarrhea",
+        "Higher kidney stone risk at very high doses"
+      ],
+      "sources_tr": [
+        "Biber",
+        "Portakal ve limon",
+        "Kivi",
+        "Brokoli"
+      ],
+      "sources_en": [
+        "Peppers",
+        "Oranges and lemons",
+        "Kiwi",
+        "Broccoli"
+      ],
+      "daily_need": "75–90 mg",
+      "upper_limit": "2000 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_d",
+      "category": "vitamin",
+      "name_tr": "D Vitamini",
+      "name_en": "Vitamin D",
+      "alt_name_tr": "Kalsiferol",
+      "alt_name_en": "Calciferol",
+      "function_tr": "Kalsiyum ve fosfor emilimini sağlayarak kemik ve diş sağlığını destekler; bağışıklık ve kas işleyişine de katkı sağlar. Güneş ışığında ciltte üretilir.",
+      "function_en": "Helps absorb calcium and phosphorus to support bones and teeth, and also supports immunity and muscles. The skin makes it in sunlight.",
+      "deficiency_tr": [
+        "Kemik ve kas ağrısı",
+        "Kas zayıflığı",
+        "Çocuklarda raşitizm",
+        "Yetişkinlerde kemik yumuşaması (osteomalazi)"
+      ],
+      "deficiency_en": [
+        "Bone and muscle pain",
+        "Muscle weakness",
+        "Rickets in children",
+        "Bone softening (osteomalacia) in adults"
+      ],
+      "excess_tr": [
+        "Kanda yüksek kalsiyum: bulantı, kusma, aşırı susama",
+        "Böbrek taşı ve böbrek hasarı",
+        "Kalp ritmi bozukluğu (yüksek dozda, uzun süreli)"
+      ],
+      "excess_en": [
+        "High blood calcium: nausea, vomiting, excessive thirst",
+        "Kidney stones and kidney damage",
+        "Heart rhythm problems (long-term high doses)"
+      ],
+      "sources_tr": [
+        "Yağlı balıklar (somon, uskumru)",
+        "Yumurta sarısı",
+        "Zenginleştirilmiş süt",
+        "Güneş ışığı"
+      ],
+      "sources_en": [
+        "Fatty fish (salmon, mackerel)",
+        "Egg yolk",
+        "Fortified milk",
+        "Sunlight"
+      ],
+      "daily_need": "15–20 mcg (600–800 IU)",
+      "upper_limit": "100 mcg (4000 IU)",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_e",
+      "category": "vitamin",
+      "name_tr": "E Vitamini",
+      "name_en": "Vitamin E",
+      "alt_name_tr": "Tokoferol",
+      "alt_name_en": "Tocopherol",
+      "function_tr": "Hücreleri serbest radikal hasarına karşı koruyan, yağda çözünen bir antioksidandır; bağışıklığa da yardımcı olur.",
+      "function_en": "A fat-soluble antioxidant that protects cells from free-radical damage and also supports immunity.",
+      "deficiency_tr": [
+        "Kas zayıflığı",
+        "Yürüme ve denge sorunu",
+        "Görme bozukluğu",
+        "Bağışıklıkta zayıflama (nadir)"
+      ],
+      "deficiency_en": [
+        "Muscle weakness",
+        "Walking and balance problems",
+        "Vision problems",
+        "Weakened immunity (rare)"
+      ],
+      "excess_tr": [
+        "Kanama riskinde artış (yüksek takviye dozunda)",
+        "Kan sulandırıcı ilaçlarla etkileşim",
+        "Bulantı ve ishal"
+      ],
+      "excess_en": [
+        "Increased bleeding risk (high supplement doses)",
+        "Interaction with blood thinners",
+        "Nausea and diarrhea"
+      ],
+      "sources_tr": [
+        "Ay çekirdeği",
+        "Badem ve fındık",
+        "Bitkisel yağlar (ayçiçek, zeytinyağı)",
+        "Ispanak"
+      ],
+      "sources_en": [
+        "Sunflower seeds",
+        "Almonds and hazelnuts",
+        "Plant oils (sunflower, olive)",
+        "Spinach"
+      ],
+      "daily_need": "15 mg",
+      "upper_limit": "1000 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "vitamin_k",
+      "category": "vitamin",
+      "name_tr": "K Vitamini",
+      "name_en": "Vitamin K",
+      "alt_name_tr": "Filokinon / Menakinon",
+      "alt_name_en": "Phylloquinone / Menaquinone",
+      "function_tr": "Kanın pıhtılaşmasında rol alan proteinlerin yapımı ve kemik sağlığı için gereklidir.",
+      "function_en": "Needed to make the proteins that clot blood and for bone health.",
+      "deficiency_tr": [
+        "Kolay morarma",
+        "Burun, diş eti kanaması",
+        "Yaralarda uzun süren kanama",
+        "Yenidoğanda kanama riski"
+      ],
+      "deficiency_en": [
+        "Easy bruising",
+        "Nose and gum bleeding",
+        "Long-lasting bleeding from wounds",
+        "Bleeding risk in newborns"
+      ],
+      "excess_tr": [
+        "Besinlerden alınan fazlasının bilinen zararı yoktur",
+        "Varfarin gibi kan sulandırıcılarla etkileşir; alımı ani değiştirmemek gerekir"
+      ],
+      "excess_en": [
+        "No known harm from food",
+        "Interacts with blood thinners such as warfarin; avoid sudden changes in intake"
+      ],
+      "sources_tr": [
+        "Ispanak ve lahana",
+        "Brokoli",
+        "Marul",
+        "Soya ve zeytinyağı"
+      ],
+      "sources_en": [
+        "Spinach and kale",
+        "Broccoli",
+        "Lettuce",
+        "Soybean and olive oil"
+      ],
+      "daily_need": "90–120 mcg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "calcium",
+      "category": "mineral",
+      "name_tr": "Kalsiyum",
+      "name_en": "Calcium",
+      "function_tr": "Kemik ve dişlerin ana yapı taşıdır; kasların kasılmasına, sinir iletimine ve kanın pıhtılaşmasına da yardımcı olur.",
+      "function_en": "The main building block of bones and teeth; also helps muscles contract, nerves signal and blood clot.",
+      "deficiency_tr": [
+        "Kemik erimesi (osteoporoz) riski",
+        "Kas krampları",
+        "Ellerde ve ağız çevresinde karıncalanma",
+        "Çocuklarda kemik gelişim sorunu"
+      ],
+      "deficiency_en": [
+        "Osteoporosis risk",
+        "Muscle cramps",
+        "Tingling in hands and around the mouth",
+        "Poor bone growth in children"
+      ],
+      "excess_tr": [
+        "Kabızlık ve şişkinlik",
+        "Böbrek taşı riskinde artış",
+        "Yüksek takviye dozunda kanda kalsiyum yükselmesi",
+        "Demir ve çinko emilimini azaltma"
+      ],
+      "excess_en": [
+        "Constipation and bloating",
+        "Higher kidney stone risk",
+        "High blood calcium with high supplement doses",
+        "Reduced iron and zinc absorption"
+      ],
+      "sources_tr": [
+        "Süt, yoğurt, peynir",
+        "Susam ve tahin",
+        "Sardalya ve kılçıklı konserve balık",
+        "Koyu yeşil yapraklılar"
+      ],
+      "sources_en": [
+        "Milk, yogurt, cheese",
+        "Sesame and tahini",
+        "Sardines with bones",
+        "Dark leafy greens"
+      ],
+      "daily_need": "1000–1200 mg",
+      "upper_limit": "2000–2500 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "phosphorus",
+      "category": "mineral",
+      "name_tr": "Fosfor",
+      "name_en": "Phosphorus",
+      "function_tr": "Kalsiyumla birlikte kemik ve dişleri oluşturur; hücre enerjisinin (ATP) ve DNA'nın yapısında yer alır.",
+      "function_en": "Works with calcium to build bones and teeth, and is part of cell energy (ATP) and DNA.",
+      "deficiency_tr": [
+        "İştah kaybı",
+        "Kemik ağrısı ve kırılganlık",
+        "Kas zayıflığı",
+        "Halsizlik"
+      ],
+      "deficiency_en": [
+        "Loss of appetite",
+        "Bone pain and fragility",
+        "Muscle weakness",
+        "Fatigue"
+      ],
+      "excess_tr": [
+        "Böbrek yetmezliğinde kanda birikim ve kalp-damar hasarı",
+        "Yüksek alımda kalsiyum dengesinin bozulması",
+        "Mide rahatsızlığı"
+      ],
+      "excess_en": [
+        "Build-up in kidney failure with heart and vessel damage",
+        "Upset calcium balance at high intakes",
+        "Stomach upset"
+      ],
+      "sources_tr": [
+        "Süt ürünleri",
+        "Et, tavuk, balık",
+        "Baklagiller",
+        "Tam tahıllar ve kuruyemiş"
+      ],
+      "sources_en": [
+        "Dairy",
+        "Meat, poultry, fish",
+        "Legumes",
+        "Whole grains and nuts"
+      ],
+      "daily_need": "700 mg",
+      "upper_limit": "4000 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "magnesium",
+      "category": "mineral",
+      "name_tr": "Magnezyum",
+      "name_en": "Magnesium",
+      "function_tr": "Kas ve sinir işleyişine, kan şekeri ve tansiyon dengesine, protein ve kemik yapımına yardımcı olan 300'den fazla enzimde görev alır.",
+      "function_en": "Takes part in over 300 enzymes that support muscle and nerve function, blood sugar and blood pressure balance, and protein and bone building.",
+      "deficiency_tr": [
+        "Kas kasılması ve kramplar",
+        "Yorgunluk ve halsizlik",
+        "Bulantı, iştah kaybı",
+        "Kalp ritmi bozukluğu (şiddetli eksiklikte)"
+      ],
+      "deficiency_en": [
+        "Muscle twitches and cramps",
+        "Fatigue and weakness",
+        "Nausea, loss of appetite",
+        "Irregular heartbeat (severe deficiency)"
+      ],
+      "excess_tr": [
+        "Takviye veya ilaç kaynaklı ishal ve karın krampı",
+        "Bulantı",
+        "Çok yüksek dozda düşük tansiyon ve kalp ritmi sorunu"
+      ],
+      "excess_en": [
+        "Diarrhea and abdominal cramps from supplements or medicines",
+        "Nausea",
+        "Very high doses: low blood pressure and heart rhythm problems"
+      ],
+      "sources_tr": [
+        "Kabak çekirdeği ve badem",
+        "Ispanak",
+        "Baklagiller",
+        "Tam tahıllar"
+      ],
+      "sources_en": [
+        "Pumpkin seeds and almonds",
+        "Spinach",
+        "Legumes",
+        "Whole grains"
+      ],
+      "daily_need": "310–420 mg",
+      "upper_limit": "350 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "sodium",
+      "category": "mineral",
+      "name_tr": "Sodyum",
+      "name_en": "Sodium",
+      "function_tr": "Vücut sıvı dengesini, sinir iletimini ve kas kasılmasını düzenler. Gıdalarda çoğunlukla sofra tuzu (sodyum klorür) olarak bulunur.",
+      "function_en": "Regulates body fluid balance, nerve signaling and muscle contraction. In food it mostly comes as table salt (sodium chloride).",
+      "deficiency_tr": [
+        "Baş ağrısı, bulantı",
+        "Kas krampları",
+        "Halsizlik ve zihinsel bulanıklık",
+        "Şiddetli düşüklükte nöbet"
+      ],
+      "deficiency_en": [
+        "Headache, nausea",
+        "Muscle cramps",
+        "Weakness and confusion",
+        "Seizures when very low"
+      ],
+      "excess_tr": [
+        "Tansiyon yükselmesi",
+        "Kalp-damar hastalığı ve inme riskinde artış",
+        "Vücutta su tutulması ve şişlik",
+        "Böbrek yükünün artması"
+      ],
+      "excess_en": [
+        "Higher blood pressure",
+        "Higher risk of heart disease and stroke",
+        "Water retention and swelling",
+        "More strain on the kidneys"
+      ],
+      "sources_tr": [
+        "Sofra tuzu",
+        "İşlenmiş et ve turşu",
+        "Peynir ve konserve",
+        "Hazır çorba ve atıştırmalıklar"
+      ],
+      "sources_en": [
+        "Table salt",
+        "Processed meat and pickles",
+        "Cheese and canned food",
+        "Instant soups and snacks"
+      ],
+      "daily_need": "1500 mg",
+      "upper_limit": "2300 mg",
+      "source": "NASEM"
+    },
+    {
+      "id": "potassium",
+      "category": "mineral",
+      "name_tr": "Potasyum",
+      "name_en": "Potassium",
+      "function_tr": "Sinir iletimi, kas kasılması ve kalp ritmi için gereklidir; sodyumun tansiyona etkisini dengelemeye yardımcı olur.",
+      "function_en": "Needed for nerve signaling, muscle contraction and a steady heartbeat; helps offset the blood-pressure effect of sodium.",
+      "deficiency_tr": [
+        "Kas zayıflığı ve krampları",
+        "Kabızlık",
+        "Çarpıntı ve kalp ritmi bozukluğu",
+        "Halsizlik"
+      ],
+      "deficiency_en": [
+        "Muscle weakness and cramps",
+        "Constipation",
+        "Palpitations and irregular heartbeat",
+        "Fatigue"
+      ],
+      "excess_tr": [
+        "Böbrek hastalarında kanda yüksek potasyum: kas zayıflığı, kalp ritmi bozukluğu",
+        "Takviyeden mide rahatsızlığı"
+      ],
+      "excess_en": [
+        "High blood potassium in kidney disease: muscle weakness, irregular heartbeat",
+        "Stomach upset from supplements"
+      ],
+      "sources_tr": [
+        "Muz",
+        "Patates ve tatlı patates",
+        "Baklagiller",
+        "Ispanak ve avokado"
+      ],
+      "sources_en": [
+        "Bananas",
+        "Potatoes and sweet potatoes",
+        "Legumes",
+        "Spinach and avocado"
+      ],
+      "daily_need": "2600–3400 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "iron",
+      "category": "mineral",
+      "name_tr": "Demir",
+      "name_en": "Iron",
+      "function_tr": "Kanda hemoglobinin yapısında oksijen taşır; kas ve enerji metabolizması için de gereklidir.",
+      "function_en": "Part of hemoglobin, which carries oxygen in the blood; also needed for muscles and energy metabolism.",
+      "deficiency_tr": [
+        "Demir eksikliği kansızlığı: halsizlik, solgunluk",
+        "Nefes darlığı ve çarpıntı",
+        "Saç dökülmesi, kırılgan tırnaklar",
+        "Soğuk el ve ayaklar"
+      ],
+      "deficiency_en": [
+        "Iron-deficiency anemia: weakness, pale skin",
+        "Shortness of breath and palpitations",
+        "Hair loss, brittle nails",
+        "Cold hands and feet"
+      ],
+      "excess_tr": [
+        "Mide ağrısı, kabızlık, bulantı",
+        "Organlarda demir birikimi (hemokromatoz)",
+        "Çocuklarda aşırı doz zehirlenmesi tehlikelidir"
+      ],
+      "excess_en": [
+        "Stomach pain, constipation, nausea",
+        "Iron build-up in organs (hemochromatosis)",
+        "Overdose is dangerous for children"
+      ],
+      "sources_tr": [
+        "Kırmızı et ve karaciğer",
+        "Mercimek ve nohut",
+        "Pekmez ve kuru kayısı",
+        "Ispanak"
+      ],
+      "sources_en": [
+        "Red meat and liver",
+        "Lentils and chickpeas",
+        "Molasses and dried apricots",
+        "Spinach"
+      ],
+      "daily_need": "8–18 mg",
+      "upper_limit": "45 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "zinc",
+      "category": "mineral",
+      "name_tr": "Çinko",
+      "name_en": "Zinc",
+      "function_tr": "Bağışıklık, yara iyileşmesi, tat ve koku alma, DNA ve protein yapımı için gerekli enzimlerde görev alır.",
+      "function_en": "Part of enzymes needed for immunity, wound healing, taste and smell, and DNA and protein production.",
+      "deficiency_tr": [
+        "Sık enfeksiyon",
+        "Yaraların geç iyileşmesi",
+        "Tat ve koku kaybı",
+        "Saç dökülmesi ve ishal"
+      ],
+      "deficiency_en": [
+        "Frequent infections",
+        "Slow wound healing",
+        "Loss of taste and smell",
+        "Hair loss and diarrhea"
+      ],
+      "excess_tr": [
+        "Bulantı, kusma, mide krampı",
+        "Bakır eksikliği (uzun süreli yüksek dozda)",
+        "Bağışıklıkta zayıflama"
+      ],
+      "excess_en": [
+        "Nausea, vomiting, stomach cramps",
+        "Copper deficiency (long-term high doses)",
+        "Weakened immunity"
+      ],
+      "sources_tr": [
+        "Kırmızı et ve deniz ürünleri (istiridye)",
+        "Kabak çekirdeği",
+        "Baklagiller",
+        "Süt ürünleri"
+      ],
+      "sources_en": [
+        "Red meat and shellfish (oysters)",
+        "Pumpkin seeds",
+        "Legumes",
+        "Dairy"
+      ],
+      "daily_need": "8–11 mg",
+      "upper_limit": "40 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "copper",
+      "category": "mineral",
+      "name_tr": "Bakır",
+      "name_en": "Copper",
+      "function_tr": "Demirin kullanımı, bağ dokusu ve sinir sağlığı ile enerji üretimi için gereklidir.",
+      "function_en": "Needed for iron use, connective tissue and nerve health, and energy production.",
+      "deficiency_tr": [
+        "Kansızlık",
+        "Sık enfeksiyon",
+        "Kemik zayıflığı",
+        "El ve ayaklarda uyuşma"
+      ],
+      "deficiency_en": [
+        "Anemia",
+        "Frequent infections",
+        "Weak bones",
+        "Numbness in hands and feet"
+      ],
+      "excess_tr": [
+        "Mide ağrısı, bulantı, kusma",
+        "Karaciğer hasarı (çok yüksek dozda)",
+        "Wilson hastalığında bakır birikimi"
+      ],
+      "excess_en": [
+        "Stomach pain, nausea, vomiting",
+        "Liver damage (very high doses)",
+        "Copper build-up in Wilson disease"
+      ],
+      "sources_tr": [
+        "Karaciğer ve deniz ürünleri",
+        "Kuruyemiş ve tohumlar",
+        "Kakao ve bitter çikolata",
+        "Tam tahıllar"
+      ],
+      "sources_en": [
+        "Liver and shellfish",
+        "Nuts and seeds",
+        "Cocoa and dark chocolate",
+        "Whole grains"
+      ],
+      "daily_need": "900 mcg",
+      "upper_limit": "10 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "manganese",
+      "category": "mineral",
+      "name_tr": "Mangan",
+      "name_en": "Manganese",
+      "function_tr": "Kemik oluşumu, karbonhidrat ve amino asit metabolizması ve antioksidan savunmada görevli enzimlerin parçasıdır.",
+      "function_en": "Part of enzymes involved in bone formation, carbohydrate and amino acid metabolism, and antioxidant defense.",
+      "deficiency_tr": [
+        "Kemik gelişiminde zayıflık",
+        "Yara iyileşmesinde gecikme",
+        "Ciltte döküntü",
+        "Kan şekeri düzensizliği"
+      ],
+      "deficiency_en": [
+        "Weaker bone growth",
+        "Slow wound healing",
+        "Skin rash",
+        "Unstable blood sugar"
+      ],
+      "excess_tr": [
+        "Sinir sistemi etkisi: titreme ve hareket bozukluğu (özellikle soluma yoluyla)",
+        "Yüksek içme suyu düzeylerinde zihinsel etkiler"
+      ],
+      "excess_en": [
+        "Nervous system effects: tremor and movement problems (especially from inhalation)",
+        "Mental effects at high drinking-water levels"
+      ],
+      "sources_tr": [
+        "Tam tahıllar",
+        "Fındık ve ceviz",
+        "Baklagiller",
+        "Çay"
+      ],
+      "sources_en": [
+        "Whole grains",
+        "Hazelnuts and walnuts",
+        "Legumes",
+        "Tea"
+      ],
+      "daily_need": "1.8–2.3 mg",
+      "upper_limit": "11 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "iodine",
+      "category": "mineral",
+      "name_tr": "İyot",
+      "name_en": "Iodine",
+      "function_tr": "Tiroid hormonlarının yapı taşıdır; metabolizma hızını, büyümeyi ve gebelikte bebeğin beyin gelişimini düzenler.",
+      "function_en": "A building block of thyroid hormones, which set metabolic rate, growth and a baby's brain development in pregnancy.",
+      "deficiency_tr": [
+        "Guatr (boyunda şişlik)",
+        "Halsizlik ve üşüme",
+        "Kilo alımı",
+        "Gebelikte bebekte gelişim geriliği"
+      ],
+      "deficiency_en": [
+        "Goiter (swelling in the neck)",
+        "Fatigue and feeling cold",
+        "Weight gain",
+        "Developmental delay in the baby during pregnancy"
+      ],
+      "excess_tr": [
+        "Tiroid işlev bozukluğu (hem yüksek hem düşük çalışma)",
+        "Guatr",
+        "Boğazda yanma, mide rahatsızlığı"
+      ],
+      "excess_en": [
+        "Thyroid problems (overactive or underactive)",
+        "Goiter",
+        "Burning in the mouth and throat, stomach upset"
+      ],
+      "sources_tr": [
+        "İyotlu tuz",
+        "Deniz ürünleri ve deniz yosunu",
+        "Süt ve yoğurt",
+        "Yumurta"
+      ],
+      "sources_en": [
+        "Iodized salt",
+        "Seafood and seaweed",
+        "Milk and yogurt",
+        "Eggs"
+      ],
+      "daily_need": "150 mcg",
+      "upper_limit": "1100 mcg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "selenium",
+      "category": "mineral",
+      "name_tr": "Selenyum",
+      "name_en": "Selenium",
+      "function_tr": "Antioksidan enzimlerin ve tiroid hormon metabolizmasının parçasıdır; bağışıklık ve üreme sağlığına katkı sağlar.",
+      "function_en": "Part of antioxidant enzymes and thyroid hormone metabolism; supports immunity and reproductive health.",
+      "deficiency_tr": [
+        "Halsizlik ve yorgunluk",
+        "Saç dökülmesi",
+        "Zihinsel bulanıklık",
+        "Bağışıklıkta zayıflama"
+      ],
+      "deficiency_en": [
+        "Fatigue and weakness",
+        "Hair loss",
+        "Mental fog",
+        "Weakened immunity"
+      ],
+      "excess_tr": [
+        "Saç ve tırnak dökülmesi, tırnak kırılması",
+        "Ağızda metalik tat, nefeste sarımsak kokusu",
+        "Bulantı ve ishal",
+        "Sinir sistemi belirtileri (selenozis)"
+      ],
+      "excess_en": [
+        "Hair and nail loss, brittle nails",
+        "Metallic taste, garlic breath",
+        "Nausea and diarrhea",
+        "Nervous system symptoms (selenosis)"
+      ],
+      "sources_tr": [
+        "Brezilya cevizi",
+        "Ton balığı ve sardalya",
+        "Yumurta",
+        "Et ve tahıllar"
+      ],
+      "sources_en": [
+        "Brazil nuts",
+        "Tuna and sardines",
+        "Eggs",
+        "Meat and grains"
+      ],
+      "daily_need": "55 mcg",
+      "upper_limit": "400 mcg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "chromium",
+      "category": "mineral",
+      "name_tr": "Krom",
+      "name_en": "Chromium",
+      "function_tr": "İnsülinin etkisini destekleyerek karbonhidrat, yağ ve protein metabolizmasına yardımcı olduğu düşünülür; eksikliği nadirdir.",
+      "function_en": "Thought to support insulin action and help metabolize carbohydrates, fats and proteins; deficiency is rare.",
+      "deficiency_tr": [
+        "Kan şekeri düzensizliği",
+        "Nadiren sinir belirtileri (uzun süreli tam parenteral beslenmede)",
+        "Kilo kaybı"
+      ],
+      "deficiency_en": [
+        "Unstable blood sugar",
+        "Rarely nerve symptoms (in long-term intravenous feeding)",
+        "Weight loss"
+      ],
+      "excess_tr": [
+        "Besinlerden zararı bilinmiyor",
+        "Yüksek takviye dozlarında mide rahatsızlığı, baş ağrısı",
+        "Böbrek ve karaciğer hasarı bildirimleri (çok yüksek doz)"
+      ],
+      "excess_en": [
+        "No known harm from food",
+        "Stomach upset and headache at high supplement doses",
+        "Reports of kidney and liver damage (very high doses)"
+      ],
+      "sources_tr": [
+        "Brokoli",
+        "Tam tahıllar",
+        "Üzüm suyu",
+        "Et"
+      ],
+      "sources_en": [
+        "Broccoli",
+        "Whole grains",
+        "Grape juice",
+        "Meat"
+      ],
+      "daily_need": "25–35 mcg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "molybdenum",
+      "category": "mineral",
+      "name_tr": "Molibden",
+      "name_en": "Molybdenum",
+      "function_tr": "Aminoasitlerin ve bazı toksinlerin parçalanmasında görev alan enzimlerin parçasıdır; eksikliği çok nadirdir.",
+      "function_en": "Part of enzymes that break down amino acids and some toxins; deficiency is very rare.",
+      "deficiency_tr": [
+        "Sağlıklı insanlarda eksiklik çok nadirdir",
+        "Tam parenteral beslenmede: hızlı kalp atışı, baş ağrısı, zihinsel bulanıklık"
+      ],
+      "deficiency_en": [
+        "Deficiency is very rare in healthy people",
+        "In long-term intravenous feeding: fast heartbeat, headache, confusion"
+      ],
+      "excess_tr": [
+        "Eklem ağrısı, gut benzeri belirtiler",
+        "Bakır eksikliği (yüksek alımda)",
+        "Yüksek dozda sinir ve böbrek etkileri"
+      ],
+      "excess_en": [
+        "Gout-like joint pain",
+        "Copper deficiency (at high intakes)",
+        "Nerve and kidney effects at high doses"
+      ],
+      "sources_tr": [
+        "Baklagiller",
+        "Tam tahıllar",
+        "Kuruyemiş",
+        "Karaciğer"
+      ],
+      "sources_en": [
+        "Legumes",
+        "Whole grains",
+        "Nuts",
+        "Liver"
+      ],
+      "daily_need": "45 mcg",
+      "upper_limit": "2000 mcg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "fluoride",
+      "category": "mineral",
+      "name_tr": "Florür",
+      "name_en": "Fluoride",
+      "function_tr": "Diş minesini güçlendirir, çürük oluşumunu azaltır ve kemik mineralizasyonuna katkı sağlar.",
+      "function_en": "Strengthens tooth enamel, reduces cavities and contributes to bone mineralization.",
+      "deficiency_tr": [
+        "Diş çürüğü riskinde artış",
+        "Çocuklarda zayıf diş mineleşmesi"
+      ],
+      "deficiency_en": [
+        "Higher risk of tooth decay",
+        "Weak tooth mineralization in children"
+      ],
+      "excess_tr": [
+        "Çocuklarda diş florozisi: dişlerde beyaz-kahverengi lekeler",
+        "Çok yüksek alımda kemik florozisi ve eklem sertliği",
+        "Aşırı dozda bulantı ve kusma"
+      ],
+      "excess_en": [
+        "Dental fluorosis in children: white-brown spots on teeth",
+        "Skeletal fluorosis and joint stiffness at very high intakes",
+        "Nausea and vomiting with an overdose"
+      ],
+      "sources_tr": [
+        "Florürlü diş macunu ve içme suyu",
+        "Çay",
+        "Deniz ürünleri",
+        "Bazı konserve balıklar"
+      ],
+      "sources_en": [
+        "Fluoridated toothpaste and drinking water",
+        "Tea",
+        "Seafood",
+        "Some canned fish"
+      ],
+      "daily_need": "3–4 mg",
+      "upper_limit": "10 mg",
+      "source": "NIH ODS"
+    },
+    {
+      "id": "histidine",
+      "category": "amino_acid",
+      "name_tr": "Histidin",
+      "name_en": "Histidine",
+      "function_tr": "Histamin ve hemoglobin yapımında rol alır, doku onarımına ve sinir hücrelerini saran kılıfın korunmasına yardımcı olur.",
+      "function_en": "Used to make histamine and hemoglobin, and helps repair tissue and protect the sheath around nerve cells.",
+      "deficiency_tr": [
+        "Sağlıklı beslenen insanlarda eksiklik nadirdir",
+        "Ciltte kuruluk ve egzama benzeri belirtiler",
+        "Kansızlık ve halsizlik"
+      ],
+      "deficiency_en": [
+        "Deficiency is rare in people who eat enough protein",
+        "Dry skin and eczema-like symptoms",
+        "Anemia and fatigue"
+      ],
+      "excess_tr": [
+        "Bilinen bir üst sınır belirlenmemiştir; besinlerden alınan miktar zararsızdır",
+        "Yüksek takviye dozlarında mide rahatsızlığı görülebilir"
+      ],
+      "excess_en": [
+        "No upper limit has been set; amounts from food are not harmful",
+        "High supplement doses may upset the stomach"
+      ],
+      "sources_tr": [
+        "Et, tavuk ve balık",
+        "Süt ürünleri",
+        "Yumurta",
+        "Soya ve baklagiller"
+      ],
+      "sources_en": [
+        "Meat, poultry and fish",
+        "Dairy",
+        "Eggs",
+        "Soy and legumes"
+      ],
+      "daily_need": "10 mg/kg",
+      "source": "WHO/FAO/UNU"
+    },
+    {
+      "id": "isoleucine",
+      "category": "amino_acid",
+      "name_tr": "İzolösin",
+      "name_en": "Isoleucine",
+      "function_tr": "Kas metabolizmasında, enerji üretiminde, hemoglobin yapımında ve kan şekeri dengesinde rol alan dallı zincirli bir amino asittir.",
+      "function_en": "A branched-chain amino acid involved in muscle metabolism, energy production, hemoglobin formation and blood sugar balance.",
+      "deficiency_tr": [
+        "Kas kaybı ve zayıflık",
+        "Yorgunluk",
+        "Ruh hali değişimleri",
+        "Yaralarda geç iyileşme"
+      ],
+      "deficiency_en": [
+        "Muscle loss and weakness",
+        "Fatigue",
+        "Mood changes",
+        "Slow wound healing"
+      ],
+      "excess_tr": [
+        "Bilinen bir üst sınır belirlenmemiştir",
+        "Yüksek dallı zincirli amino asit takviyesinde bulantı, yorgunluk ve koordinasyon kaybı bildirilmiştir",
+        "Akçaağaç şurubu idrar hastalığında (MSUD) tehlikelidir"
+      ],
+      "excess_en": [
+        "No upper limit has been set",
+        "High branched-chain amino acid supplements have been linked to nausea, fatigue and loss of coordination",
+        "Dangerous in maple syrup urine disease (MSUD)"
+      ],
+      "sources_tr": [
+        "Tavuk, et ve balık",
+        "Yumurta",
+        "Süt ürünleri",
+        "Mercimek ve fıstık"
+      ],
+      "sources_en": [
+        "Poultry, meat and fish",
+        "Eggs",
+        "Dairy",
+        "Lentils and peanuts"
+      ],
+      "daily_need": "20 mg/kg",
+      "source": "WHO/FAO/UNU"
+    },
+    {
+      "id": "leucine",
+      "category": "amino_acid",
+      "name_tr": "Lösin",
+      "name_en": "Leucine",
+      "function_tr": "Kas proteini yapımını tetikleyen, yara iyileşmesine ve kan şekeri dengesine yardımcı olan dallı zincirli bir amino asittir.",
+      "function_en": "A branched-chain amino acid that triggers muscle protein building and helps wound healing and blood sugar balance.",
+      "deficiency_tr": [
+        "Kas kaybı",
+        "Yorgunluk ve halsizlik",
+        "Yaraların geç iyileşmesi",
+        "Baş dönmesi"
+      ],
+      "deficiency_en": [
+        "Muscle loss",
+        "Fatigue and weakness",
+        "Slow wound healing",
+        "Dizziness"
+      ],
+      "excess_tr": [
+        "Bilinen bir üst sınır belirlenmemiştir",
+        "Çok yüksek dozda bulantı, yorgunluk ve kan şekeri dalgalanması",
+        "Akçaağaç şurubu idrar hastalığında (MSUD) tehlikelidir"
+      ],
+      "excess_en": [
+        "No upper limit has been set",
+        "Very high doses: nausea, fatigue and blood sugar swings",
+        "Dangerous in maple syrup urine disease (MSUD)"
+      ],
+      "sources_tr": [
+        "Et ve balık",
+        "Süt ve peynir",
+        "Yumurta",
+        "Soya ve baklagiller"
+      ],
+      "sources_en": [
+        "Meat and fish",
+        "Milk and cheese",
+        "Eggs",
+        "Soy and legumes"
+      ],
+      "daily_need": "39 mg/kg",
+      "source": "WHO/FAO/UNU"
+    },
+    {
+      "id": "lysine",
+      "category": "amino_acid",
+      "name_tr": "Lizin",
+      "name_en": "Lysine",
+      "function_tr": "Kolajen yapımı, kalsiyum emilimi ve hücre enerjisi için gerekli karnitin üretiminde rol alır; bağışıklığa da katkı sağlar.",
+      "function_en": "Used to make collagen and carnitine and to absorb calcium; also supports immunity.",
+      "deficiency_tr": [
+        "Yorgunluk ve iştahsızlık",
+        "Bulantı",
+        "Saç dökülmesi",
+        "Kansızlık",
+        "Çocuklarda büyüme geriliği"
+      ],
+      "deficiency_en": [
+        "Fatigue and loss of appetite",
+        "Nausea",
+        "Hair loss",
+        "Anemia",
+        "Slow growth in children"
+      ],
+      "excess_tr": [
+        "Bilinen bir üst sınır belirlenmemiştir",
+        "Yüksek takviye dozunda mide krampı ve ishal",
+        "Çok yüksek dozda böbrek yükü"
+      ],
+      "excess_en": [
+        "No upper limit has been set",
+        "High supplement doses: stomach cramps and diarrhea",
+        "Very high doses can strain the kidneys"
+      ],
+      "sources_tr": [
+        "Et, tavuk ve balık",
+        "Süt ürünleri",
+        "Baklagiller",
+        "Kinoa"
+      ],
+      "sources_en": [
+        "Meat, poultry and fish",
+        "Dairy",
+        "Legumes",
+        "Quinoa"
+      ],
+      "daily_need": "30 mg/kg",
+      "source": "WHO/FAO/UNU"
+    },
+    {
+      "id": "methionine",
+      "category": "amino_acid",
+      "name_tr": "Metiyonin",
+      "name_en": "Methionine",
+      "function_tr": "Kükürt içeren bir amino asittir; sistein, kreatin ve vücuttaki birçok metil reaksiyonunun kaynağıdır, karaciğer ve doku sağlığına yardımcı olur. Gereksinim sisteinle birlikte hesaplanır.",
+      "function_en": "A sulfur-containing amino acid that is the source of cysteine, creatine and many methyl reactions in the body, supporting liver and tissue health. The need is counted together with cysteine.",
+      "deficiency_tr": [
+        "Sağlıklı beslenen insanlarda eksiklik nadirdir",
+        "Saç ve cilt değişiklikleri",
+        "Karaciğerde yağlanma",
+        "Büyüme geriliği (çocuklarda)"
+      ],
+      "deficiency_en": [
+        "Deficiency is rare in people who eat enough protein",
+        "Hair and skin changes",
+        "Fatty liver",
+        "Slow growth in children"
+      ],
+      "excess_tr": [
+        "Kanda homosistein yükselmesi ve damar sağlığı riski",
+        "Karaciğer hastalığında durumu ağırlaştırabilir",
+        "Yüksek takviye dozunda bulantı ve uyku hali"
+      ],
+      "excess_en": [
+        "Raised blood homocysteine and vascular risk",
+        "Can worsen liver disease",
+        "High supplement doses: nausea and drowsiness"
+      ],
+      "sources_tr": [
+        "Et ve balık",
+        "Yumurta",
+        "Süt ürünleri",
+        "Susam ve Brezilya cevizi"
+      ],
+      "sources_en": [
+        "Meat and fish",
+        "Eggs",
+        "Dairy",
+        "Sesame and Brazil nuts"
+      ],
+      "daily_need": "15 mg/kg",
+      "source": "WHO/FAO/UNU"
+    },
+    {
+      "id": "phenylalanine",
+      "category": "amino_acid",
+      "name_tr": "Fenilalanin",
+      "name_en": "Phenylalanine",
+      "function_tr": "Tirozin amino asitinin, dopamin ve adrenalin gibi sinyal maddelerinin öncüsüdür. Gereksinim tirozinle birlikte hesaplanır.",
+      "function_en": "A precursor of the amino acid tyrosine and of signaling chemicals such as dopamine and adrenaline. The need is counted together with tyrosine.",
+      "deficiency_tr": [
+        "Sağlıklı beslenen insanlarda eksiklik nadirdir",
+        "Yorgunluk ve ruh hali değişimleri",
+        "Hafıza ve dikkat sorunları",
+        "İştah kaybı"
+      ],
+      "deficiency_en": [
+        "Deficiency is rare in people who eat enough protein",
+        "Fatigue and mood changes",
+        "Memory and attention problems",
+        "Loss of appetite"
+      ],
+      "excess_tr": [
+        "Fenilketonüri (PKU) hastalarında birikim beyin hasarına yol açar; bu kişiler kısıtlı diyet izlemelidir",
+        "Yüksek takviye dozunda baş ağrısı ve bulantı",
+        "Tansiyon yükselmesi (hassas kişilerde)"
+      ],
+      "excess_en": [
+        "Build-up in phenylketonuria (PKU) causes brain damage; those people need a restricted diet",
+        "High supplement doses: headache and nausea",
+        "Raised blood pressure (in sensitive people)"
+      ],
+      "sources_tr": [
+        "Et ve balık",
+        "Yumurta ve süt ürünleri",
+        "Soya ve baklagiller",
+        "Aspartam içeren ürünler (PKU'da kaçınılır)"
+      ],
+      "sources_en": [
+        "Meat and fish",
+        "Eggs and dairy",
+        "Soy and legumes",
+        "Aspartame products (avoided in PKU)"
+      ],
+      "daily_need": "25 mg/kg",
+      "source": "WHO/FAO/UNU"
+    },
+    {
+      "id": "threonine",
+      "category": "amino_acid",
+      "name_tr": "Treonin",
+      "name_en": "Threonine",
+      "function_tr": "Kolajen ve elastin yapımında, bağışıklık (antikor) üretiminde ve karaciğerde yağ metabolizmasında rol alır.",
+      "function_en": "Used to make collagen and elastin, produce antibodies and handle fat metabolism in the liver.",
+      "deficiency_tr": [
+        "Sağlıklı beslenen insanlarda eksiklik nadirdir",
+        "Karaciğerde yağ birikimi",
+        "Sinirlilik ve huzursuzluk",
+        "Sindirim sorunları"
+      ],
+      "deficiency_en": [
+        "Deficiency is rare in people who eat enough protein",
+        "Fat build-up in the liver",
+        "Irritability and restlessness",
+        "Digestive problems"
+      ],
+      "excess_tr": [
+        "Bilinen bir üst sınır belirlenmemiştir; besinlerden alınan miktar zararsızdır",
+        "Yüksek takviye dozunda mide rahatsızlığı"
+      ],
+      "excess_en": [
+        "No upper limit has been set; amounts from food are not harmful",
+        "High supplement doses may upset the stomach"
+      ],
+      "sources_tr": [
+        "Et, tavuk ve balık",
+        "Süt ürünleri",
+        "Yumurta",
+        "Mercimek ve fındık"
+      ],
+      "sources_en": [
+        "Meat, poultry and fish",
+        "Dairy",
+        "Eggs",
+        "Lentils and hazelnuts"
+      ],
+      "daily_need": "15 mg/kg",
+      "source": "WHO/FAO/UNU"
+    },
+    {
+      "id": "tryptophan",
+      "category": "amino_acid",
+      "name_tr": "Triptofan",
+      "name_en": "Tryptophan",
+      "function_tr": "Ruh hali ve uykuyu düzenleyen serotonin ile melatoninin, ayrıca B3 vitamininin (niasin) öncüsüdür.",
+      "function_en": "A precursor of serotonin and melatonin, which regulate mood and sleep, and of vitamin B3 (niacin).",
+      "deficiency_tr": [
+        "Uyku sorunları",
+        "Düşük ruh hali, sinirlilik",
+        "İştah değişimleri",
+        "Niasinle birlikte eksikse pellagra"
+      ],
+      "deficiency_en": [
+        "Sleep problems",
+        "Low mood, irritability",
+        "Appetite changes",
+        "Pellagra when niacin is also low"
+      ],
+      "excess_tr": [
+        "Bulantı, baş dönmesi ve uyku hali (yüksek takviye dozunda)",
+        "Antidepresanlarla (SSRI) birlikte serotonin sendromu riski",
+        "Bu yüzden takviye öncesi hekime danışılmalıdır"
+      ],
+      "excess_en": [
+        "Nausea, dizziness and drowsiness (high supplement doses)",
+        "Serotonin syndrome risk together with antidepressants (SSRIs)",
+        "Ask a doctor before taking supplements"
+      ],
+      "sources_tr": [
+        "Hindi ve tavuk",
+        "Süt ve peynir",
+        "Yumurta",
+        "Kabak çekirdeği ve fıstık"
+      ],
+      "sources_en": [
+        "Turkey and chicken",
+        "Milk and cheese",
+        "Eggs",
+        "Pumpkin seeds and peanuts"
+      ],
+      "daily_need": "4 mg/kg",
+      "source": "WHO/FAO/UNU"
+    },
+    {
+      "id": "valine",
+      "category": "amino_acid",
+      "name_tr": "Valin",
+      "name_en": "Valine",
+      "function_tr": "Kas gelişimi, enerji üretimi ve sinir sisteminin düzgün çalışması için gerekli, dallı zincirli bir amino asittir.",
+      "function_en": "A branched-chain amino acid needed for muscle growth, energy production and a well-working nervous system.",
+      "deficiency_tr": [
+        "Kas zayıflığı",
+        "Uykusuzluk ve sinirlilik",
+        "Koordinasyon sorunları",
+        "İştah kaybı"
+      ],
+      "deficiency_en": [
+        "Muscle weakness",
+        "Insomnia and irritability",
+        "Coordination problems",
+        "Loss of appetite"
+      ],
+      "excess_tr": [
+        "Bilinen bir üst sınır belirlenmemiştir",
+        "Çok yüksek alımda ciltte karıncalanma ve bulantı",
+        "Akçaağaç şurubu idrar hastalığında (MSUD) tehlikelidir"
+      ],
+      "excess_en": [
+        "No upper limit has been set",
+        "Very high intakes: skin tingling and nausea",
+        "Dangerous in maple syrup urine disease (MSUD)"
+      ],
+      "sources_tr": [
+        "Et ve balık",
+        "Süt ürünleri",
+        "Soya ve baklagiller",
+        "Yer fıstığı"
+      ],
+      "sources_en": [
+        "Meat and fish",
+        "Dairy",
+        "Soy and legumes",
+        "Peanuts"
+      ],
+      "daily_need": "26 mg/kg",
+      "source": "WHO/FAO/UNU"
+    }
+  ]
+}

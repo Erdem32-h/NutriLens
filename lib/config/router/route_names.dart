@@ -18,6 +18,10 @@ abstract final class RouteNames {
   static const String additiveDetail = 'additiveDetail';
   static const String editProduct = 'editProduct';
 
+  // Nutrient guide
+  static const String nutrientGuide = 'nutrientGuide';
+  static const String nutrientDetail = 'nutrientDetail';
+
   // Comparison
   static const String compare = 'compare';
 

@@ -981,5 +981,30 @@
   "reportProductThanks": "谢谢，已收到你的举报。",
   "reportProductAlready": "你已经举报过此产品。",
   "reportProductUnavailable": "此产品来自外部数据库；你可以通过我们的支持页面联系我们进行更正。",
-  "reportProductFailed": "举报发送失败，请重试。"
+  "reportProductFailed": "举报发送失败，请重试。",
+  "nutrientGuideTitle": "Nutrient Guide",
+  "nutrientGuideSubtitle": "Vitamins, minerals and amino acids",
+  "nutrientTabVitamins": "Vitamins",
+  "nutrientTabMinerals": "Minerals",
+  "nutrientTabAminoAcids": "Amino acids",
+  "nutrientSearchHint": "Search nutrients",
+  "nutrientNoResults": "No results found",
+  "nutrientSectionFunction": "What it does",
+  "nutrientSectionDeficiency": "If you get too little",
+  "nutrientSectionExcess": "If you get too much",
+  "nutrientSectionSources": "Where to find it",
+  "nutrientSectionDailyNeed": "Daily need (adult)",
+  "nutrientUpperLimitLabel": "Upper limit",
+  "nutrientDisclaimer": "This information is for general education only and is not medical advice. See a doctor for health concerns.",
+  "nutrientSourceLabel": "Source: {source}",
+  "@nutrientSourceLabel": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "nutrientLoadError": "Could not load content",
+  "nutrientRetry": "Try again",
+  "nutrientNotFound": "Nutrient not found"
 }

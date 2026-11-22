@@ -2356,4 +2356,61 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reportProductFailed =>
       'Couldn\'t send the report. Please try again.';
+
+  @override
+  String get nutrientGuideTitle => 'Nutrient Guide';
+
+  @override
+  String get nutrientGuideSubtitle => 'Vitamins, minerals and amino acids';
+
+  @override
+  String get nutrientTabVitamins => 'Vitamins';
+
+  @override
+  String get nutrientTabMinerals => 'Minerals';
+
+  @override
+  String get nutrientTabAminoAcids => 'Amino acids';
+
+  @override
+  String get nutrientSearchHint => 'Search nutrients';
+
+  @override
+  String get nutrientNoResults => 'No results found';
+
+  @override
+  String get nutrientSectionFunction => 'What it does';
+
+  @override
+  String get nutrientSectionDeficiency => 'If you get too little';
+
+  @override
+  String get nutrientSectionExcess => 'If you get too much';
+
+  @override
+  String get nutrientSectionSources => 'Where to find it';
+
+  @override
+  String get nutrientSectionDailyNeed => 'Daily need (adult)';
+
+  @override
+  String get nutrientUpperLimitLabel => 'Upper limit';
+
+  @override
+  String get nutrientDisclaimer =>
+      'This information is for general education only and is not medical advice. See a doctor for health concerns.';
+
+  @override
+  String nutrientSourceLabel(String source) {
+    return 'Source: $source';
+  }
+
+  @override
+  String get nutrientLoadError => 'Could not load content';
+
+  @override
+  String get nutrientRetry => 'Try again';
+
+  @override
+  String get nutrientNotFound => 'Nutrient not found';
 }

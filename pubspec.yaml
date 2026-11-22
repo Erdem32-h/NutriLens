@@ -157,6 +157,7 @@ flutter:
   assets:
     - .env
     - assets/additives/
+    - assets/nutrients/
     - assets/images/
     # Plus Jakarta Sans, bundled rather than downloaded at runtime. Declared
     # under `assets:` (not `fonts:`) on purpose: google_fonts finds these by

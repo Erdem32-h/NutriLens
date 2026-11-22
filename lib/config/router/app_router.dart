@@ -30,6 +30,8 @@ import '../../features/profile/presentation/screens/diet_filter_screen.dart';
 import '../../features/profile/presentation/screens/oil_filter_screen.dart';
 import '../../features/profile/presentation/screens/chemical_filter_screen.dart';
 import '../../features/product/presentation/screens/additive_detail_screen.dart';
+import '../../features/nutrient_guide/presentation/screens/nutrient_detail_screen.dart';
+import '../../features/nutrient_guide/presentation/screens/nutrient_guide_screen.dart';
 import '../../features/comparison/presentation/screens/comparison_screen.dart';
 import '../../features/water/presentation/screens/water_screen.dart';
 import '../../features/fasting/presentation/screens/fasting_screen.dart';
@@ -220,6 +222,19 @@ GoRouter createRouter(WidgetRef ref) {
           final eCode = state.pathParameters['eCode']!;
           return AdditiveDetailScreen(eCode: eCode);
         },
+      ),
+      GoRoute(
+        path: '/nutrients',
+        name: RouteNames.nutrientGuide,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const NutrientGuideScreen(),
+      ),
+      GoRoute(
+        path: '/nutrient/:id',
+        name: RouteNames.nutrientDetail,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) =>
+            NutrientDetailScreen(nutrientId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/food-result',

@@ -2361,4 +2361,61 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get reportProductFailed =>
       'Bildirim gönderilemedi. Lütfen tekrar dene.';
+
+  @override
+  String get nutrientGuideTitle => 'Besin Rehberi';
+
+  @override
+  String get nutrientGuideSubtitle => 'Vitamin, mineral ve amino asitler';
+
+  @override
+  String get nutrientTabVitamins => 'Vitaminler';
+
+  @override
+  String get nutrientTabMinerals => 'Mineraller';
+
+  @override
+  String get nutrientTabAminoAcids => 'Amino asitler';
+
+  @override
+  String get nutrientSearchHint => 'Besin ara';
+
+  @override
+  String get nutrientNoResults => 'Sonuç bulunamadı';
+
+  @override
+  String get nutrientSectionFunction => 'Ne işe yarar';
+
+  @override
+  String get nutrientSectionDeficiency => 'Eksikse';
+
+  @override
+  String get nutrientSectionExcess => 'Fazlaysa';
+
+  @override
+  String get nutrientSectionSources => 'Nerede bulunur';
+
+  @override
+  String get nutrientSectionDailyNeed => 'Günlük ihtiyaç (yetişkin)';
+
+  @override
+  String get nutrientUpperLimitLabel => 'Üst sınır';
+
+  @override
+  String get nutrientDisclaimer =>
+      'Bu bilgiler genel bilgilendirme amaçlıdır, tıbbi tavsiye değildir. Sağlık sorunları için bir hekime danışın.';
+
+  @override
+  String nutrientSourceLabel(String source) {
+    return 'Kaynak: $source';
+  }
+
+  @override
+  String get nutrientLoadError => 'İçerik yüklenemedi';
+
+  @override
+  String get nutrientRetry => 'Tekrar dene';
+
+  @override
+  String get nutrientNotFound => 'Bu besin bulunamadı';
 }
