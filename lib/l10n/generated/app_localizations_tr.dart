@@ -15,7 +15,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get scanner => 'Tarayıcı';
 
   @override
-  String get history => 'Ürün Geçmişi';
+  String get history => 'Geçmiş';
 
   @override
   String get favorites => 'Favoriler';
@@ -2418,4 +2418,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get nutrientNotFound => 'Bu besin bulunamadı';
+
+  @override
+  String get exactAlarmTitle => 'Tam zamanlı sahur & iftar bildirimi';
+
+  @override
+  String get exactAlarmBody =>
+      'Android 14+ cihazlarda sahur ve iftar hatırlatıcılarının gecikmeden çalması için \"Alarmlar ve hatırlatıcılar\" izni gerekir. İstemezseniz bildirimler yine gelir ancak birkaç dakika gecikebilir.';
 }

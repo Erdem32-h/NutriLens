@@ -27,8 +27,8 @@ import '../widgets/compare_hint_strip.dart';
 import '../widgets/content_analysis_section.dart';
 import '../widgets/editorial_header.dart';
 import '../widgets/editorial_nutrient_table.dart';
-import '../widgets/health_score_bar.dart';
 import '../widgets/pill_tab_bar.dart';
+import '../widgets/product_bento_summary.dart';
 import '../widgets/report_product_button.dart';
 import '../widgets/dietary_suitability_section.dart';
 import '../widgets/score_breakdown_card.dart';
@@ -152,22 +152,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
     final productLoaded = productAsync.hasValue && productAsync.value != null;
 
+    final colors = context.colors;
+
     return Scaffold(
-      backgroundColor: context.colors.background,
+      backgroundColor: colors.background,
       appBar: AppBar(
         title: Text(l10n.productDetail),
         backgroundColor: Colors.transparent,
         actions: productLoaded
             ? [
-                IconButton(
+                _CircleActionChip(
                   tooltip: l10n.share,
-                  icon: const Icon(Icons.ios_share_rounded),
+                  icon: Icons.ios_share_rounded,
                   onPressed: () => _shareProduct(productAsync.value!),
                 ),
+                const SizedBox(width: 6),
                 // Favorite toggle
                 isFavoriteAsync.when(
                   loading: () => const SizedBox(
-                    width: 48,
+                    width: 40,
                     child: Center(
                       child: SizedBox(
                         width: 18,
@@ -177,14 +180,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ),
                   ),
                   error: (e, s) => const SizedBox.shrink(),
-                  data: (isFav) => IconButton(
+                  data: (isFav) => _CircleActionChip(
                     tooltip: isFav
                         ? l10n.removeFromFavorites
                         : l10n.addToFavorites,
-                    icon: Icon(
-                      isFav ? Icons.favorite : Icons.favorite_border,
-                      color: isFav ? Colors.redAccent : null,
-                    ),
+                    icon: isFav ? Icons.favorite : Icons.favorite_border,
+                    iconColor: isFav ? Colors.redAccent : null,
                     onPressed: () async {
                       if (!await ref.requireAuthOr(
                         context,
@@ -215,54 +216,122 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     },
                   ),
                 ),
-                // Blacklist toggle
-                isBlacklistedAsync.when(
-                  loading: () => const SizedBox.shrink(),
-                  error: (e, s) => const SizedBox.shrink(),
-                  data: (isBlocked) => IconButton(
-                    tooltip: isBlocked
-                        ? l10n.removeFromBlacklist
-                        : l10n.addToBlacklist,
-                    icon: Icon(
-                      isBlocked ? Icons.block : Icons.block_outlined,
-                      color: isBlocked ? Colors.orange : null,
+                const SizedBox(width: 6),
+                // Overflow menu: Blacklist + Report
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: SizedBox(
+                    width: 38,
+                    height: 38,
+                    child: Material(
+                      color: colors.cozy.floating,
+                      shape: const CircleBorder(),
+                      child: PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        tooltip: MaterialLocalizations.of(
+                          context,
+                        ).showMenuTooltip,
+                        icon: Icon(
+                          Icons.more_horiz_rounded,
+                          color: colors.textPrimary,
+                          size: 19,
+                        ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      onSelected: (value) async {
+                        if (value == 'blacklist') {
+                          final isBlocked =
+                              isBlacklistedAsync.value ?? false;
+                          if (!await ref.requireAuthOr(
+                            context,
+                            feature: l10n.featureBlacklist,
+                          )) {
+                            return;
+                          }
+                          if (isBlocked) {
+                            await removeBlacklistByBarcode(
+                              ref,
+                              barcode: widget.barcode,
+                            );
+                          } else {
+                            await addToBlacklist(
+                              ref,
+                              barcode: widget.barcode,
+                            );
+                          }
+                        } else if (value == 'report') {
+                          await ReportProductButton.runReportFlow(
+                            context: context,
+                            canProceed: () => ref.requireAuthOr(
+                              context,
+                              feature: l10n.reportProduct,
+                            ),
+                            onReport: () {
+                              final userId = ref
+                                  .read(supabaseClientProvider)
+                                  .auth
+                                  .currentUser
+                                  ?.id;
+                              if (userId == null) {
+                                throw StateError(
+                                  'report without a signed-in user',
+                                );
+                              }
+                              return ref
+                                  .read(communityProductSourceProvider)
+                                  .reportByBarcode(
+                                    barcode: widget.barcode,
+                                    userId: userId,
+                                  );
+                            },
+                          );
+                        }
+                      },
+                      itemBuilder: (ctx) {
+                        final isBlocked = isBlacklistedAsync.value ?? false;
+                        return [
+                          PopupMenuItem<String>(
+                            value: 'blacklist',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isBlocked
+                                      ? Icons.block
+                                      : Icons.block_outlined,
+                                  size: 20,
+                                  color: isBlocked
+                                      ? Colors.orange
+                                      : colors.textPrimary,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  isBlocked
+                                      ? l10n.removeFromBlacklist
+                                      : l10n.addToBlacklist,
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'report',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.flag_outlined,
+                                  size: 20,
+                                  color: colors.textPrimary,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(l10n.reportProduct),
+                              ],
+                            ),
+                          ),
+                        ];
+                      },
                     ),
-                    onPressed: () async {
-                      if (!await ref.requireAuthOr(
-                        context,
-                        feature: l10n.featureBlacklist,
-                      )) {
-                        return;
-                      }
-                      if (isBlocked) {
-                        await removeBlacklistByBarcode(
-                          ref,
-                          barcode: widget.barcode,
-                        );
-                      } else {
-                        await addToBlacklist(ref, barcode: widget.barcode);
-                      }
-                    },
                   ),
                 ),
-                ReportProductButton(
-                  canProceed: () => ref.requireAuthOr(
-                    context,
-                    feature: l10n.reportProduct,
-                  ),
-                  onReport: () {
-                    final userId =
-                        ref.read(supabaseClientProvider).auth.currentUser?.id;
-                    if (userId == null) {
-                      throw StateError('report without a signed-in user');
-                    }
-                    return ref
-                        .read(communityProductSourceProvider)
-                        .reportByBarcode(
-                          barcode: widget.barcode,
-                          userId: userId,
-                        );
-                  },
                 ),
               ]
             : null,
@@ -350,35 +419,54 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   Widget _buildProductDetail(ProductEntity product) {
+    final colors = context.colors;
+    final gaugeLevel = ScoreConstants.hpToGauge(product.calculatedHpScore);
+    final washColor = switch (gaugeLevel) {
+      1 || 2 => colors.cozy.mint.surface,
+      3 => colors.cozy.peach.surface,
+      _ => colors.cozy.rose.surface,
+    };
+
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          EditorialHeader(
-            product: product,
-            onEditPressed: () {
-              context.push('/product/${widget.barcode}/edit');
-            },
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [washColor, washColor.withValues(alpha: 0)],
+            stops: const [0.0, 0.28],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          // Tarım Bakanlığı counterfeit warning (highest priority)
-          CounterfeitWarningBanner(
-            barcode: widget.barcode,
-            brand: product.brands,
-          ),
-          if (widget.digitalLink != null)
-            DigitalLinkCard(link: widget.digitalLink!),
-          _buildBlacklistedBanner(),
-          _buildFilterWarningBanner(product),
-          PillTabBar(
-            selectedIndex: _selectedTab,
-            onTabChanged: (i) => setState(() => _selectedTab = i),
-          ),
-          const CompareHintStrip(),
-          const SizedBox(height: 16),
-          if (_selectedTab == 0) ..._buildHealthTab(product),
-          if (_selectedTab == 1) ..._buildNutritionTab(product),
-          if (_selectedTab == 2) ..._buildAlternativeTab(product),
-          const SizedBox(height: 32),
-        ],
+        ),
+        child: Column(
+          children: [
+            EditorialHeader(
+              product: product,
+              isCommunity: product.isCommunity,
+              onEditPressed: () {
+                context.push('/product/${widget.barcode}/edit');
+              },
+            ),
+            // Tarım Bakanlığı counterfeit warning (highest priority)
+            CounterfeitWarningBanner(
+              barcode: widget.barcode,
+              brand: product.brands,
+            ),
+            if (widget.digitalLink != null)
+              DigitalLinkCard(link: widget.digitalLink!),
+            _buildBlacklistedBanner(),
+            _buildFilterWarningBanner(product),
+            PillTabBar(
+              selectedIndex: _selectedTab,
+              onTabChanged: (i) => setState(() => _selectedTab = i),
+            ),
+            const CompareHintStrip(),
+            const SizedBox(height: 16),
+            if (_selectedTab == 0) ..._buildHealthTab(product),
+            if (_selectedTab == 1) ..._buildNutritionTab(product),
+            if (_selectedTab == 2) ..._buildAlternativeTab(product),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }
@@ -524,8 +612,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   List<Widget> _buildHealthTab(ProductEntity product) {
     return [
-      HealthScoreBar(hpScore: product.calculatedHpScore),
-      const SizedBox(height: 8),
+      ProductBentoSummary(product: product),
+      const SizedBox(height: 12),
       ScoreBreakdownCard(product: product),
       const SizedBox(height: 8),
       DietarySuitabilitySection(product: product),
@@ -813,6 +901,45 @@ class _AlternativeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(Icons.image_outlined, size: 28, color: colors.textMuted),
+    );
+  }
+}
+
+class _CircleActionChip extends StatelessWidget {
+  final String tooltip;
+  final IconData icon;
+  final Color? iconColor;
+  final VoidCallback onPressed;
+
+  const _CircleActionChip({
+    required this.tooltip,
+    required this.icon,
+    this.iconColor,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: colors.cozy.floating,
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onPressed,
+          child: SizedBox(
+            width: 38,
+            height: 38,
+            child: Icon(
+              icon,
+              size: 19,
+              color: iconColor ?? colors.textPrimary,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

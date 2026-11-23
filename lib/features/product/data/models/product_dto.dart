@@ -61,6 +61,7 @@ abstract final class ProductDto {
       hpScoreVersion:
           _safeInt(row['hp_score_version']) ??
           ScoreConstants.hpScoreAlgorithmVersion,
+      isCommunity: true,
     );
   }
 

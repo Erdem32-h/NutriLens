@@ -25,11 +25,19 @@ class ReportProductButton extends StatelessWidget {
     return IconButton(
       tooltip: l10n.reportProduct,
       icon: const Icon(Icons.flag_outlined),
-      onPressed: () => _handleTap(context),
+      onPressed: () => runReportFlow(
+        context: context,
+        canProceed: canProceed,
+        onReport: onReport,
+      ),
     );
   }
 
-  Future<void> _handleTap(BuildContext context) async {
+  static Future<void> runReportFlow({
+    required BuildContext context,
+    required Future<bool> Function() canProceed,
+    required Future<ReportOutcome> Function() onReport,
+  }) async {
     if (!await canProceed()) return;
     if (!context.mounted) return;
     final l10n = context.l10n;

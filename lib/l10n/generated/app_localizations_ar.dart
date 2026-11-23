@@ -15,7 +15,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scanner => 'الماسح الضوئي';
 
   @override
-  String get history => 'سجل المنتجات';
+  String get history => 'السجل';
 
   @override
   String get favorites => 'المفضلة';
@@ -2349,59 +2349,66 @@ class AppLocalizationsAr extends AppLocalizations {
       'تعذر إرسال البلاغ. يرجى المحاولة مرة أخرى.';
 
   @override
-  String get nutrientGuideTitle => 'Nutrient Guide';
+  String get nutrientGuideTitle => 'دليل العناصر الغذائية';
 
   @override
-  String get nutrientGuideSubtitle => 'Vitamins, minerals and amino acids';
+  String get nutrientGuideSubtitle => 'الفيتامينات والمعادن والأحماض الأمينية';
 
   @override
-  String get nutrientTabVitamins => 'Vitamins';
+  String get nutrientTabVitamins => 'الفيتامينات';
 
   @override
-  String get nutrientTabMinerals => 'Minerals';
+  String get nutrientTabMinerals => 'المعادن';
 
   @override
-  String get nutrientTabAminoAcids => 'Amino acids';
+  String get nutrientTabAminoAcids => 'الأحماض الأمينية';
 
   @override
-  String get nutrientSearchHint => 'Search nutrients';
+  String get nutrientSearchHint => 'ابحث عن عنصر غذائي';
 
   @override
-  String get nutrientNoResults => 'No results found';
+  String get nutrientNoResults => 'لم يتم العثور على نتائج';
 
   @override
-  String get nutrientSectionFunction => 'What it does';
+  String get nutrientSectionFunction => 'فائدته للجسم';
 
   @override
-  String get nutrientSectionDeficiency => 'If you get too little';
+  String get nutrientSectionDeficiency => 'عند النقص';
 
   @override
-  String get nutrientSectionExcess => 'If you get too much';
+  String get nutrientSectionExcess => 'عند الزيادة';
 
   @override
-  String get nutrientSectionSources => 'Where to find it';
+  String get nutrientSectionSources => 'مصادره الغذائية';
 
   @override
-  String get nutrientSectionDailyNeed => 'Daily need (adult)';
+  String get nutrientSectionDailyNeed => 'الاحتياج اليومي (للبالغين)';
 
   @override
-  String get nutrientUpperLimitLabel => 'Upper limit';
+  String get nutrientUpperLimitLabel => 'الحد الأقصى';
 
   @override
   String get nutrientDisclaimer =>
-      'This information is for general education only and is not medical advice. See a doctor for health concerns.';
+      'هذه المعلومات للتثقيف العام فقط وليست نصيحة طبية. استشر طبيباً لأي مخاوف صحية.';
 
   @override
   String nutrientSourceLabel(String source) {
-    return 'Source: $source';
+    return 'المصدر: $source';
   }
 
   @override
-  String get nutrientLoadError => 'Could not load content';
+  String get nutrientLoadError => 'تعذر تحميل المحتوى';
 
   @override
-  String get nutrientRetry => 'Try again';
+  String get nutrientRetry => 'حاول مجدداً';
 
   @override
-  String get nutrientNotFound => 'Nutrient not found';
+  String get nutrientNotFound => 'العنصر الغذائي غير موجود';
+
+  @override
+  String get exactAlarmTitle => 'تنبيهات السحور والإفطار في وقتها';
+
+  @override
+  String get exactAlarmBody =>
+      'يتطلب Android 14+ إذن \"المنبهات والتذكيرات\" لتصل تنبيهات السحور والإفطار في موعدها الدقيق. يمكنك التخطي لكن قد تتأخر التنبيهات قليلاً.';
 }

@@ -121,7 +121,7 @@ abstract class AppLocalizations {
   /// No description provided for @history.
   ///
   /// In tr, this message translates to:
-  /// **'Ürün Geçmişi'**
+  /// **'Geçmiş'**
   String get history;
 
   /// No description provided for @favorites.
@@ -4491,6 +4491,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bu besin bulunamadı'**
   String get nutrientNotFound;
+
+  /// No description provided for @exactAlarmTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tam zamanlı sahur & iftar bildirimi'**
+  String get exactAlarmTitle;
+
+  /// No description provided for @exactAlarmBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Android 14+ cihazlarda sahur ve iftar hatırlatıcılarının gecikmeden çalması için \"Alarmlar ve hatırlatıcılar\" izni gerekir. İstemezseniz bildirimler yine gelir ancak birkaç dakika gecikebilir.'**
+  String get exactAlarmBody;
 }
 
 class _AppLocalizationsDelegate

@@ -15,7 +15,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scanner => '扫码器';
 
   @override
-  String get history => '产品历史';
+  String get history => '历史';
 
   @override
   String get favorites => '收藏夹';
@@ -2287,59 +2287,65 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reportProductFailed => '举报发送失败，请重试。';
 
   @override
-  String get nutrientGuideTitle => 'Nutrient Guide';
+  String get nutrientGuideTitle => '营养素指南';
 
   @override
-  String get nutrientGuideSubtitle => 'Vitamins, minerals and amino acids';
+  String get nutrientGuideSubtitle => '维生素、矿物质与氨基酸';
 
   @override
-  String get nutrientTabVitamins => 'Vitamins';
+  String get nutrientTabVitamins => '维生素';
 
   @override
-  String get nutrientTabMinerals => 'Minerals';
+  String get nutrientTabMinerals => '矿物质';
 
   @override
-  String get nutrientTabAminoAcids => 'Amino acids';
+  String get nutrientTabAminoAcids => '氨基酸';
 
   @override
-  String get nutrientSearchHint => 'Search nutrients';
+  String get nutrientSearchHint => '搜索营养素';
 
   @override
-  String get nutrientNoResults => 'No results found';
+  String get nutrientNoResults => '未找到结果';
 
   @override
-  String get nutrientSectionFunction => 'What it does';
+  String get nutrientSectionFunction => '主要作用';
 
   @override
-  String get nutrientSectionDeficiency => 'If you get too little';
+  String get nutrientSectionDeficiency => '缺乏表现';
 
   @override
-  String get nutrientSectionExcess => 'If you get too much';
+  String get nutrientSectionExcess => '过量风险';
 
   @override
-  String get nutrientSectionSources => 'Where to find it';
+  String get nutrientSectionSources => '食物来源';
 
   @override
-  String get nutrientSectionDailyNeed => 'Daily need (adult)';
+  String get nutrientSectionDailyNeed => '每日需求（成人）';
 
   @override
-  String get nutrientUpperLimitLabel => 'Upper limit';
+  String get nutrientUpperLimitLabel => '最高限量';
 
   @override
-  String get nutrientDisclaimer =>
-      'This information is for general education only and is not medical advice. See a doctor for health concerns.';
+  String get nutrientDisclaimer => '本信息仅供一般科普参考，不构成医疗建议。如有健康问题请咨询医生。';
 
   @override
   String nutrientSourceLabel(String source) {
-    return 'Source: $source';
+    return '来源：$source';
   }
 
   @override
-  String get nutrientLoadError => 'Could not load content';
+  String get nutrientLoadError => '无法加载内容';
 
   @override
-  String get nutrientRetry => 'Try again';
+  String get nutrientRetry => '重试';
 
   @override
-  String get nutrientNotFound => 'Nutrient not found';
+  String get nutrientNotFound => '未找到该营养素';
+
+  @override
+  String get exactAlarmTitle => '准时提醒封斋与开斋';
+
+  @override
+  String get exactAlarmBody =>
+      'Android 14+ 需要“闹钟和提醒”权限以确保准时提醒。如果跳过，提醒仍会送达但可能略有延迟。';
 }

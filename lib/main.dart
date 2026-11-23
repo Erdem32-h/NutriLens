@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,8 +27,12 @@ import 'core/providers/theme_provider.dart';
 import 'core/services/notification_service.dart';
 import 'core/session/app_session.dart';
 import 'core/theme/app_theme.dart';
+import 'features/meals/presentation/providers/meal_chart_provider.dart';
+import 'features/meals/presentation/providers/meal_provider.dart';
 import 'features/product/presentation/providers/product_provider.dart';
 import 'features/profile/presentation/providers/user_data_deletion_provider.dart';
+import 'features/water/presentation/providers/water_provider.dart';
+import 'features/water/presentation/water_actions.dart';
 
 Future<void> main() async {
   // Sentry — Crash + error reporting. DSN is injected at build time via
@@ -324,6 +329,22 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   StreamSubscription<Uri?>? _widgetClicked;
   StreamSubscription<AuthState>? _authSub;
   AppLifecycleListener? _lifecycle;
+  String _lastActiveDay = _dayStamp(DateTime.now());
+
+  static String _dayStamp(DateTime dt) => '${dt.year}-${dt.month}-${dt.day}';
+
+  void _handleResume() {
+    final today = _dayStamp(DateTime.now());
+    if (today == _lastActiveDay) return;
+    _lastActiveDay = today;
+    // Day rolled over while the app sat in background: snap the period
+    // selector back to the current week/day and refresh date-keyed providers.
+    ref.read(calorieOffsetProvider.notifier).state = 0;
+    ref.invalidate(calorieChartDataProvider);
+    ref.invalidate(todayCalorieTotalProvider);
+    ref.invalidate(waterTodayProvider);
+    ref.invalidate(waterWeekProvider);
+  }
 
   @override
   void initState() {
@@ -361,6 +382,7 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
     // this, a user who never reopens the app only shows up after the next
     // launch replays the persisted queue — and users who churn never do.
     _lifecycle = AppLifecycleListener(
+      onResume: _handleResume,
       onPause: () => unawaited(analytics.flush()),
       onDetach: () => unawaited(analytics.flush()),
     );
@@ -399,6 +421,22 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   void _handleWidgetUri(Uri? uri) {
     if (uri == null) return;
     final path = uri.host + uri.path;
+    if (path.contains('water-add')) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        HapticFeedback.lightImpact();
+        final locale = ref.read(localeProvider);
+        final l10n = lookupAppLocalizations(locale);
+        final day = await ref
+            .read(waterControllerProvider)
+            .addGlass(waterReminderCopy(l10n), source: 'home_widget');
+        if (day != null && day.glasses == day.goalGlasses) {
+          HapticFeedback.mediumImpact();
+        }
+        if (mounted) _router.go('/meals');
+      });
+      return;
+    }
     if (path.contains('scan')) {
       // GoRouter may not be attached yet on cold-launch — defer to the
       // first frame so the navigator is ready.

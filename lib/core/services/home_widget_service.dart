@@ -6,6 +6,8 @@ import '../../config/drift/app_database.dart';
 import '../constants/macro_reference_constants.dart';
 import '../../features/product/data/models/nutriments_dto.dart';
 import '../../features/product/domain/entities/nutriments_entity.dart';
+import '../../features/water/domain/water_day.dart';
+import '../../features/water/domain/water_goal.dart';
 
 /// Pushes today's meal summary to the OS-level home-screen widget on
 /// both Android (AppWidget) and iOS (WidgetKit).
@@ -36,6 +38,8 @@ class HomeWidgetService {
   static const _keyProteinPct = 'today_protein_pct';
   static const _keyCarbPct = 'today_carb_pct';
   static const _keyFatPct = 'today_fat_pct';
+  static const _keyWaterGlasses = 'today_water_glasses';
+  static const _keyWaterGoal = 'today_water_goal';
 
   final AppDatabase _db;
 
@@ -110,6 +114,20 @@ class HomeWidgetService {
         rows.map((r) => NutrimentsDto.fromJsonString(r.nutriments)),
       );
 
+      final todayKey = waterDayKey(now);
+      final waterQuery = _db.select(_db.waterLogs)
+        ..where((t) => t.day.equals(todayKey));
+      if (userId != null) {
+        waterQuery.where((t) => t.userId.equals(userId));
+      }
+      final waterRows = await waterQuery.get();
+      var waterGlasses = 0;
+      var waterGoal = kDefaultWaterGoalGlasses;
+      for (final w in waterRows) {
+        waterGlasses += w.glasses;
+        if (w.goalGlasses > 0) waterGoal = w.goalGlasses;
+      }
+
       await Future.wait<void>([
         HomeWidget.saveWidgetData<int>(_keyKcal, kcal.round()),
         HomeWidget.saveWidgetData<int>(_keyMealCount, count),
@@ -120,6 +138,8 @@ class HomeWidgetService {
         HomeWidget.saveWidgetData<int>(_keyProteinPct, macros.protein),
         HomeWidget.saveWidgetData<int>(_keyCarbPct, macros.carb),
         HomeWidget.saveWidgetData<int>(_keyFatPct, macros.fat),
+        HomeWidget.saveWidgetData<int>(_keyWaterGlasses, waterGlasses),
+        HomeWidget.saveWidgetData<int>(_keyWaterGoal, waterGoal),
       ]);
 
       await HomeWidget.updateWidget(
@@ -128,7 +148,10 @@ class HomeWidgetService {
         iOSName: _iosWidgetName,
       );
 
-      debugPrint('[HomeWidget] refreshed → ${kcal.round()} kcal · $count öğün');
+      debugPrint(
+        '[HomeWidget] refreshed → ${kcal.round()} kcal · $count öğün · '
+        '$waterGlasses/$waterGoal su',
+      );
     } catch (e) {
       debugPrint('[HomeWidget] refresh failed: $e');
     }

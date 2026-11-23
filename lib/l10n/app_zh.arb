@@ -2,7 +2,7 @@
   "@@locale": "zh",
   "appTitle": "NutriLens",
   "scanner": "扫码器",
-  "history": "产品历史",
+  "history": "历史",
   "favorites": "收藏夹",
   "profile": "个人中心",
   "login": "登录",
@@ -982,21 +982,21 @@
   "reportProductAlready": "你已经举报过此产品。",
   "reportProductUnavailable": "此产品来自外部数据库；你可以通过我们的支持页面联系我们进行更正。",
   "reportProductFailed": "举报发送失败，请重试。",
-  "nutrientGuideTitle": "Nutrient Guide",
-  "nutrientGuideSubtitle": "Vitamins, minerals and amino acids",
-  "nutrientTabVitamins": "Vitamins",
-  "nutrientTabMinerals": "Minerals",
-  "nutrientTabAminoAcids": "Amino acids",
-  "nutrientSearchHint": "Search nutrients",
-  "nutrientNoResults": "No results found",
-  "nutrientSectionFunction": "What it does",
-  "nutrientSectionDeficiency": "If you get too little",
-  "nutrientSectionExcess": "If you get too much",
-  "nutrientSectionSources": "Where to find it",
-  "nutrientSectionDailyNeed": "Daily need (adult)",
-  "nutrientUpperLimitLabel": "Upper limit",
-  "nutrientDisclaimer": "This information is for general education only and is not medical advice. See a doctor for health concerns.",
-  "nutrientSourceLabel": "Source: {source}",
+  "nutrientGuideTitle": "营养素指南",
+  "nutrientGuideSubtitle": "维生素、矿物质与氨基酸",
+  "nutrientTabVitamins": "维生素",
+  "nutrientTabMinerals": "矿物质",
+  "nutrientTabAminoAcids": "氨基酸",
+  "nutrientSearchHint": "搜索营养素",
+  "nutrientNoResults": "未找到结果",
+  "nutrientSectionFunction": "主要作用",
+  "nutrientSectionDeficiency": "缺乏表现",
+  "nutrientSectionExcess": "过量风险",
+  "nutrientSectionSources": "食物来源",
+  "nutrientSectionDailyNeed": "每日需求（成人）",
+  "nutrientUpperLimitLabel": "最高限量",
+  "nutrientDisclaimer": "本信息仅供一般科普参考，不构成医疗建议。如有健康问题请咨询医生。",
+  "nutrientSourceLabel": "来源：{source}",
   "@nutrientSourceLabel": {
     "placeholders": {
       "source": {
@@ -1004,7 +1004,9 @@
       }
     }
   },
-  "nutrientLoadError": "Could not load content",
-  "nutrientRetry": "Try again",
-  "nutrientNotFound": "Nutrient not found"
+  "nutrientLoadError": "无法加载内容",
+  "nutrientRetry": "重试",
+  "nutrientNotFound": "未找到该营养素",
+  "exactAlarmTitle": "准时提醒封斋与开斋",
+  "exactAlarmBody": "Android 14+ 需要“闹钟和提醒”权限以确保准时提醒。如果跳过，提醒仍会送达但可能略有延迟。"
 }

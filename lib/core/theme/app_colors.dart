@@ -238,14 +238,14 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     primary: Color(0xFF4ADE80),
     primaryDark: Color(0xFF22C55E),
     primaryDeep: Color(0xFF16A34A),
-    background: Color(0xFF070D07),
-    surface: Color(0xFF0F1A0F),
-    surfaceCard: Color(0xFF162016),
-    surfaceCard2: Color(0xFF1E2E1E),
-    border: Color(0xFF243324),
-    textPrimary: Color(0xFFF0FDF4),
-    textSecondary: Color(0xFF86EFAC),
-    textMuted: Color(0xFF4B7A4B),
+    background: Color(0xFF0E1210),
+    surface: Color(0xFF151A17),
+    surfaceCard: Color(0xFF1A201D),
+    surfaceCard2: Color(0xFF222A25),
+    border: Color(0xFF2E3832),
+    textPrimary: Color(0xFFF3F6F4),
+    textSecondary: Color(0xFFA8B5AD),
+    textMuted: Color(0xFF728279),
     error: Color(0xFFF87171),
     warning: Color(0xFFFCD34D),
     success: Color(0xFF4ADE80),
@@ -270,7 +270,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       end: Alignment.bottomRight,
     ),
     backgroundGradient: LinearGradient(
-      colors: [Color(0xFF070D07), Color(0xFF0F1A0F)],
+      colors: [Color(0xFF0E1210), Color(0xFF151A17)],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     ),
@@ -281,11 +281,11 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     primary: Color(0xFF16A34A), // Deep green primary in light mode for contrast
     primaryDark: Color(0xFF15803D), // Darker green
     primaryDeep: Color(0xFF166534), // Even darker for deep primary
-    background: Color(0xFFF8FAFC), // Off-white/slate-50 background
+    background: Color(0xFFF8F7F4), // Warm off-white background
     surface: Color(0xFFFFFFFF), // Pure white surface
-    surfaceCard: Color(0xFFF1F5F9), // Slate-100 card surface
-    surfaceCard2: Color(0xFFE2E8F0), // Slate-200 alternate card surface
-    border: Color(0xFFCBD5E1), // Slate-300 borders
+    surfaceCard: Color(0xFFF3F1EC), // Warm stone card surface
+    surfaceCard2: Color(0xFFEAE6DE), // Warm stone alternate card surface
+    border: Color(0xFFDAD5CA), // Warm subtle borders
     textPrimary: Color(0xFF0F172A), // Slate-900 primary text
     textSecondary: Color(0xFF334155), // Slate-700 secondary text
     textMuted: Color(0xFF64748B), // Slate-500 muted text
@@ -313,7 +313,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       end: Alignment.bottomRight,
     ),
     backgroundGradient: LinearGradient(
-      colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
+      colors: [Color(0xFFF8F7F4), Color(0xFFF3F1EC)],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     ),

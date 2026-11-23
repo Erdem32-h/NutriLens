@@ -1,37 +1,32 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/score_constants.dart';
 import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/cozy_tile.dart';
 
 class HealthScoreBar extends StatelessWidget {
-  /// (gauge level, width in score points) from 0 upward.
-  static final _bands = () {
-    const edges = [
-      0.0,
-      ScoreConstants.gauge4Threshold,
-      ScoreConstants.gauge3Threshold,
-      ScoreConstants.gauge2Threshold,
-      ScoreConstants.gauge1Threshold,
-      100.0,
-    ];
-    return [
-      for (var i = 0; i < 5; i++) (5 - i, (edges[i + 1] - edges[i]).round()),
-    ];
-  }();
-
   final double? hpScore;
 
-  /// Dış boşluk. Varsayılan, mevcut ekranlardaki (ürün detayı, öğün detayı,
-  /// tarama sonucu) sabit değerle birebir aynı — bu 4 çağrı noktası
-  /// davranış değişikliği görmez. Onboarding önizlemesi kendi sayfa
-  /// gutter'ını zaten uyguladığı için sıfır yatay padding geçer.
+  /// Outer padding when rendered as a standalone card. Ignored when [embedded]
+  /// is true.
   final EdgeInsets padding;
+
+  /// When true, omits the outer card container so the gauge can sit directly
+  /// inside another surface such as the product hero card.
+  final bool embedded;
+
+  /// Optional concise 1-line summary shown under the score (e.g. "NOVA 2 · 4g sugar").
+  final String? summary;
 
   const HealthScoreBar({
     super.key,
     required this.hpScore,
-    this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+    this.padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    this.embedded = false,
+    this.summary,
   });
 
   @override
@@ -43,133 +38,197 @@ class HealthScoreBar extends StatelessWidget {
     final gaugeLevel = ScoreConstants.hpToGauge(hpScore!);
     final gaugeColor = colors.gaugeColor(gaugeLevel);
     final shown = ScoreConstants.displayHp(hpScore!);
+    final verdict = switch (gaugeLevel) {
+      1 => l10n.gaugeExcellent,
+      2 => l10n.gaugeGood,
+      3 => l10n.gaugeModerate,
+      4 => l10n.gaugeWeak,
+      _ => l10n.gaugeBad,
+    };
 
-    return Padding(
-      padding: padding,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: colors.surfaceCard,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Label
-            Text(
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (!embedded) ...[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
               '${l10n.healthScoreLabel} ${l10n.hundredIsBest}',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: colors.textMuted,
-                letterSpacing: 1.0,
+                letterSpacing: 0.9,
               ),
             ),
-
-            const SizedBox(height: 12),
-
-            // Score display
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Text(
-                  '$shown',
-                  style: TextStyle(
-                    fontSize: 42,
-                    fontWeight: FontWeight.w800,
-                    color: gaugeColor,
-                    height: 1.0,
+          ),
+          const SizedBox(height: 6),
+        ],
+        SizedBox(
+          height: 112,
+          width: 230,
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _ArcGaugePainter(
+                    score: shown.toDouble(),
+                    activeColor: gaugeColor,
+                    trackColor: colors.border.withValues(alpha: 0.35),
                   ),
                 ),
-                Text(
-                  '/100',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textMuted,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // Arrow over the exact score, 0 at the start edge.
-            Align(
-              alignment: AlignmentDirectional(shown / 50 - 1, 0),
-              child: Icon(
-                Icons.arrow_drop_down_rounded,
-                size: 16,
-                color: gaugeColor,
               ),
-            ),
-
-            // Band bar, worst → best; segment widths follow the thresholds.
-            SizedBox(
-              height: 12,
-              child: Row(
-                children: List.generate(_bands.length, (index) {
-                  final (level, width) = _bands[index];
-                  final segmentColor = colors.gaugeColor(level);
-                  final isFirst = index == 0;
-                  final isLast = index == _bands.length - 1;
-
-                  return Expanded(
-                    flex: width,
-                    child: Padding(
-                      padding: EdgeInsetsDirectional.only(
-                        start: isFirst ? 0 : 1.5,
-                        end: isLast ? 0 : 1.5,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            '$shown',
+                            style: TextStyle(
+                              fontSize: 38,
+                              fontWeight: FontWeight.w800,
+                              color: colors.textPrimary,
+                              height: 1.0,
+                              letterSpacing: -1.0,
+                            ),
+                          ),
+                          Text(
+                            '/100',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: colors.textMuted,
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Container(
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
-                          color: level == gaugeLevel
-                              ? segmentColor
-                              : segmentColor.withValues(alpha: 0.25),
-                          borderRadius: BorderRadiusDirectional.horizontal(
-                            start: isFirst
-                                ? const Radius.circular(6)
-                                : Radius.zero,
-                            end: isLast
-                                ? const Radius.circular(6)
-                                : Radius.zero,
+                          color: gaugeColor.withValues(alpha: 0.16),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          verdict,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: gaugeColor,
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    ],
+                  ),
+                ),
               ),
-            ),
-
-            const SizedBox(height: 6),
-
-            // Worst / Best labels
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.worstScore,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textMuted,
-                  ),
-                ),
-                Text(
-                  l10n.bestScore,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textMuted,
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
+        if (summary != null && summary!.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text(
+            summary!,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: colors.textSecondary,
+            ),
+          ),
+        ],
+      ],
+    );
+
+    if (embedded) return content;
+
+    return Padding(
+      padding: padding,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
+        decoration: cozyCardDecoration(context),
+        child: content,
       ),
     );
   }
+}
+
+class _ArcGaugePainter extends CustomPainter {
+  final double score; // 0..100
+  final Color activeColor;
+  final Color trackColor;
+
+  _ArcGaugePainter({
+    required this.score,
+    required this.activeColor,
+    required this.trackColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const segmentCount = 5;
+    const strokeWidth = 10.0;
+    const gapAngle = 0.055; // radians between segments
+    const startAngle = math.pi * 0.96;
+    const totalSweep = math.pi * 1.08;
+    final segmentSweep =
+        (totalSweep - gapAngle * (segmentCount - 1)) / segmentCount;
+
+    final radius = math.min(size.width / 2, size.height) - strokeWidth;
+    final center = Offset(size.width / 2, size.height - strokeWidth * 0.5);
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    final trackPaint = Paint()
+      ..color = trackColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    final activePaint = Paint()
+      ..color = activeColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    final progress = (score / 100.0).clamp(0.0, 1.0);
+    final filledSegments = progress * segmentCount;
+
+    for (var i = 0; i < segmentCount; i++) {
+      final segStart = startAngle + i * (segmentSweep + gapAngle);
+      canvas.drawArc(rect, segStart, segmentSweep, false, trackPaint);
+
+      final segFill = (filledSegments - i).clamp(0.0, 1.0);
+      if (segFill > 0.01) {
+        canvas.drawArc(
+          rect,
+          segStart,
+          segmentSweep * segFill,
+          false,
+          activePaint,
+        );
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ArcGaugePainter oldDelegate) =>
+      oldDelegate.score != score ||
+      oldDelegate.activeColor != activeColor ||
+      oldDelegate.trackColor != trackColor;
 }

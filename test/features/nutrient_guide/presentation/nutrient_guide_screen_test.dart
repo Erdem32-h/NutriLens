@@ -133,12 +133,14 @@ void main() {
     expect(find.text('İçerik yüklenemedi'), findsNothing);
   });
 
-  testWidgets('locale ar shows English names and English UI text', (t) async {
+  testWidgets('locale ar shows Arabic UI text and falls back to English names', (
+    t,
+  ) async {
     await t.pumpWidget(_app(provider: _ok(), locale: 'ar'));
     await t.pumpAndSettle();
 
     expect(find.text('Vitamin C'), findsOneWidget);
-    expect(find.text('Vitamins'), findsOneWidget);
+    expect(find.text('الفيتامينات'), findsOneWidget);
   });
 
   testWidgets('tapping a row opens the detail route for that id', (t) async {

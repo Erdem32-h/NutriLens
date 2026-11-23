@@ -123,6 +123,7 @@ class _RamadanOfferCardState extends ConsumerState<RamadanOfferCard> {
           source: pick.source,
           copy: ramadanCopy(l10n),
           waterCopy: waterReminderCopy(l10n),
+          confirmExactAlarm: () => showExactAlarmExplanationDialog(context),
         );
     // The card disappears once enabled, so point at where the settings
     // live now (Profile › Ramazan, visible from the offer window on).

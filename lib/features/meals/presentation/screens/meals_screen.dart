@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,10 +61,8 @@ class MealsScreen extends ConsumerWidget {
                 subtitle: context.l10n.mealsSubtitle,
               ),
             ),
-            // "Today" first on purpose: new guests land on this tab, and
-            // water is the habit that brings people back — further down,
-            // most never scrolled to it. Water and meals sit together so
-            // the day's progress reads at a glance.
+            // "Today" first: water sits full-width on top (highest-frequency
+            // habit), followed immediately by today's meal/calorie summary.
             const SliverToBoxAdapter(child: _TodayHeading()),
             const SliverToBoxAdapter(
               child: Padding(
@@ -73,7 +72,7 @@ class MealsScreen extends ConsumerWidget {
             ),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 18),
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 16),
                 child: _DailyTargetSummary(),
               ),
             ),
@@ -431,15 +430,8 @@ class _TodayHeading extends StatelessWidget {
   }
 }
 
-/// Günün toplam alınan kalorisi / günlük hedef özeti + ilerleme çubuğu.
-/// Öğün listesinin başlığının üstünde yaşar — [_CalorieInsights]'taki
-/// grafik hangi dönem sekmesinde olursa olsun (Gün/Hafta/Ay/Yıl) bu satır
-/// her zaman BUGÜNÜ gösterir; [todayCalorieTotalProvider] bilerek grafiğin
-/// caloriePeriodProvider/calorieOffsetProvider durumundan bağımsızdır.
-///
-/// Metrics kaydı yoksa [dailyCalorieTargetProvider] varsayılan 2000 kcal'e
-/// düşer — bu widget o durumda da çökmeden, aynı satırı 2000 hedefiyle
-/// gösterir (bkz. task brief'teki global kısıt).
+/// Günün toplam alınan kalorisi / günlük hedef özeti — sol dairesel ilerleme
+/// halkası + sağ özet ve hızlı tarama aksiyonu.
 class _DailyTargetSummary extends ConsumerWidget {
   const _DailyTargetSummary();
 
@@ -462,96 +454,191 @@ class _DailyTargetSummary extends ConsumerWidget {
         final consumed = total.round();
         final over = consumed - target;
         final progress = target <= 0 ? 0.0 : (total / target).clamp(0.0, 1.0);
+        final ringColor = over > 0 ? colors.error : colors.primary;
 
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: cozyCardDecoration(
-            context,
-          ).copyWith(color: colors.cozy.mint.surface),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: cozyCardDecoration(context),
+              child: Row(
                 children: [
-                  Icon(Icons.restaurant_rounded, color: colors.cozy.mint.ink),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      l10n.todayMealCount(mealsToday),
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
-                      ),
+                  SizedBox(
+                    width: 72,
+                    height: 72,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox.expand(
+                          child: CustomPaint(
+                            painter: _CalorieRingPainter(
+                              progress: progress,
+                              activeColor: ringColor,
+                              trackColor: colors.border.withValues(alpha: 0.35),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              '$consumed',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: colors.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    l10n.dailyCalorieSummary(consumed, target),
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: colors.textSecondary,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                l10n.todayMealCount(mealsToday),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: ringColor.withValues(alpha: 0.14),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                l10n.dailyCalorieSummary(consumed, target),
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: ringColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (over > 0) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            l10n.dailyCalorieOver(over),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: colors.error,
+                            ),
+                          ),
+                        ],
+                        if (mealsToday == 0 && hasEarlierMeals) ...[
+                          const SizedBox(height: 8),
+                          FilledButton.tonalIcon(
+                            key: const ValueKey('today-add-meal'),
+                            style: FilledButton.styleFrom(
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                            ),
+                            onPressed: () {
+                              ref
+                                  .read(pendingScannerModeProvider.notifier)
+                                  .state = 1;
+                              context.goNamed(RouteNames.scanner);
+                            },
+                            icon: const Icon(
+                              Icons.center_focus_strong_rounded,
+                              size: 16,
+                            ),
+                            label: Text(l10n.scanFood),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(999),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 8,
-                  backgroundColor: colors.border,
-                  color: over > 0 ? colors.error : colors.primary,
-                ),
-              ),
-              if (over > 0) ...[
-                const SizedBox(height: 6),
-                Text(
-                  l10n.dailyCalorieOver(over),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: colors.error,
-                  ),
-                ),
-              ],
-              // A returning user with nothing logged today gets the way in
-              // right here; a brand-new user already sees the same button
-              // in the empty state below, so it isn't shown twice.
-              if (mealsToday == 0 && hasEarlierMeals) ...[
-                const SizedBox(height: 10),
-                FilledButton.tonalIcon(
-                  key: const ValueKey('today-add-meal'),
-                  onPressed: () {
-                    ref.read(pendingScannerModeProvider.notifier).state = 1;
-                    context.goNamed(RouteNames.scanner);
-                  },
-                  icon: const Icon(Icons.center_focus_strong_rounded),
-                  label: Text(l10n.scanFood),
-                ),
-              ],
-              const SizedBox(height: 6),
-              // Metrics girilmemiş kullanıcılar için hedef sessizce
-              // varsayılan 2000 kcal'e düşer (bkz. sınıf dokstring'i) — bu
-              // satır her zaman görünür, çünkü gösterilen sayı ne olursa
-              // olsun (kişisel veya varsayılan) tıbbi tavsiye değil, tahmini
-              // bir referanstır. Sessiz/ikincil renk: bir uyarı değil, bir
-              // niteleyici.
-              Text(
+            ),
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Text(
                 l10n.metricsMedicalDisclaimer,
                 style: TextStyle(fontSize: 11, color: colors.textMuted),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
-      // İlk yüklemede/hata durumunda sessizce boş bırak — bu satırın kendi
-      // spinner'ı, üstündeki grafik bölümünün spinner'ıyla aynı anda çakışıp
-      // ekranı zıplatmasın (bkz. calorieChartDataProvider.skipLoadingOnReload
-      // yorumu, aynı gerekçe).
       loading: () => const SizedBox.shrink(),
       error: (error, stackTrace) => const SizedBox.shrink(),
     );
   }
+}
+
+class _CalorieRingPainter extends CustomPainter {
+  final double progress;
+  final Color activeColor;
+  final Color trackColor;
+
+  _CalorieRingPainter({
+    required this.progress,
+    required this.activeColor,
+    required this.trackColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const strokeWidth = 8.0;
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (math.min(size.width, size.height) - strokeWidth) / 2;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    final trackPaint = Paint()
+      ..color = trackColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+
+    canvas.drawCircle(center, radius, trackPaint);
+
+    if (progress > 0.001) {
+      final activePaint = Paint()
+        ..color = activeColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round;
+
+      canvas.drawArc(
+        rect,
+        -math.pi / 2,
+        math.pi * 2 * progress.clamp(0.0, 1.0),
+        false,
+        activePaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _CalorieRingPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.activeColor != activeColor ||
+      oldDelegate.trackColor != trackColor;
 }

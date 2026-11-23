@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/extensions/l10n_extension.dart';
@@ -13,10 +14,14 @@ Future<void> addWaterGlass(
   WidgetRef ref, {
   required String source,
 }) async {
+  HapticFeedback.lightImpact();
   final l10n = context.l10n;
   final messenger = ScaffoldMessenger.of(context);
   final controller = ref.read(waterControllerProvider);
-  await controller.addGlass(waterReminderCopy(l10n), source: source);
+  final day = await controller.addGlass(waterReminderCopy(l10n), source: source);
+  if (day != null && day.glasses == day.goalGlasses) {
+    HapticFeedback.mediumImpact();
+  }
 
   // One-shot discovery: the switch lives on the water screen, which most
   // users never open before the habit forms.
@@ -53,6 +58,7 @@ Future<void> addWaterGlass(
 }
 
 Future<void> removeWaterGlass(BuildContext context, WidgetRef ref) async {
+  HapticFeedback.selectionClick();
   await ref
       .read(waterControllerProvider)
       .removeGlass(waterReminderCopy(context.l10n));

@@ -38,6 +38,8 @@ class NutriLensHomeWidgetProvider : AppWidgetProvider() {
         var proteinPct = 0
         var carbPct = 0
         var fatPct = 0
+        var waterGlasses = 0
+        var waterGoal = 10
         try {
             val prefs = HomeWidgetPlugin.getData(context)
             kcal = prefs.getInt("today_kcal", 0)
@@ -45,6 +47,9 @@ class NutriLensHomeWidgetProvider : AppWidgetProvider() {
             proteinPct = prefs.getInt("today_protein_pct", 0)
             carbPct = prefs.getInt("today_carb_pct", 0)
             fatPct = prefs.getInt("today_fat_pct", 0)
+            waterGlasses = prefs.getInt("today_water_glasses", 0)
+            val savedGoal = prefs.getInt("today_water_goal", 10)
+            if (savedGoal > 0) waterGoal = savedGoal
         } catch (t: Throwable) {
             Log.e(TAG, "Failed reading widget data, falling back to zeros", t)
         }
@@ -60,6 +65,10 @@ class NutriLensHomeWidgetProvider : AppWidgetProvider() {
                     R.id.widget_meal_count,
                     "$mealCount öğün · bugün"
                 )
+                views.setTextViewText(
+                    R.id.widget_water_status,
+                    "💧 $waterGlasses/$waterGoal bardak"
+                )
                 views.setTextViewText(R.id.widget_protein_label, "P %$proteinPct")
                 views.setProgressBar(R.id.widget_protein_bar, 100, proteinPct, false)
                 views.setTextViewText(R.id.widget_carb_label, "K %$carbPct")
@@ -72,8 +81,14 @@ class NutriLensHomeWidgetProvider : AppWidgetProvider() {
                     MainActivity::class.java,
                     Uri.parse("nutrilens://widget/scan")
                 )
+                val waterIntent: PendingIntent = HomeWidgetLaunchIntent.getActivity(
+                    context,
+                    MainActivity::class.java,
+                    Uri.parse("nutrilens://widget/water-add")
+                )
                 views.setOnClickPendingIntent(R.id.widget_root, scanIntent)
                 views.setOnClickPendingIntent(R.id.widget_scan_button, scanIntent)
+                views.setOnClickPendingIntent(R.id.widget_water_button, waterIntent)
 
                 appWidgetManager.updateAppWidget(widgetId, views)
             } catch (t: Throwable) {

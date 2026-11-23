@@ -40,7 +40,7 @@ class WaterGlasses extends ConsumerWidget {
             showPlus: i == glasses,
             width: glassWidth,
             water: water,
-            outline: colors.border,
+            outline: colors.cozy.sky.ink.withValues(alpha: 0.45),
             plus: colors.cozy.sky.ink,
             semanticLabel: i == glasses ? l10n.waterAddGlass : null,
             onTap: i == glasses
@@ -81,13 +81,25 @@ class _Glass extends StatelessWidget {
     final size = Size(width, width * 1.3);
     final glass = TweenAnimationBuilder<double>(
       tween: Tween(end: filled ? 1 : 0),
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOutCubic,
-      builder: (context, level, child) => CustomPaint(
-        size: size,
-        painter: _GlassPainter(level: level, water: water, outline: outline),
-        child: child,
-      ),
+      duration: const Duration(milliseconds: 340),
+      curve: Curves.easeOutBack,
+      builder: (context, level, child) {
+        // Subtle pop when filling so each logged glass feels tactile.
+        final clamped = level.clamp(0.0, 1.0);
+        final bounce = 1.0 + (level - clamped).clamp(0.0, 0.14);
+        return Transform.scale(
+          scale: bounce,
+          child: CustomPaint(
+            size: size,
+            painter: _GlassPainter(
+              level: clamped,
+              water: water,
+              outline: outline,
+            ),
+            child: child,
+          ),
+        );
+      },
       child: SizedBox.fromSize(
         size: size,
         child: showPlus

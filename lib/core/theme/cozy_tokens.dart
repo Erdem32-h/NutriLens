@@ -99,7 +99,7 @@ class CozyPalette {
     peach: CozyTint(surface: Color(0xFFFDF0DE), ink: Color(0xFFD97F13)),
     rose: CozyTint(surface: Color(0xFFFCE8EE), ink: Color(0xFFDB4E85)),
     headerGlow: LinearGradient(
-      colors: [Color(0xFFFBE9F0), Color(0xFFEFEAFB), Color(0x00F8FAFC)],
+      colors: [Color(0xFFFBE9F0), Color(0xFFEFEAFB), Color(0x00F8F7F4)],
       stops: [0, 0.45, 1],
       begin: Alignment.topRight,
       end: Alignment.bottomLeft,
@@ -119,12 +119,12 @@ class CozyPalette {
     peach: CozyTint(surface: Color(0xFF2E2416), ink: Color(0xFFFBBF24)),
     rose: CozyTint(surface: Color(0xFF301A24), ink: Color(0xFFF472B6)),
     headerGlow: LinearGradient(
-      colors: [Color(0xFF1C1730), Color(0xFF12201A), Color(0x00070D07)],
+      colors: [Color(0xFF1E192E), Color(0xFF14211B), Color(0x000E1210)],
       stops: [0, 0.45, 1],
       begin: Alignment.topRight,
       end: Alignment.bottomLeft,
     ),
-    floating: Color(0xFF18231A),
+    floating: Color(0xFF1B221E),
     bodyOnTint: Color(0xFFCBD5CD),
   );
 }

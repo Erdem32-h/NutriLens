@@ -23,6 +23,7 @@ typedef RamadanLocationPick = ({
 Future<RamadanLocationPick?> showCityPicker(BuildContext context) {
   return showModalBottomSheet<RamadanLocationPick>(
     context: context,
+    useRootNavigator: true,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (_) => const CityPickerSheet(),
@@ -86,93 +87,102 @@ class _CityPickerSheetState extends ConsumerState<CityPickerSheet> {
               .where((c) => foldTurkish(c.name).contains(query))
               .toList();
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.7,
-      minChildSize: 0.4,
-      maxChildSize: 0.92,
-      expand: false,
-      builder: (ctx, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.surfaceCard,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            children: [
-              Container(
-                width: 36,
-                height: 4,
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: colors.textMuted.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
+    final viewInsetsBottom = MediaQuery.viewInsetsOf(context).bottom;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: viewInsetsBottom),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.4,
+        maxChildSize: 0.92,
+        expand: false,
+        builder: (ctx, scrollController) {
+          return Container(
+            decoration: BoxDecoration(
+              color: colors.cozy.floating,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (value) => setState(() => _query = value),
-                  decoration: InputDecoration(
-                    hintText: l10n.ramadanSearchCity,
-                    prefixIcon: const Icon(Icons.search_rounded),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: _locating ? null : _useMyLocation,
-                    icon: _locating
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.my_location_rounded),
-                    label: Text(l10n.ramadanUseMyLocation),
-                  ),
-                ),
-              ),
-              if (_locationFailed)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                  child: Text(
-                    l10n.ramadanLocationFailed,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: colors.error,
+            ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 4,
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: colors.textMuted.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 24),
-                  itemCount: cities.length,
-                  itemBuilder: (_, i) {
-                    final city = cities[i];
-                    return ListTile(
-                      title: Text(city.name),
-                      onTap: () => Navigator.pop(context, (
-                        lat: city.lat,
-                        lng: city.lng,
-                        label: city.name,
-                        plate: city.plate,
-                        source: 'city',
-                      )),
-                    );
-                  },
-                ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) => setState(() => _query = value),
+                      decoration: InputDecoration(
+                        hintText: l10n.ramadanSearchCity,
+                        prefixIcon: const Icon(Icons.search_rounded),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _locating ? null : _useMyLocation,
+                        icon: _locating
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.my_location_rounded),
+                        label: Text(l10n.ramadanUseMyLocation),
+                      ),
+                    ),
+                  ),
+                  if (_locationFailed)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                      child: Text(
+                        l10n.ramadanLocationFailed,
+                        style: TextStyle(fontSize: 13, color: colors.error),
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: scrollController,
+                      padding: const EdgeInsets.fromLTRB(8, 4, 8, 24),
+                      itemCount: cities.length,
+                      itemBuilder: (_, i) {
+                        final city = cities[i];
+                        return ListTile(
+                          title: Text(city.name),
+                          onTap: () => Navigator.pop(context, (
+                            lat: city.lat,
+                            lng: city.lng,
+                            label: city.name,
+                            plate: city.plate,
+                            source: 'city',
+                          )),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      },
+            ),
+          );
+        },
+      ),
     );
   }
 }

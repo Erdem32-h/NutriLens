@@ -2,7 +2,7 @@
   "@@locale": "pt",
   "appTitle": "NutriLens",
   "scanner": "Scanner",
-  "history": "Histórico de Produtos",
+  "history": "Histórico",
   "favorites": "Favoritos",
   "profile": "Perfil",
   "login": "Entrar",
@@ -982,21 +982,21 @@
   "reportProductAlready": "Você já denunciou este produto.",
   "reportProductUnavailable": "Este produto vem de um banco de dados externo; fale conosco pela página de suporte para corrigi-lo.",
   "reportProductFailed": "Não foi possível enviar a denúncia. Tente novamente.",
-  "nutrientGuideTitle": "Nutrient Guide",
-  "nutrientGuideSubtitle": "Vitamins, minerals and amino acids",
-  "nutrientTabVitamins": "Vitamins",
-  "nutrientTabMinerals": "Minerals",
-  "nutrientTabAminoAcids": "Amino acids",
-  "nutrientSearchHint": "Search nutrients",
-  "nutrientNoResults": "No results found",
-  "nutrientSectionFunction": "What it does",
-  "nutrientSectionDeficiency": "If you get too little",
-  "nutrientSectionExcess": "If you get too much",
-  "nutrientSectionSources": "Where to find it",
-  "nutrientSectionDailyNeed": "Daily need (adult)",
-  "nutrientUpperLimitLabel": "Upper limit",
-  "nutrientDisclaimer": "This information is for general education only and is not medical advice. See a doctor for health concerns.",
-  "nutrientSourceLabel": "Source: {source}",
+  "nutrientGuideTitle": "Guia de Nutrientes",
+  "nutrientGuideSubtitle": "Vitaminas, minerais e aminoácidos",
+  "nutrientTabVitamins": "Vitaminas",
+  "nutrientTabMinerals": "Minerais",
+  "nutrientTabAminoAcids": "Aminoácidos",
+  "nutrientSearchHint": "Buscar nutrientes",
+  "nutrientNoResults": "Nenhum resultado encontrado",
+  "nutrientSectionFunction": "Para que serve",
+  "nutrientSectionDeficiency": "Se faltar",
+  "nutrientSectionExcess": "Em excesso",
+  "nutrientSectionSources": "Onde encontrar",
+  "nutrientSectionDailyNeed": "Necessidade diária (adulto)",
+  "nutrientUpperLimitLabel": "Limite máximo",
+  "nutrientDisclaimer": "Estas informações são apenas para fins educativos gerais e não substituem aconselhamento médico. Consulte um médico para questões de saúde.",
+  "nutrientSourceLabel": "Fonte: {source}",
   "@nutrientSourceLabel": {
     "placeholders": {
       "source": {
@@ -1004,7 +1004,9 @@
       }
     }
   },
-  "nutrientLoadError": "Could not load content",
-  "nutrientRetry": "Try again",
-  "nutrientNotFound": "Nutrient not found"
+  "nutrientLoadError": "Não foi possível carregar o conteúdo",
+  "nutrientRetry": "Tentar novamente",
+  "nutrientNotFound": "Nutriente não encontrado",
+  "exactAlarmTitle": "Horário exato para sahur e iftar",
+  "exactAlarmBody": "O Android 14+ exige a permissão \"Alarmes e lembretes\" para tocar na hora certa. Se preferir pular, os lembretes ainda chegarão, mas podem atrasar."
 }

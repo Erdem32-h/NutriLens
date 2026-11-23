@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanner => 'Scanner';
 
   @override
-  String get history => 'Product History';
+  String get history => 'History';
 
   @override
   String get favorites => 'Favorites';
@@ -2413,4 +2413,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nutrientNotFound => 'Nutrient not found';
+
+  @override
+  String get exactAlarmTitle => 'Exact timing for sahur & iftar';
+
+  @override
+  String get exactAlarmBody =>
+      'Android 14+ requires the \"Alarms & reminders\" permission so sahur and iftar reminders fire on time. If you skip this, reminders will still arrive but may be delayed.';
 }

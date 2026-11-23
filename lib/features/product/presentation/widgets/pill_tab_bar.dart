@@ -20,12 +20,12 @@ class PillTabBar extends StatelessWidget {
     final labels = [l10n.tabHealth, l10n.tabNutrient, l10n.tabAlternative];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        padding: const EdgeInsets.all(6),
+        padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           color: colors.surfaceCard,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
         ),
         child: Row(
           children: List.generate(labels.length, (index) {
@@ -33,23 +33,19 @@ class PillTabBar extends StatelessWidget {
             return Expanded(
               child: GestureDetector(
                 onTap: () => onTabChanged(index),
+                behavior: HitTestBehavior.opaque,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
+                  curve: Curves.easeOutCubic,
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
-                    color: isActive ? colors.surface : Colors.transparent,
-                    borderRadius: BorderRadius.circular(14),
-                    border: isActive
-                        ? Border(
-                            bottom: BorderSide(color: colors.primary, width: 2),
-                          )
-                        : null,
+                    color: isActive ? colors.cozy.floating : Colors.transparent,
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: isActive
                         ? [
                             BoxShadow(
-                              color: colors.primary.withValues(alpha: 0.08),
-                              blurRadius: 8,
+                              color: colors.textPrimary.withValues(alpha: 0.06),
+                              blurRadius: 10,
                               offset: const Offset(0, 2),
                             ),
                           ]
@@ -59,10 +55,9 @@ class PillTabBar extends StatelessWidget {
                     labels[index],
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                      color: isActive ? colors.primary : colors.textMuted,
-                      letterSpacing: 0.5,
+                      color: isActive ? colors.textPrimary : colors.textMuted,
                     ),
                   ),
                 ),

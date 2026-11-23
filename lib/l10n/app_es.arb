@@ -2,7 +2,7 @@
   "@@locale": "es",
   "appTitle": "NutriLens",
   "scanner": "Escáner",
-  "history": "Historial de Productos",
+  "history": "Historial",
   "favorites": "Favoritos",
   "profile": "Perfil",
   "login": "Iniciar Sesión",
@@ -982,21 +982,21 @@
   "reportProductAlready": "Ya reportaste este producto.",
   "reportProductUnavailable": "Este producto proviene de una base de datos externa; puedes escribirnos desde nuestra página de soporte para corregirlo.",
   "reportProductFailed": "No se pudo enviar el reporte. Inténtalo de nuevo.",
-  "nutrientGuideTitle": "Nutrient Guide",
-  "nutrientGuideSubtitle": "Vitamins, minerals and amino acids",
-  "nutrientTabVitamins": "Vitamins",
-  "nutrientTabMinerals": "Minerals",
-  "nutrientTabAminoAcids": "Amino acids",
-  "nutrientSearchHint": "Search nutrients",
-  "nutrientNoResults": "No results found",
-  "nutrientSectionFunction": "What it does",
-  "nutrientSectionDeficiency": "If you get too little",
-  "nutrientSectionExcess": "If you get too much",
-  "nutrientSectionSources": "Where to find it",
-  "nutrientSectionDailyNeed": "Daily need (adult)",
-  "nutrientUpperLimitLabel": "Upper limit",
-  "nutrientDisclaimer": "This information is for general education only and is not medical advice. See a doctor for health concerns.",
-  "nutrientSourceLabel": "Source: {source}",
+  "nutrientGuideTitle": "Guía de Nutrientes",
+  "nutrientGuideSubtitle": "Vitaminas, minerales y aminoácidos",
+  "nutrientTabVitamins": "Vitaminas",
+  "nutrientTabMinerals": "Minerales",
+  "nutrientTabAminoAcids": "Aminoácidos",
+  "nutrientSearchHint": "Buscar nutrientes",
+  "nutrientNoResults": "No se encontraron resultados",
+  "nutrientSectionFunction": "Para qué sirve",
+  "nutrientSectionDeficiency": "Si falta",
+  "nutrientSectionExcess": "Si sobra",
+  "nutrientSectionSources": "Dónde encontrarlo",
+  "nutrientSectionDailyNeed": "Necesidad diaria (adulto)",
+  "nutrientUpperLimitLabel": "Límite máximo",
+  "nutrientDisclaimer": "Esta información es solo para fines educativos generales y no constituye consejo médico. Consulte a un médico por problemas de salud.",
+  "nutrientSourceLabel": "Fuente: {source}",
   "@nutrientSourceLabel": {
     "placeholders": {
       "source": {
@@ -1004,7 +1004,9 @@
       }
     }
   },
-  "nutrientLoadError": "Could not load content",
-  "nutrientRetry": "Try again",
-  "nutrientNotFound": "Nutrient not found"
+  "nutrientLoadError": "No se pudo cargar el contenido",
+  "nutrientRetry": "Intentar de nuevo",
+  "nutrientNotFound": "Nutriente no encontrado",
+  "exactAlarmTitle": "Recordatorios exactos de sahur e iftar",
+  "exactAlarmBody": "Android 14+ requiere el permiso de \"Alarmas y recordatorios\" para que los avisos suenen a tiempo. Si lo omites, los avisos seguirán llegando pero podrían retrasarse."
 }

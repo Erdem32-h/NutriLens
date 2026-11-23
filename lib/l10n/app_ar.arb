@@ -2,7 +2,7 @@
   "@@locale": "ar",
   "appTitle": "NutriLens",
   "scanner": "الماسح الضوئي",
-  "history": "سجل المنتجات",
+  "history": "السجل",
   "favorites": "المفضلة",
   "profile": "الملف الشخصي",
   "login": "تسجيل الدخول",
@@ -982,21 +982,21 @@
   "reportProductAlready": "لقد أبلغت عن هذا المنتج من قبل.",
   "reportProductUnavailable": "هذا المنتج من قاعدة بيانات خارجية؛ يمكنك التواصل معنا عبر صفحة الدعم لتصحيحه.",
   "reportProductFailed": "تعذر إرسال البلاغ. يرجى المحاولة مرة أخرى.",
-  "nutrientGuideTitle": "Nutrient Guide",
-  "nutrientGuideSubtitle": "Vitamins, minerals and amino acids",
-  "nutrientTabVitamins": "Vitamins",
-  "nutrientTabMinerals": "Minerals",
-  "nutrientTabAminoAcids": "Amino acids",
-  "nutrientSearchHint": "Search nutrients",
-  "nutrientNoResults": "No results found",
-  "nutrientSectionFunction": "What it does",
-  "nutrientSectionDeficiency": "If you get too little",
-  "nutrientSectionExcess": "If you get too much",
-  "nutrientSectionSources": "Where to find it",
-  "nutrientSectionDailyNeed": "Daily need (adult)",
-  "nutrientUpperLimitLabel": "Upper limit",
-  "nutrientDisclaimer": "This information is for general education only and is not medical advice. See a doctor for health concerns.",
-  "nutrientSourceLabel": "Source: {source}",
+  "nutrientGuideTitle": "دليل العناصر الغذائية",
+  "nutrientGuideSubtitle": "الفيتامينات والمعادن والأحماض الأمينية",
+  "nutrientTabVitamins": "الفيتامينات",
+  "nutrientTabMinerals": "المعادن",
+  "nutrientTabAminoAcids": "الأحماض الأمينية",
+  "nutrientSearchHint": "ابحث عن عنصر غذائي",
+  "nutrientNoResults": "لم يتم العثور على نتائج",
+  "nutrientSectionFunction": "فائدته للجسم",
+  "nutrientSectionDeficiency": "عند النقص",
+  "nutrientSectionExcess": "عند الزيادة",
+  "nutrientSectionSources": "مصادره الغذائية",
+  "nutrientSectionDailyNeed": "الاحتياج اليومي (للبالغين)",
+  "nutrientUpperLimitLabel": "الحد الأقصى",
+  "nutrientDisclaimer": "هذه المعلومات للتثقيف العام فقط وليست نصيحة طبية. استشر طبيباً لأي مخاوف صحية.",
+  "nutrientSourceLabel": "المصدر: {source}",
   "@nutrientSourceLabel": {
     "placeholders": {
       "source": {
@@ -1004,7 +1004,9 @@
       }
     }
   },
-  "nutrientLoadError": "Could not load content",
-  "nutrientRetry": "Try again",
-  "nutrientNotFound": "Nutrient not found"
+  "nutrientLoadError": "تعذر تحميل المحتوى",
+  "nutrientRetry": "حاول مجدداً",
+  "nutrientNotFound": "العنصر الغذائي غير موجود",
+  "exactAlarmTitle": "تنبيهات السحور والإفطار في وقتها",
+  "exactAlarmBody": "يتطلب Android 14+ إذن \"المنبهات والتذكيرات\" لتصل تنبيهات السحور والإفطار في موعدها الدقيق. يمكنك التخطي لكن قد تتأخر التنبيهات قليلاً."
 }

@@ -58,11 +58,45 @@ NutrientEntity _parseEntry(Map<String, dynamic> m, int index) {
     return v.cast<String>();
   }
 
-  Localized<String> pair(String base) =>
-      Localized(tr: text('${base}_tr'), en: text('${base}_en'));
+  String? optionalText(String key) {
+    final v = m[key];
+    if (v == null) return null;
+    if (v is! String || v.trim().isEmpty) {
+      throw FormatException('nutrient "$label": "$key" must be non-empty text');
+    }
+    return v;
+  }
 
-  Localized<List<String>> listPair(String base) =>
-      Localized(tr: list('${base}_tr'), en: list('${base}_en'));
+  List<String>? optionalList(String key) {
+    final v = m[key];
+    if (v == null) return null;
+    if (v is! List ||
+        v.isEmpty ||
+        v.any((e) => e is! String || e.trim().isEmpty)) {
+      throw FormatException(
+        'nutrient "$label": "$key" must be a non-empty list of text',
+      );
+    }
+    return v.cast<String>();
+  }
+
+  Localized<String> pair(String base) => Localized(
+    tr: text('${base}_tr'),
+    en: text('${base}_en'),
+    es: optionalText('${base}_es'),
+    pt: optionalText('${base}_pt'),
+    ar: optionalText('${base}_ar'),
+    zh: optionalText('${base}_zh'),
+  );
+
+  Localized<List<String>> listPair(String base) => Localized(
+    tr: list('${base}_tr'),
+    en: list('${base}_en'),
+    es: optionalList('${base}_es'),
+    pt: optionalList('${base}_pt'),
+    ar: optionalList('${base}_ar'),
+    zh: optionalList('${base}_zh'),
+  );
 
   final categoryName = text('category');
   final category = switch (categoryName) {

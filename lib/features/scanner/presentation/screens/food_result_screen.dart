@@ -75,6 +75,8 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
   bool _quotaExhausted = false;
   bool _connectionLost = false;
   bool _saving = false;
+  bool _saved = false;
+  bool _discarded = false;
   bool _recalcLoading = false;
 
   /// User-tunable multiplier applied to portion grams + nutrition before
@@ -452,6 +454,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       );
 
       await ref.read(mealLocalDataSourceProvider).saveMeal(meal);
+      _saved = true;
       // Tracked after the local write, which is the authoritative one — the
       // premium cloud push below is best-effort and must not decide whether
       // this counts as activation.
@@ -654,43 +657,61 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     final l10n = context.l10n;
     final colors = context.colors;
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(l10n.aiAnalysisResult),
-        backgroundColor: Colors.transparent,
-        actions: [
-          if (_hasMeal)
-            IconButton(
-              tooltip: l10n.share,
-              icon: const Icon(Icons.ios_share_rounded),
-              onPressed: _shareMeal,
-            ),
-        ],
+    return PopScope(
+      canPop: !_hasMeal || _saved || _discarded || _saving,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop || !_hasMeal || _saved || _discarded || _saving) return;
+        unawaited(_saveMeal());
+      },
+      child: Scaffold(
+        backgroundColor: colors.background,
+        appBar: AppBar(
+          title: Text(l10n.aiAnalysisResult),
+          backgroundColor: Colors.transparent,
+          actions: [
+            if (_hasMeal) ...[
+              IconButton(
+                tooltip: l10n.cancel,
+                icon: const Icon(Icons.close_rounded),
+                onPressed: _saving
+                    ? null
+                    : () {
+                        setState(() => _discarded = true);
+                        context.pop();
+                      },
+              ),
+              IconButton(
+                tooltip: l10n.share,
+                icon: const Icon(Icons.ios_share_rounded),
+                onPressed: _shareMeal,
+              ),
+            ],
+          ],
+        ),
+        body: _loading
+            ? _buildLoading(l10n, colors)
+            : _error != null
+            ? _buildError(l10n, colors)
+            : _result!.isNotFood
+            ? _buildNotFood(l10n, colors)
+            : _buildResult(l10n, colors),
+        // Sticky save CTA. It used to be the last widget of a long scroll —
+        // below the photo, the name/brand fields, the macro grid, the portion
+        // chips, the HP-Score bar and the description — so on a phone it sat
+        // roughly a screen and a half below the fold. The result page reads as
+        // a report, and a reader with no visible next step leaves: in the
+        // funnel 22 devices reached `meal_analysis_succeeded` over 7 days and
+        // exactly 1 reached `meal_added`. As a `bottomNavigationBar` the
+        // Scaffold lays the body out above it, so the action is on screen from
+        // the first frame and nothing gets covered.
+        bottomNavigationBar: _hasMeal
+            ? MealSaveBar(
+                onSave: _saveMeal,
+                saving: _saving,
+                label: l10n.saveToMeals,
+              )
+            : null,
       ),
-      body: _loading
-          ? _buildLoading(l10n, colors)
-          : _error != null
-          ? _buildError(l10n, colors)
-          : _result!.isNotFood
-          ? _buildNotFood(l10n, colors)
-          : _buildResult(l10n, colors),
-      // Sticky save CTA. It used to be the last widget of a long scroll —
-      // below the photo, the name/brand fields, the macro grid, the portion
-      // chips, the HP-Score bar and the description — so on a phone it sat
-      // roughly a screen and a half below the fold. The result page reads as
-      // a report, and a reader with no visible next step leaves: in the
-      // funnel 22 devices reached `meal_analysis_succeeded` over 7 days and
-      // exactly 1 reached `meal_added`. As a `bottomNavigationBar` the
-      // Scaffold lays the body out above it, so the action is on screen from
-      // the first frame and nothing gets covered.
-      bottomNavigationBar: _hasMeal
-          ? MealSaveBar(
-              onSave: _saveMeal,
-              saving: _saving,
-              label: l10n.saveToMeals,
-            )
-          : null,
     );
   }
 

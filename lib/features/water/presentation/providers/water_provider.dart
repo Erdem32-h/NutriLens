@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/analytics/analytics_event.dart';
 import '../../../../core/analytics/analytics_provider.dart';
 import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/services/home_widget_service.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../product/presentation/providers/product_provider.dart';
@@ -134,6 +137,12 @@ class WaterController {
     _ref.invalidate(waterWeekProvider);
   }
 
+  void _refreshHomeWidget(String userId) {
+    unawaited(
+      HomeWidgetService(_ref.read(appDatabaseProvider)).refresh(userId: userId),
+    );
+  }
+
   /// `waterGoalProvider` falls back to the default goal while the profile's
   /// weight is still loading (its `.value` reads null mid-flight). Awaiting
   /// the metrics future first means a write that races the initial load
@@ -167,6 +176,7 @@ class WaterController {
       goal: await _resolvedGoal(),
     );
     _invalidate();
+    _refreshHomeWidget(userId);
     _ref
         .read(analyticsServiceProvider)
         .track(FunnelEvents.waterGlassAdded, props: {'source': source});
@@ -186,6 +196,7 @@ class WaterController {
       goal: await _resolvedGoal(),
     );
     _invalidate();
+    _refreshHomeWidget(userId);
     await rescheduleReminders(copy);
     return day;
   }
@@ -199,6 +210,7 @@ class WaterController {
         day: waterDayKey(_now()),
         goal: await _resolvedGoal(),
       );
+      _refreshHomeWidget(userId);
     }
     _invalidate();
     await rescheduleReminders(copy);

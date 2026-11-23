@@ -49,7 +49,91 @@
       ],
       "daily_need": "700–900 mcg RAE",
       "upper_limit": "3000 mcg RAE",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina A",
+      "alt_name_es": "Retinol",
+      "function_es": "Vitamina liposoluble que favorece la visión (especialmente con poca luz), el sistema inmunitario, la salud de la piel y las mucosas, y el crecimiento celular.",
+      "deficiency_es": [
+        "Ceguera nocturna",
+        "Ojos secos",
+        "Infecciones frecuentes",
+        "Piel seca y escamosa"
+      ],
+      "excess_es": [
+        "Dolor de cabeza y náuseas",
+        "Piel y labios agrietados, caída del cabello",
+        "Daño hepático (con dosis altas prolongadas)",
+        "Riesgo de malformaciones congénitas en el embarazo"
+      ],
+      "sources_es": [
+        "Hígado",
+        "Zanahorias",
+        "Batata (camote)",
+        "Espinacas y verduras de hoja verde"
+      ],
+      "name_pt": "Vitamina A",
+      "alt_name_pt": "Retinol",
+      "function_pt": "Vitamina lipossolúvel que auxilia a visão (especialmente em pouca luz), a imunidade, a saúde da pele e das mucosas e o crescimento celular.",
+      "deficiency_pt": [
+        "Cegueira noturna",
+        "Olhos secos",
+        "Infecções frequentes",
+        "Pele seca e descamativa"
+      ],
+      "excess_pt": [
+        "Dor de cabeça e náusea",
+        "Pele e lábios rachados, queda de cabelo",
+        "Danos ao fígado (altas doses por longo prazo)",
+        "Risco de malformação fetal na gravidez"
+      ],
+      "sources_pt": [
+        "Fígado",
+        "Cenoura",
+        "Batata-doce",
+        "Espinafre e folhas verdes"
+      ],
+      "name_ar": "فيتامين أ",
+      "alt_name_ar": "ريتينول",
+      "function_ar": "فيتامين ذواب في الدهون يدعم الرؤية (خاصة في الإضاءة الخافتة)، والمناعة، وصحة الجلد والأغشية المخاطية، ونمو الخلايا.",
+      "deficiency_ar": [
+        "العمى الليلي",
+        "جفاف العينين",
+        "تكرار العدوى",
+        "جفاف الجلد وتقشره"
+      ],
+      "excess_ar": [
+        "صداع وغثيان",
+        "تشقق الجلد والشفاه، وتساقط الشعر",
+        "تلف الكبد (عند تناول جرعات عالية لفترة طويلة)",
+        "خطر حدوث تشوهات خلقية أثناء الحمل"
+      ],
+      "sources_ar": [
+        "الكبد",
+        "الجزر",
+        "البطاطا الحلوة",
+        "السبانخ والخضروات الورقية"
+      ],
+      "name_zh": "维生素A",
+      "alt_name_zh": "视黄醇",
+      "function_zh": "一种脂溶性维生素，有助于维持视力（尤其是暗光下的视觉）、免疫功能、皮肤和黏膜健康以及细胞生长。",
+      "deficiency_zh": [
+        "夜盲症",
+        "眼干",
+        "易感染",
+        "皮肤干燥脱屑"
+      ],
+      "excess_zh": [
+        "头痛和恶心",
+        "皮肤和嘴唇干裂、脱发",
+        "肝损伤（长期大剂量摄入）",
+        "孕期增加胎儿畸形风险"
+      ],
+      "sources_zh": [
+        "动物肝脏",
+        "胡萝卜",
+        "红薯",
+        "菠菜和绿叶蔬菜"
+      ]
     },
     {
       "id": "vitamin_b1",
@@ -91,7 +175,79 @@
         "Sunflower seeds"
       ],
       "daily_need": "1.1–1.2 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina B1",
+      "alt_name_es": "Tiamina",
+      "function_es": "Vitamina hidrosoluble que ayuda a convertir los carbohidratos en energía y favorece la función nerviosa y muscular.",
+      "deficiency_es": [
+        "Fatiga y pérdida de apetito",
+        "Entumecimiento u hormigueo en manos y pies",
+        "Debilidad muscular",
+        "Beriberi en deficiencia grave"
+      ],
+      "excess_es": [
+        "Sin daños conocidos por fuentes alimentarias; el exceso se elimina en la orina"
+      ],
+      "sources_es": [
+        "Cereales integrales",
+        "Legumbres",
+        "Carne",
+        "Semillas de girasol"
+      ],
+      "name_pt": "Vitamina B1",
+      "alt_name_pt": "Tiamina",
+      "function_pt": "Vitamina hidrossolúvel que ajuda a transformar carboidratos em energia e auxilia o funcionamento dos nervos e músculos.",
+      "deficiency_pt": [
+        "Fadiga e perda de apetite",
+        "Dormência ou formigamento nas mãos e nos pés",
+        "Fraqueza muscular",
+        "Beribéri em deficiência grave"
+      ],
+      "excess_pt": [
+        "Sem danos conhecidos por fontes alimentares; o excesso é eliminado na urina"
+      ],
+      "sources_pt": [
+        "Grãos integrais",
+        "Leguminosas",
+        "Carne",
+        "Sementes de girassol"
+      ],
+      "name_ar": "فيتامين ب1",
+      "alt_name_ar": "ثيامين",
+      "function_ar": "فيتامين ذواب في الماء يساعد على تحويل الكربوهيدرات إلى طاقة ويدعم وظائف الأعصاب والعضلات.",
+      "deficiency_ar": [
+        "إرهاق وفقدان الشهية",
+        "خدر أو تنميل في اليدين والقدمين",
+        "ضعف العضلات",
+        "مرض البري بري في حالات النقص الشديد"
+      ],
+      "excess_ar": [
+        "لا يوجد ضرر معروف من المصادر الغذائية؛ إذ يُطرح الفائض في البول"
+      ],
+      "sources_ar": [
+        "الحبوب الكاملة",
+        "البقوليات",
+        "اللحوم",
+        "بذور دوار الشمس"
+      ],
+      "name_zh": "维生素B1",
+      "alt_name_zh": "硫胺素",
+      "function_zh": "一种水溶性维生素，有助于将碳水化合物转化为能量，并支持神经和肌肉功能。",
+      "deficiency_zh": [
+        "疲劳和食欲不振",
+        "手脚麻木或刺痛",
+        "肌肉无力",
+        "严重缺乏可致脚气病"
+      ],
+      "excess_zh": [
+        "来自食物的过量摄入尚无已知危害；多余部分会随尿液排出"
+      ],
+      "sources_zh": [
+        "全谷物",
+        "豆类",
+        "肉类",
+        "葵花籽"
+      ]
     },
     {
       "id": "vitamin_b2",
@@ -135,7 +291,83 @@
         "Liver"
       ],
       "daily_need": "1.1–1.3 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina B2",
+      "alt_name_es": "Riboflavina",
+      "function_es": "Vitamina hidrosoluble que participa en la producción de energía, el crecimiento celular y la salud de la piel y los ojos.",
+      "deficiency_es": [
+        "Grietas en las comisuras de la boca",
+        "Labios y lengua inflamados o doloridos",
+        "Piel escamosa",
+        "Ojos enrojecidos y sensibilidad a la luz"
+      ],
+      "excess_es": [
+        "Sin daños conocidos por fuentes alimentarias",
+        "El exceso tiñe la orina de amarillo brillante"
+      ],
+      "sources_es": [
+        "Leche y yogur",
+        "Huevos",
+        "Almendras",
+        "Hígado"
+      ],
+      "name_pt": "Vitamina B2",
+      "alt_name_pt": "Riboflavina",
+      "function_pt": "Vitamina hidrossolúvel que auxilia a produção de energia, o crescimento celular e a saúde da pele e dos olhos.",
+      "deficiency_pt": [
+        "Rachaduras nos cantos da boca",
+        "Lábios e língua inflamados",
+        "Pele descamativa",
+        "Olhos vermelhos e sensibilidade à luz"
+      ],
+      "excess_pt": [
+        "Sem danos conhecidos por fontes alimentares",
+        "O excesso deixa a urina com cor amarela intensa"
+      ],
+      "sources_pt": [
+        "Leite e iogurte",
+        "Ovos",
+        "Amêndoas",
+        "Fígado"
+      ],
+      "name_ar": "فيتامين ب2",
+      "alt_name_ar": "ريبوفلافين",
+      "function_ar": "فيتامين ذواب في الماء يدعم إنتاج الطاقة، ونمو الخلايا، وصحة الجلد والعينين.",
+      "deficiency_ar": [
+        "تشققات في زوايا الفم",
+        "التهاب الشفاه واللسان",
+        "تقشر الجلد",
+        "احمرار العينين والحساسية للضوء"
+      ],
+      "excess_ar": [
+        "لا يوجد ضرر معروف من المصادر الغذائية",
+        "الفائض يحول لون البول إلى أصفر ساطع"
+      ],
+      "sources_ar": [
+        "الحليب والزبادي",
+        "البيض",
+        "اللوز",
+        "الكبد"
+      ],
+      "name_zh": "维生素B2",
+      "alt_name_zh": "核黄素",
+      "function_zh": "一种水溶性维生素，有助于能量生成、细胞生长以及皮肤和眼部健康。",
+      "deficiency_zh": [
+        "口角干裂",
+        "唇炎和舌炎",
+        "皮肤脱屑",
+        "眼睛发红及畏光"
+      ],
+      "excess_zh": [
+        "来自食物的过量摄入尚无已知危害",
+        "多余部分会使尿液呈亮黄色"
+      ],
+      "sources_zh": [
+        "牛奶和酸奶",
+        "鸡蛋",
+        "杏仁",
+        "动物肝脏"
+      ]
     },
     {
       "id": "vitamin_b3",
@@ -182,7 +414,87 @@
       ],
       "daily_need": "14–16 mg NE",
       "upper_limit": "35 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina B3",
+      "alt_name_es": "Niacina",
+      "function_es": "Vitamina hidrosoluble que ayuda a liberar energía de los alimentos y favorece el sistema nervioso y la salud de la piel.",
+      "deficiency_es": [
+        "Erupción cutánea sensible al sol",
+        "Problemas digestivos (diarrea)",
+        "Confusión mental",
+        "Pelagra en deficiencia grave"
+      ],
+      "excess_es": [
+        "Enrojecimiento y picazón en cara y cuello (por suplementos)",
+        "Náuseas",
+        "Daño hepático en dosis altas"
+      ],
+      "sources_es": [
+        "Pollo y pavo",
+        "Atún",
+        "Cacahuetes (maní)",
+        "Cereales integrales"
+      ],
+      "name_pt": "Vitamina B3",
+      "alt_name_pt": "Niacina",
+      "function_pt": "Vitamina hidrossolúvel que ajuda a liberar energia dos alimentos e auxilia o sistema nervoso e a saúde da pele.",
+      "deficiency_pt": [
+        "Erupção cutânea sensível ao sol",
+        "Problemas digestivos (diarreia)",
+        "Confusão mental",
+        "Pelagra em deficiência grave"
+      ],
+      "excess_pt": [
+        "Rubor e coceira no rosto e pescoço (por suplementos)",
+        "Náusea",
+        "Danos ao fígado em doses elevadas"
+      ],
+      "sources_pt": [
+        "Frango e peru",
+        "Atum",
+        "Amendoim",
+        "Grãos integrais"
+      ],
+      "name_ar": "فيتامين ب3",
+      "alt_name_ar": "نياسين",
+      "function_ar": "فيتامين ذواب في الماء يساعد على استخلاص الطاقة من الطعام ويدعم الجهاز العصبي وصحة الجلد.",
+      "deficiency_ar": [
+        "طفح جلدي حساس لأشعة الشمس",
+        "مشاكل هضمية (إسهال)",
+        "تشوش ذهني",
+        "مرض البلاغرا في حالات النقص الشديد"
+      ],
+      "excess_ar": [
+        "احمرار وحكة في الوجه والرقبة (من المكملات)",
+        "غثيان",
+        "تلف الكبد عند الجرعات العالية"
+      ],
+      "sources_ar": [
+        "الدجاج والديك الرومي",
+        "التونة",
+        "الفول السوداني",
+        "الحبوب الكاملة"
+      ],
+      "name_zh": "维生素B3",
+      "alt_name_zh": "烟酸",
+      "function_zh": "一种水溶性维生素，有助于从食物中释放能量，并支持神经系统和皮肤健康。",
+      "deficiency_zh": [
+        "光敏性皮疹",
+        "消化问题（腹泻）",
+        "精神混乱",
+        "严重缺乏可致糙皮病"
+      ],
+      "excess_zh": [
+        "面部和颈部潮红、瘙痒（来自补充剂）",
+        "恶心",
+        "大剂量可能导致肝损伤"
+      ],
+      "sources_zh": [
+        "鸡肉和火鸡肉",
+        "金枪鱼",
+        "花生",
+        "全谷物"
+      ]
     },
     {
       "id": "vitamin_b5",
@@ -226,7 +538,83 @@
         "Chicken"
       ],
       "daily_need": "5 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina B5",
+      "alt_name_es": "Ácido pantoténico",
+      "function_es": "Componente básico de la coenzima A, necesaria para transformar grasas, carbohidratos y proteínas en energía.",
+      "deficiency_es": [
+        "Fatiga",
+        "Ardor u hormigueo en manos y pies",
+        "Insomnio e irritabilidad",
+        "Malestar estomacal"
+      ],
+      "excess_es": [
+        "Sin daños conocidos por alimentos",
+        "Dosis muy altas de suplementos pueden causar diarrea leve"
+      ],
+      "sources_es": [
+        "Champiñones y setas",
+        "Aguacate",
+        "Huevos",
+        "Pollo"
+      ],
+      "name_pt": "Vitamina B5",
+      "alt_name_pt": "Ácido pantotênico",
+      "function_pt": "Componente da coenzima A, necessária para transformar gorduras, carboidratos e proteínas em energia.",
+      "deficiency_pt": [
+        "Fadiga",
+        "Queimação ou formigamento nas mãos e nos pés",
+        "Insônia e irritabilidade",
+        "Desconforto estomacal"
+      ],
+      "excess_pt": [
+        "Sem danos conhecidos pelos alimentos",
+        "Doses muito altas de suplementos podem causar diarreia leve"
+      ],
+      "sources_pt": [
+        "Cogumelos",
+        "Abacate",
+        "Ovos",
+        "Frango"
+      ],
+      "name_ar": "فيتامين ب5",
+      "alt_name_ar": "حمض البانتوثينيك",
+      "function_ar": "مكوّن أساسي لإنزيم المساعد أ (CoA) اللازم لتحويل الدهون والكربوهيدرات والبروتينات إلى طاقة.",
+      "deficiency_ar": [
+        "إرهاق",
+        "حرقة أو تنميل في اليدين والقدمين",
+        "أرق وتهيج عصبي",
+        "اضطراب في المعدة"
+      ],
+      "excess_ar": [
+        "لا يوجد ضرر معروف من الغذاء",
+        "الجرعات العالية جداً من المكملات قد تسبب إسهالاً خفيفاً"
+      ],
+      "sources_ar": [
+        "الفطر",
+        "الأفوكادو",
+        "البيض",
+        "الدجاج"
+      ],
+      "name_zh": "维生素B5",
+      "alt_name_zh": "泛酸",
+      "function_zh": "辅酶A的组成部分，是脂肪、碳水化合物和蛋白质转化为能量所必需的营养素。",
+      "deficiency_zh": [
+        "疲劳",
+        "手脚灼热或刺痛",
+        "失眠和易怒",
+        "胃部不适"
+      ],
+      "excess_zh": [
+        "来自食物的摄入尚无已知危害",
+        "极高剂量的补充剂可能引起轻度腹泻"
+      ],
+      "sources_zh": [
+        "蘑菇",
+        "牛油果",
+        "鸡蛋",
+        "鸡肉"
+      ]
     },
     {
       "id": "vitamin_b6",
@@ -273,7 +661,87 @@
       ],
       "daily_need": "1.3–1.7 mg",
       "upper_limit": "100 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina B6",
+      "alt_name_es": "Piridoxina",
+      "function_es": "Participa en el metabolismo de proteínas y aminoácidos, la producción de glóbulos rojos y la transmisión nerviosa.",
+      "deficiency_es": [
+        "Anemia",
+        "Grietas en las comisuras de la boca, lengua inflamada",
+        "Cambios de humor, estado de ánimo bajo",
+        "Entumecimiento en manos y pies"
+      ],
+      "excess_es": [
+        "Daño nervioso: entumecimiento en manos y pies, problemas de equilibrio (suplementos altos a largo plazo)",
+        "Lesiones en la piel",
+        "Sensibilidad a la luz"
+      ],
+      "sources_es": [
+        "Garbanzos",
+        "Atún y salmón",
+        "Pollo",
+        "Patatas y plátanos"
+      ],
+      "name_pt": "Vitamina B6",
+      "alt_name_pt": "Piridoxina",
+      "function_pt": "Participa do metabolismo de proteínas e aminoácidos, da produção de glóbulos vermelhos e da transmissão nervosa.",
+      "deficiency_pt": [
+        "Anemia",
+        "Rachaduras nos cantos da boca, língua inflamada",
+        "Alterações de humor, desânimo",
+        "Dormência nas mãos e nos pés"
+      ],
+      "excess_pt": [
+        "Danos aos nervos: dormência nas mãos e pés, problemas de equilíbrio (suplementação alta prolongada)",
+        "Lesões na pele",
+        "Sensibilidade à luz"
+      ],
+      "sources_pt": [
+        "Grão-de-bico",
+        "Atum e salmão",
+        "Frango",
+        "Batata e banana"
+      ],
+      "name_ar": "فيتامين ب6",
+      "alt_name_ar": "بيريدوكسين",
+      "function_ar": "يشارك في استقلاب البروتينات والأحماض الأمينية، وإنتاج خلايا الدم الحمراء، ونقل الإشارات العصبية.",
+      "deficiency_ar": [
+        "فقر الدم",
+        "تشققات في زوايا الفم والتهاب اللسان",
+        "تقلبات مزاجية وشعور بالاكتئاب",
+        "خدر في اليدين والقدمين"
+      ],
+      "excess_ar": [
+        "تلف الأعصاب: خدر في اليدين والقدمين ومشاكل في التوازن (عند تناول مكملات بجرعات عالية لفترات طويلة)",
+        "آفات جلدية",
+        "حساسية للضوء"
+      ],
+      "sources_ar": [
+        "الحمص",
+        "التونة والسلمون",
+        "الدجاج",
+        "البطاطس والموز"
+      ],
+      "name_zh": "维生素B6",
+      "alt_name_zh": "吡哆醇",
+      "function_zh": "参与蛋白质和氨基酸代谢、红细胞生成以及神经信号传递。",
+      "deficiency_zh": [
+        "贫血",
+        "口角干裂、舌炎",
+        "情绪波动、情绪低落",
+        "手脚麻木"
+      ],
+      "excess_zh": [
+        "神经损伤：手脚麻木、平衡障碍（长期大剂量服用补充剂）",
+        "皮肤病变",
+        "光敏反应"
+      ],
+      "sources_zh": [
+        "鹰嘴豆",
+        "金枪鱼和三文鱼",
+        "鸡肉",
+        "土豆和香蕉"
+      ]
     },
     {
       "id": "vitamin_b7",
@@ -317,7 +785,83 @@
         "Sweet potato"
       ],
       "daily_need": "30 mcg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina B7",
+      "alt_name_es": "Biotina",
+      "function_es": "Ayuda a procesar grasas, carbohidratos y proteínas; se asocia con la salud del cabello, la piel y las uñas.",
+      "deficiency_es": [
+        "Adelgazamiento y caída del cabello",
+        "Erupción roja y escamosa alrededor de la boca",
+        "Uñas quebradizas",
+        "Fatiga y hormigueo en manos y pies"
+      ],
+      "excess_es": [
+        "Sin daños conocidos por alimentos",
+        "Suplementos en dosis altas pueden alterar algunas pruebas de laboratorio (p. ej., troponina, tiroides)"
+      ],
+      "sources_es": [
+        "Huevos (cocidos)",
+        "Salmón",
+        "Almendras",
+        "Batata (camote)"
+      ],
+      "name_pt": "Vitamina B7",
+      "alt_name_pt": "Biotina",
+      "function_pt": "Ajuda a processar gorduras, carboidratos e proteínas; associada à saúde dos cabelos, da pele e das unhas.",
+      "deficiency_pt": [
+        "Afinamento e queda de cabelo",
+        "Erupção vermelha e descamativa ao redor da boca",
+        "Unhas quebradiças",
+        "Fadiga e formigamento nas mãos e nos pés"
+      ],
+      "excess_pt": [
+        "Sem danos conhecidos pelos alimentos",
+        "Suplementos em altas doses podem alterar alguns exames laboratoriais (ex.: troponina, tireoide)"
+      ],
+      "sources_pt": [
+        "Ovos (cozidos)",
+        "Salmão",
+        "Amêndoas",
+        "Batata-doce"
+      ],
+      "name_ar": "فيتامين ب7",
+      "alt_name_ar": "بيوتين",
+      "function_ar": "يساعد في معالجة الدهون والكربوهيدرات والبروتينات؛ ويرتبط بصحة الشعر والجلد والأظافر.",
+      "deficiency_ar": [
+        "ترقق الشعر وتساقطه",
+        "طفح جلدي أحمر متقشر حول الفم",
+        "هشاشة الأظافر",
+        "إرهاق وتنميل في اليدين والقدمين"
+      ],
+      "excess_ar": [
+        "لا يوجد ضرر معروف من الغذاء",
+        "المكملات بجرعات عالية قد تعطي نتائج مضللة في بعض فحوصات الدم (مثل التروبونين والغدة الدرقية)"
+      ],
+      "sources_ar": [
+        "البيض (المطبوخ)",
+        "السلمون",
+        "اللوز",
+        "البطاطا الحلوة"
+      ],
+      "name_zh": "维生素B7",
+      "alt_name_zh": "生物素",
+      "function_zh": "有助于代谢脂肪、碳水化合物和蛋白质，并与头发、皮肤和指甲健康相关。",
+      "deficiency_zh": [
+        "头发稀疏和脱发",
+        "口周红色鳞屑状皮疹",
+        "指甲脆弱",
+        "疲劳和手脚刺痛"
+      ],
+      "excess_zh": [
+        "来自食物的摄入尚无已知危害",
+        "大剂量补充剂可能干扰部分血液检查结果（如肌钙蛋白、甲状腺指标）"
+      ],
+      "sources_zh": [
+        "鸡蛋（熟食）",
+        "三文鱼",
+        "杏仁",
+        "红薯"
+      ]
     },
     {
       "id": "vitamin_b9",
@@ -362,7 +906,83 @@
       ],
       "daily_need": "400 mcg DFE",
       "upper_limit": "1000 mcg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina B9",
+      "alt_name_es": "Folato (ácido fólico)",
+      "function_es": "Necesaria para fabricar ADN, nuevas células y glóbulos rojos; es fundamental para el desarrollo del tubo neural del bebé en el embarazo.",
+      "deficiency_es": [
+        "Anemia megaloblástica, debilidad",
+        "Lengua dolorida, úlceras bucales",
+        "Náuseas y pérdida de apetito",
+        "Riesgo de defectos del tubo neural en el bebé durante el embarazo"
+      ],
+      "excess_es": [
+        "Los suplementos altos de ácido fólico pueden enmascarar la deficiencia de B12",
+        "El folato de los alimentos no es perjudicial"
+      ],
+      "sources_es": [
+        "Lentejas y garbanzos",
+        "Verduras de hoja verde oscuro",
+        "Espárragos",
+        "Cereales fortificados"
+      ],
+      "name_pt": "Vitamina B9",
+      "alt_name_pt": "Folato (ácido fólico)",
+      "function_pt": "Necessária para produzir DNA, novas células e glóbulos vermelhos; fundamental para a formação do tubo neural do bebê na gravidez.",
+      "deficiency_pt": [
+        "Anemia megaloblástica, fraqueza",
+        "Língua dolorida, aftas na boca",
+        "Náusea e perda de apetite",
+        "Risco de defeito do tubo neural no bebê durante a gravidez"
+      ],
+      "excess_pt": [
+        "Altas doses de ácido fólico em suplementos podem mascarar deficiência de B12",
+        "O folato proveniente dos alimentos não faz mal"
+      ],
+      "sources_pt": [
+        "Lentilha e grão-de-bico",
+        "Folhas verde-escuras",
+        "Aspargos",
+        "Grãos fortificados"
+      ],
+      "name_ar": "فيتامين ب9",
+      "alt_name_ar": "فولات (حمض الفوليك)",
+      "function_ar": "ضروري لصنع الحمض النووي (DNA) وتكوين الخلايا الجديدة وخلايا الدم الحمراء؛ وهو بالغ الأهمية لنمو الأنبوب العصبي للجنين أثناء الحمل.",
+      "deficiency_ar": [
+        "فقر الدم الضخم الأرومات وإعياء",
+        "التهاب اللسان وتقرحات الفم",
+        "غثيان وفقدان الشهية",
+        "خطر عيوب الأنبوب العصبي لدى الجنين أثناء الحمل"
+      ],
+      "excess_ar": [
+        "الجرعات العالية من مكملات حمض الفوليك قد تخفي نقص فيتامين ب12",
+        "الفولات من المصادر الغذائية غير ضار"
+      ],
+      "sources_ar": [
+        "العدس والحمص",
+        "الخضروات الورقية الداكنة",
+        "الهليون",
+        "الحبوب المدعمة"
+      ],
+      "name_zh": "维生素B9",
+      "alt_name_zh": "叶酸",
+      "function_zh": "合成DNA、生成新细胞和红细胞所必需；对孕期胎儿神经管发育至关重要。",
+      "deficiency_zh": [
+        "巨幼细胞性贫血、乏力",
+        "舌炎、口腔溃疡",
+        "恶心和食欲不振",
+        "孕期增加胎儿神经管畸形风险"
+      ],
+      "excess_zh": [
+        "大剂量叶酸补充剂可能掩盖维生素B12缺乏",
+        "来自食物的叶酸无害"
+      ],
+      "sources_zh": [
+        "扁豆和鹰嘴豆",
+        "深色绿叶蔬菜",
+        "芦笋",
+        "强化谷物"
+      ]
     },
     {
       "id": "vitamin_b12",
@@ -408,7 +1028,87 @@
         "Dairy"
       ],
       "daily_need": "2.4 mcg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina B12",
+      "alt_name_es": "Cobalamina",
+      "function_es": "Necesaria para la salud de las células nerviosas, la síntesis de ADN y la formación de glóbulos rojos.",
+      "deficiency_es": [
+        "Fatiga y debilidad",
+        "Anemia",
+        "Entumecimiento en manos y pies, problemas de equilibrio",
+        "Problemas de memoria y concentración",
+        "Lengua dolorida"
+      ],
+      "excess_es": [
+        "No hay un límite superior establecido; el exceso suele eliminarse",
+        "En raras ocasiones se han reportado reacciones cutáneas similares al acné"
+      ],
+      "sources_es": [
+        "Carne e hígado",
+        "Pescado",
+        "Huevos",
+        "Lácteos"
+      ],
+      "name_pt": "Vitamina B12",
+      "alt_name_pt": "Cobalamina",
+      "function_pt": "Necessária para a saúde das células nervosas, síntese de DNA e formação dos glóbulos vermelhos.",
+      "deficiency_pt": [
+        "Fadiga e fraqueza",
+        "Anemia",
+        "Dormência nas mãos e pés, problemas de equilíbrio",
+        "Problemas de memória e concentração",
+        "Língua dolorida"
+      ],
+      "excess_pt": [
+        "Não há limite máximo estabelecido; o excesso costuma ser eliminado",
+        "Raramente são relatadas erupções semelhantes à acne"
+      ],
+      "sources_pt": [
+        "Carne e fígado",
+        "Peixes",
+        "Ovos",
+        "Laticínios"
+      ],
+      "name_ar": "فيتامين ب12",
+      "alt_name_ar": "كوبالامين",
+      "function_ar": "ضروري لصحة الخلايا العصبية، وتكوين الحمض النووي (DNA)، وإنتاج خلايا الدم الحمراء.",
+      "deficiency_ar": [
+        "إرهاق وضعف عام",
+        "فقر الدم",
+        "خدر في اليدين والقدمين ومشاكل في التوازن",
+        "مشاكل في الذاكرة والتركيز",
+        "التهاب اللسان"
+      ],
+      "excess_ar": [
+        "لا يوجد حد أعلى محدد؛ إذ يُطرح الفائض عادةً خارج الجسم",
+        "نادراً ما يُبلّغ عن طفح جلدي شبيه بحب الشباب"
+      ],
+      "sources_ar": [
+        "اللحوم والكبد",
+        "الأسماك",
+        "البيض",
+        "منتجات الألبان"
+      ],
+      "name_zh": "维生素B12",
+      "alt_name_zh": "钴胺素",
+      "function_zh": "维持神经细胞健康、合成DNA和生成红细胞所必需。",
+      "deficiency_zh": [
+        "疲劳和乏力",
+        "贫血",
+        "手脚麻木、平衡障碍",
+        "记忆力和注意力下降",
+        "舌炎"
+      ],
+      "excess_zh": [
+        "尚无明确的可耐受最高摄入量；多余部分通常会排出体外",
+        "极少数情况下报告过痤疮样皮疹"
+      ],
+      "sources_zh": [
+        "肉类和动物肝脏",
+        "鱼类",
+        "鸡蛋",
+        "乳制品"
+      ]
     },
     {
       "id": "vitamin_c",
@@ -457,7 +1157,91 @@
       ],
       "daily_need": "75–90 mg",
       "upper_limit": "2000 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina C",
+      "alt_name_es": "Ácido ascórbico",
+      "function_es": "Antioxidante hidrosoluble que ayuda al cuerpo a producir colágeno, apoya las células inmunitarias y mejora la absorción del hierro de origen vegetal.",
+      "deficiency_es": [
+        "Fatiga y debilidad",
+        "Encías inflamadas y sangrantes",
+        "Cicatrización lenta de heridas",
+        "Facilidad para hacerse hematomas",
+        "Escorbuto en deficiencia grave"
+      ],
+      "excess_es": [
+        "Náuseas y calambres abdominales",
+        "Diarrea",
+        "Mayor riesgo de cálculos renales en dosis muy altas"
+      ],
+      "sources_es": [
+        "Pimientos",
+        "Naranjas y limones",
+        "Kiwi",
+        "Brócoli"
+      ],
+      "name_pt": "Vitamina C",
+      "alt_name_pt": "Ácido ascórbico",
+      "function_pt": "Antioxidante hidrossolúvel que ajuda o corpo a produzir colágeno, fortalece as células de defesa e melhora a absorção do ferro vegetal.",
+      "deficiency_pt": [
+        "Fadiga e fraqueza",
+        "Gengivas inchadas e com sangramento",
+        "Cicatrização lenta de feridas",
+        "Hematomas fáceis",
+        "Escorbuto em deficiência grave"
+      ],
+      "excess_pt": [
+        "Náusea e cólicas",
+        "Diarreia",
+        "Maior risco de pedras nos rins em doses muito altas"
+      ],
+      "sources_pt": [
+        "Pimentão",
+        "Laranja e limão",
+        "Kiwi",
+        "Brócolis"
+      ],
+      "name_ar": "فيتامين ج",
+      "alt_name_ar": "حمض الأسكوربيك",
+      "function_ar": "مضاد أكسدة ذواب في الماء يساعد الجسم على إنتاج الكولاجين، ويدعم خلايا المناعة، ويحسّن امتصاص الحديد النباتي.",
+      "deficiency_ar": [
+        "إرهاق وضعف عام",
+        "تورم ونزيف اللثة",
+        "بطء التئام الجروح",
+        "سهولة ظهور الكدمات",
+        "داء الإسقربوط في حالات النقص الشديد"
+      ],
+      "excess_ar": [
+        "غثيان وتقلصات في المعدة",
+        "إسهال",
+        "زيادة خطر حصوات الكلى عند الجرعات العالية جداً"
+      ],
+      "sources_ar": [
+        "الفلفل",
+        "البرتقال والليمون",
+        "الكيوي",
+        "البروكلي"
+      ],
+      "name_zh": "维生素C",
+      "alt_name_zh": "抗坏血酸",
+      "function_zh": "一种水溶性抗氧化剂，有助于身体合成胶原蛋白、支持免疫细胞功能，并提高植物性铁的吸收。",
+      "deficiency_zh": [
+        "疲劳和乏力",
+        "牙龈肿胀和出血",
+        "伤口愈合缓慢",
+        "容易瘀青",
+        "严重缺乏可致坏血病"
+      ],
+      "excess_zh": [
+        "恶心和腹部绞痛",
+        "腹泻",
+        "极高剂量可能增加肾结石风险"
+      ],
+      "sources_zh": [
+        "甜椒",
+        "橙子和柠檬",
+        "猕猴桃",
+        "西兰花"
+      ]
     },
     {
       "id": "vitamin_d",
@@ -504,7 +1288,87 @@
       ],
       "daily_need": "15–20 mcg (600–800 IU)",
       "upper_limit": "100 mcg (4000 IU)",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina D",
+      "alt_name_es": "Calciferol",
+      "function_es": "Ayuda a absorber calcio y fósforo para fortalecer huesos y dientes, y también apoya el sistema inmunitario y los músculos. La piel la produce con la luz solar.",
+      "deficiency_es": [
+        "Dolor óseo y muscular",
+        "Debilidad muscular",
+        "Raquitismo en niños",
+        "Ablandamiento óseo (osteomalacia) en adultos"
+      ],
+      "excess_es": [
+        "Calcio alto en sangre: náuseas, vómitos, sed excesiva",
+        "Cálculos renales y daño renal",
+        "Alteraciones del ritmo cardíaco (dosis altas prolongadas)"
+      ],
+      "sources_es": [
+        "Pescados grasos (salmón, caballa)",
+        "Yema de huevo",
+        "Leche fortificada",
+        "Luz solar"
+      ],
+      "name_pt": "Vitamina D",
+      "alt_name_pt": "Calciferol",
+      "function_pt": "Ajuda a absorver cálcio e fósforo para fortalecer ossos e dentes, além de apoiar a imunidade e os músculos. É produzida na pele com a luz solar.",
+      "deficiency_pt": [
+        "Dor nos ossos e músculos",
+        "Fraqueza muscular",
+        "Raquitismo em crianças",
+        "Amolecimento ósseo (osteomalacia) em adultos"
+      ],
+      "excess_pt": [
+        "Cálcio alto no sangue: náusea, vômito, sede excessiva",
+        "Pedras nos rins e danos renais",
+        "Alterações no ritmo cardíaco (altas doses por longo prazo)"
+      ],
+      "sources_pt": [
+        "Peixes gordurosos (salmão, cavala)",
+        "Gema de ovo",
+        "Leite fortificado",
+        "Luz solar"
+      ],
+      "name_ar": "فيتامين د",
+      "alt_name_ar": "كالسيفيرول",
+      "function_ar": "يساعد على امتصاص الكالسيوم والفوسفور لدعم صحة العظام والأسنان، ويساهم أيضاً في دعم المناعة والعضلات. يُنتَج في الجلد عند التعرض لأشعة الشمس.",
+      "deficiency_ar": [
+        "آلام العظام والعضلات",
+        "ضعف العضلات",
+        "الكساح لدى الأطفال",
+        "لين العظام لدى البالغين"
+      ],
+      "excess_ar": [
+        "ارتفاع الكالسيوم في الدم: غثيان وقيء وعطش شديد",
+        "حصوات الكلى وتلف الكلى",
+        "اضطرابات نبض القلب (عند تناول جرعات عالية لفترات طويلة)"
+      ],
+      "sources_ar": [
+        "الأسماك الدهنية (السلمون، الماكريل)",
+        "صفار البيض",
+        "الحليب المدعم",
+        "أشعة الشمس"
+      ],
+      "name_zh": "维生素D",
+      "alt_name_zh": "钙化醇",
+      "function_zh": "促进钙和磷的吸收以维护骨骼和牙齿健康，同时支持免疫和肌肉功能。皮肤在阳光照射下可自行合成。",
+      "deficiency_zh": [
+        "骨痛和肌肉疼痛",
+        "肌肉无力",
+        "儿童佝偻病",
+        "成人骨软化症"
+      ],
+      "excess_zh": [
+        "高血钙：恶心、呕吐、极度口渴",
+        "肾结石和肾损伤",
+        "心律异常（长期大剂量摄入）"
+      ],
+      "sources_zh": [
+        "富含脂肪的鱼类（三文鱼、鲭鱼）",
+        "蛋黄",
+        "强化牛奶",
+        "阳光照射"
+      ]
     },
     {
       "id": "vitamin_e",
@@ -551,7 +1415,87 @@
       ],
       "daily_need": "15 mg",
       "upper_limit": "1000 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina E",
+      "alt_name_es": "Tocoferol",
+      "function_es": "Antioxidante liposoluble que protege las células del daño por radicales libres y también apoya el sistema inmunitario.",
+      "deficiency_es": [
+        "Debilidad muscular",
+        "Problemas para caminar y de equilibrio",
+        "Problemas de visión",
+        "Inmunidad debilitada (poco frecuente)"
+      ],
+      "excess_es": [
+        "Mayor riesgo de sangrado (dosis altas de suplementos)",
+        "Interacción con anticoagulantes",
+        "Náuseas y diarrea"
+      ],
+      "sources_es": [
+        "Semillas de girasol",
+        "Almendras y avellanas",
+        "Aceites vegetales (girasol, oliva)",
+        "Espinacas"
+      ],
+      "name_pt": "Vitamina E",
+      "alt_name_pt": "Tocoferol",
+      "function_pt": "Antioxidante lipossolúvel que protege as células contra danos dos radicais livres e também auxilia a imunidade.",
+      "deficiency_pt": [
+        "Fraqueza muscular",
+        "Problemas para andar e de equilíbrio",
+        "Alterações na visão",
+        "Imunidade reduzida (raro)"
+      ],
+      "excess_pt": [
+        "Aumento do risco de sangramento (altas doses de suplementos)",
+        "Interação com anticoagulantes",
+        "Náusea e diarreia"
+      ],
+      "sources_pt": [
+        "Sementes de girassol",
+        "Amêndoas e avelãs",
+        "Óleos vegetais (girassol, azeite de oliva)",
+        "Espinafre"
+      ],
+      "name_ar": "فيتامين هـ",
+      "alt_name_ar": "توكوفيرول",
+      "function_ar": "مضاد أكسدة ذواب في الدهون يحمي الخلايا من تلف الجذور الحرة ويدعم المناعة أيضاً.",
+      "deficiency_ar": [
+        "ضعف العضلات",
+        "صعوبة في المشي والتوازن",
+        "مشاكل في الرؤية",
+        "ضعف المناعة (نادر)"
+      ],
+      "excess_ar": [
+        "زيادة خطر النزيف (عند تناول جرعات عالية من المكملات)",
+        "التداخل مع أدوية سيولة الدم",
+        "غثيان وإسهال"
+      ],
+      "sources_ar": [
+        "بذور دوار الشمس",
+        "اللوز والبندق",
+        "الزيوت النباتية (دوار الشمس، الزيتون)",
+        "السبانخ"
+      ],
+      "name_zh": "维生素E",
+      "alt_name_zh": "生育酚",
+      "function_zh": "一种脂溶性抗氧化剂，可保护细胞免受自由基损伤，并支持免疫功能。",
+      "deficiency_zh": [
+        "肌肉无力",
+        "行走和平衡障碍",
+        "视力问题",
+        "免疫力下降（罕见）"
+      ],
+      "excess_zh": [
+        "增加出血风险（大剂量补充剂）",
+        "与抗凝血药物发生相互作用",
+        "恶心和腹泻"
+      ],
+      "sources_zh": [
+        "葵花籽",
+        "杏仁和榛子",
+        "植物油（葵花籽油、橄榄油）",
+        "菠菜"
+      ]
     },
     {
       "id": "vitamin_k",
@@ -595,7 +1539,83 @@
         "Soybean and olive oil"
       ],
       "daily_need": "90–120 mcg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Vitamina K",
+      "alt_name_es": "Filoquinona / Menaquinona",
+      "function_es": "Necesaria para producir las proteínas que coagulan la sangre y para la salud ósea.",
+      "deficiency_es": [
+        "Facilidad para hacerse hematomas",
+        "Sangrado nasal y de encías",
+        "Sangrado prolongado en heridas",
+        "Riesgo de sangrado en recién nacidos"
+      ],
+      "excess_es": [
+        "Sin daños conocidos por alimentos",
+        "Interactúa con anticoagulantes como la warfarina; evite cambios bruscos en su consumo"
+      ],
+      "sources_es": [
+        "Espinacas y col rizada (kale)",
+        "Brócoli",
+        "Lechuga",
+        "Aceite de soja y de oliva"
+      ],
+      "name_pt": "Vitamina K",
+      "alt_name_pt": "Filoquinona / Menaquinona",
+      "function_pt": "Necessária para produzir proteínas que coagulam o sangue e para a saúde dos ossos.",
+      "deficiency_pt": [
+        "Hematomas fáceis",
+        "Sangramento nasal e nas gengivas",
+        "Sangramento prolongado em ferimentos",
+        "Risco de sangramento em recém-nascidos"
+      ],
+      "excess_pt": [
+        "Sem danos conhecidos pelos alimentos",
+        "Interage com anticoagulantes como a varfarina; evite mudanças bruscas na ingestão"
+      ],
+      "sources_pt": [
+        "Espinafre e couve",
+        "Brócolis",
+        "Alface",
+        "Óleo de soja e azeite de oliva"
+      ],
+      "name_ar": "فيتامين ك",
+      "alt_name_ar": "فيلوكينون / ميناكينون",
+      "function_ar": "ضروري لإنتاج البروتينات المسؤولة عن تخثر الدم ولصحة العظام.",
+      "deficiency_ar": [
+        "سهولة ظهور الكدمات",
+        "نزيف الأنف واللثة",
+        "طول مدة النزيف من الجروح",
+        "خطر النزيف لدى حديثي الولادة"
+      ],
+      "excess_ar": [
+        "لا يوجد ضرر معروف من الغذاء",
+        "يتداخل مع مميعات الدم مثل الوارفارين؛ يجب تجنب التغيير المفاجئ في الكمية المتناولة"
+      ],
+      "sources_ar": [
+        "السبانخ والكرنب الأجعد",
+        "البروكلي",
+        "الخس",
+        "زيت الصويا وزيت الزيتون"
+      ],
+      "name_zh": "维生素K",
+      "alt_name_zh": "叶绿醌 / 甲萘醌",
+      "function_zh": "合成凝血所需蛋白质以及维持骨骼健康所必需。",
+      "deficiency_zh": [
+        "容易瘀青",
+        "鼻出血和牙龈出血",
+        "伤口出血时间延长",
+        "新生儿出血风险"
+      ],
+      "excess_zh": [
+        "来自食物的摄入尚无已知危害",
+        "会与华法林等抗凝血药发生相互作用；应避免摄入量突然大幅波动"
+      ],
+      "sources_zh": [
+        "菠菜和羽衣甘蓝",
+        "西兰花",
+        "生菜",
+        "大豆油和橄榄油"
+      ]
     },
     {
       "id": "calcium",
@@ -642,7 +1662,87 @@
       ],
       "daily_need": "1000–1200 mg",
       "upper_limit": "2000–2500 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Calcio",
+      "function_es": "El componente principal de huesos y dientes; también ayuda a que los músculos se contraigan, los nervios transmitan señales y la sangre coagule.",
+      "deficiency_es": [
+        "Riesgo de osteoporosis",
+        "Calambres musculares",
+        "Hormigueo en las manos y alrededor de la boca",
+        "Crecimiento óseo deficiente en niños"
+      ],
+      "excess_es": [
+        "Estreñimiento e hinchazón",
+        "Mayor riesgo de cálculos renales",
+        "Calcio alto en sangre con dosis altas de suplementos",
+        "Menor absorción de hierro y zinc"
+      ],
+      "sources_es": [
+        "Leche, yogur, queso",
+        "Sésamo y tahini",
+        "Sardinas con espina",
+        "Verduras de hoja verde oscuro"
+      ],
+      "name_pt": "Cálcio",
+      "function_pt": "Principal componente dos ossos e dentes; também ajuda na contração muscular, transmissão nervosa e coagulação do sangue.",
+      "deficiency_pt": [
+        "Risco de osteoporose",
+        "Cãibras musculares",
+        "Formigamento nas mãos e ao redor da boca",
+        "Desenvolvimento ósseo deficiente em crianças"
+      ],
+      "excess_pt": [
+        "Constipação e inchaço abdominal",
+        "Maior risco de pedras nos rins",
+        "Cálcio alto no sangue com doses elevadas de suplementos",
+        "Redução da absorção de ferro e zinco"
+      ],
+      "sources_pt": [
+        "Leite, iogurte e queijo",
+        "Gergelim e tahine",
+        "Sardinha com espinha",
+        "Folhas verde-escuras"
+      ],
+      "name_ar": "الكالسيوم",
+      "function_ar": "اللبنة الأساسية لبناء العظام والأسنان؛ كما يساعد في انقباض العضلات ونقل الإشارات العصبية وتخثر الدم.",
+      "deficiency_ar": [
+        "خطر هشاشة العظام",
+        "تشنجات عضلية",
+        "تنميل في اليدين وحول الفم",
+        "ضعف نمو العظام لدى الأطفال"
+      ],
+      "excess_ar": [
+        "إمساك وانتفاخ",
+        "زيادة خطر حصوات الكلى",
+        "ارتفاع الكالسيوم في الدم عند تناول جرعات عالية من المكملات",
+        "تقليل امتصاص الحديد والزنك"
+      ],
+      "sources_ar": [
+        "الحليب والزبادي والجبن",
+        "السمسم والطحينة",
+        "السردين المعلب بعظامه",
+        "الخضروات الورقية الداكنة"
+      ],
+      "name_zh": "钙",
+      "function_zh": "骨骼和牙齿的主要构成成分；也有助于肌肉收缩、神经信号传递和血液凝固。",
+      "deficiency_zh": [
+        "骨质疏松风险",
+        "肌肉痉挛",
+        "手部和口周刺痛感",
+        "儿童骨骼发育不良"
+      ],
+      "excess_zh": [
+        "便秘和腹胀",
+        "增加肾结石风险",
+        "大剂量补充剂导致血钙升高",
+        "降低铁和锌的吸收"
+      ],
+      "sources_zh": [
+        "牛奶、酸奶、奶酪",
+        "芝麻和芝麻酱",
+        "带骨沙丁鱼",
+        "深色绿叶蔬菜"
+      ]
     },
     {
       "id": "phosphorus",
@@ -687,7 +1787,83 @@
       ],
       "daily_need": "700 mg",
       "upper_limit": "4000 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Fósforo",
+      "function_es": "Actúa junto con el calcio para formar huesos y dientes, y forma parte de la energía celular (ATP) y del ADN.",
+      "deficiency_es": [
+        "Pérdida de apetito",
+        "Dolor y fragilidad ósea",
+        "Debilidad muscular",
+        "Fatiga"
+      ],
+      "excess_es": [
+        "Acumulación en insuficiencia renal con daño cardíaco y vascular",
+        "Alteración del equilibrio del calcio en ingestas altas",
+        "Malestar estomacal"
+      ],
+      "sources_es": [
+        "Lácteos",
+        "Carne, aves y pescado",
+        "Legumbres",
+        "Cereales integrales y frutos secos"
+      ],
+      "name_pt": "Fósforo",
+      "function_pt": "Atua junto com o cálcio na formação de ossos e dentes e faz parte da energia celular (ATP) e do DNA.",
+      "deficiency_pt": [
+        "Perda de apetite",
+        "Dor e fragilidade óssea",
+        "Fraqueza muscular",
+        "Fadiga"
+      ],
+      "excess_pt": [
+        "Acúmulo na insuficiência renal com danos ao coração e vasos sanguíneos",
+        "Desequilíbrio do cálcio em ingestões elevadas",
+        "Desconforto estomacal"
+      ],
+      "sources_pt": [
+        "Laticínios",
+        "Carne, aves e peixes",
+        "Leguminosas",
+        "Grãos integrais e oleaginosas"
+      ],
+      "name_ar": "الفوسفور",
+      "function_ar": "يعمل مع الكالسيوم على بناء العظام والأسنان، ويدخل في تركيب طاقة الخلية (ATP) والحمض النووي (DNA).",
+      "deficiency_ar": [
+        "فقدان الشهية",
+        "ألم العظام وهشاشتها",
+        "ضعف العضلات",
+        "إرهاق"
+      ],
+      "excess_ar": [
+        "تراكمه في الدم لدى مرضى الفشل الكلوي مع تلف القلب والأوعية الدموية",
+        "اختلال توازن الكالسيوم عند الإفراط في تناوله",
+        "اضطراب في المعدة"
+      ],
+      "sources_ar": [
+        "منتجات الألبان",
+        "اللحوم والدواجن والأسماك",
+        "البقوليات",
+        "الحبوب الكاملة والمكسرات"
+      ],
+      "name_zh": "磷",
+      "function_zh": "与钙共同构成骨骼和牙齿，也是细胞能量（ATP）和DNA的组成部分。",
+      "deficiency_zh": [
+        "食欲不振",
+        "骨痛和骨骼脆弱",
+        "肌肉无力",
+        "疲劳"
+      ],
+      "excess_zh": [
+        "肾衰竭患者易在血液中蓄积，引发心血管损伤",
+        "摄入过高会打破钙平衡",
+        "胃部不适"
+      ],
+      "sources_zh": [
+        "乳制品",
+        "肉类、禽类、鱼类",
+        "豆类",
+        "全谷物和坚果"
+      ]
     },
     {
       "id": "magnesium",
@@ -732,7 +1908,83 @@
       ],
       "daily_need": "310–420 mg",
       "upper_limit": "350 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Magnesio",
+      "function_es": "Participa en más de 300 enzimas que favorecen la función muscular y nerviosa, el equilibrio del azúcar y la presión arterial, y la formación de proteínas y huesos.",
+      "deficiency_es": [
+        "Espasmos y calambres musculares",
+        "Fatiga y debilidad",
+        "Náuseas, pérdida de apetito",
+        "Latidos cardíacos irregulares (deficiencia grave)"
+      ],
+      "excess_es": [
+        "Diarrea y calambres abdominales por suplementos o medicamentos",
+        "Náuseas",
+        "Dosis muy altas: presión arterial baja y alteraciones del ritmo cardíaco"
+      ],
+      "sources_es": [
+        "Semillas de calabaza y almendras",
+        "Espinacas",
+        "Legumbres",
+        "Cereales integrales"
+      ],
+      "name_pt": "Magnésio",
+      "function_pt": "Participa de mais de 300 enzimas que auxiliam o funcionamento muscular e nervoso, o equilíbrio da glicemia e pressão arterial e a formação de proteínas e ossos.",
+      "deficiency_pt": [
+        "Espasmos e cãibras musculares",
+        "Fadiga e fraqueza",
+        "Náusea e perda de apetite",
+        "Batimentos cardíacos irregulares (deficiência grave)"
+      ],
+      "excess_pt": [
+        "Diarreia e cólicas abdominais por suplementos ou medicamentos",
+        "Náusea",
+        "Doses muito altas: pressão baixa e alterações no ritmo cardíaco"
+      ],
+      "sources_pt": [
+        "Sementes de abóbora e amêndoas",
+        "Espinafre",
+        "Leguminosas",
+        "Grãos integrais"
+      ],
+      "name_ar": "المغنيسيوم",
+      "function_ar": "يشارك في أكثر من 300 إنزيم تدعم وظائف العضلات والأعصاب، وتوازن سكر الدم وضغط الدم، وبناء البروتين والعظام.",
+      "deficiency_ar": [
+        "ارتعاش وتقلصات عضلية",
+        "إرهاق وضعف عام",
+        "غثيان وفقدان الشهية",
+        "عدم انتظام ضربات القلب (في النقص الشديد)"
+      ],
+      "excess_ar": [
+        "إسهال وتقلصات في البطن نتيجة المكملات أو الأدوية",
+        "غثيان",
+        "الجرعات العالية جداً: انخفاض ضغط الدم واضطرابات نظم القلب"
+      ],
+      "sources_ar": [
+        "بذور اليقطين واللوز",
+        "السبانخ",
+        "البقوليات",
+        "الحبوب الكاملة"
+      ],
+      "name_zh": "镁",
+      "function_zh": "参与300多种酶的反应，支持肌肉和神经功能、血糖和血压平衡，以及蛋白质和骨骼合成。",
+      "deficiency_zh": [
+        "肌肉抽搐和痉挛",
+        "疲劳和乏力",
+        "恶心、食欲不振",
+        "心律不齐（严重缺乏时）"
+      ],
+      "excess_zh": [
+        "补充剂或药物引起的腹泻和腹部绞痛",
+        "恶心",
+        "极高剂量：低血压和心律问题"
+      ],
+      "sources_zh": [
+        "南瓜籽和杏仁",
+        "菠菜",
+        "豆类",
+        "全谷物"
+      ]
     },
     {
       "id": "sodium",
@@ -779,7 +2031,87 @@
       ],
       "daily_need": "1500 mg",
       "upper_limit": "2300 mg",
-      "source": "NASEM"
+      "source": "NASEM",
+      "name_es": "Sodio",
+      "function_es": "Regula el equilibrio de líquidos del cuerpo, la transmisión nerviosa y la contracción muscular. En los alimentos proviene sobre todo de la sal de mesa (cloruro de sodio).",
+      "deficiency_es": [
+        "Dolor de cabeza, náuseas",
+        "Calambres musculares",
+        "Debilidad y confusión",
+        "Convulsiones cuando está muy bajo"
+      ],
+      "excess_es": [
+        "Presión arterial más alta",
+        "Mayor riesgo de enfermedad cardíaca y accidente cerebrovascular",
+        "Retención de líquidos e hinchazón",
+        "Mayor carga para los riñones"
+      ],
+      "sources_es": [
+        "Sal de mesa",
+        "Carnes procesadas y encurtidos",
+        "Queso y alimentos enlatados",
+        "Sopas instantáneas y aperitivos salados"
+      ],
+      "name_pt": "Sódio",
+      "function_pt": "Regula o equilíbrio de líquidos do corpo, a transmissão nervosa e a contração muscular. Nos alimentos, vem principalmente como sal de cozinha (cloreto de sódio).",
+      "deficiency_pt": [
+        "Dor de cabeça, náusea",
+        "Cãibras musculares",
+        "Fraqueza e confusão mental",
+        "Convulsões quando muito baixo"
+      ],
+      "excess_pt": [
+        "Aumento da pressão arterial",
+        "Maior risco de doenças cardíacas e AVC",
+        "Retenção de líquidos e inchaço",
+        "Sobrecarga nos rins"
+      ],
+      "sources_pt": [
+        "Sal de cozinha",
+        "Carnes processadas e conservas",
+        "Queijos e alimentos enlatados",
+        "Sopas instantâneas e salgadinhos"
+      ],
+      "name_ar": "الصوديوم",
+      "function_ar": "ينظم توازن السوائل في الجسم، ونقل الإشارات العصبية، وانقباض العضلات. يوجد في الطعام غالباً على شكل ملح الطعام (كلوريد الصوديوم).",
+      "deficiency_ar": [
+        "صداع وغثيان",
+        "تشنجات عضلية",
+        "ضعف وتشوش ذهني",
+        "نوبات تشنجية عند الانخفاض الشديد"
+      ],
+      "excess_ar": [
+        "ارتفاع ضغط الدم",
+        "زيادة خطر أمراض القلب والسكتة الدماغية",
+        "احتباس السوائل والتورم",
+        "زيادة العبء على الكلى"
+      ],
+      "sources_ar": [
+        "ملح الطعام",
+        "اللحوم المصنعة والمخللات",
+        "الأجبان والأطعمة المعلبة",
+        "الشوربات الفورية والوجبات الخفيفة"
+      ],
+      "name_zh": "钠",
+      "function_zh": "调节体液平衡、神经信号传递和肌肉收缩。在食物中主要以食盐（氯化钠）的形式存在。",
+      "deficiency_zh": [
+        "头痛、恶心",
+        "肌肉痉挛",
+        "乏力和意识混乱",
+        "严重偏低时可致癫痫发作"
+      ],
+      "excess_zh": [
+        "血压升高",
+        "增加心脏病和中风风险",
+        "水钠潴留和水肿",
+        "加重肾脏负担"
+      ],
+      "sources_zh": [
+        "食盐",
+        "加工肉类和腌菜",
+        "奶酪和罐头食品",
+        "速食汤和零食"
+      ]
     },
     {
       "id": "potassium",
@@ -821,7 +2153,79 @@
         "Spinach and avocado"
       ],
       "daily_need": "2600–3400 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Potasio",
+      "function_es": "Necesario para la transmisión nerviosa, la contracción muscular y un ritmo cardíaco estable; ayuda a contrarrestar el efecto del sodio sobre la presión arterial.",
+      "deficiency_es": [
+        "Debilidad y calambres musculares",
+        "Estreñimiento",
+        "Palpitaciones y ritmo cardíaco irregular",
+        "Fatiga"
+      ],
+      "excess_es": [
+        "Potasio alto en sangre en enfermedad renal: debilidad muscular, ritmo cardíaco irregular",
+        "Malestar estomacal por suplementos"
+      ],
+      "sources_es": [
+        "Plátanos",
+        "Patatas y batatas",
+        "Legumbres",
+        "Espinacas y aguacate"
+      ],
+      "name_pt": "Potássio",
+      "function_pt": "Necessário para a transmissão nervosa, contração muscular e ritmo cardíaco estável; ajuda a equilibrar o efeito do sódio na pressão arterial.",
+      "deficiency_pt": [
+        "Fraqueza e cãibras musculares",
+        "Constipação",
+        "Palpitações e batimentos cardíacos irregulares",
+        "Fadiga"
+      ],
+      "excess_pt": [
+        "Potássio alto no sangue em doenças renais: fraqueza muscular, arritmia cardíaca",
+        "Desconforto estomacal por suplementos"
+      ],
+      "sources_pt": [
+        "Banana",
+        "Batata e batata-doce",
+        "Leguminosas",
+        "Espinafre e abacate"
+      ],
+      "name_ar": "البوتاسيوم",
+      "function_ar": "ضروري لنقل الإشارات العصبية، وانقباض العضلات، وانتظام نبض القلب؛ كما يساعد على موازنة تأثير الصوديوم في ضغط الدم.",
+      "deficiency_ar": [
+        "ضعف وتشنجات عضلية",
+        "إمساك",
+        "خفقان وعدم انتظام ضربات القلب",
+        "إرهاق"
+      ],
+      "excess_ar": [
+        "ارتفاع البوتاسيوم في الدم لدى مرضى الكلى: ضعف عضلي واضطراب نظم القلب",
+        "اضطراب المعدة من المكملات"
+      ],
+      "sources_ar": [
+        "الموز",
+        "البطاطس والبطاطا الحلوة",
+        "البقوليات",
+        "السبانخ والأفوكادو"
+      ],
+      "name_zh": "钾",
+      "function_zh": "神经信号传递、肌肉收缩和维持正常心律所必需；有助于抵消钠对血压的影响。",
+      "deficiency_zh": [
+        "肌肉无力和痉挛",
+        "便秘",
+        "心悸和心律不齐",
+        "疲劳"
+      ],
+      "excess_zh": [
+        "肾病患者易出现高血钾：肌肉无力、心律不齐",
+        "补充剂引起的胃部不适"
+      ],
+      "sources_zh": [
+        "香蕉",
+        "土豆和红薯",
+        "豆类",
+        "菠菜和牛油果"
+      ]
     },
     {
       "id": "iron",
@@ -866,7 +2270,83 @@
       ],
       "daily_need": "8–18 mg",
       "upper_limit": "45 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Hierro",
+      "function_es": "Forma parte de la hemoglobina, que transporta oxígeno en la sangre; también es necesario para los músculos y el metabolismo energético.",
+      "deficiency_es": [
+        "Anemia ferropénica: debilidad, piel pálida",
+        "Falta de aire y palpitaciones",
+        "Caída del cabello, uñas quebradizas",
+        "Manos y pies fríos"
+      ],
+      "excess_es": [
+        "Dolor de estómago, estreñimiento, náuseas",
+        "Acumulación de hierro en órganos (hemocromatosis)",
+        "La sobredosis es peligrosa para los niños"
+      ],
+      "sources_es": [
+        "Carne roja e hígado",
+        "Lentejas y garbanzos",
+        "Melaza y orejones (albaricoques secos)",
+        "Espinacas"
+      ],
+      "name_pt": "Ferro",
+      "function_pt": "Faz parte da hemoglobina, que transporta oxigênio no sangue; também é necessário para os músculos e o metabolismo energético.",
+      "deficiency_pt": [
+        "Anemia ferropriva: fraqueza, pele pálida",
+        "Falta de ar e palpitações",
+        "Queda de cabelo, unhas quebradiças",
+        "Mãos e pés frios"
+      ],
+      "excess_pt": [
+        "Dor de estômago, constipação, náusea",
+        "Acúmulo de ferro nos órgãos (hemocromatose)",
+        "Superdosagem é perigosa para crianças"
+      ],
+      "sources_pt": [
+        "Carne vermelha e fígado",
+        "Lentilha e grão-de-bico",
+        "Melaço e damasco seco",
+        "Espinafre"
+      ],
+      "name_ar": "الحديد",
+      "function_ar": "يدخل في تركيب الهيموغلوبين الذي ينقل الأكسجين في الدم، كما أنه ضروري للعضلات واستقلاب الطاقة.",
+      "deficiency_ar": [
+        "فقر الدم بعوز الحديد: ضعف وشحوب الجلد",
+        "ضيق التنفس وخفقان القلب",
+        "تساقط الشعر وهشاشة الأظافر",
+        "برودة اليدين والقدمين"
+      ],
+      "excess_ar": [
+        "ألم في المعدة وإمساك وغثيان",
+        "تراكم الحديد في الأعضاء (داء ترسب الأصبغة الدموية)",
+        "الجرعة الزائدة تشكل خطراً شديداً على الأطفال"
+      ],
+      "sources_ar": [
+        "اللحوم الحمراء والكبد",
+        "العدس والحمص",
+        "الدبس والمشمش المجفف",
+        "السبانخ"
+      ],
+      "name_zh": "铁",
+      "function_zh": "血红蛋白的组成部分，负责在血液中输送氧气；也是肌肉和能量代谢所必需的。",
+      "deficiency_zh": [
+        "缺铁性贫血：乏力、面色苍白",
+        "气短和心悸",
+        "脱发、指甲脆弱",
+        "手脚冰凉"
+      ],
+      "excess_zh": [
+        "胃痛、便秘、恶心",
+        "器官内铁蓄积（血色病）",
+        "过量摄入对儿童有中毒危险"
+      ],
+      "sources_zh": [
+        "红肉和动物肝脏",
+        "扁豆和鹰嘴豆",
+        "糖蜜和杏干",
+        "菠菜"
+      ]
     },
     {
       "id": "zinc",
@@ -911,7 +2391,83 @@
       ],
       "daily_need": "8–11 mg",
       "upper_limit": "40 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Zinc",
+      "function_es": "Forma parte de enzimas necesarias para la inmunidad, la cicatrización de heridas, el gusto y el olfato, y la producción de ADN y proteínas.",
+      "deficiency_es": [
+        "Infecciones frecuentes",
+        "Cicatrización lenta de heridas",
+        "Pérdida del gusto y del olfato",
+        "Caída del cabello y diarrea"
+      ],
+      "excess_es": [
+        "Náuseas, vómitos, calambres estomacales",
+        "Deficiencia de cobre (dosis altas prolongadas)",
+        "Inmunidad debilitada"
+      ],
+      "sources_es": [
+        "Carne roja y mariscos (ostras)",
+        "Semillas de calabaza",
+        "Legumbres",
+        "Lácteos"
+      ],
+      "name_pt": "Zinco",
+      "function_pt": "Integra enzimas necessárias para a imunidade, cicatrização de feridas, paladar e olfato, e produção de DNA e proteínas.",
+      "deficiency_pt": [
+        "Infecções frequentes",
+        "Cicatrização lenta de feridas",
+        "Perda de paladar e olfato",
+        "Queda de cabelo e diarreia"
+      ],
+      "excess_pt": [
+        "Náusea, vômito e cólicas estomacais",
+        "Deficiência de cobre (altas doses por longo prazo)",
+        "Imunidade enfraquecida"
+      ],
+      "sources_pt": [
+        "Carne vermelha e frutos do mar (ostras)",
+        "Sementes de abóbora",
+        "Leguminosas",
+        "Laticínios"
+      ],
+      "name_ar": "الزنك",
+      "function_ar": "يدخل في عمل الإنزيمات اللازمة للمناعة، والتئام الجروح، وحاستي التذوق والشم، وإنتاج الحمض النووي (DNA) والبروتين.",
+      "deficiency_ar": [
+        "تكرار العدوى",
+        "بطء التئام الجروح",
+        "فقدان حاستي التذوق والشم",
+        "تساقط الشعر وإسهال"
+      ],
+      "excess_ar": [
+        "غثيان وقيء وتقلصات في المعدة",
+        "نقص النحاس (عند الجرعات العالية لفترات طويلة)",
+        "ضعف المناعة"
+      ],
+      "sources_ar": [
+        "اللحوم الحمراء والمحاريات (المحار)",
+        "بذور اليقطين",
+        "البقوليات",
+        "منتجات الألبان"
+      ],
+      "name_zh": "锌",
+      "function_zh": "免疫、伤口愈合、味觉和嗅觉以及DNA和蛋白质合成所需多种酶的组成部分。",
+      "deficiency_zh": [
+        "频繁感染",
+        "伤口愈合缓慢",
+        "味觉和嗅觉减退",
+        "脱发和腹泻"
+      ],
+      "excess_zh": [
+        "恶心、呕吐、胃痉挛",
+        "铜缺乏（长期大剂量摄入）",
+        "免疫力下降"
+      ],
+      "sources_zh": [
+        "红肉和贝类（牡蛎）",
+        "南瓜籽",
+        "豆类",
+        "乳制品"
+      ]
     },
     {
       "id": "copper",
@@ -956,7 +2512,83 @@
       ],
       "daily_need": "900 mcg",
       "upper_limit": "10 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Cobre",
+      "function_es": "Necesario para el uso del hierro, la salud del tejido conectivo y los nervios, y la producción de energía.",
+      "deficiency_es": [
+        "Anemia",
+        "Infecciones frecuentes",
+        "Huesos débiles",
+        "Entumecimiento en manos y pies"
+      ],
+      "excess_es": [
+        "Dolor de estómago, náuseas, vómitos",
+        "Daño hepático (dosis muy altas)",
+        "Acumulación de cobre en la enfermedad de Wilson"
+      ],
+      "sources_es": [
+        "Hígado y mariscos",
+        "Frutos secos y semillas",
+        "Cacao y chocolate negro",
+        "Cereales integrales"
+      ],
+      "name_pt": "Cobre",
+      "function_pt": "Necessário para o aproveitamento do ferro, saúde do tecido conjuntivo e dos nervos, e produção de energia.",
+      "deficiency_pt": [
+        "Anemia",
+        "Infecções frequentes",
+        "Ossos fracos",
+        "Dormência nas mãos e nos pés"
+      ],
+      "excess_pt": [
+        "Dor de estômago, náusea e vômito",
+        "Danos ao fígado (doses muito altas)",
+        "Acúmulo de cobre na doença de Wilson"
+      ],
+      "sources_pt": [
+        "Fígado e frutos do mar",
+        "Castanhas e sementes",
+        "Cacau e chocolate amargo",
+        "Grãos integrais"
+      ],
+      "name_ar": "النحاس",
+      "function_ar": "ضروري للاستفادة من الحديد، وصحة الأنسجة الضامة والأعصاب، وإنتاج الطاقة.",
+      "deficiency_ar": [
+        "فقر الدم",
+        "تكرار العدوى",
+        "ضعف العظام",
+        "خدر في اليدين والقدمين"
+      ],
+      "excess_ar": [
+        "ألم في المعدة وغثيان وقيء",
+        "تلف الكبد (عند الجرعات العالية جداً)",
+        "تراكم النحاس في مرض ويلسون"
+      ],
+      "sources_ar": [
+        "الكبد والمحاريات",
+        "المكسرات والبذور",
+        "الكاكاو والشوكولاتة الداكنة",
+        "الحبوب الكاملة"
+      ],
+      "name_zh": "铜",
+      "function_zh": "促进铁的利用、维持结缔组织和神经健康以及能量生成所必需。",
+      "deficiency_zh": [
+        "贫血",
+        "频繁感染",
+        "骨骼脆弱",
+        "手脚麻木"
+      ],
+      "excess_zh": [
+        "胃痛、恶心、呕吐",
+        "肝损伤（极高剂量）",
+        "肝豆状核变性（Wilson病）患者体内铜蓄积"
+      ],
+      "sources_zh": [
+        "动物肝脏和贝类",
+        "坚果和种子",
+        "可可和黑巧克力",
+        "全谷物"
+      ]
     },
     {
       "id": "manganese",
@@ -999,7 +2631,79 @@
       ],
       "daily_need": "1.8–2.3 mg",
       "upper_limit": "11 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Manganeso",
+      "function_es": "Forma parte de enzimas implicadas en la formación ósea, el metabolismo de carbohidratos y aminoácidos, y la defensa antioxidante.",
+      "deficiency_es": [
+        "Crecimiento óseo más débil",
+        "Cicatrización lenta de heridas",
+        "Erupción cutánea",
+        "Azúcar en sangre inestable"
+      ],
+      "excess_es": [
+        "Efectos en el sistema nervioso: temblor y problemas de movimiento (especialmente por inhalación)",
+        "Efectos mentales con niveles altos en el agua potable"
+      ],
+      "sources_es": [
+        "Cereales integrales",
+        "Avellanas y nueces",
+        "Legumbres",
+        "Té"
+      ],
+      "name_pt": "Manganês",
+      "function_pt": "Faz parte de enzimas envolvidas na formação óssea, metabolismo de carboidratos e aminoácidos, e defesa antioxidante.",
+      "deficiency_pt": [
+        "Crescimento ósseo mais fraco",
+        "Cicatrização lenta de feridas",
+        "Erupção cutânea",
+        "Glicemia instável"
+      ],
+      "excess_pt": [
+        "Efeitos no sistema nervoso: tremores e problemas motores (especialmente por inalação)",
+        "Efeitos mentais em níveis altos na água potável"
+      ],
+      "sources_pt": [
+        "Grãos integrais",
+        "Avelãs e nozes",
+        "Leguminosas",
+        "Chá"
+      ],
+      "name_ar": "المنغنيز",
+      "function_ar": "يدخل في تركيب إنزيمات تشارك في تكوين العظام، واستقلاب الكربوهيدرات والأحماض الأمينية، والدفاع المضاد للأكسدة.",
+      "deficiency_ar": [
+        "ضعف نمو العظام",
+        "بطء التئام الجروح",
+        "طفح جلدي",
+        "عدم استقرار سكر الدم"
+      ],
+      "excess_ar": [
+        "تأثيرات على الجهاز العصبي: رعاش ومشاكل في الحركة (خاصة عن طريق الاستنشاق)",
+        "تأثيرات ذهنية عند المستويات المرتفعة في مياه الشرب"
+      ],
+      "sources_ar": [
+        "الحبوب الكاملة",
+        "البندق والجوز",
+        "البقوليات",
+        "الشاي"
+      ],
+      "name_zh": "锰",
+      "function_zh": "参与骨骼形成、碳水化合物和氨基酸代谢以及抗氧化防御的酶的组成部分。",
+      "deficiency_zh": [
+        "骨骼生长较弱",
+        "伤口愈合缓慢",
+        "皮疹",
+        "血糖不稳定"
+      ],
+      "excess_zh": [
+        "神经系统影响：震颤和运动障碍（尤其是经呼吸道吸入时）",
+        "饮用水中锰含量过高时的精神和神经影响"
+      ],
+      "sources_zh": [
+        "全谷物",
+        "榛子和核桃",
+        "豆类",
+        "茶"
+      ]
     },
     {
       "id": "iodine",
@@ -1044,7 +2748,83 @@
       ],
       "daily_need": "150 mcg",
       "upper_limit": "1100 mcg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Yodo",
+      "function_es": "Componente básico de las hormonas tiroideas, que regulan el metabolismo, el crecimiento y el desarrollo cerebral del bebé durante el embarazo.",
+      "deficiency_es": [
+        "Bocio (hinchazón en el cuello)",
+        "Fatiga y sensación de frío",
+        "Aumento de peso",
+        "Retraso del desarrollo en el bebé durante el embarazo"
+      ],
+      "excess_es": [
+        "Problemas tiroideos (hiperactividad o hipoactividad)",
+        "Bocio",
+        "Ardor en la boca y la garganta, malestar estomacal"
+      ],
+      "sources_es": [
+        "Sal yodada",
+        "Mariscos y algas marinas",
+        "Leche y yogur",
+        "Huevos"
+      ],
+      "name_pt": "Iodo",
+      "function_pt": "Componente dos hormônios da tireoide, que regulam a taxa metabólica, o crescimento e o desenvolvimento cerebral do bebê na gravidez.",
+      "deficiency_pt": [
+        "Bócio (inchaço no pescoço)",
+        "Fadiga e sensação de frio",
+        "Ganho de peso",
+        "Atraso no desenvolvimento do bebê durante a gravidez"
+      ],
+      "excess_pt": [
+        "Problemas na tireoide (hiperativa ou hipoativa)",
+        "Bócio",
+        "Queimação na boca e garganta, desconforto estomacal"
+      ],
+      "sources_pt": [
+        "Sal iodado",
+        "Frutos do mar e algas marinhas",
+        "Leite e iogurte",
+        "Ovos"
+      ],
+      "name_ar": "اليود",
+      "function_ar": "مكوّن أساسي لهرمونات الغدة الدرقية التي تضبط معدل الأيض والنمو وتطور دماغ الجنين أثناء الحمل.",
+      "deficiency_ar": [
+        "تضخم الغدة الدرقية (انتفاخ في الرقبة)",
+        "إرهاق وشعور بالبرد",
+        "زيادة الوزن",
+        "تأخر النمو والتطور لدى الجنين أثناء الحمل"
+      ],
+      "excess_ar": [
+        "اضطرابات الغدة الدرقية (فرط النشاط أو قصوره)",
+        "تضخم الغدة الدرقية",
+        "حرقة في الفم والحلق واضطراب في المعدة"
+      ],
+      "sources_ar": [
+        "الملح المدعم باليود",
+        "المأكولات البحرية والأعشاب البحرية",
+        "الحليب والزبادي",
+        "البيض"
+      ],
+      "name_zh": "碘",
+      "function_zh": "甲状腺激素的合成原料，负责调节代谢率、生长发育以及孕期胎儿大脑发育。",
+      "deficiency_zh": [
+        "甲状腺肿（颈部肿大）",
+        "疲劳和畏寒",
+        "体重增加",
+        "孕期影响胎儿发育迟缓"
+      ],
+      "excess_zh": [
+        "甲状腺功能异常（甲亢或甲减）",
+        "甲状腺肿",
+        "口腔和咽喉灼热感、胃部不适"
+      ],
+      "sources_zh": [
+        "加碘盐",
+        "海鲜和海藻",
+        "牛奶和酸奶",
+        "鸡蛋"
+      ]
     },
     {
       "id": "selenium",
@@ -1091,7 +2871,87 @@
       ],
       "daily_need": "55 mcg",
       "upper_limit": "400 mcg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Selenio",
+      "function_es": "Forma parte de enzimas antioxidantes y del metabolismo de las hormonas tiroideas; apoya la inmunidad y la salud reproductiva.",
+      "deficiency_es": [
+        "Fatiga y debilidad",
+        "Caída del cabello",
+        "Niebla mental",
+        "Inmunidad debilitada"
+      ],
+      "excess_es": [
+        "Caída del cabello y uñas, uñas quebradizas",
+        "Sabor metálico, aliento con olor a ajo",
+        "Náuseas y diarrea",
+        "Síntomas del sistema nervioso (selenosis)"
+      ],
+      "sources_es": [
+        "Nueces de Brasil",
+        "Atún y sardinas",
+        "Huevos",
+        "Carne y cereales"
+      ],
+      "name_pt": "Selênio",
+      "function_pt": "Faz parte de enzimas antioxidantes e do metabolismo dos hormônios da tireoide; auxilia a imunidade e a saúde reprodutiva.",
+      "deficiency_pt": [
+        "Fadiga e fraqueza",
+        "Queda de cabelo",
+        "Névoa mental",
+        "Imunidade enfraquecida"
+      ],
+      "excess_pt": [
+        "Queda de cabelo e unhas, unhas quebradiças",
+        "Gosto metálico, hálito com odor de alho",
+        "Náusea e diarreia",
+        "Sintomas neurológicos (selenose)"
+      ],
+      "sources_pt": [
+        "Castanha-do-pará",
+        "Atum e sardinha",
+        "Ovos",
+        "Carnes e grãos"
+      ],
+      "name_ar": "السيلينيوم",
+      "function_ar": "يدخل في تركيب الإنزيمات المضادة للأكسدة واستقلاب هرمونات الغدة الدرقية، ويدعم المناعة والصحة الإنجابية.",
+      "deficiency_ar": [
+        "إرهاق وضعف عام",
+        "تساقط الشعر",
+        "تشوش ذهني",
+        "ضعف المناعة"
+      ],
+      "excess_ar": [
+        "تساقط الشعر والأظافر وهشاشة الأظافر",
+        "طعم معدني في الفم ورائحة ثوم في النفس",
+        "غثيان وإسهال",
+        "أعراض في الجهاز العصبي (التسمم بالسيلينيوم)"
+      ],
+      "sources_ar": [
+        "الجوز البرازيلي",
+        "التونة والسردين",
+        "البيض",
+        "اللحوم والحبوب"
+      ],
+      "name_zh": "硒",
+      "function_zh": "抗氧化酶和甲状腺激素代谢酶的组成部分；支持免疫和生殖健康。",
+      "deficiency_zh": [
+        "疲劳和乏力",
+        "脱发",
+        "思维迟钝（脑雾）",
+        "免疫力下降"
+      ],
+      "excess_zh": [
+        "脱发和指甲脱落、指甲脆弱",
+        "口腔金属味、呼气有大蒜味",
+        "恶心和腹泻",
+        "神经系统症状（硒中毒）"
+      ],
+      "sources_zh": [
+        "巴西坚果",
+        "金枪鱼和沙丁鱼",
+        "鸡蛋",
+        "肉类和谷物"
+      ]
     },
     {
       "id": "chromium",
@@ -1133,7 +2993,79 @@
         "Meat"
       ],
       "daily_need": "25–35 mcg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Cromo",
+      "function_es": "Se cree que apoya la acción de la insulina y ayuda a metabolizar carbohidratos, grasas y proteínas; su deficiencia es poco frecuente.",
+      "deficiency_es": [
+        "Azúcar en sangre inestable",
+        "Rara vez síntomas nerviosos (en nutrición intravenosa prolongada)",
+        "Pérdida de peso"
+      ],
+      "excess_es": [
+        "Sin daños conocidos por alimentos",
+        "Malestar estomacal y dolor de cabeza en dosis altas de suplementos",
+        "Reportes de daño renal y hepático (dosis muy altas)"
+      ],
+      "sources_es": [
+        "Brócoli",
+        "Cereales integrales",
+        "Zumo (jugo) de uva",
+        "Carne"
+      ],
+      "name_pt": "Cromo",
+      "function_pt": "Acredita-se que apoie a ação da insulina e ajude a metabolizar carboidratos, gorduras e proteínas; a deficiência é rara.",
+      "deficiency_pt": [
+        "Glicemia instável",
+        "Raramente sintomas neurológicos (em nutrição intravenosa prolongada)",
+        "Perda de peso"
+      ],
+      "excess_pt": [
+        "Sem danos conhecidos pelos alimentos",
+        "Desconforto estomacal e dor de cabeça em altas doses de suplementos",
+        "Relatos de danos nos rins e fígado (doses muito altas)"
+      ],
+      "sources_pt": [
+        "Brócolis",
+        "Grãos integrais",
+        "Suco de uva",
+        "Carne"
+      ],
+      "name_ar": "الكروم",
+      "function_ar": "يُعتقد أنه يدعم عمل الإنسولين ويساعد في استقلاب الكربوهيدرات والدهون والبروتينات؛ ونقصه نادر.",
+      "deficiency_ar": [
+        "عدم استقرار سكر الدم",
+        "أعراض عصبية نادراً (في حالات التغذية الوريدية طويلة الأمد)",
+        "فقدان الوزن"
+      ],
+      "excess_ar": [
+        "لا يوجد ضرر معروف من الغذاء",
+        "اضطراب في المعدة وصداع عند الجرعات العالية من المكملات",
+        "تقارير عن تلف الكلى والكبد (عند الجرعات العالية جداً)"
+      ],
+      "sources_ar": [
+        "البروكلي",
+        "الحبوب الكاملة",
+        "عصير العنب",
+        "اللحوم"
+      ],
+      "name_zh": "铬",
+      "function_zh": "被认为有助于增强胰岛素作用并协助碳水化合物、脂肪和蛋白质代谢；缺乏较为罕见。",
+      "deficiency_zh": [
+        "血糖不稳定",
+        "极少数出现神经症状（见于长期静脉营养患者）",
+        "体重下降"
+      ],
+      "excess_zh": [
+        "来自食物的摄入尚无已知危害",
+        "大剂量补充剂可致胃部不适和头痛",
+        "有肾脏和肝脏损伤报告（极高剂量）"
+      ],
+      "sources_zh": [
+        "西兰花",
+        "全谷物",
+        "葡萄汁",
+        "肉类"
+      ]
     },
     {
       "id": "molybdenum",
@@ -1174,7 +3106,75 @@
       ],
       "daily_need": "45 mcg",
       "upper_limit": "2000 mcg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Molibdeno",
+      "function_es": "Forma parte de enzimas que descomponen aminoácidos y algunas toxinas; su deficiencia es muy poco frecuente.",
+      "deficiency_es": [
+        "La deficiencia es muy rara en personas sanas",
+        "En nutrición intravenosa prolongada: latidos rápidos, dolor de cabeza, confusión"
+      ],
+      "excess_es": [
+        "Dolor articular similar a la gota",
+        "Deficiencia de cobre (en ingestas altas)",
+        "Efectos nerviosos y renales en dosis altas"
+      ],
+      "sources_es": [
+        "Legumbres",
+        "Cereales integrales",
+        "Frutos secos",
+        "Hígado"
+      ],
+      "name_pt": "Molibdênio",
+      "function_pt": "Faz parte de enzimas que decompõem aminoácidos e algumas toxinas; a deficiência é muito rara.",
+      "deficiency_pt": [
+        "A deficiência é muito rara em pessoas saudáveis",
+        "Em nutrição intravenosa prolongada: batimentos rápidos, dor de cabeça, confusão mental"
+      ],
+      "excess_pt": [
+        "Dor articular semelhante à gota",
+        "Deficiência de cobre (em ingestões elevadas)",
+        "Efeitos neurológicos e renais em altas doses"
+      ],
+      "sources_pt": [
+        "Leguminosas",
+        "Grãos integrais",
+        "Oleaginosas",
+        "Fígado"
+      ],
+      "name_ar": "الموليبدينوم",
+      "function_ar": "يدخل في تركيب إنزيمات تفكك الأحماض الأمينية وبعض السموم؛ ونقصه نادر جداً.",
+      "deficiency_ar": [
+        "النقص نادر جداً لدى الأشخاص الأصحاء",
+        "في التغذية الوريدية طويلة الأمد: تسارع نبض القلب، صداع، تشوش ذهني"
+      ],
+      "excess_ar": [
+        "ألم في المفاصل يشبه النقرس",
+        "نقص النحاس (عند الإفراط في تناوله)",
+        "تأثيرات على الأعصاب والكلى عند الجرعات العالية"
+      ],
+      "sources_ar": [
+        "البقوليات",
+        "الحبوب الكاملة",
+        "المكسرات",
+        "الكبد"
+      ],
+      "name_zh": "钼",
+      "function_zh": "参与分解氨基酸和部分毒素的酶的组成部分；缺乏非常罕见。",
+      "deficiency_zh": [
+        "健康人群中极少出现缺乏",
+        "长期静脉营养时可出现：心率加快、头痛、意识混乱"
+      ],
+      "excess_zh": [
+        "痛风样关节痛",
+        "铜缺乏（高摄入量时）",
+        "大剂量对神经和肾脏产生影响"
+      ],
+      "sources_zh": [
+        "豆类",
+        "全谷物",
+        "坚果",
+        "动物肝脏"
+      ]
     },
     {
       "id": "fluoride",
@@ -1215,7 +3215,75 @@
       ],
       "daily_need": "3–4 mg",
       "upper_limit": "10 mg",
-      "source": "NIH ODS"
+      "source": "NIH ODS",
+      "name_es": "Flúor",
+      "function_es": "Fortalece el esmalte dental, reduce las caries y contribuye a la mineralización ósea.",
+      "deficiency_es": [
+        "Mayor riesgo de caries dental",
+        "Mineralización dental débil en niños"
+      ],
+      "excess_es": [
+        "Fluorosis dental en niños: manchas blancas o marrones en los dientes",
+        "Fluorosis esquelética y rigidez articular en ingestas muy altas",
+        "Náuseas y vómitos en caso de sobredosis"
+      ],
+      "sources_es": [
+        "Pasta dental con flúor y agua potable",
+        "Té",
+        "Mariscos",
+        "Algunos pescados enlatados"
+      ],
+      "name_pt": "Flúor",
+      "function_pt": "Fortalece o esmalte dos dentes, reduz cáries e contribui para a mineralização óssea.",
+      "deficiency_pt": [
+        "Maior risco de cárie dentária",
+        "Mineralização dentária fraca em crianças"
+      ],
+      "excess_pt": [
+        "Fluorose dentária em crianças: manchas branco-acastanhadas nos dentes",
+        "Fluorose esquelética e rigidez articular em ingestões muito altas",
+        "Náusea e vômito em caso de superdosagem"
+      ],
+      "sources_pt": [
+        "Creme dental fluoretado e água potável",
+        "Chá",
+        "Frutos do mar",
+        "Alguns peixes enlatados"
+      ],
+      "name_ar": "الفلورايد",
+      "function_ar": "يقوّي مينا الأسنان، ويقلل التسوس، ويساهم في تمعدن العظام.",
+      "deficiency_ar": [
+        "زيادة خطر تسوس الأسنان",
+        "ضعف تمعدن الأسنان لدى الأطفال"
+      ],
+      "excess_ar": [
+        "تسمم الأسنان بالفلور لدى الأطفال: بقع بيضاء أو بنية على الأسنان",
+        "تسمم العظام بالفلور وتيبس المفاصل عند الإفراط الشديد",
+        "غثيان وقيء عند الجرعة الزائدة"
+      ],
+      "sources_ar": [
+        "معجون الأسنان ومياه الشرب المفلورة",
+        "الشاي",
+        "المأكولات البحرية",
+        "بعض الأسماك المعلبة"
+      ],
+      "name_zh": "氟",
+      "function_zh": "强化牙釉质、减少蛀牙并有助于骨骼矿化。",
+      "deficiency_zh": [
+        "龋齿（蛀牙）风险增加",
+        "儿童牙齿矿化不良"
+      ],
+      "excess_zh": [
+        "儿童氟斑牙：牙齿出现白斑或褐斑",
+        "极高摄入量可致氟骨症和关节僵硬",
+        "过量摄入引起恶心和呕吐"
+      ],
+      "sources_zh": [
+        "含氟牙膏和饮用水",
+        "茶",
+        "海鲜",
+        "部分罐头鱼类"
+      ]
     },
     {
       "id": "histidine",
@@ -1255,7 +3323,75 @@
         "Soy and legumes"
       ],
       "daily_need": "10 mg/kg",
-      "source": "WHO/FAO/UNU"
+      "source": "WHO/FAO/UNU",
+      "name_es": "Histidina",
+      "function_es": "Se utiliza para producir histamina y hemoglobina, y ayuda a reparar tejidos y proteger la vaina que recubre las células nerviosas.",
+      "deficiency_es": [
+        "La deficiencia es rara en personas que consumen suficiente proteína",
+        "Piel seca y síntomas similares al eccema",
+        "Anemia y fatiga"
+      ],
+      "excess_es": [
+        "No se ha establecido un límite superior; las cantidades procedentes de alimentos no son perjudiciales",
+        "Dosis altas de suplementos pueden causar malestar estomacal"
+      ],
+      "sources_es": [
+        "Carne, aves y pescado",
+        "Lácteos",
+        "Huevos",
+        "Soja y legumbres"
+      ],
+      "name_pt": "Histidina",
+      "function_pt": "Usada para produzir histamina e hemoglobina, além de ajudar a reparar tecidos e proteger a bainha dos neurônios.",
+      "deficiency_pt": [
+        "A deficiência é rara em quem consome proteína suficiente",
+        "Pele seca e sintomas semelhantes ao eczema",
+        "Anemia e fadiga"
+      ],
+      "excess_pt": [
+        "Nenhum limite máximo foi estabelecido; quantidades dos alimentos não fazem mal",
+        "Altas doses de suplementos podem causar desconforto estomacal"
+      ],
+      "sources_pt": [
+        "Carne, aves e peixes",
+        "Laticínios",
+        "Ovos",
+        "Soja e leguminosas"
+      ],
+      "name_ar": "الهيستيدين",
+      "function_ar": "يُستخدم في إنتاج الهستامين والهيموغلوبين، ويساعد على ترميم الأنسجة وحماية الغلاف المحيط بالخلايا العصبية.",
+      "deficiency_ar": [
+        "النقص نادر لدى من يتناولون كمية كافية من البروتين",
+        "جفاف الجلد وأعراض تشبه الإكزيما",
+        "فقر الدم والإرهاق"
+      ],
+      "excess_ar": [
+        "لم يُحدَّد حد أعلى؛ والكميات الموجودة في الغذاء غير ضارة",
+        "الجرعات العالية من المكملات قد تسبب اضطراباً في المعدة"
+      ],
+      "sources_ar": [
+        "اللحوم والدواجن والأسماك",
+        "منتجات الألبان",
+        "البيض",
+        "الصويا والبقوليات"
+      ],
+      "name_zh": "组氨酸",
+      "function_zh": "用于合成组胺和血红蛋白，并有助于修复组织和保护神经细胞周围的髓鞘。",
+      "deficiency_zh": [
+        "蛋白质摄入充足的人群很少缺乏",
+        "皮肤干燥和湿疹样症状",
+        "贫血和疲劳"
+      ],
+      "excess_zh": [
+        "尚未设定可耐受最高摄入量；来自食物的摄入量无害",
+        "大剂量补充剂可能引起胃部不适"
+      ],
+      "sources_zh": [
+        "肉类、禽类和鱼类",
+        "乳制品",
+        "鸡蛋",
+        "大豆和豆类"
+      ]
     },
     {
       "id": "isoleucine",
@@ -1299,7 +3435,83 @@
         "Lentils and peanuts"
       ],
       "daily_need": "20 mg/kg",
-      "source": "WHO/FAO/UNU"
+      "source": "WHO/FAO/UNU",
+      "name_es": "Isoleucina",
+      "function_es": "Aminoácido de cadena ramificada que participa en el metabolismo muscular, la producción de energía, la formación de hemoglobina y el equilibrio del azúcar en sangre.",
+      "deficiency_es": [
+        "Pérdida y debilidad muscular",
+        "Fatiga",
+        "Cambios de humor",
+        "Cicatrización lenta de heridas"
+      ],
+      "excess_es": [
+        "No se ha establecido un límite superior",
+        "Suplementos altos en aminoácidos de cadena ramificada se han asociado con náuseas, fatiga y pérdida de coordinación",
+        "Peligrosa en la enfermedad de la orina con olor a jarabe de arce (MSUD)"
+      ],
+      "sources_es": [
+        "Aves, carne y pescado",
+        "Huevos",
+        "Lácteos",
+        "Lentejas y cacahuetes (maní)"
+      ],
+      "name_pt": "Isoleucina",
+      "function_pt": "Aminoácido de cadeia ramificada envolvido no metabolismo muscular, produção de energia, formação de hemoglobina e equilíbrio da glicemia.",
+      "deficiency_pt": [
+        "Perda muscular e fraqueza",
+        "Fadiga",
+        "Alterações de humor",
+        "Cicatrização lenta de feridas"
+      ],
+      "excess_pt": [
+        "Nenhum limite máximo foi estabelecido",
+        "Altas doses de suplementos de aminoácidos ramificados foram associadas a náusea, fadiga e perda de coordenação",
+        "Perigoso na doença da urina em xarope de bordo (MSUD)"
+      ],
+      "sources_pt": [
+        "Aves, carne e peixes",
+        "Ovos",
+        "Laticínios",
+        "Lentilha e amendoim"
+      ],
+      "name_ar": "الأيزولوسين",
+      "function_ar": "حمض أميني متفرع السلسلة يشارك في استقلاب العضلات، وإنتاج الطاقة، وتكوين الهيموغلوبين، وتوازن سكر الدم.",
+      "deficiency_ar": [
+        "فقدان العضلات وضعفها",
+        "إرهاق",
+        "تقلبات مزاجية",
+        "بطء التئام الجروح"
+      ],
+      "excess_ar": [
+        "لم يُحدَّد حد أعلى",
+        "ارتبطت الجرعات العالية من مكملات الأحماض الأمينية متفرعة السلسلة بالغثيان والإرهاق وفقدان التناسق الحركي",
+        "خطير في مرض بول شراب القيقب (MSUD)"
+      ],
+      "sources_ar": [
+        "الدواجن واللحوم والأسماك",
+        "البيض",
+        "منتجات الألبان",
+        "العدس والفول السوداني"
+      ],
+      "name_zh": "异亮氨酸",
+      "function_zh": "一种支链氨基酸，参与肌肉代谢、能量生成、血红蛋白形成和血糖平衡。",
+      "deficiency_zh": [
+        "肌肉流失和无力",
+        "疲劳",
+        "情绪波动",
+        "伤口愈合缓慢"
+      ],
+      "excess_zh": [
+        "尚未设定可耐受最高摄入量",
+        "高剂量支链氨基酸补充剂与恶心、疲劳和协调能力下降有关",
+        "对枫糖尿症（MSUD）患者有危险"
+      ],
+      "sources_zh": [
+        "禽类、肉类和鱼类",
+        "鸡蛋",
+        "乳制品",
+        "扁豆和花生"
+      ]
     },
     {
       "id": "leucine",
@@ -1343,7 +3555,83 @@
         "Soy and legumes"
       ],
       "daily_need": "39 mg/kg",
-      "source": "WHO/FAO/UNU"
+      "source": "WHO/FAO/UNU",
+      "name_es": "Leucina",
+      "function_es": "Aminoácido de cadena ramificada que estimula la síntesis de proteína muscular y ayuda a la cicatrización de heridas y al equilibrio del azúcar en sangre.",
+      "deficiency_es": [
+        "Pérdida muscular",
+        "Fatiga y debilidad",
+        "Cicatrización lenta de heridas",
+        "Mareos"
+      ],
+      "excess_es": [
+        "No se ha establecido un límite superior",
+        "Dosis muy altas: náuseas, fatiga y oscilaciones del azúcar en sangre",
+        "Peligrosa en la enfermedad de la orina con olor a jarabe de arce (MSUD)"
+      ],
+      "sources_es": [
+        "Carne y pescado",
+        "Leche y queso",
+        "Huevos",
+        "Soja y legumbres"
+      ],
+      "name_pt": "Leucina",
+      "function_pt": "Aminoácido de cadeia ramificada que estimula a síntese de proteína muscular e auxilia a cicatrização e o equilíbrio da glicemia.",
+      "deficiency_pt": [
+        "Perda muscular",
+        "Fadiga e fraqueza",
+        "Cicatrização lenta de feridas",
+        "Tontura"
+      ],
+      "excess_pt": [
+        "Nenhum limite máximo foi estabelecido",
+        "Doses muito altas: náusea, fadiga e oscilações na glicemia",
+        "Perigoso na doença da urina em xarope de bordo (MSUD)"
+      ],
+      "sources_pt": [
+        "Carne e peixes",
+        "Leite e queijo",
+        "Ovos",
+        "Soja e leguminosas"
+      ],
+      "name_ar": "اللوسين",
+      "function_ar": "حمض أميني متفرع السلسلة يحفز بناء بروتين العضلات ويساعد في التئام الجروح وتوازن سكر الدم.",
+      "deficiency_ar": [
+        "فقدان الكتلة العضلية",
+        "إرهاق وضعف عام",
+        "بطء التئام الجروح",
+        "دوخة"
+      ],
+      "excess_ar": [
+        "لم يُحدَّد حد أعلى",
+        "الجرعات العالية جداً: غثيان وإرهاق وتقلبات في سكر الدم",
+        "خطير في مرض بول شراب القيقب (MSUD)"
+      ],
+      "sources_ar": [
+        "اللحوم والأسماك",
+        "الحليب والجبن",
+        "البيض",
+        "الصويا والبقوليات"
+      ],
+      "name_zh": "亮氨酸",
+      "function_zh": "一种支链氨基酸，可启动肌肉蛋白质合成，并有助于伤口愈合和血糖平衡。",
+      "deficiency_zh": [
+        "肌肉流失",
+        "疲劳和乏力",
+        "伤口愈合缓慢",
+        "头晕"
+      ],
+      "excess_zh": [
+        "尚未设定可耐受最高摄入量",
+        "极高剂量：恶心、疲劳和血糖波动",
+        "对枫糖尿症（MSUD）患者有危险"
+      ],
+      "sources_zh": [
+        "肉类和鱼类",
+        "牛奶和奶酪",
+        "鸡蛋",
+        "大豆和豆类"
+      ]
     },
     {
       "id": "lysine",
@@ -1389,7 +3677,87 @@
         "Quinoa"
       ],
       "daily_need": "30 mg/kg",
-      "source": "WHO/FAO/UNU"
+      "source": "WHO/FAO/UNU",
+      "name_es": "Lisina",
+      "function_es": "Se utiliza para producir colágeno y carnitina y para absorber calcio; también apoya el sistema inmunitario.",
+      "deficiency_es": [
+        "Fatiga y pérdida de apetito",
+        "Náuseas",
+        "Caída del cabello",
+        "Anemia",
+        "Crecimiento lento en niños"
+      ],
+      "excess_es": [
+        "No se ha establecido un límite superior",
+        "Dosis altas de suplementos: calambres estomacales y diarrea",
+        "Dosis muy altas pueden sobrecargar los riñones"
+      ],
+      "sources_es": [
+        "Carne, aves y pescado",
+        "Lácteos",
+        "Legumbres",
+        "Quinoa"
+      ],
+      "name_pt": "Lisina",
+      "function_pt": "Usada para produzir colágeno e carnitina e absorver cálcio; também auxilia a imunidade.",
+      "deficiency_pt": [
+        "Fadiga e perda de apetite",
+        "Náusea",
+        "Queda de cabelo",
+        "Anemia",
+        "Crescimento lento em crianças"
+      ],
+      "excess_pt": [
+        "Nenhum limite máximo foi estabelecido",
+        "Altas doses de suplementos: cólicas estomacais e diarreia",
+        "Doses muito altas podem sobrecarregar os rins"
+      ],
+      "sources_pt": [
+        "Carne, aves e peixes",
+        "Laticínios",
+        "Leguminosas",
+        "Quinoa"
+      ],
+      "name_ar": "اللايسين",
+      "function_ar": "يدخل في تصنيع الكولاجين والكارنيتين وامتصاص الكالسيوم، كما يدعم المناعة.",
+      "deficiency_ar": [
+        "إرهاق وفقدان الشهية",
+        "غثيان",
+        "تساقط الشعر",
+        "فقر الدم",
+        "بطء النمو لدى الأطفال"
+      ],
+      "excess_ar": [
+        "لم يُحدَّد حد أعلى",
+        "جرعات المكملات العالية: تقلصات المعدة وإسهال",
+        "الجرعات العالية جداً قد تشكل عبئاً على الكلى"
+      ],
+      "sources_ar": [
+        "اللحوم والدواجن والأسماك",
+        "منتجات الألبان",
+        "البقوليات",
+        "الكينوا"
+      ],
+      "name_zh": "赖氨酸",
+      "function_zh": "用于合成胶原蛋白和肉碱并促进钙吸收；也支持免疫功能。",
+      "deficiency_zh": [
+        "疲劳和食欲不振",
+        "恶心",
+        "脱发",
+        "贫血",
+        "儿童生长发育迟缓"
+      ],
+      "excess_zh": [
+        "尚未设定可耐受最高摄入量",
+        "大剂量补充剂：胃痉挛和腹泻",
+        "极高剂量可能加重肾脏负担"
+      ],
+      "sources_zh": [
+        "肉类、禽类和鱼类",
+        "乳制品",
+        "豆类",
+        "藜麦"
+      ]
     },
     {
       "id": "methionine",
@@ -1433,7 +3801,83 @@
         "Sesame and Brazil nuts"
       ],
       "daily_need": "15 mg/kg",
-      "source": "WHO/FAO/UNU"
+      "source": "WHO/FAO/UNU",
+      "name_es": "Metionina",
+      "function_es": "Aminoácido azufrado que es fuente de cisteína, creatina y muchas reacciones de metilación en el cuerpo, apoyando la salud del hígado y los tejidos. Su necesidad se calcula junto con la cisteína.",
+      "deficiency_es": [
+        "La deficiencia es rara en personas que consumen suficiente proteína",
+        "Cambios en el cabello y la piel",
+        "Hígado graso",
+        "Crecimiento lento en niños"
+      ],
+      "excess_es": [
+        "Aumento de homocisteína en sangre y riesgo vascular",
+        "Puede empeorar la enfermedad hepática",
+        "Dosis altas de suplementos: náuseas y somnolencia"
+      ],
+      "sources_es": [
+        "Carne y pescado",
+        "Huevos",
+        "Lácteos",
+        "Sésamo y nueces de Brasil"
+      ],
+      "name_pt": "Metionina",
+      "function_pt": "Aminoácido sulfurado que origina cisteína, creatina e diversas reações de metilação no corpo, auxiliando o fígado e os tecidos. A necessidade é contabilizada junto com a cisteína.",
+      "deficiency_pt": [
+        "A deficiência é rara em quem consome proteína suficiente",
+        "Alterações nos cabelos e na pele",
+        "Gordura no fígado",
+        "Crescimento lento em crianças"
+      ],
+      "excess_pt": [
+        "Aumento da homocisteína no sangue e risco vascular",
+        "Pode agravar doenças do fígado",
+        "Altas doses de suplementos: náusea e sonolência"
+      ],
+      "sources_pt": [
+        "Carne e peixes",
+        "Ovos",
+        "Laticínios",
+        "Gergelim e castanha-do-pará"
+      ],
+      "name_ar": "الميثيونين",
+      "function_ar": "حمض أميني يحتوي على الكبريت، وهو مصدر السيستين والكرياتين والعديد من تفاعلات الميثيل في الجسم، مما يدعم صحة الكبد والأنسجة. ويُحسب الاحتياج منه مع السيستين معاً.",
+      "deficiency_ar": [
+        "النقص نادر لدى من يتناولون كمية كافية من البروتين",
+        "تغيرات في الشعر والجلد",
+        "تراكم الدهون في الكبد",
+        "بطء النمو لدى الأطفال"
+      ],
+      "excess_ar": [
+        "ارتفاع الهوموسيستين في الدم وزيادة مخاطر الأوعية الدموية",
+        "قد يفاقم أمراض الكبد",
+        "جرعات المكملات العالية: غثيان ونعاس"
+      ],
+      "sources_ar": [
+        "اللحوم والأسماك",
+        "البيض",
+        "منتجات الألبان",
+        "السمسم والجوز البرازيلي"
+      ],
+      "name_zh": "蛋氨酸",
+      "function_zh": "一种含硫氨基酸，是半胱氨酸、肌酸及体内多种甲基化反应的来源，支持肝脏和组织健康。其需要量通常与半胱氨酸合并计算。",
+      "deficiency_zh": [
+        "蛋白质摄入充足的人群很少缺乏",
+        "头发和皮肤变化",
+        "脂肪肝",
+        "儿童生长迟缓"
+      ],
+      "excess_zh": [
+        "血液同型半胱氨酸升高及血管风险",
+        "可能加重肝病病情",
+        "大剂量补充剂：恶心和嗜睡"
+      ],
+      "sources_zh": [
+        "肉类和鱼类",
+        "鸡蛋",
+        "乳制品",
+        "芝麻和巴西坚果"
+      ]
     },
     {
       "id": "phenylalanine",
@@ -1477,7 +3921,83 @@
         "Aspartame products (avoided in PKU)"
       ],
       "daily_need": "25 mg/kg",
-      "source": "WHO/FAO/UNU"
+      "source": "WHO/FAO/UNU",
+      "name_es": "Fenilalanina",
+      "function_es": "Precursor del aminoácido tirosina y de mensajeros químicos como la dopamina y la adrenalina. Su necesidad se calcula junto con la tirosina.",
+      "deficiency_es": [
+        "La deficiencia es rara en personas que consumen suficiente proteína",
+        "Fatiga y cambios de humor",
+        "Problemas de memoria y atención",
+        "Pérdida de apetito"
+      ],
+      "excess_es": [
+        "Su acumulación en la fenilcetonuria (PKU) causa daño cerebral; quienes la padecen necesitan una dieta restringida",
+        "Dosis altas de suplementos: dolor de cabeza y náuseas",
+        "Aumento de la presión arterial (en personas sensibles)"
+      ],
+      "sources_es": [
+        "Carne y pescado",
+        "Huevos y lácteos",
+        "Soja y legumbres",
+        "Productos con aspartamo (se evitan en la PKU)"
+      ],
+      "name_pt": "Fenilalanina",
+      "function_pt": "Precursora do aminoácido tirosina e de mensageiros químicos como dopamina e adrenalina. A necessidade é contabilizada junto com a tirosina.",
+      "deficiency_pt": [
+        "A deficiência é rara em quem consome proteína suficiente",
+        "Fadiga e alterações de humor",
+        "Problemas de memória e atenção",
+        "Perda de apetite"
+      ],
+      "excess_pt": [
+        "O acúmulo na fenilcetonúria (PKU) causa danos cerebrais; essas pessoas precisam de dieta restrita",
+        "Altas doses de suplementos: dor de cabeça e náusea",
+        "Aumento da pressão arterial (em pessoas sensíveis)"
+      ],
+      "sources_pt": [
+        "Carne e peixes",
+        "Ovos e laticínios",
+        "Soja e leguminosas",
+        "Produtos com aspartame (evitados na PKU)"
+      ],
+      "name_ar": "الفينيل ألانين",
+      "function_ar": "سلفٌ للحمض الأميني التيروسين ولنواقل كيميائية مثل الدوبامين والأدرينالين. ويُحسب الاحتياج منه مع التيروسين معاً.",
+      "deficiency_ar": [
+        "النقص نادر لدى من يتناولون كمية كافية من البروتين",
+        "إرهاق وتقلبات مزاجية",
+        "مشاكل في الذاكرة والانتباه",
+        "فقدان الشهية"
+      ],
+      "excess_ar": [
+        "تراكمه في مرض بيلة الفينيل كيتون (PKU) يسبب تلفاً في الدماغ؛ لذا يحتاج المصابون إلى نظام غذائي مقيد",
+        "جرعات المكملات العالية: صداع وغثيان",
+        "ارتفاع ضغط الدم (لدى الأشخاص الحساسين)"
+      ],
+      "sources_ar": [
+        "اللحوم والأسماك",
+        "البيض ومنتجات الألبان",
+        "الصويا والبقوليات",
+        "المنتجات المحتوية على الأسبارتام (تُتجنَّب في مرض PKU)"
+      ],
+      "name_zh": "苯丙氨酸",
+      "function_zh": "酪氨酸以及多巴胺、肾上腺素等信号物质的前体。其需要量通常与酪氨酸合并计算。",
+      "deficiency_zh": [
+        "蛋白质摄入充足的人群很少缺乏",
+        "疲劳和情绪波动",
+        "记忆力和注意力问题",
+        "食欲不振"
+      ],
+      "excess_zh": [
+        "苯丙酮尿症（PKU）患者体内蓄积会导致脑损伤；此类人群需严格限制饮食",
+        "大剂量补充剂：头痛和恶心",
+        "血压升高（敏感人群）"
+      ],
+      "sources_zh": [
+        "肉类和鱼类",
+        "鸡蛋和乳制品",
+        "大豆和豆类",
+        "含阿斯巴甜的产品（PKU患者应避免）"
+      ]
     },
     {
       "id": "threonine",
@@ -1519,7 +4039,79 @@
         "Lentils and hazelnuts"
       ],
       "daily_need": "15 mg/kg",
-      "source": "WHO/FAO/UNU"
+      "source": "WHO/FAO/UNU",
+      "name_es": "Treonina",
+      "function_es": "Se utiliza para producir colágeno y elastina, fabricar anticuerpos y regular el metabolismo de las grasas en el hígado.",
+      "deficiency_es": [
+        "La deficiencia es rara en personas que consumen suficiente proteína",
+        "Acumulación de grasa en el hígado",
+        "Irritabilidad e inquietud",
+        "Problemas digestivos"
+      ],
+      "excess_es": [
+        "No se ha establecido un límite superior; las cantidades procedentes de alimentos no son perjudiciales",
+        "Dosis altas de suplementos pueden causar malestar estomacal"
+      ],
+      "sources_es": [
+        "Carne, aves y pescado",
+        "Lácteos",
+        "Huevos",
+        "Lentejas y avellanas"
+      ],
+      "name_pt": "Treonina",
+      "function_pt": "Usada para produzir colágeno e elastina, formar anticorpos e auxiliar o metabolismo de gorduras no fígado.",
+      "deficiency_pt": [
+        "A deficiência é rara em quem consome proteína suficiente",
+        "Acúmulo de gordura no fígado",
+        "Irritabilidade e inquietação",
+        "Problemas digestivos"
+      ],
+      "excess_pt": [
+        "Nenhum limite máximo foi estabelecido; quantidades dos alimentos não fazem mal",
+        "Altas doses de suplementos podem causar desconforto estomacal"
+      ],
+      "sources_pt": [
+        "Carne, aves e peixes",
+        "Laticínios",
+        "Ovos",
+        "Lentilha e avelãs"
+      ],
+      "name_ar": "الثريونين",
+      "function_ar": "يُستخدم في تكوين الكولاجين والإيلاستين، وإنتاج الأجسام المضادة، واستقلاب الدهون في الكبد.",
+      "deficiency_ar": [
+        "النقص نادر لدى من يتناولون كمية كافية من البروتين",
+        "تراكم الدهون في الكبد",
+        "تهيج عصبي وتململ",
+        "مشاكل هضمية"
+      ],
+      "excess_ar": [
+        "لم يُحدَّد حد أعلى؛ والكميات الموجودة في الغذاء غير ضارة",
+        "الجرعات العالية من المكملات قد تسبب اضطراباً في المعدة"
+      ],
+      "sources_ar": [
+        "اللحوم والدواجن والأسماك",
+        "منتجات الألبان",
+        "البيض",
+        "العدس والبندق"
+      ],
+      "name_zh": "苏氨酸",
+      "function_zh": "用于合成胶原蛋白和弹性蛋白、生成抗体，并参与肝脏中的脂肪代谢。",
+      "deficiency_zh": [
+        "蛋白质摄入充足的人群很少缺乏",
+        "肝脏脂肪蓄积",
+        "易怒和烦躁不安",
+        "消化问题"
+      ],
+      "excess_zh": [
+        "尚未设定可耐受最高摄入量；来自食物的摄入量无害",
+        "大剂量补充剂可能引起胃部不适"
+      ],
+      "sources_zh": [
+        "肉类、禽类和鱼类",
+        "乳制品",
+        "鸡蛋",
+        "扁豆和榛子"
+      ]
     },
     {
       "id": "tryptophan",
@@ -1563,7 +4155,83 @@
         "Pumpkin seeds and peanuts"
       ],
       "daily_need": "4 mg/kg",
-      "source": "WHO/FAO/UNU"
+      "source": "WHO/FAO/UNU",
+      "name_es": "Triptófano",
+      "function_es": "Precursor de la serotonina y la melatonina, que regulan el estado de ánimo y el sueño, y de la vitamina B3 (niacina).",
+      "deficiency_es": [
+        "Problemas de sueño",
+        "Estado de ánimo bajo, irritabilidad",
+        "Cambios en el apetito",
+        "Pelagra cuando también hay déficit de niacina"
+      ],
+      "excess_es": [
+        "Náuseas, mareos y somnolencia (dosis altas de suplementos)",
+        "Riesgo de síndrome serotoninérgico junto con antidepresivos (ISRS)",
+        "Consulte a un médico antes de tomar suplementos"
+      ],
+      "sources_es": [
+        "Pavo y pollo",
+        "Leche y queso",
+        "Huevos",
+        "Semillas de calabaza y cacahuetes (maní)"
+      ],
+      "name_pt": "Triptofano",
+      "function_pt": "Precursor da serotonina e melatonina, que regulam o humor e o sono, e da vitamina B3 (niacina).",
+      "deficiency_pt": [
+        "Problemas para dormir",
+        "Humor deprimido, irritabilidade",
+        "Alterações de apetite",
+        "Pelagra quando a niacina também está baixa"
+      ],
+      "excess_pt": [
+        "Náusea, tontura e sonolência (altas doses de suplementos)",
+        "Risco de síndrome serotoninérgica junto com antidepressivos (ISRSs)",
+        "Consulte um médico antes de tomar suplementos"
+      ],
+      "sources_pt": [
+        "Peru e frango",
+        "Leite e queijo",
+        "Ovos",
+        "Sementes de abóbora e amendoim"
+      ],
+      "name_ar": "التريبتوفان",
+      "function_ar": "سلفٌ للسيروتونين والميلاتونين اللذين ينظمان المزاج والنوم، وكذلك لفيتامين ب3 (النياسين).",
+      "deficiency_ar": [
+        "اضطرابات النوم",
+        "انخفاض المزاج وتهيج عصبي",
+        "تغيرات في الشهية",
+        "مرض البلاغرا عند انخفاض النياسين أيضاً"
+      ],
+      "excess_ar": [
+        "غثيان ودوخة ونعاس (عند الجرعات العالية من المكملات)",
+        "خطر متلازمة السيروتونين عند تناوله مع مضادات الاكتئاب (SSRI)",
+        "استشر الطبيب قبل تناول المكملات"
+      ],
+      "sources_ar": [
+        "الديك الرومي والدجاج",
+        "الحليب والجبن",
+        "البيض",
+        "بذور اليقطين والفول السوداني"
+      ],
+      "name_zh": "色氨酸",
+      "function_zh": "调节情绪和睡眠的血清素与褪黑素的前体，也是维生素B3（烟酸）的前体。",
+      "deficiency_zh": [
+        "睡眠问题",
+        "情绪低落、易怒",
+        "食欲变化",
+        "当烟酸同时偏低时可致糙皮病"
+      ],
+      "excess_zh": [
+        "恶心、头晕和嗜睡（大剂量补充剂）",
+        "与抗抑郁药（SSRI）合用有引发血清素综合征的风险",
+        "服用补充剂前应咨询医生"
+      ],
+      "sources_zh": [
+        "火鸡肉和鸡肉",
+        "牛奶和奶酪",
+        "鸡蛋",
+        "南瓜籽和花生"
+      ]
     },
     {
       "id": "valine",
@@ -1607,7 +4275,83 @@
         "Peanuts"
       ],
       "daily_need": "26 mg/kg",
-      "source": "WHO/FAO/UNU"
+      "source": "WHO/FAO/UNU",
+      "name_es": "Valina",
+      "function_es": "Aminoácido de cadena ramificada necesario para el crecimiento muscular, la producción de energía y el buen funcionamiento del sistema nervioso.",
+      "deficiency_es": [
+        "Debilidad muscular",
+        "Insomnio e irritabilidad",
+        "Problemas de coordinación",
+        "Pérdida de apetito"
+      ],
+      "excess_es": [
+        "No se ha establecido un límite superior",
+        "Ingestas muy altas: hormigueo en la piel y náuseas",
+        "Peligrosa en la enfermedad de la orina con olor a jarabe de arce (MSUD)"
+      ],
+      "sources_es": [
+        "Carne y pescado",
+        "Lácteos",
+        "Soja y legumbres",
+        "Cacahuetes (maní)"
+      ],
+      "name_pt": "Valina",
+      "function_pt": "Aminoácido de cadeia ramificada necessário para o crescimento muscular, produção de energia e bom funcionamento do sistema nervoso.",
+      "deficiency_pt": [
+        "Fraqueza muscular",
+        "Insônia e irritabilidade",
+        "Problemas de coordenação",
+        "Perda de apetite"
+      ],
+      "excess_pt": [
+        "Nenhum limite máximo foi estabelecido",
+        "Ingestões muito altas: formigamento na pele e náusea",
+        "Perigoso na doença da urina em xarope de bordo (MSUD)"
+      ],
+      "sources_pt": [
+        "Carne e peixes",
+        "Laticínios",
+        "Soja e leguminosas",
+        "Amendoim"
+      ],
+      "name_ar": "الفالين",
+      "function_ar": "حمض أميني متفرع السلسلة ضروري لنمو العضلات وإنتاج الطاقة وسلامة عمل الجهاز العصبي.",
+      "deficiency_ar": [
+        "ضعف العضلات",
+        "أرق وتهيج عصبي",
+        "مشاكل في التناسق الحركي",
+        "فقدان الشهية"
+      ],
+      "excess_ar": [
+        "لم يُحدَّد حد أعلى",
+        "الكميات العالية جداً: تنميل في الجلد وغثيان",
+        "خطير في مرض بول شراب القيقب (MSUD)"
+      ],
+      "sources_ar": [
+        "اللحوم والأسماك",
+        "منتجات الألبان",
+        "الصويا والبقوليات",
+        "الفول السوداني"
+      ],
+      "name_zh": "缬氨酸",
+      "function_zh": "一种支链氨基酸，是肌肉生长、能量生成和神经系统正常运转所必需的。",
+      "deficiency_zh": [
+        "肌肉无力",
+        "失眠和易怒",
+        "协调能力问题",
+        "食欲不振"
+      ],
+      "excess_zh": [
+        "尚未设定可耐受最高摄入量",
+        "极高摄入量：皮肤刺痛感和恶心",
+        "对枫糖尿症（MSUD）患者有危险"
+      ],
+      "sources_zh": [
+        "肉类和鱼类",
+        "乳制品",
+        "大豆和豆类",
+        "花生"
+      ]
     }
   ]
 }

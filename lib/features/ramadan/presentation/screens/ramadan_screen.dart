@@ -222,6 +222,7 @@ class RamadanScreen extends ConsumerWidget {
             source: location.plate != null ? 'city' : 'gps',
             copy: ramadanCopy(l10n),
             waterCopy: waterReminderCopy(l10n),
+            confirmExactAlarm: () => showExactAlarmExplanationDialog(context),
           );
       return;
     }
@@ -238,6 +239,7 @@ class RamadanScreen extends ConsumerWidget {
           source: pick.source,
           copy: ramadanCopy(freshL10n),
           waterCopy: waterReminderCopy(freshL10n),
+          confirmExactAlarm: () => showExactAlarmExplanationDialog(context),
         );
   }
 

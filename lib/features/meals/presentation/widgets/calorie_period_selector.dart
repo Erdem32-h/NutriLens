@@ -80,12 +80,17 @@ class CaloriePeriodSelector extends ConsumerWidget {
               onPressed: () =>
                   ref.read(calorieOffsetProvider.notifier).state = offset + 1,
             ),
-            Text(
-              _rangeLabel(context, period, offset),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: colors.textPrimary,
+            GestureDetector(
+              onTap: offset == 0
+                  ? null
+                  : () => ref.read(calorieOffsetProvider.notifier).state = 0,
+              child: Text(
+                _rangeLabel(context, period, offset),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: offset == 0 ? colors.textPrimary : colors.primary,
+                ),
               ),
             ),
             IconButton(

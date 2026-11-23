@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/extensions/l10n_extension.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
 /// Notification text, resolved by the caller from `context.l10n`. [sahurBody]
@@ -20,3 +25,29 @@ RamadanCopy ramadanCopy(AppLocalizations l10n) => (
   iftarTitle: l10n.ramadanIftarTitle,
   iftarBody: l10n.ramadanIftarBody,
 );
+
+/// Explains why Android 14+ jumps to the system "Alarms & reminders" settings
+/// screen before [NotificationService.requestExactAlarms] is invoked. Returns
+/// `false` on non-Android platforms or when the user skips.
+Future<bool> showExactAlarmExplanationDialog(BuildContext context) async {
+  if (kIsWeb || !Platform.isAndroid || !context.mounted) return false;
+  final l10n = context.l10n;
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l10n.exactAlarmTitle),
+      content: Text(l10n.exactAlarmBody),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: Text(l10n.continueText),
+        ),
+      ],
+    ),
+  );
+  return confirmed == true;
+}

@@ -22,6 +22,8 @@ private let kKeyMealCount = "today_meal_count"
 private let kKeyProteinPct = "today_protein_pct"
 private let kKeyCarbPct = "today_carb_pct"
 private let kKeyFatPct = "today_fat_pct"
+private let kKeyWaterGlasses = "today_water_glasses"
+private let kKeyWaterGoal = "today_water_goal"
 
 struct NutriLensEntry: TimelineEntry {
     let date: Date
@@ -30,11 +32,13 @@ struct NutriLensEntry: TimelineEntry {
     let proteinPct: Int
     let carbPct: Int
     let fatPct: Int
+    let waterGlasses: Int
+    let waterGoal: Int
 }
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> NutriLensEntry {
-        NutriLensEntry(date: Date(), kcal: 0, mealCount: 0, proteinPct: 0, carbPct: 0, fatPct: 0)
+        NutriLensEntry(date: Date(), kcal: 0, mealCount: 0, proteinPct: 0, carbPct: 0, fatPct: 0, waterGlasses: 0, waterGoal: 10)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (NutriLensEntry) -> Void) {
@@ -58,7 +62,10 @@ struct Provider: TimelineProvider {
         let protein = defaults?.integer(forKey: kKeyProteinPct) ?? 0
         let carb = defaults?.integer(forKey: kKeyCarbPct) ?? 0
         let fat = defaults?.integer(forKey: kKeyFatPct) ?? 0
-        return NutriLensEntry(date: Date(), kcal: kcal, mealCount: count, proteinPct: protein, carbPct: carb, fatPct: fat)
+        let water = defaults?.integer(forKey: kKeyWaterGlasses) ?? 0
+        let rawGoal = defaults?.integer(forKey: kKeyWaterGoal) ?? 10
+        let goal = rawGoal > 0 ? rawGoal : 10
+        return NutriLensEntry(date: Date(), kcal: kcal, mealCount: count, proteinPct: protein, carbPct: carb, fatPct: fat, waterGlasses: water, waterGoal: goal)
     }
 }
 
@@ -115,9 +122,9 @@ struct NutriLensHomeWidgetView: View {
                         .foregroundColor(Color.white.opacity(0.7))
                 }
 
-                Text("\(entry.mealCount) öğün · bugün")
-                    .font(.system(size: 12))
-                    .foregroundColor(Color.white.opacity(0.7))
+                Text("\(entry.mealCount) öğün · 💧 \(entry.waterGlasses)/\(entry.waterGoal)")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Color.white.opacity(0.8))
 
                 // .systemSmall'da bu 3 satırlık makro bloğu toplam yüksekliği
                 // Tara butonunu kırpacak kadar aşıyor — sadece .systemMedium'da
@@ -136,20 +143,35 @@ struct NutriLensHomeWidgetView: View {
 
                 Spacer()
 
-                // "Tara" button — wraps the deep-link URL the app picks
-                // up via `HomeWidget.widgetClicked` to route to /scanner.
-                Link(destination: URL(string: "nutrilens://widget/scan")!) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "camera.viewfinder")
-                            .font(.system(size: 13, weight: .bold))
-                        Text("Tara")
-                            .font(.system(size: 14, weight: .bold))
+                // Action buttons: Tara + 1-tap +1 Su deep-links.
+                HStack(spacing: 6) {
+                    Link(destination: URL(string: "nutrilens://widget/scan")!) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "camera.viewfinder")
+                                .font(.system(size: 12, weight: .bold))
+                            Text("Tara")
+                                .font(.system(size: 13, weight: .bold))
+                        }
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity)
+                        .background(Color(red: 0.91, green: 0.97, blue: 0.94))
+                        .foregroundColor(Color(red: 0.10, green: 0.10, blue: 0.10))
+                        .cornerRadius(19)
                     }
-                    .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity)
-                    .background(Color(red: 0.91, green: 0.97, blue: 0.94))
-                    .foregroundColor(Color(red: 0.10, green: 0.10, blue: 0.10))
-                    .cornerRadius(19)
+
+                    Link(destination: URL(string: "nutrilens://widget/water-add")!) {
+                        HStack(spacing: 3) {
+                            Image(systemName: "drop.fill")
+                                .font(.system(size: 11, weight: .bold))
+                            Text("+1")
+                                .font(.system(size: 13, weight: .bold))
+                        }
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity)
+                        .background(Color(red: 0.84, green: 0.93, blue: 1.0))
+                        .foregroundColor(Color(red: 0.12, green: 0.23, blue: 0.37))
+                        .cornerRadius(19)
+                    }
                 }
             }
             .padding(14)

@@ -115,7 +115,7 @@ void main() {
     expect(find.text('Bu besin bulunamadı'), findsOneWidget);
   });
 
-  testWidgets('locale zh renders English text, no empty section titles', (
+  testWidgets('locale zh renders localized UI text, no empty section titles', (
     t,
   ) async {
     _tallScreen(t);
@@ -123,11 +123,11 @@ void main() {
     await t.pumpAndSettle();
 
     expect(find.text('Vitamin C'), findsOneWidget);
-    expect(find.text('What it does'), findsOneWidget);
-    expect(find.text('If you get too little'), findsOneWidget);
-    expect(find.text('If you get too much'), findsOneWidget);
-    expect(find.text('Where to find it'), findsOneWidget);
-    expect(find.textContaining('not medical advice'), findsOneWidget);
+    expect(find.text('主要作用'), findsOneWidget);
+    expect(find.text('缺乏表现'), findsOneWidget);
+    expect(find.text('过量风险'), findsOneWidget);
+    expect(find.text('食物来源'), findsOneWidget);
+    expect(find.textContaining('不构成医疗建议'), findsOneWidget);
   });
 
   testWidgets('scrolls without overflow at textScale 2.0', (t) async {

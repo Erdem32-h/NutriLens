@@ -2,7 +2,7 @@
   "@@locale": "tr",
   "appTitle": "NutriLens",
   "scanner": "Tarayıcı",
-  "history": "Ürün Geçmişi",
+  "history": "Geçmiş",
   "favorites": "Favoriler",
   "profile": "Profil",
   "login": "Giriş Yap",
@@ -1058,5 +1058,7 @@
   },
   "nutrientLoadError": "İçerik yüklenemedi",
   "nutrientRetry": "Tekrar dene",
-  "nutrientNotFound": "Bu besin bulunamadı"
+  "nutrientNotFound": "Bu besin bulunamadı",
+  "exactAlarmTitle": "Tam zamanlı sahur & iftar bildirimi",
+  "exactAlarmBody": "Android 14+ cihazlarda sahur ve iftar hatırlatıcılarının gecikmeden çalması için \"Alarmlar ve hatırlatıcılar\" izni gerekir. İstemezseniz bildirimler yine gelir ancak birkaç dakika gecikebilir."
 }

@@ -154,6 +154,7 @@ class RamadanController {
     required String source,
     required RamadanCopy copy,
     required WaterReminderCopy waterCopy,
+    Future<bool> Function()? confirmExactAlarm,
   }) async {
     // Ask for notification permission (spec §5 step 2) but enable whatever
     // the answer — the countdown card's "Bildirimler kapalı — aç" link
@@ -169,7 +170,12 @@ class RamadanController {
     // back to inexact scheduling (see NotificationService.canScheduleExact).
     try {
       if (!await _notifications.canScheduleExact()) {
-        await _notifications.requestExactAlarms();
+        final proceed = confirmExactAlarm == null
+            ? true
+            : await confirmExactAlarm();
+        if (proceed) {
+          await _notifications.requestExactAlarms();
+        }
       }
     } catch (e) {
       debugPrint('[Ramadan] exact alarm permission request failed: $e');

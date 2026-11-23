@@ -1,17 +1,36 @@
 import 'package:equatable/equatable.dart';
 
-/// A value written in Turkish and English. Every other UI language reads the
-/// English text, so [of] never returns an empty value for a supported locale.
+/// A value written in Turkish and English, with optional translations for
+/// Spanish, Portuguese, Arabic, and Chinese. Missing locales fall back to
+/// English so [of] never returns an empty value.
 class Localized<T> extends Equatable {
   final T tr;
   final T en;
+  final T? es;
+  final T? pt;
+  final T? ar;
+  final T? zh;
 
-  const Localized({required this.tr, required this.en});
+  const Localized({
+    required this.tr,
+    required this.en,
+    this.es,
+    this.pt,
+    this.ar,
+    this.zh,
+  });
 
-  T of(String languageCode) => languageCode == 'tr' ? tr : en;
+  T of(String languageCode) => switch (languageCode) {
+    'tr' => tr,
+    'es' => es ?? en,
+    'pt' => pt ?? en,
+    'ar' => ar ?? en,
+    'zh' => zh ?? en,
+    _ => en,
+  };
 
   @override
-  List<Object?> get props => [tr, en];
+  List<Object?> get props => [tr, en, es, pt, ar, zh];
 }
 
 enum NutrientCategory { vitamin, mineral, aminoAcid }
