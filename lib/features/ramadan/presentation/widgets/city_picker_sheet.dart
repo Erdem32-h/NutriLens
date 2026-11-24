@@ -97,12 +97,15 @@ class _CityPickerSheetState extends ConsumerState<CityPickerSheet> {
         maxChildSize: 0.92,
         expand: false,
         builder: (ctx, scrollController) {
-          return Container(
-            decoration: BoxDecoration(
-              color: colors.cozy.floating,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(28),
-              ),
+          // Material, not a decorated Container: the city ListTiles paint
+          // their ink on the nearest Material, which a coloured
+          // DecoratedBox would cover (taps showed no ripple and debug
+          // builds asserted).
+          return Material(
+            color: colors.cozy.floating,
+            clipBehavior: Clip.antiAlias,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(28),
             ),
             child: SafeArea(
               top: false,
