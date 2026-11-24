@@ -22,7 +22,6 @@ class NutrientGuideEntryTile extends StatelessWidget {
       icon: Icons.menu_book_rounded,
       title: l10n.nutrientGuideTitle,
       subtitle: l10n.nutrientGuideSubtitle,
-      trailing: const Icon(Icons.chevron_right_rounded),
       onTap: () => context.pushNamed(
         RouteNames.nutrientGuide,
         queryParameters: {'tab': ?tab},
