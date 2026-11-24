@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:drift/native.dart';
@@ -331,6 +332,56 @@ void main() {
       expect(find.text('Kaydetme başarısız'), findsNothing);
       expect(analytics.wasTracked(FunnelEvents.mealAdded), isTrue);
       expect(analytics.wasTracked(FunnelEvents.metricsPromptShown), isFalse);
+    });
+
+    testWidgets(
+        'geri tusuyla otomatik kayit auto_back olarak izlenir ve sihirbaz acilmaz',
+        (tester) async {
+      // Geri tusu PopScope uzerinden _saveMeal'i cagiriyor. Bu kayit,
+      // kullanicinin "Ogunlere kaydet"e bastigi kayitla ayni `food_scan`
+      // kaynagiyla izlenirse aktivasyon hunisi (meal_analysis_succeeded →
+      // meal_added) yapay olarak sisiyor; ayrica geri cikan kullaniciya
+      // tam ekran sihirbaz acilmamali.
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      final analytics = _RecordingAnalytics();
+      final router = _routerFor(image);
+
+      await tester.pumpWidget(
+        _subject(
+          analytics: analytics,
+          prefs: prefs,
+          db: db,
+          image: image,
+          router: router,
+        ),
+      );
+
+      router.push('/food-result');
+      await tester.pump();
+      await _drain(tester, () => tester.any(find.text('Öğünlere kaydet')));
+
+      unawaited(
+        Navigator.of(tester.element(find.byType(FoodResultScreen))).maybePop(),
+      );
+      await _drain(
+        tester,
+        () =>
+            tester.any(find.byType(MetricsWizardScreen)) ||
+            !tester.any(find.byType(FoodResultScreen)),
+      );
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byType(MetricsWizardScreen), findsNothing);
+      expect(find.byType(FoodResultScreen), findsNothing);
+      expect(analytics.wasTracked(FunnelEvents.metricsPromptShown), isFalse);
+      final added = analytics.calls.where(
+        (c) => c.$1 == FunnelEvents.mealAdded,
+      );
+      expect(added, hasLength(1));
+      expect(added.single.$2['source'], 'auto_back');
     });
   });
 }

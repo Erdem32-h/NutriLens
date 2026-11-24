@@ -40,7 +40,7 @@ final class ProductRepositoryImpl implements ProductRepository {
           return Right(cached);
         }
         // Stale cache — try resolver, fall back to stale
-        return _resolveWithFallback(barcode, staleCached: cached);
+        return await _resolveWithFallback(barcode, staleCached: cached);
       }
     } on CacheException {
       // Cache read failed, continue to resolver

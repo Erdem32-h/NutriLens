@@ -377,7 +377,12 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
     }
   }
 
-  Future<void> _saveMeal() async {
+  /// [auto] is true when the back gesture saved the meal (see PopScope).
+  /// It is tracked as its own source so the activation funnel does not
+  /// count a reflexive back as a deliberate save, and it skips the
+  /// full-screen prompts (metrics wizard, store review, notification
+  /// permission, guest account offer) a user who is leaving should not see.
+  Future<void> _saveMeal({bool auto = false}) async {
     if (_result == null || _result!.isNotFood || _saving) return;
 
     // Set before the fast check so a second tap during its awaits is ignored;
@@ -460,7 +465,10 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       // this counts as activation.
       ref
           .read(analyticsServiceProvider)
-          .track(FunnelEvents.mealAdded, props: {'source': 'food_scan'});
+          .track(
+            FunnelEvents.mealAdded,
+            props: {'source': auto ? 'auto_back' : 'food_scan'},
+          );
       // Premium users get a cloud backup; free users stay local-only.
       // Best-effort, fire-and-forget — the local save above is authoritative.
       if (ref.read(isPremiumProvider)) {
@@ -499,7 +507,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
             .get(userId);
         if (!mounted) return;
 
-        if (metrics == null && await promptStore.shouldPrompt()) {
+        if (!auto && metrics == null && await promptStore.shouldPrompt()) {
           if (!mounted) return;
           ref
               .read(analyticsServiceProvider)
@@ -523,7 +531,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
         final shouldPrompt = await ref
             .read(reviewPromptStoreProvider)
             .recordMealSavedAndShouldPrompt();
-        if (shouldPrompt) {
+        if (!auto && shouldPrompt) {
           final inAppReview = InAppReview.instance;
           // Only consume the one-shot flag when the ask actually went out —
           // if the OS review API isn't available yet (e.g. no Play Store
@@ -546,7 +554,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       // reminder and arm tomorrow's (mealLoggedToday: true).
       try {
         final notifPromptStore = ref.read(notificationPromptStoreProvider);
-        if (await notifPromptStore.shouldPrompt()) {
+        if (!auto && await notifPromptStore.shouldPrompt()) {
           await notifPromptStore.markAsked();
           await ref.read(notificationServiceProvider).requestPermission();
         }
@@ -565,7 +573,9 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
 
       // Guest value moment: offer an account once, but never stacked on top
       // of the full-screen metrics wizard this same save already opened.
-      if (!metricsWizardShown && await _offerAccountToGuest()) return;
+      if (!auto && !metricsWizardShown && await _offerAccountToGuest()) {
+        return;
+      }
       if (!mounted) return;
 
       final messenger = ScaffoldMessenger.of(context);
@@ -661,7 +671,7 @@ class _FoodResultScreenState extends ConsumerState<FoodResultScreen> {
       canPop: !_hasMeal || _saved || _discarded || _saving,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop || !_hasMeal || _saved || _discarded || _saving) return;
-        unawaited(_saveMeal());
+        unawaited(_saveMeal(auto: true));
       },
       child: Scaffold(
         backgroundColor: colors.background,
