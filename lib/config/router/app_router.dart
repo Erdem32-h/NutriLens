@@ -227,7 +227,9 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/nutrients',
         name: RouteNames.nutrientGuide,
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const NutrientGuideScreen(),
+        builder: (context, state) => NutrientGuideScreen(
+          initialTab: state.uri.queryParameters['tab'],
+        ),
       ),
       GoRoute(
         path: '/nutrient/:id',

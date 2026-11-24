@@ -5,6 +5,7 @@ import '../../../../core/extensions/l10n_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/cozy_tile.dart';
 import '../../domain/entities/nutrient_entity.dart';
+import '../amino_class_label.dart';
 import '../providers/nutrient_provider.dart';
 
 class NutrientDetailScreen extends ConsumerWidget {
@@ -76,6 +77,16 @@ class _DetailBody extends StatelessWidget {
           const SizedBox(height: 2),
           Text(alt, style: TextStyle(fontSize: 14, color: colors.textMuted)),
         ],
+        if (nutrient.aminoClass != null) ...[
+          const SizedBox(height: 10),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Chip(
+              label: Text(aminoClassLabel(l10n, nutrient.aminoClass!)),
+              visualDensity: VisualDensity.compact,
+            ),
+          ),
+        ],
         const SizedBox(height: 16),
         _SectionCard(
           icon: Icons.favorite_outline_rounded,
@@ -103,7 +114,7 @@ class _DetailBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _BodyText(nutrient.dailyNeed),
+              _BodyText(nutrient.dailyNeed ?? l10n.nutrientNoDailyNeed),
               if (nutrient.upperLimit != null) ...[
                 const SizedBox(height: 10),
                 Text(

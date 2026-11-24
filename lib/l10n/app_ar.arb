@@ -1007,6 +1007,10 @@
   "nutrientLoadError": "تعذر تحميل المحتوى",
   "nutrientRetry": "حاول مجدداً",
   "nutrientNotFound": "العنصر الغذائي غير موجود",
+  "nutrientAminoEssential": "أساسي · يجب الحصول عليه من الطعام",
+  "nutrientAminoConditional": "أساسي مشروط · قد يلزم من الطعام أحياناً",
+  "nutrientAminoNonEssential": "غير أساسي · يصنعه الجسم",
+  "nutrientNoDailyNeed": "لا توجد حاجة يومية محددة لأن الجسم يصنعه.",
   "exactAlarmTitle": "تنبيهات السحور والإفطار في وقتها",
   "exactAlarmBody": "يتطلب Android 14+ إذن \"المنبهات والتذكيرات\" لتصل تنبيهات السحور والإفطار في موعدها الدقيق. يمكنك التخطي لكن قد تتأخر التنبيهات قليلاً."
 }

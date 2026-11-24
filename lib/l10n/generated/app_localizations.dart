@@ -4492,6 +4492,30 @@ abstract class AppLocalizations {
   /// **'Bu besin bulunamadı'**
   String get nutrientNotFound;
 
+  /// No description provided for @nutrientAminoEssential.
+  ///
+  /// In tr, this message translates to:
+  /// **'Temel · besinle alınmalı'**
+  String get nutrientAminoEssential;
+
+  /// No description provided for @nutrientAminoConditional.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şartlı temel · bazen besinle alınmalı'**
+  String get nutrientAminoConditional;
+
+  /// No description provided for @nutrientAminoNonEssential.
+  ///
+  /// In tr, this message translates to:
+  /// **'Temel değil · vücut üretir'**
+  String get nutrientAminoNonEssential;
+
+  /// No description provided for @nutrientNoDailyNeed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vücut ürettiği için belirlenmiş bir günlük ihtiyaç yoktur.'**
+  String get nutrientNoDailyNeed;
+
   /// No description provided for @exactAlarmTitle.
   ///
   /// In tr, this message translates to:

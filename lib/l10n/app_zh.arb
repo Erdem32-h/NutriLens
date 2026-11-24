@@ -1007,6 +1007,10 @@
   "nutrientLoadError": "无法加载内容",
   "nutrientRetry": "重试",
   "nutrientNotFound": "未找到该营养素",
+  "nutrientAminoEssential": "必需 · 须从食物获取",
+  "nutrientAminoConditional": "条件必需 · 有时需从食物获取",
+  "nutrientAminoNonEssential": "非必需 · 身体可自行合成",
+  "nutrientNoDailyNeed": "身体可自行合成，因此没有设定每日需要量。",
   "exactAlarmTitle": "准时提醒封斋与开斋",
   "exactAlarmBody": "Android 14+ 需要“闹钟和提醒”权限以确保准时提醒。如果跳过，提醒仍会送达但可能略有延迟。"
 }

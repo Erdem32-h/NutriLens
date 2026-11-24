@@ -1059,6 +1059,10 @@
   "nutrientLoadError": "İçerik yüklenemedi",
   "nutrientRetry": "Tekrar dene",
   "nutrientNotFound": "Bu besin bulunamadı",
+  "nutrientAminoEssential": "Temel · besinle alınmalı",
+  "nutrientAminoConditional": "Şartlı temel · bazen besinle alınmalı",
+  "nutrientAminoNonEssential": "Temel değil · vücut üretir",
+  "nutrientNoDailyNeed": "Vücut ürettiği için belirlenmiş bir günlük ihtiyaç yoktur.",
   "exactAlarmTitle": "Tam zamanlı sahur & iftar bildirimi",
   "exactAlarmBody": "Android 14+ cihazlarda sahur ve iftar hatırlatıcılarının gecikmeden çalması için \"Alarmlar ve hatırlatıcılar\" izni gerekir. İstemezseniz bildirimler yine gelir ancak birkaç dakika gecikebilir."
 }

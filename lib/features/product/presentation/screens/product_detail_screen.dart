@@ -34,6 +34,7 @@ import '../widgets/dietary_suitability_section.dart';
 import '../widgets/score_breakdown_card.dart';
 import '../../../../core/widgets/app_tap_card.dart';
 import '../../../../core/widgets/premium_blur_gate.dart';
+import '../../../nutrient_guide/presentation/widgets/nutrient_guide_entry_tile.dart';
 import '../widgets/digital_link_card.dart';
 import '../../../../core/utils/gs1_digital_link.dart';
 
@@ -676,6 +677,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           personalDailyCalories: ref.watch(personalDailyCaloriesProvider),
         ),
       ),
+      // Outside the premium gate on purpose: the guide is free for everyone.
+      const SizedBox(height: 8),
+      const NutrientGuideEntryTile(),
     ];
   }
 

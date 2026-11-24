@@ -9,11 +9,16 @@ import '../../../../core/theme/cozy_tokens.dart';
 import '../../../../core/widgets/cozy_tile.dart';
 import '../../domain/entities/nutrient_entity.dart';
 import '../../domain/nutrient_search.dart';
+import '../amino_class_label.dart';
 import '../providers/nutrient_provider.dart';
 
 /// Vitamins / minerals / amino acids reference, searchable by name.
 class NutrientGuideScreen extends ConsumerStatefulWidget {
-  const NutrientGuideScreen({super.key});
+  /// Tab to open on: `vitamin`, `mineral` or `amino` (the `?tab=` query
+  /// parameter). Anything else opens on vitamins.
+  final String? initialTab;
+
+  const NutrientGuideScreen({super.key, this.initialTab});
 
   @override
   ConsumerState<NutrientGuideScreen> createState() =>
@@ -31,6 +36,11 @@ class _NutrientGuideScreenState extends ConsumerState<NutrientGuideScreen> {
 
     return DefaultTabController(
       length: NutrientCategory.values.length,
+      initialIndex: switch (widget.initialTab) {
+        'mineral' => NutrientCategory.mineral.index,
+        'amino' => NutrientCategory.aminoAcid.index,
+        _ => NutrientCategory.vitamin.index,
+      },
       child: Scaffold(
         backgroundColor: colors.background,
         appBar: AppBar(
@@ -146,22 +156,61 @@ class _CategoryList extends StatelessWidget {
       NutrientCategory.aminoAcid => (cozy.lilac, Icons.bubble_chart_rounded),
     };
 
-    return ListView.builder(
+    Widget tile(NutrientEntity n) => CozyTile(
+      tint: tint,
+      icon: icon,
+      title: n.name.of(languageCode),
+      subtitle: n.altName?.of(languageCode),
+      onTap: () => context.pushNamed(
+        RouteNames.nutrientDetail,
+        pathParameters: {'id': n.id},
+      ),
+    );
+
+    if (category != NutrientCategory.aminoAcid) {
+      return ListView.builder(
+        padding: const EdgeInsets.only(top: 8, bottom: 24),
+        itemCount: items.length,
+        itemBuilder: (context, i) => tile(items[i]),
+      );
+    }
+
+    // Amino acids: essential first, then conditional, then non-essential,
+    // each under a header; groups emptied by the search are left out.
+    final l10n = context.l10n;
+    return ListView(
       padding: const EdgeInsets.only(top: 8, bottom: 24),
-      itemCount: items.length,
-      itemBuilder: (context, i) {
-        final n = items[i];
-        return CozyTile(
-          tint: tint,
-          icon: icon,
-          title: n.name.of(languageCode),
-          subtitle: n.altName?.of(languageCode),
-          onTap: () => context.pushNamed(
-            RouteNames.nutrientDetail,
-            pathParameters: {'id': n.id},
-          ),
-        );
-      },
+      children: [
+        for (final cls in AminoAcidClass.values)
+          if (items.any((n) => n.aminoClass == cls)) ...[
+            _GroupHeader(
+              '${aminoClassLabel(l10n, cls)} '
+              '(${items.where((n) => n.aminoClass == cls).length})',
+            ),
+            for (final n in items.where((n) => n.aminoClass == cls)) tile(n),
+          ],
+      ],
+    );
+  }
+}
+
+class _GroupHeader extends StatelessWidget {
+  final String text;
+
+  const _GroupHeader(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 6),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: context.colors.textSecondary,
+        ),
+      ),
     );
   }
 }

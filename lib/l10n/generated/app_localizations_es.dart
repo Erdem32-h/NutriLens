@@ -2427,6 +2427,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get nutrientNotFound => 'Nutriente no encontrado';
 
   @override
+  String get nutrientAminoEssential => 'Esencial · debe venir de los alimentos';
+
+  @override
+  String get nutrientAminoConditional =>
+      'Condicional · a veces se necesita de los alimentos';
+
+  @override
+  String get nutrientAminoNonEssential => 'No esencial · el cuerpo lo produce';
+
+  @override
+  String get nutrientNoDailyNeed =>
+      'No hay una necesidad diaria establecida, ya que el cuerpo lo produce.';
+
+  @override
   String get exactAlarmTitle => 'Recordatorios exactos de sahur e iftar';
 
   @override

@@ -3288,6 +3288,7 @@
     {
       "id": "histidine",
       "category": "amino_acid",
+      "amino_class": "essential",
       "name_tr": "Histidin",
       "name_en": "Histidine",
       "function_tr": "Histamin ve hemoglobin yapımında rol alır, doku onarımına ve sinir hücrelerini saran kılıfın korunmasına yardımcı olur.",
@@ -3396,6 +3397,7 @@
     {
       "id": "isoleucine",
       "category": "amino_acid",
+      "amino_class": "essential",
       "name_tr": "İzolösin",
       "name_en": "Isoleucine",
       "function_tr": "Kas metabolizmasında, enerji üretiminde, hemoglobin yapımında ve kan şekeri dengesinde rol alan dallı zincirli bir amino asittir.",
@@ -3516,6 +3518,7 @@
     {
       "id": "leucine",
       "category": "amino_acid",
+      "amino_class": "essential",
       "name_tr": "Lösin",
       "name_en": "Leucine",
       "function_tr": "Kas proteini yapımını tetikleyen, yara iyileşmesine ve kan şekeri dengesine yardımcı olan dallı zincirli bir amino asittir.",
@@ -3636,6 +3639,7 @@
     {
       "id": "lysine",
       "category": "amino_acid",
+      "amino_class": "essential",
       "name_tr": "Lizin",
       "name_en": "Lysine",
       "function_tr": "Kolajen yapımı, kalsiyum emilimi ve hücre enerjisi için gerekli karnitin üretiminde rol alır; bağışıklığa da katkı sağlar.",
@@ -3762,6 +3766,7 @@
     {
       "id": "methionine",
       "category": "amino_acid",
+      "amino_class": "essential",
       "name_tr": "Metiyonin",
       "name_en": "Methionine",
       "function_tr": "Kükürt içeren bir amino asittir; sistein, kreatin ve vücuttaki birçok metil reaksiyonunun kaynağıdır, karaciğer ve doku sağlığına yardımcı olur. Gereksinim sisteinle birlikte hesaplanır.",
@@ -3882,6 +3887,7 @@
     {
       "id": "phenylalanine",
       "category": "amino_acid",
+      "amino_class": "essential",
       "name_tr": "Fenilalanin",
       "name_en": "Phenylalanine",
       "function_tr": "Tirozin amino asitinin, dopamin ve adrenalin gibi sinyal maddelerinin öncüsüdür. Gereksinim tirozinle birlikte hesaplanır.",
@@ -4002,6 +4008,7 @@
     {
       "id": "threonine",
       "category": "amino_acid",
+      "amino_class": "essential",
       "name_tr": "Treonin",
       "name_en": "Threonine",
       "function_tr": "Kolajen ve elastin yapımında, bağışıklık (antikor) üretiminde ve karaciğerde yağ metabolizmasında rol alır.",
@@ -4116,6 +4123,7 @@
     {
       "id": "tryptophan",
       "category": "amino_acid",
+      "amino_class": "essential",
       "name_tr": "Triptofan",
       "name_en": "Tryptophan",
       "function_tr": "Ruh hali ve uykuyu düzenleyen serotonin ile melatoninin, ayrıca B3 vitamininin (niasin) öncüsüdür.",
@@ -4236,6 +4244,7 @@
     {
       "id": "valine",
       "category": "amino_acid",
+      "amino_class": "essential",
       "name_tr": "Valin",
       "name_en": "Valine",
       "function_tr": "Kas gelişimi, enerji üretimi ve sinir sisteminin düzgün çalışması için gerekli, dallı zincirli bir amino asittir.",
@@ -4352,6 +4361,1110 @@
         "大豆和豆类",
         "花生"
       ]
+    },
+    {
+      "id": "arginine",
+      "category": "amino_acid",
+      "amino_class": "conditional",
+      "name_tr": "Arjinin",
+      "function_tr": "Vücudun nitrik oksit üretmesine yardım eder; kan damarlarının gevşemesi, yara iyileşmesi ve bağışıklık için önemlidir. Büyüme, yaralanma veya ağır hastalıkta ihtiyaç vücudun ürettiğini aşabilir.",
+      "deficiency_tr": [
+        "Sağlıklı yetişkinlerde nadirdir",
+        "Yara iyileşmesinde gecikme",
+        "Bağışıklıkta zayıflama"
+      ],
+      "excess_tr": [
+        "Yüksek doz takviyede mide bulantısı ve ishal",
+        "Kalp krizi geçirmiş kişilerde takviye önerilmez",
+        "Tansiyon ilacıyla birlikte tansiyonu fazla düşürebilir"
+      ],
+      "sources_tr": [
+        "Kırmızı et ve tavuk",
+        "Kabak çekirdeği ve yer fıstığı",
+        "Nohut ve mercimek"
+      ],
+      "name_en": "Arginine",
+      "function_en": "Helps the body make nitric oxide, which relaxes blood vessels, and supports wound healing and immunity. Growth, injury or serious illness can raise the need beyond what the body makes.",
+      "deficiency_en": [
+        "Rare in healthy adults",
+        "Slower wound healing",
+        "Weaker immunity"
+      ],
+      "excess_en": [
+        "High-dose supplements: nausea and diarrhea",
+        "Supplements are not advised after a heart attack",
+        "May lower blood pressure too much with blood pressure medicines"
+      ],
+      "sources_en": [
+        "Red meat and chicken",
+        "Pumpkin seeds and peanuts",
+        "Chickpeas and lentils"
+      ],
+      "name_es": "Arginina",
+      "function_es": "Ayuda al cuerpo a producir óxido nítrico, que relaja los vasos sanguíneos, y favorece la cicatrización y la inmunidad. El crecimiento, las lesiones o una enfermedad grave pueden elevar la necesidad por encima de lo que el cuerpo produce.",
+      "deficiency_es": [
+        "Rara en adultos sanos",
+        "Cicatrización más lenta",
+        "Inmunidad más débil"
+      ],
+      "excess_es": [
+        "Suplementos en dosis altas: náuseas y diarrea",
+        "No se recomiendan suplementos tras un infarto",
+        "Puede bajar demasiado la presión arterial junto con antihipertensivos"
+      ],
+      "sources_es": [
+        "Carne roja y pollo",
+        "Semillas de calabaza y cacahuetes",
+        "Garbanzos y lentejas"
+      ],
+      "name_pt": "Arginina",
+      "function_pt": "Ajuda o corpo a produzir óxido nítrico, que relaxa os vasos sanguíneos, e apoia a cicatrização e a imunidade. Crescimento, lesões ou doença grave podem elevar a necessidade além do que o corpo produz.",
+      "deficiency_pt": [
+        "Rara em adultos saudáveis",
+        "Cicatrização mais lenta",
+        "Imunidade mais fraca"
+      ],
+      "excess_pt": [
+        "Suplementos em doses altas: náusea e diarreia",
+        "Suplementos não são recomendados após um infarto",
+        "Pode baixar demais a pressão arterial com remédios para pressão"
+      ],
+      "sources_pt": [
+        "Carne vermelha e frango",
+        "Sementes de abóbora e amendoim",
+        "Grão-de-bico e lentilha"
+      ],
+      "name_ar": "الأرجينين",
+      "function_ar": "يساعد الجسم على إنتاج أكسيد النيتريك الذي يُرخي الأوعية الدموية، ويدعم التئام الجروح والمناعة. قد يرفع النمو أو الإصابة أو المرض الشديد الحاجة إليه فوق ما يصنعه الجسم.",
+      "deficiency_ar": [
+        "نادر لدى البالغين الأصحاء",
+        "بطء التئام الجروح",
+        "ضعف المناعة"
+      ],
+      "excess_ar": [
+        "المكملات بجرعات عالية: غثيان وإسهال",
+        "لا يُنصح بالمكملات بعد النوبة القلبية",
+        "قد يخفض ضغط الدم أكثر من اللازم مع أدوية الضغط"
+      ],
+      "sources_ar": [
+        "اللحوم الحمراء والدجاج",
+        "بذور اليقطين والفول السوداني",
+        "الحمص والعدس"
+      ],
+      "name_zh": "精氨酸",
+      "function_zh": "帮助身体生成一氧化氮，使血管舒张，并支持伤口愈合和免疫功能。生长期、受伤或重病时，需求可能超过身体自身的合成量。",
+      "deficiency_zh": [
+        "健康成年人中罕见",
+        "伤口愈合变慢",
+        "免疫力下降"
+      ],
+      "excess_zh": [
+        "高剂量补充剂：恶心和腹泻",
+        "心肌梗死后不建议服用补充剂",
+        "与降压药同用可能使血压过低"
+      ],
+      "sources_zh": [
+        "红肉和鸡肉",
+        "南瓜子和花生",
+        "鹰嘴豆和小扁豆"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "cysteine",
+      "category": "amino_acid",
+      "amino_class": "conditional",
+      "name_tr": "Sistein",
+      "function_tr": "Kükürt içeren bir amino asittir; vücudun ana antioksidanlarından glutatyonun ve saç, deri, tırnaktaki keratinin yapımında kullanılır. Vücut onu metiyoninden üretir; prematüre bebeklerde ve karaciğer hastalığında besinle alınması gerekebilir.",
+      "deficiency_tr": [
+        "Sağlıklı yetişkinlerde nadirdir",
+        "Antioksidan savunmada zayıflama",
+        "Saç ve tırnaklarda zayıflık"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor",
+        "Yüksek doz takviyede (NAC) bulantı, kusma ve ishal"
+      ],
+      "sources_tr": [
+        "Yumurta",
+        "Tavuk ve hindi",
+        "Yoğurt ve peynir",
+        "Ayçiçeği çekirdeği"
+      ],
+      "name_en": "Cysteine",
+      "function_en": "A sulfur-containing amino acid used to make glutathione, one of the body's main antioxidants, and keratin in hair, skin and nails. The body makes it from methionine; premature babies and people with liver disease may need it from food.",
+      "deficiency_en": [
+        "Rare in healthy adults",
+        "Weaker antioxidant defense",
+        "Weak hair and nails"
+      ],
+      "excess_en": [
+        "No known excess from food",
+        "High-dose supplements (NAC): nausea, vomiting and diarrhea"
+      ],
+      "sources_en": [
+        "Eggs",
+        "Chicken and turkey",
+        "Yogurt and cheese",
+        "Sunflower seeds"
+      ],
+      "name_es": "Cisteína",
+      "function_es": "Aminoácido azufrado que se usa para producir glutatión, uno de los principales antioxidantes del cuerpo, y la queratina del cabello, la piel y las uñas. El cuerpo la produce a partir de la metionina; los bebés prematuros y las personas con enfermedad hepática pueden necesitarla de los alimentos.",
+      "deficiency_es": [
+        "Rara en adultos sanos",
+        "Defensa antioxidante más débil",
+        "Cabello y uñas débiles"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación",
+        "Suplementos en dosis altas (NAC): náuseas, vómitos y diarrea"
+      ],
+      "sources_es": [
+        "Huevos",
+        "Pollo y pavo",
+        "Yogur y queso",
+        "Semillas de girasol"
+      ],
+      "name_pt": "Cisteína",
+      "function_pt": "Aminoácido com enxofre usado para produzir glutationa, um dos principais antioxidantes do corpo, e a queratina de cabelos, pele e unhas. O corpo a produz a partir da metionina; bebês prematuros e pessoas com doença hepática podem precisar obtê-la dos alimentos.",
+      "deficiency_pt": [
+        "Rara em adultos saudáveis",
+        "Defesa antioxidante mais fraca",
+        "Cabelos e unhas fracos"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação",
+        "Suplementos em doses altas (NAC): náusea, vômito e diarreia"
+      ],
+      "sources_pt": [
+        "Ovos",
+        "Frango e peru",
+        "Iogurte e queijo",
+        "Sementes de girassol"
+      ],
+      "name_ar": "السيستين",
+      "function_ar": "حمض أميني يحتوي على الكبريت، يُستخدم لصنع الجلوتاثيون، أحد أهم مضادات الأكسدة في الجسم، والكيراتين في الشعر والجلد والأظافر. يصنعه الجسم من الميثيونين؛ وقد يحتاجه الخدّج ومرضى الكبد من الطعام.",
+      "deficiency_ar": [
+        "نادر لدى البالغين الأصحاء",
+        "ضعف الدفاع المضاد للأكسدة",
+        "ضعف الشعر والأظافر"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام",
+        "المكملات بجرعات عالية (NAC): غثيان وقيء وإسهال"
+      ],
+      "sources_ar": [
+        "البيض",
+        "الدجاج والديك الرومي",
+        "الزبادي والجبن",
+        "بذور دوار الشمس"
+      ],
+      "name_zh": "半胱氨酸",
+      "function_zh": "一种含硫氨基酸，用于合成身体主要抗氧化物之一谷胱甘肽，以及头发、皮肤和指甲中的角蛋白。身体可由蛋氨酸合成；早产儿和肝病患者可能需要从食物中获取。",
+      "deficiency_zh": [
+        "健康成年人中罕见",
+        "抗氧化防御减弱",
+        "头发和指甲脆弱"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题",
+        "高剂量补充剂（NAC）：恶心、呕吐和腹泻"
+      ],
+      "sources_zh": [
+        "鸡蛋",
+        "鸡肉和火鸡肉",
+        "酸奶和奶酪",
+        "葵花籽"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "glutamine",
+      "category": "amino_acid",
+      "amino_class": "conditional",
+      "name_tr": "Glutamin",
+      "function_tr": "Kanda en bol bulunan amino asittir; bağırsak ve bağışıklık hücrelerine yakıt sağlar ve vücutta azot taşır. Yanık, ağır ameliyat ve ciddi hastalıkta ihtiyaç artar.",
+      "deficiency_tr": [
+        "Sağlıklı kişilerde nadirdir",
+        "Ağır hastalıkta bağırsak bariyerinde zayıflama",
+        "Enfeksiyonlara yatkınlık"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor",
+        "Yüksek doz takviyede şişkinlik ve bulantı",
+        "Karaciğer veya böbrek hastalığında takviye önerilmez"
+      ],
+      "sources_tr": [
+        "Et, balık ve yumurta",
+        "Süt ürünleri",
+        "Lahana ve ıspanak",
+        "Baklagiller"
+      ],
+      "name_en": "Glutamine",
+      "function_en": "The most plentiful amino acid in the blood; it fuels gut and immune cells and carries nitrogen around the body. Burns, major surgery and serious illness raise the need.",
+      "deficiency_en": [
+        "Rare in healthy people",
+        "Weaker gut barrier in severe illness",
+        "Proneness to infections"
+      ],
+      "excess_en": [
+        "No known excess from food",
+        "High-dose supplements: bloating and nausea",
+        "Supplements are not advised with liver or kidney disease"
+      ],
+      "sources_en": [
+        "Meat, fish and eggs",
+        "Dairy",
+        "Cabbage and spinach",
+        "Legumes"
+      ],
+      "name_es": "Glutamina",
+      "function_es": "Es el aminoácido más abundante en la sangre; sirve de combustible a las células intestinales e inmunitarias y transporta nitrógeno por el cuerpo. Las quemaduras, las cirugías mayores y las enfermedades graves aumentan la necesidad.",
+      "deficiency_es": [
+        "Rara en personas sanas",
+        "Barrera intestinal más débil en enfermedades graves",
+        "Mayor tendencia a las infecciones"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación",
+        "Suplementos en dosis altas: hinchazón y náuseas",
+        "No se recomiendan suplementos con enfermedad hepática o renal"
+      ],
+      "sources_es": [
+        "Carne, pescado y huevos",
+        "Lácteos",
+        "Col y espinacas",
+        "Legumbres"
+      ],
+      "name_pt": "Glutamina",
+      "function_pt": "É o aminoácido mais abundante no sangue; fornece energia às células do intestino e do sistema imune e transporta nitrogênio pelo corpo. Queimaduras, grandes cirurgias e doenças graves aumentam a necessidade.",
+      "deficiency_pt": [
+        "Rara em pessoas saudáveis",
+        "Barreira intestinal mais fraca em doenças graves",
+        "Maior propensão a infecções"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação",
+        "Suplementos em doses altas: inchaço e náusea",
+        "Suplementos não são recomendados com doença hepática ou renal"
+      ],
+      "sources_pt": [
+        "Carne, peixe e ovos",
+        "Laticínios",
+        "Repolho e espinafre",
+        "Leguminosas"
+      ],
+      "name_ar": "الغلوتامين",
+      "function_ar": "أكثر الأحماض الأمينية وفرة في الدم؛ يمدّ خلايا الأمعاء والمناعة بالطاقة وينقل النيتروجين في الجسم. تزيد الحروق والعمليات الجراحية الكبرى والأمراض الشديدة من الحاجة إليه.",
+      "deficiency_ar": [
+        "نادر لدى الأشخاص الأصحاء",
+        "ضعف الحاجز المعوي في الأمراض الشديدة",
+        "قابلية أكبر للعدوى"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام",
+        "المكملات بجرعات عالية: انتفاخ وغثيان",
+        "لا يُنصح بالمكملات مع أمراض الكبد أو الكلى"
+      ],
+      "sources_ar": [
+        "اللحوم والأسماك والبيض",
+        "منتجات الألبان",
+        "الملفوف والسبانخ",
+        "البقوليات"
+      ],
+      "name_zh": "谷氨酰胺",
+      "function_zh": "血液中含量最多的氨基酸；为肠道细胞和免疫细胞提供能量，并在体内运输氮。烧伤、大手术和重病会增加需求。",
+      "deficiency_zh": [
+        "健康人群中罕见",
+        "重病时肠道屏障减弱",
+        "易发生感染"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题",
+        "高剂量补充剂：腹胀和恶心",
+        "肝病或肾病患者不建议服用补充剂"
+      ],
+      "sources_zh": [
+        "肉类、鱼类和鸡蛋",
+        "乳制品",
+        "卷心菜和菠菜",
+        "豆类"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "glycine",
+      "category": "amino_acid",
+      "amino_class": "conditional",
+      "name_tr": "Glisin",
+      "function_tr": "En küçük amino asittir; kolajenin yaklaşık üçte birini oluşturur, sinir sisteminde sakinleştirici bir haberci olarak çalışır ve glutatyon ile kreatin yapımında kullanılır.",
+      "deficiency_tr": [
+        "Sağlıklı kişilerde nadirdir",
+        "Kolajen yapımında yetersizlik (deri, eklem)"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor",
+        "Yüksek doz takviyede mide rahatsızlığı ve uyku hali"
+      ],
+      "sources_tr": [
+        "Kemik suyu ve jelatin",
+        "Tavuk derisi ve et",
+        "Balık",
+        "Baklagiller"
+      ],
+      "name_en": "Glycine",
+      "function_en": "The smallest amino acid; it makes up about a third of collagen, acts as a calming messenger in the nervous system and is used to make glutathione and creatine.",
+      "deficiency_en": [
+        "Rare in healthy people",
+        "Less collagen building (skin, joints)"
+      ],
+      "excess_en": [
+        "No known excess from food",
+        "High-dose supplements: stomach upset and drowsiness"
+      ],
+      "sources_en": [
+        "Bone broth and gelatin",
+        "Chicken skin and meat",
+        "Fish",
+        "Legumes"
+      ],
+      "name_es": "Glicina",
+      "function_es": "Es el aminoácido más pequeño; forma cerca de un tercio del colágeno, actúa como mensajero calmante en el sistema nervioso y se usa para producir glutatión y creatina.",
+      "deficiency_es": [
+        "Rara en personas sanas",
+        "Menor formación de colágeno (piel, articulaciones)"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación",
+        "Suplementos en dosis altas: malestar estomacal y somnolencia"
+      ],
+      "sources_es": [
+        "Caldo de huesos y gelatina",
+        "Piel de pollo y carne",
+        "Pescado",
+        "Legumbres"
+      ],
+      "name_pt": "Glicina",
+      "function_pt": "É o menor aminoácido; forma cerca de um terço do colágeno, atua como mensageiro calmante no sistema nervoso e é usado para produzir glutationa e creatina.",
+      "deficiency_pt": [
+        "Rara em pessoas saudáveis",
+        "Menor formação de colágeno (pele, articulações)"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação",
+        "Suplementos em doses altas: desconforto estomacal e sonolência"
+      ],
+      "sources_pt": [
+        "Caldo de ossos e gelatina",
+        "Pele de frango e carne",
+        "Peixe",
+        "Leguminosas"
+      ],
+      "name_ar": "الغليسين",
+      "function_ar": "أصغر الأحماض الأمينية؛ يشكّل نحو ثلث الكولاجين، ويعمل ناقلاً مهدّئاً في الجهاز العصبي، ويُستخدم لصنع الجلوتاثيون والكرياتين.",
+      "deficiency_ar": [
+        "نادر لدى الأشخاص الأصحاء",
+        "نقص بناء الكولاجين (الجلد والمفاصل)"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام",
+        "المكملات بجرعات عالية: اضطراب المعدة والنعاس"
+      ],
+      "sources_ar": [
+        "مرق العظام والجيلاتين",
+        "جلد الدجاج واللحوم",
+        "الأسماك",
+        "البقوليات"
+      ],
+      "name_zh": "甘氨酸",
+      "function_zh": "最小的氨基酸；约占胶原蛋白的三分之一，在神经系统中起镇静信使作用，并用于合成谷胱甘肽和肌酸。",
+      "deficiency_zh": [
+        "健康人群中罕见",
+        "胶原蛋白合成不足（皮肤、关节）"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题",
+        "高剂量补充剂：胃部不适和嗜睡"
+      ],
+      "sources_zh": [
+        "骨头汤和明胶",
+        "鸡皮和肉类",
+        "鱼类",
+        "豆类"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "proline",
+      "category": "amino_acid",
+      "amino_class": "conditional",
+      "name_tr": "Prolin",
+      "function_tr": "Kolajenin temel yapı taşlarından biridir; deri, kıkırdak, tendon ve damarların sağlam kalmasına ve yara iyileşmesine katkı verir. Ağır yanık ve yaralanmalarda ihtiyaç artabilir.",
+      "deficiency_tr": [
+        "Sağlıklı kişilerde nadirdir",
+        "Yara iyileşmesinde gecikme"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor",
+        "Belirlenmiş bir üst sınır yok"
+      ],
+      "sources_tr": [
+        "Kemik suyu ve jelatin",
+        "Et ve balık",
+        "Süt ürünleri ve yumurta"
+      ],
+      "name_en": "Proline",
+      "function_en": "One of the main building blocks of collagen; it helps keep skin, cartilage, tendons and blood vessels strong and supports wound healing. Severe burns and injuries can raise the need.",
+      "deficiency_en": [
+        "Rare in healthy people",
+        "Slower wound healing"
+      ],
+      "excess_en": [
+        "No known excess from food",
+        "No upper limit has been set"
+      ],
+      "sources_en": [
+        "Bone broth and gelatin",
+        "Meat and fish",
+        "Dairy and eggs"
+      ],
+      "name_es": "Prolina",
+      "function_es": "Uno de los principales componentes del colágeno; ayuda a mantener fuertes la piel, el cartílago, los tendones y los vasos sanguíneos y favorece la cicatrización. Las quemaduras y lesiones graves pueden aumentar la necesidad.",
+      "deficiency_es": [
+        "Rara en personas sanas",
+        "Cicatrización más lenta"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación",
+        "No se ha establecido un límite superior"
+      ],
+      "sources_es": [
+        "Caldo de huesos y gelatina",
+        "Carne y pescado",
+        "Lácteos y huevos"
+      ],
+      "name_pt": "Prolina",
+      "function_pt": "Um dos principais componentes do colágeno; ajuda a manter fortes a pele, a cartilagem, os tendões e os vasos sanguíneos e apoia a cicatrização. Queimaduras e lesões graves podem aumentar a necessidade.",
+      "deficiency_pt": [
+        "Rara em pessoas saudáveis",
+        "Cicatrização mais lenta"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação",
+        "Nenhum limite máximo foi estabelecido"
+      ],
+      "sources_pt": [
+        "Caldo de ossos e gelatina",
+        "Carne e peixe",
+        "Laticínios e ovos"
+      ],
+      "name_ar": "البرولين",
+      "function_ar": "أحد اللبنات الأساسية للكولاجين؛ يساعد على بقاء الجلد والغضاريف والأوتار والأوعية الدموية قوية، ويدعم التئام الجروح. قد تزيد الحروق والإصابات الشديدة من الحاجة إليه.",
+      "deficiency_ar": [
+        "نادر لدى الأشخاص الأصحاء",
+        "بطء التئام الجروح"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام",
+        "لم يُحدَّد حد أعلى"
+      ],
+      "sources_ar": [
+        "مرق العظام والجيلاتين",
+        "اللحوم والأسماك",
+        "منتجات الألبان والبيض"
+      ],
+      "name_zh": "脯氨酸",
+      "function_zh": "胶原蛋白的主要组成成分之一；有助于保持皮肤、软骨、肌腱和血管的强韧，并支持伤口愈合。严重烧伤和创伤可能增加需求。",
+      "deficiency_zh": [
+        "健康人群中罕见",
+        "伤口愈合变慢"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题",
+        "尚未设定可耐受最高摄入量"
+      ],
+      "sources_zh": [
+        "骨头汤和明胶",
+        "肉类和鱼类",
+        "乳制品和鸡蛋"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "tyrosine",
+      "category": "amino_acid",
+      "amino_class": "conditional",
+      "name_tr": "Tirozin",
+      "function_tr": "Fenilalaninden üretilir; dopamin ve adrenalin gibi beyin habercilerinin, tiroid hormonlarının ve cilde renk veren melaninin yapımında kullanılır. Fenilketonüride (PKU) besinle alınması gerekir.",
+      "deficiency_tr": [
+        "Sağlıklı kişilerde nadirdir",
+        "PKU'da yorgunluk ve düşük ruh hali",
+        "Tiroid hormonu yapımında azalma"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor",
+        "MAO inhibitörü ilaç kullananlarda takviye tansiyonu tehlikeli şekilde yükseltebilir",
+        "Tiroid ilacı kullananlarda takviye önerilmez"
+      ],
+      "sources_tr": [
+        "Peynir",
+        "Tavuk, hindi ve balık",
+        "Soya",
+        "Badem ve kabak çekirdeği"
+      ],
+      "name_en": "Tyrosine",
+      "function_en": "Made from phenylalanine; used to make brain messengers such as dopamine and adrenaline, thyroid hormones and melanin, the pigment in skin. People with phenylketonuria (PKU) must get it from food.",
+      "deficiency_en": [
+        "Rare in healthy people",
+        "In PKU: fatigue and low mood",
+        "Less thyroid hormone production"
+      ],
+      "excess_en": [
+        "No known excess from food",
+        "With MAO inhibitor drugs, supplements can raise blood pressure dangerously",
+        "Supplements are not advised with thyroid medicines"
+      ],
+      "sources_en": [
+        "Cheese",
+        "Chicken, turkey and fish",
+        "Soy",
+        "Almonds and pumpkin seeds"
+      ],
+      "name_es": "Tirosina",
+      "function_es": "Se produce a partir de la fenilalanina; se usa para fabricar mensajeros cerebrales como la dopamina y la adrenalina, hormonas tiroideas y la melanina, el pigmento de la piel. Las personas con fenilcetonuria (PKU) deben obtenerla de los alimentos.",
+      "deficiency_es": [
+        "Rara en personas sanas",
+        "En la PKU: cansancio y ánimo bajo",
+        "Menor producción de hormona tiroidea"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación",
+        "Con fármacos inhibidores de la MAO, los suplementos pueden elevar peligrosamente la presión arterial",
+        "No se recomiendan suplementos con medicamentos para la tiroides"
+      ],
+      "sources_es": [
+        "Queso",
+        "Pollo, pavo y pescado",
+        "Soja",
+        "Almendras y semillas de calabaza"
+      ],
+      "name_pt": "Tirosina",
+      "function_pt": "É produzida a partir da fenilalanina; usada para fabricar mensageiros cerebrais como dopamina e adrenalina, hormônios da tireoide e a melanina, o pigmento da pele. Pessoas com fenilcetonúria (PKU) precisam obtê-la dos alimentos.",
+      "deficiency_pt": [
+        "Rara em pessoas saudáveis",
+        "Na PKU: cansaço e humor baixo",
+        "Menor produção de hormônio da tireoide"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação",
+        "Com remédios inibidores da MAO, suplementos podem elevar perigosamente a pressão arterial",
+        "Suplementos não são recomendados com remédios para a tireoide"
+      ],
+      "sources_pt": [
+        "Queijo",
+        "Frango, peru e peixe",
+        "Soja",
+        "Amêndoas e sementes de abóbora"
+      ],
+      "name_ar": "التيروزين",
+      "function_ar": "يُصنع من الفينيل ألانين؛ ويُستخدم لصنع نواقل الدماغ مثل الدوبامين والأدرينالين، وهرمونات الغدة الدرقية، والميلانين صبغة الجلد. يجب على مرضى بيلة الفينيل كيتون (PKU) الحصول عليه من الطعام.",
+      "deficiency_ar": [
+        "نادر لدى الأشخاص الأصحاء",
+        "في PKU: تعب وانخفاض المزاج",
+        "نقص إنتاج هرمون الغدة الدرقية"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام",
+        "مع أدوية مثبطات MAO قد ترفع المكملات ضغط الدم بشكل خطير",
+        "لا يُنصح بالمكملات مع أدوية الغدة الدرقية"
+      ],
+      "sources_ar": [
+        "الجبن",
+        "الدجاج والديك الرومي والأسماك",
+        "الصويا",
+        "اللوز وبذور اليقطين"
+      ],
+      "name_zh": "酪氨酸",
+      "function_zh": "由苯丙氨酸合成；用于生成多巴胺、肾上腺素等脑内信使、甲状腺激素以及皮肤色素黑色素。苯丙酮尿症（PKU）患者必须从食物中获取。",
+      "deficiency_zh": [
+        "健康人群中罕见",
+        "PKU患者：疲劳和情绪低落",
+        "甲状腺激素生成减少"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题",
+        "与单胺氧化酶抑制剂（MAOI）同用时，补充剂可能使血压危险升高",
+        "服用甲状腺药物者不建议服用补充剂"
+      ],
+      "sources_zh": [
+        "奶酪",
+        "鸡肉、火鸡肉和鱼类",
+        "大豆",
+        "杏仁和南瓜子"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "alanine",
+      "category": "amino_acid",
+      "amino_class": "non_essential",
+      "name_tr": "Alanin",
+      "function_tr": "Vücut tarafından kolayca üretilir; kaslardan karaciğere azot taşır ve açlıkta karaciğerin kan şekeri üretmesine yardım eder.",
+      "deficiency_tr": [
+        "Vücut ürettiği için besinsel eksiklik görülmez"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor"
+      ],
+      "sources_tr": [
+        "Et ve tavuk",
+        "Balık",
+        "Yumurta ve süt ürünleri"
+      ],
+      "name_en": "Alanine",
+      "function_en": "Easily made by the body; it carries nitrogen from muscles to the liver and helps the liver make blood sugar during fasting.",
+      "deficiency_en": [
+        "No dietary deficiency: the body makes it"
+      ],
+      "excess_en": [
+        "No known excess from food"
+      ],
+      "sources_en": [
+        "Meat and poultry",
+        "Fish",
+        "Eggs and dairy"
+      ],
+      "name_es": "Alanina",
+      "function_es": "El cuerpo la produce con facilidad; transporta nitrógeno de los músculos al hígado y ayuda al hígado a producir glucosa durante el ayuno.",
+      "deficiency_es": [
+        "Sin deficiencia dietética: el cuerpo la produce"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación"
+      ],
+      "sources_es": [
+        "Carne y aves",
+        "Pescado",
+        "Huevos y lácteos"
+      ],
+      "name_pt": "Alanina",
+      "function_pt": "O corpo a produz facilmente; transporta nitrogênio dos músculos ao fígado e ajuda o fígado a produzir glicose durante o jejum.",
+      "deficiency_pt": [
+        "Sem deficiência alimentar: o corpo a produz"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação"
+      ],
+      "sources_pt": [
+        "Carne e aves",
+        "Peixe",
+        "Ovos e laticínios"
+      ],
+      "name_ar": "الألانين",
+      "function_ar": "يصنعه الجسم بسهولة؛ ينقل النيتروجين من العضلات إلى الكبد ويساعد الكبد على إنتاج سكر الدم أثناء الصيام.",
+      "deficiency_ar": [
+        "لا يحدث نقص غذائي، فالجسم يصنعه"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام"
+      ],
+      "sources_ar": [
+        "اللحوم والدواجن",
+        "الأسماك",
+        "البيض ومنتجات الألبان"
+      ],
+      "name_zh": "丙氨酸",
+      "function_zh": "身体容易合成；将氮从肌肉运送到肝脏，并在空腹时帮助肝脏生成血糖。",
+      "deficiency_zh": [
+        "身体可自行合成，不会出现膳食缺乏"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题"
+      ],
+      "sources_zh": [
+        "肉类和禽肉",
+        "鱼类",
+        "鸡蛋和乳制品"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "asparagine",
+      "category": "amino_acid",
+      "amino_class": "non_essential",
+      "name_tr": "Asparajin",
+      "function_tr": "Vücut tarafından üretilir; beyin ve sinir sisteminin gelişimi ve çalışması için gereklidir ve proteinlerin yapısında yer alır.",
+      "deficiency_tr": [
+        "Besinsel eksiklik görülmez",
+        "Çok nadir bir genetik hastalıkta (asparajin sentetaz eksikliği) beyin gelişimi etkilenir"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor"
+      ],
+      "sources_tr": [
+        "Kuşkonmaz",
+        "Patates",
+        "Süt ürünleri ve et",
+        "Baklagiller"
+      ],
+      "name_en": "Asparagine",
+      "function_en": "Made by the body; needed for the development and work of the brain and nervous system, and part of the structure of proteins.",
+      "deficiency_en": [
+        "No dietary deficiency",
+        "A very rare genetic disorder (asparagine synthetase deficiency) affects brain development"
+      ],
+      "excess_en": [
+        "No known excess from food"
+      ],
+      "sources_en": [
+        "Asparagus",
+        "Potatoes",
+        "Dairy and meat",
+        "Legumes"
+      ],
+      "name_es": "Asparagina",
+      "function_es": "La produce el cuerpo; es necesaria para el desarrollo y el funcionamiento del cerebro y del sistema nervioso y forma parte de la estructura de las proteínas.",
+      "deficiency_es": [
+        "Sin deficiencia dietética",
+        "Un trastorno genético muy raro (deficiencia de asparagina sintetasa) afecta al desarrollo cerebral"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación"
+      ],
+      "sources_es": [
+        "Espárragos",
+        "Patatas",
+        "Lácteos y carne",
+        "Legumbres"
+      ],
+      "name_pt": "Asparagina",
+      "function_pt": "É produzida pelo corpo; necessária para o desenvolvimento e o funcionamento do cérebro e do sistema nervoso e faz parte da estrutura das proteínas.",
+      "deficiency_pt": [
+        "Sem deficiência alimentar",
+        "Um distúrbio genético muito raro (deficiência de asparagina sintetase) afeta o desenvolvimento cerebral"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação"
+      ],
+      "sources_pt": [
+        "Aspargos",
+        "Batatas",
+        "Laticínios e carne",
+        "Leguminosas"
+      ],
+      "name_ar": "الأسباراجين",
+      "function_ar": "يصنعه الجسم؛ وهو ضروري لنمو الدماغ والجهاز العصبي وعملهما، ويدخل في بنية البروتينات.",
+      "deficiency_ar": [
+        "لا يحدث نقص غذائي",
+        "اضطراب وراثي نادر جداً (نقص إنزيم أسباراجين سينثيتاز) يؤثر في نمو الدماغ"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام"
+      ],
+      "sources_ar": [
+        "الهليون",
+        "البطاطس",
+        "منتجات الألبان واللحوم",
+        "البقوليات"
+      ],
+      "name_zh": "天冬酰胺",
+      "function_zh": "由身体合成；是大脑和神经系统发育及运转所必需的，也是蛋白质结构的组成部分。",
+      "deficiency_zh": [
+        "不会出现膳食缺乏",
+        "一种非常罕见的遗传病（天冬酰胺合成酶缺乏症）会影响大脑发育"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题"
+      ],
+      "sources_zh": [
+        "芦笋",
+        "土豆",
+        "乳制品和肉类",
+        "豆类"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "aspartic_acid",
+      "category": "amino_acid",
+      "amino_class": "non_essential",
+      "name_tr": "Aspartik asit",
+      "function_tr": "Vücut tarafından üretilir; enerji üretiminde, amonyağın atıldığı üre döngüsünde ve başka amino asitlerin yapımında görev alır.",
+      "deficiency_tr": [
+        "Vücut ürettiği için besinsel eksiklik görülmez"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor"
+      ],
+      "sources_tr": [
+        "Et ve balık",
+        "Yumurta",
+        "Avokado ve kuşkonmaz",
+        "Soya"
+      ],
+      "name_en": "Aspartic acid",
+      "function_en": "Made by the body; takes part in energy production, the urea cycle that clears ammonia, and making other amino acids.",
+      "deficiency_en": [
+        "No dietary deficiency: the body makes it"
+      ],
+      "excess_en": [
+        "No known excess from food"
+      ],
+      "sources_en": [
+        "Meat and fish",
+        "Eggs",
+        "Avocado and asparagus",
+        "Soy"
+      ],
+      "name_es": "Ácido aspártico",
+      "function_es": "La produce el cuerpo; participa en la producción de energía, en el ciclo de la urea que elimina el amoníaco y en la fabricación de otros aminoácidos.",
+      "deficiency_es": [
+        "Sin deficiencia dietética: el cuerpo la produce"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación"
+      ],
+      "sources_es": [
+        "Carne y pescado",
+        "Huevos",
+        "Aguacate y espárragos",
+        "Soja"
+      ],
+      "name_pt": "Ácido aspártico",
+      "function_pt": "É produzido pelo corpo; participa da produção de energia, do ciclo da ureia que elimina a amônia e da fabricação de outros aminoácidos.",
+      "deficiency_pt": [
+        "Sem deficiência alimentar: o corpo a produz"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação"
+      ],
+      "sources_pt": [
+        "Carne e peixe",
+        "Ovos",
+        "Abacate e aspargos",
+        "Soja"
+      ],
+      "name_ar": "حمض الأسبارتيك",
+      "function_ar": "يصنعه الجسم؛ ويشارك في إنتاج الطاقة، وفي دورة اليوريا التي تتخلص من الأمونيا، وفي صنع أحماض أمينية أخرى.",
+      "deficiency_ar": [
+        "لا يحدث نقص غذائي، فالجسم يصنعه"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام"
+      ],
+      "sources_ar": [
+        "اللحوم والأسماك",
+        "البيض",
+        "الأفوكادو والهليون",
+        "الصويا"
+      ],
+      "name_zh": "天冬氨酸",
+      "function_zh": "由身体合成；参与能量生成、清除氨的尿素循环以及其他氨基酸的合成。",
+      "deficiency_zh": [
+        "身体可自行合成，不会出现膳食缺乏"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题"
+      ],
+      "sources_zh": [
+        "肉类和鱼类",
+        "鸡蛋",
+        "牛油果和芦笋",
+        "大豆"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "glutamic_acid",
+      "category": "amino_acid",
+      "amino_class": "non_essential",
+      "name_tr": "Glutamik asit",
+      "function_tr": "Vücut tarafından üretilir; beyindeki en yaygın uyarıcı habercidir, glutamin ve glutatyon yapımında kullanılır ve yiyeceklere umami tadını verir.",
+      "deficiency_tr": [
+        "Vücut ürettiği için besinsel eksiklik görülmez"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor",
+        "Bazı kişiler çok yüksek miktarda MSG (çin tuzu) sonrası geçici baş ağrısı bildirir"
+      ],
+      "sources_tr": [
+        "Domates ve mantar",
+        "Olgun peynir (parmesan)",
+        "Et ve balık",
+        "Soya sosu"
+      ],
+      "name_en": "Glutamic acid",
+      "function_en": "Made by the body; the brain's most common excitatory messenger, used to make glutamine and glutathione, and the source of the umami taste in food.",
+      "deficiency_en": [
+        "No dietary deficiency: the body makes it"
+      ],
+      "excess_en": [
+        "No known excess from food",
+        "Some people report a passing headache after very large amounts of MSG"
+      ],
+      "sources_en": [
+        "Tomatoes and mushrooms",
+        "Aged cheese (parmesan)",
+        "Meat and fish",
+        "Soy sauce"
+      ],
+      "name_es": "Ácido glutámico",
+      "function_es": "La produce el cuerpo; es el mensajero excitador más común del cerebro, se usa para producir glutamina y glutatión y da a los alimentos el sabor umami.",
+      "deficiency_es": [
+        "Sin deficiencia dietética: el cuerpo la produce"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación",
+        "Algunas personas refieren dolor de cabeza pasajero tras cantidades muy grandes de glutamato monosódico (GMS)"
+      ],
+      "sources_es": [
+        "Tomates y champiñones",
+        "Queso curado (parmesano)",
+        "Carne y pescado",
+        "Salsa de soja"
+      ],
+      "name_pt": "Ácido glutâmico",
+      "function_pt": "É produzido pelo corpo; é o mensageiro excitatório mais comum do cérebro, usado para produzir glutamina e glutationa, e dá aos alimentos o sabor umami.",
+      "deficiency_pt": [
+        "Sem deficiência alimentar: o corpo a produz"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação",
+        "Algumas pessoas relatam dor de cabeça passageira após quantidades muito grandes de glutamato monossódico (GMS)"
+      ],
+      "sources_pt": [
+        "Tomates e cogumelos",
+        "Queijo curado (parmesão)",
+        "Carne e peixe",
+        "Molho de soja"
+      ],
+      "name_ar": "حمض الغلوتاميك",
+      "function_ar": "يصنعه الجسم؛ وهو أكثر النواقل المنبّهة شيوعاً في الدماغ، ويُستخدم لصنع الغلوتامين والجلوتاثيون، ويمنح الطعام مذاق الأومامي.",
+      "deficiency_ar": [
+        "لا يحدث نقص غذائي، فالجسم يصنعه"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام",
+        "يذكر بعض الأشخاص صداعاً عابراً بعد كميات كبيرة جداً من غلوتامات أحادية الصوديوم (MSG)"
+      ],
+      "sources_ar": [
+        "الطماطم والفطر",
+        "الجبن المعتّق (البارميزان)",
+        "اللحوم والأسماك",
+        "صلصة الصويا"
+      ],
+      "name_zh": "谷氨酸",
+      "function_zh": "由身体合成；是大脑中最常见的兴奋性信使，用于合成谷氨酰胺和谷胱甘肽，也是食物鲜味（umami）的来源。",
+      "deficiency_zh": [
+        "身体可自行合成，不会出现膳食缺乏"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题",
+        "部分人在摄入大量味精（MSG）后出现短暂头痛"
+      ],
+      "sources_zh": [
+        "番茄和蘑菇",
+        "陈年奶酪（帕玛森）",
+        "肉类和鱼类",
+        "酱油"
+      ],
+      "source": "NASEM 2005"
+    },
+    {
+      "id": "serine",
+      "category": "amino_acid",
+      "amino_class": "non_essential",
+      "name_tr": "Serin",
+      "function_tr": "Vücut tarafından üretilir; hücre zarlarının ve beyin habercilerinin yapımında, ayrıca glisin ve sistein üretiminde kullanılır.",
+      "deficiency_tr": [
+        "Besinsel eksiklik görülmez",
+        "Çok nadir genetik serin eksikliği bozukluklarında nörolojik sorunlar"
+      ],
+      "excess_tr": [
+        "Besinle aşırı alım bilinmiyor"
+      ],
+      "sources_tr": [
+        "Yumurta",
+        "Soya ve baklagiller",
+        "Et ve balık",
+        "Süt ürünleri"
+      ],
+      "name_en": "Serine",
+      "function_en": "Made by the body; used to build cell membranes and brain messengers, and to make glycine and cysteine.",
+      "deficiency_en": [
+        "No dietary deficiency",
+        "Very rare genetic serine deficiency disorders cause neurological problems"
+      ],
+      "excess_en": [
+        "No known excess from food"
+      ],
+      "sources_en": [
+        "Eggs",
+        "Soy and legumes",
+        "Meat and fish",
+        "Dairy"
+      ],
+      "name_es": "Serina",
+      "function_es": "La produce el cuerpo; se usa para construir membranas celulares y mensajeros cerebrales, y para producir glicina y cisteína.",
+      "deficiency_es": [
+        "Sin deficiencia dietética",
+        "Los trastornos genéticos muy raros por deficiencia de serina causan problemas neurológicos"
+      ],
+      "excess_es": [
+        "No se conoce exceso por la alimentación"
+      ],
+      "sources_es": [
+        "Huevos",
+        "Soja y legumbres",
+        "Carne y pescado",
+        "Lácteos"
+      ],
+      "name_pt": "Serina",
+      "function_pt": "É produzida pelo corpo; usada para construir membranas celulares e mensageiros cerebrais, e para produzir glicina e cisteína.",
+      "deficiency_pt": [
+        "Sem deficiência alimentar",
+        "Distúrbios genéticos muito raros de deficiência de serina causam problemas neurológicos"
+      ],
+      "excess_pt": [
+        "Não há excesso conhecido pela alimentação"
+      ],
+      "sources_pt": [
+        "Ovos",
+        "Soja e leguminosas",
+        "Carne e peixe",
+        "Laticínios"
+      ],
+      "name_ar": "السيرين",
+      "function_ar": "يصنعه الجسم؛ ويُستخدم لبناء أغشية الخلايا ونواقل الدماغ، ولصنع الغليسين والسيستين.",
+      "deficiency_ar": [
+        "لا يحدث نقص غذائي",
+        "تسبب اضطرابات نقص السيرين الوراثية النادرة جداً مشكلات عصبية"
+      ],
+      "excess_ar": [
+        "لا يُعرف فرط في التناول من الطعام"
+      ],
+      "sources_ar": [
+        "البيض",
+        "الصويا والبقوليات",
+        "اللحوم والأسماك",
+        "منتجات الألبان"
+      ],
+      "name_zh": "丝氨酸",
+      "function_zh": "由身体合成；用于构建细胞膜和脑内信使，并用于合成甘氨酸和半胱氨酸。",
+      "deficiency_zh": [
+        "不会出现膳食缺乏",
+        "非常罕见的遗传性丝氨酸缺乏症会导致神经系统问题"
+      ],
+      "excess_zh": [
+        "通过食物摄入未见过量问题"
+      ],
+      "sources_zh": [
+        "鸡蛋",
+        "大豆和豆类",
+        "肉类和鱼类",
+        "乳制品"
+      ],
+      "source": "NASEM 2005"
     }
   ]
 }

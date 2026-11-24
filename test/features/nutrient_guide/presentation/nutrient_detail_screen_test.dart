@@ -154,4 +154,39 @@ void main() {
     expect(find.text('İçerik yüklenemedi'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
+
+  testWidgets('amino acid shows its class and the no-daily-need note', (
+    t,
+  ) async {
+    _tallScreen(t);
+    const one = Localized<List<String>>(tr: ['x'], en: ['x']);
+    await t.pumpWidget(
+      _app(
+        _returns(
+          const NutrientEntity(
+            id: 'alanine',
+            category: NutrientCategory.aminoAcid,
+            aminoClass: AminoAcidClass.nonEssential,
+            name: Localized(tr: 'Alanin', en: 'Alanine'),
+            altName: null,
+            function: Localized(tr: 'a', en: 'a'),
+            deficiency: one,
+            excess: one,
+            sources: one,
+            dailyNeed: null,
+            upperLimit: null,
+            source: 'NASEM 2005',
+          ),
+        ),
+      ),
+    );
+    await t.pumpAndSettle();
+
+    expect(find.text('Temel değil · vücut üretir'), findsOneWidget);
+    expect(
+      find.text('Vücut ürettiği için belirlenmiş bir günlük ihtiyaç yoktur.'),
+      findsOneWidget,
+    );
+  });
 }
+

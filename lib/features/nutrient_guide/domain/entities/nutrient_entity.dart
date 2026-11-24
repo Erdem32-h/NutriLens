@@ -35,6 +35,11 @@ class Localized<T> extends Equatable {
 
 enum NutrientCategory { vitamin, mineral, aminoAcid }
 
+/// Whether the body can make an amino acid: [essential] ones must come from
+/// food, [conditional] ones only in illness or stress, [nonEssential] ones
+/// the body always makes.
+enum AminoAcidClass { essential, conditional, nonEssential }
+
 class NutrientEntity extends Equatable {
   final String id;
   final NutrientCategory category;
@@ -45,8 +50,12 @@ class NutrientEntity extends Equatable {
   final Localized<List<String>> excess;
   final Localized<List<String>> sources;
 
+  /// Set for amino acids only.
+  final AminoAcidClass? aminoClass;
+
   /// Adult daily need as display text, number and unit only (e.g. "75–90 mg").
-  final String dailyNeed;
+  /// Null only for amino acids the body makes, which have no set need.
+  final String? dailyNeed;
 
   /// Tolerable upper intake as display text, null when none is established.
   final String? upperLimit;
@@ -57,6 +66,7 @@ class NutrientEntity extends Equatable {
   const NutrientEntity({
     required this.id,
     required this.category,
+    this.aminoClass,
     required this.name,
     required this.altName,
     required this.function,
@@ -72,6 +82,7 @@ class NutrientEntity extends Equatable {
   List<Object?> get props => [
     id,
     category,
+    aminoClass,
     name,
     altName,
     function,

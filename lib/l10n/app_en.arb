@@ -1007,6 +1007,10 @@
   "nutrientLoadError": "Could not load content",
   "nutrientRetry": "Try again",
   "nutrientNotFound": "Nutrient not found",
+  "nutrientAminoEssential": "Essential · must come from food",
+  "nutrientAminoConditional": "Conditional · sometimes needed from food",
+  "nutrientAminoNonEssential": "Non-essential · the body makes it",
+  "nutrientNoDailyNeed": "No daily need has been set, as the body makes it.",
   "exactAlarmTitle": "Exact timing for sahur & iftar",
   "exactAlarmBody": "Android 14+ requires the \"Alarms & reminders\" permission so sahur and iftar reminders fire on time. If you skip this, reminders will still arrive but may be delayed."
 }

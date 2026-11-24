@@ -2415,6 +2415,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nutrientNotFound => 'Nutrient not found';
 
   @override
+  String get nutrientAminoEssential => 'Essential · must come from food';
+
+  @override
+  String get nutrientAminoConditional =>
+      'Conditional · sometimes needed from food';
+
+  @override
+  String get nutrientAminoNonEssential => 'Non-essential · the body makes it';
+
+  @override
+  String get nutrientNoDailyNeed =>
+      'No daily need has been set, as the body makes it.';
+
+  @override
   String get exactAlarmTitle => 'Exact timing for sahur & iftar';
 
   @override

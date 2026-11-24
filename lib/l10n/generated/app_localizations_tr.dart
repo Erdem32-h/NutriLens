@@ -2420,6 +2420,20 @@ class AppLocalizationsTr extends AppLocalizations {
   String get nutrientNotFound => 'Bu besin bulunamadı';
 
   @override
+  String get nutrientAminoEssential => 'Temel · besinle alınmalı';
+
+  @override
+  String get nutrientAminoConditional =>
+      'Şartlı temel · bazen besinle alınmalı';
+
+  @override
+  String get nutrientAminoNonEssential => 'Temel değil · vücut üretir';
+
+  @override
+  String get nutrientNoDailyNeed =>
+      'Vücut ürettiği için belirlenmiş bir günlük ihtiyaç yoktur.';
+
+  @override
   String get exactAlarmTitle => 'Tam zamanlı sahur & iftar bildirimi';
 
   @override

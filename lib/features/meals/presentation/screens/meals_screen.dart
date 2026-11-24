@@ -26,6 +26,7 @@ import '../widgets/calorie_stacked_bar_chart.dart';
 import '../widgets/macro_balance_card.dart';
 import '../widgets/meal_sync_banner.dart';
 import '../../../fasting/presentation/widgets/fasting_card.dart';
+import '../../../nutrient_guide/presentation/widgets/nutrient_guide_entry_tile.dart';
 import '../../../ramadan/presentation/widgets/ramadan_countdown_card.dart';
 import '../../../ramadan/presentation/widgets/ramadan_offer_card.dart';
 import '../../../scanner/presentation/providers/scanner_mode_provider.dart';
@@ -74,6 +75,13 @@ class MealsScreen extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 16),
                 child: _DailyTargetSummary(),
+              ),
+            ),
+            // CozyTile carries its own 20px side margin.
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: NutrientGuideEntryTile(),
               ),
             ),
             SliverToBoxAdapter(

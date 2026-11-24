@@ -1007,6 +1007,10 @@
   "nutrientLoadError": "Não foi possível carregar o conteúdo",
   "nutrientRetry": "Tentar novamente",
   "nutrientNotFound": "Nutriente não encontrado",
+  "nutrientAminoEssential": "Essencial · deve vir dos alimentos",
+  "nutrientAminoConditional": "Condicional · às vezes é preciso obter dos alimentos",
+  "nutrientAminoNonEssential": "Não essencial · o corpo produz",
+  "nutrientNoDailyNeed": "Não há necessidade diária estabelecida, pois o corpo o produz.",
   "exactAlarmTitle": "Horário exato para sahur e iftar",
   "exactAlarmBody": "O Android 14+ exige a permissão \"Alarmes e lembretes\" para tocar na hora certa. Se preferir pular, os lembretes ainda chegarão, mas podem atrasar."
 }

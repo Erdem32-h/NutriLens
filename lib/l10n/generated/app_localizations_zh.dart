@@ -2343,6 +2343,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nutrientNotFound => '未找到该营养素';
 
   @override
+  String get nutrientAminoEssential => '必需 · 须从食物获取';
+
+  @override
+  String get nutrientAminoConditional => '条件必需 · 有时需从食物获取';
+
+  @override
+  String get nutrientAminoNonEssential => '非必需 · 身体可自行合成';
+
+  @override
+  String get nutrientNoDailyNeed => '身体可自行合成，因此没有设定每日需要量。';
+
+  @override
   String get exactAlarmTitle => '准时提醒封斋与开斋';
 
   @override

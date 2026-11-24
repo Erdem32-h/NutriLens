@@ -108,6 +108,26 @@ NutrientEntity _parseEntry(Map<String, dynamic> m, int index) {
     ),
   };
 
+  final aminoClassName = optionalText('amino_class');
+  final aminoClass = switch (aminoClassName) {
+    null => null,
+    'essential' => AminoAcidClass.essential,
+    'conditional' => AminoAcidClass.conditional,
+    'non_essential' => AminoAcidClass.nonEssential,
+    _ => throw FormatException(
+      'nutrient "$label": unknown amino_class "$aminoClassName"',
+    ),
+  };
+  if ((category == NutrientCategory.aminoAcid) != (aminoClass != null)) {
+    throw FormatException(
+      'nutrient "$label": amino_class is required for amino acids only',
+    );
+  }
+  // Only amino acids the body makes may lack a daily need.
+  final dailyNeed = aminoClass == null || aminoClass == AminoAcidClass.essential
+      ? text('daily_need')
+      : optionalText('daily_need');
+
   final hasAltTr = m.containsKey('alt_name_tr');
   final hasAltEn = m.containsKey('alt_name_en');
   if (hasAltTr != hasAltEn) {
@@ -124,13 +144,14 @@ NutrientEntity _parseEntry(Map<String, dynamic> m, int index) {
   return NutrientEntity(
     id: text('id'),
     category: category,
+    aminoClass: aminoClass,
     name: pair('name'),
     altName: hasAltTr ? pair('alt_name') : null,
     function: pair('function'),
     deficiency: listPair('deficiency'),
     excess: listPair('excess'),
     sources: listPair('sources'),
-    dailyNeed: text('daily_need'),
+    dailyNeed: dailyNeed,
     upperLimit: upper as String?,
     source: text('source'),
   );

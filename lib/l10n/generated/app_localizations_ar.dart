@@ -2406,6 +2406,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get nutrientNotFound => 'العنصر الغذائي غير موجود';
 
   @override
+  String get nutrientAminoEssential => 'أساسي · يجب الحصول عليه من الطعام';
+
+  @override
+  String get nutrientAminoConditional =>
+      'أساسي مشروط · قد يلزم من الطعام أحياناً';
+
+  @override
+  String get nutrientAminoNonEssential => 'غير أساسي · يصنعه الجسم';
+
+  @override
+  String get nutrientNoDailyNeed => 'لا توجد حاجة يومية محددة لأن الجسم يصنعه.';
+
+  @override
   String get exactAlarmTitle => 'تنبيهات السحور والإفطار في وقتها';
 
   @override

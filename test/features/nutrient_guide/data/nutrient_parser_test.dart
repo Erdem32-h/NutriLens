@@ -51,9 +51,86 @@ void main() {
 
     test('maps amino_acid category', () {
       final list = parseNutrients(
-        _doc([_entry(id: 'lysine', category: 'amino_acid')]),
+        _doc([
+          _entry(
+            id: 'lysine',
+            category: 'amino_acid',
+            overrides: {'amino_class': 'essential'},
+          ),
+        ]),
       );
       expect(list.single.category, NutrientCategory.aminoAcid);
+      expect(list.single.aminoClass, AminoAcidClass.essential);
+    });
+
+    test('maps every amino_class value', () {
+      final list = parseNutrients(
+        _doc([
+          _entry(
+            id: 'lysine',
+            category: 'amino_acid',
+            overrides: {'amino_class': 'essential'},
+          ),
+          _entry(
+            id: 'glutamine',
+            category: 'amino_acid',
+            overrides: {'amino_class': 'conditional', 'daily_need': null},
+          ),
+          _entry(
+            id: 'alanine',
+            category: 'amino_acid',
+            overrides: {'amino_class': 'non_essential', 'daily_need': null},
+          ),
+        ]),
+      );
+      expect(list.map((n) => n.aminoClass), [
+        AminoAcidClass.essential,
+        AminoAcidClass.conditional,
+        AminoAcidClass.nonEssential,
+      ]);
+      expect(list[1].dailyNeed, isNull);
+    });
+
+    test('amino acid without amino_class is rejected', () {
+      expect(
+        () => parseNutrients(
+          _doc([_entry(id: 'lysine', category: 'amino_acid')]),
+        ),
+        throwsFormatException,
+      );
+    });
+
+    test('amino_class on a vitamin is rejected', () {
+      expect(
+        () => parseNutrients(
+          _doc([
+            _entry(overrides: {'amino_class': 'essential'}),
+          ]),
+        ),
+        throwsFormatException,
+      );
+    });
+
+    test('essential amino acid still needs daily_need', () {
+      expect(
+        () => parseNutrients(
+          _doc([
+            _entry(
+              id: 'lysine',
+              category: 'amino_acid',
+              overrides: {'amino_class': 'essential', 'daily_need': null},
+            ),
+          ]),
+        ),
+        throwsFormatException,
+      );
+    });
+
+    test('vitamin without daily_need is rejected', () {
+      expect(
+        () => parseNutrients(_doc([_entry(overrides: {'daily_need': null})])),
+        throwsFormatException,
+      );
     });
 
     test('altName is null when absent', () {

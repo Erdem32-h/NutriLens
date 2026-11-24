@@ -11,11 +11,20 @@ import 'package:nutrilens/features/nutrient_guide/presentation/providers/nutrien
 import 'package:nutrilens/features/nutrient_guide/presentation/screens/nutrient_guide_screen.dart';
 import 'package:nutrilens/l10n/generated/app_localizations.dart';
 
-NutrientEntity _n(String id, NutrientCategory c, String tr, String en) {
+NutrientEntity _n(
+  String id,
+  NutrientCategory c,
+  String tr,
+  String en, {
+  AminoAcidClass? amino,
+}) {
   const one = Localized<List<String>>(tr: ['x'], en: ['x']);
   return NutrientEntity(
     id: id,
     category: c,
+    aminoClass: c == NutrientCategory.aminoAcid
+        ? amino ?? AminoAcidClass.essential
+        : null,
     name: Localized(tr: tr, en: en),
     altName: null,
     function: const Localized(tr: 'a', en: 'a'),
@@ -33,12 +42,36 @@ final _data = [
   _n('iodine', NutrientCategory.mineral, 'İyot', 'Iodine'),
   _n('selenium', NutrientCategory.mineral, 'Selenyum', 'Selenium'),
   _n('lysine', NutrientCategory.aminoAcid, 'Lizin', 'Lysine'),
+  _n(
+    'glycine',
+    NutrientCategory.aminoAcid,
+    'Glisin',
+    'Glycine',
+    amino: AminoAcidClass.conditional,
+  ),
+  _n(
+    'alanine',
+    NutrientCategory.aminoAcid,
+    'Alanin',
+    'Alanine',
+    amino: AminoAcidClass.nonEssential,
+  ),
 ];
 
-Widget _app({required Override provider, String locale = 'tr'}) {
+Widget _app({
+  required Override provider,
+  String locale = 'tr',
+  String initialLocation = '/',
+}) {
   final router = GoRouter(
+    initialLocation: initialLocation,
     routes: [
-      GoRoute(path: '/', builder: (_, _) => const NutrientGuideScreen()),
+      GoRoute(
+        path: '/',
+        builder: (_, state) => NutrientGuideScreen(
+          initialTab: state.uri.queryParameters['tab'],
+        ),
+      ),
       GoRoute(
         path: '/nutrient/:id',
         name: RouteNames.nutrientDetail,
@@ -151,5 +184,47 @@ void main() {
     await t.pumpAndSettle();
 
     expect(find.text('DETAIL vitamin_c'), findsOneWidget);
+  });
+
+  testWidgets('amino acid tab groups by essential / conditional / '
+      'non-essential with counts', (t) async {
+    await t.pumpWidget(_app(provider: _ok()));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Amino asitler'));
+    await t.pumpAndSettle();
+
+    expect(find.text('Temel · besinle alınmalı (1)'), findsOneWidget);
+    expect(find.text('Şartlı temel · bazen besinle alınmalı (1)'), findsOneWidget);
+    expect(find.text('Temel değil · vücut üretir (1)'), findsOneWidget);
+    expect(find.text('Lizin'), findsOneWidget);
+    expect(find.text('Glisin'), findsOneWidget);
+    expect(find.text('Alanin'), findsOneWidget);
+    final lizin = t.getTopLeft(find.text('Lizin')).dy;
+    final glisin = t.getTopLeft(find.text('Glisin')).dy;
+    final alanin = t.getTopLeft(find.text('Alanin')).dy;
+    expect(lizin < glisin && glisin < alanin, isTrue);
+  });
+
+  testWidgets('search hides empty amino groups', (t) async {
+    await t.pumpWidget(_app(provider: _ok()));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Amino asitler'));
+    await t.pumpAndSettle();
+    await t.enterText(find.byType(TextField), 'glis');
+    await t.pumpAndSettle();
+
+    expect(find.text('Glisin'), findsOneWidget);
+    expect(find.text('Temel · besinle alınmalı (1)'), findsNothing);
+    expect(find.text('Şartlı temel · bazen besinle alınmalı (1)'), findsOneWidget);
+  });
+
+  testWidgets('?tab=amino opens on the amino acid tab', (t) async {
+    await t.pumpWidget(
+      _app(provider: _ok(), initialLocation: '/?tab=amino'),
+    );
+    await t.pumpAndSettle();
+
+    expect(find.text('Lizin'), findsOneWidget);
+    expect(find.text('C Vitamini'), findsNothing);
   });
 }
