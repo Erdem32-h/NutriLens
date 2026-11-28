@@ -40,6 +40,49 @@ class HomeWidgetService {
   static const _keyFatPct = 'today_fat_pct';
   static const _keyWaterGlasses = 'today_water_glasses';
   static const _keyWaterGoal = 'today_water_goal';
+  static const _keyWaterDay = 'today_water_day';
+  static const _keyPendingWaterQueue = 'pending_water_queue';
+
+  /// Parses `"yyyy-MM-dd:count,..."` written by native background widget taps.
+  @visibleForTesting
+  static Map<String, int> parsePendingWaterQueue(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return const {};
+    final out = <String, int>{};
+    for (final entry in raw.split(',')) {
+      final parts = entry.trim().split(':');
+      if (parts.length != 2) continue;
+      final day = parts[0].trim();
+      final count = int.tryParse(parts[1].trim());
+      if (day.isEmpty || count == null || count <= 0) continue;
+      out[day] = (out[day] ?? 0) + count;
+    }
+    return out;
+  }
+
+  /// Serializes a day → count map back to `"yyyy-MM-dd:count,..."`.
+  @visibleForTesting
+  static String encodePendingWaterQueue(Map<String, int> queue) {
+    final entries = queue.entries.where((e) => e.value > 0).toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    return entries.map((e) => '${e.key}:${e.value}').join(',');
+  }
+
+  /// Reads and atomically clears any `+1 Su` taps queued natively from the
+  /// home-screen widget while the app was closed or backgrounded.
+  static Future<Map<String, int>> consumePendingWaterQueue() async {
+    try {
+      final raw = await HomeWidget.getWidgetData<String>(
+        _keyPendingWaterQueue,
+      );
+      final parsed = parsePendingWaterQueue(raw);
+      if (parsed.isEmpty) return const {};
+      await HomeWidget.saveWidgetData<String>(_keyPendingWaterQueue, '');
+      return parsed;
+    } catch (e) {
+      debugPrint('[HomeWidget] consumePendingWaterQueue failed: $e');
+      return const {};
+    }
+  }
 
   final AppDatabase _db;
 
@@ -128,6 +171,16 @@ class HomeWidgetService {
         if (w.goalGlasses > 0) waterGoal = w.goalGlasses;
       }
 
+      // Preserve unsynced native widget taps for today so an early refresh
+      // (e.g. during bootstrap) never overwrites the user's optimistic count.
+      try {
+        final rawPending = await HomeWidget.getWidgetData<String>(
+          _keyPendingWaterQueue,
+        );
+        final pendingToday = parsePendingWaterQueue(rawPending)[todayKey] ?? 0;
+        waterGlasses += pendingToday;
+      } catch (_) {}
+
       await Future.wait<void>([
         HomeWidget.saveWidgetData<int>(_keyKcal, kcal.round()),
         HomeWidget.saveWidgetData<int>(_keyMealCount, count),
@@ -140,6 +193,7 @@ class HomeWidgetService {
         HomeWidget.saveWidgetData<int>(_keyFatPct, macros.fat),
         HomeWidget.saveWidgetData<int>(_keyWaterGlasses, waterGlasses),
         HomeWidget.saveWidgetData<int>(_keyWaterGoal, waterGoal),
+        HomeWidget.saveWidgetData<String>(_keyWaterDay, todayKey),
       ]);
 
       await HomeWidget.updateWidget(

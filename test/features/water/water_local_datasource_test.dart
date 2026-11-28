@@ -104,4 +104,25 @@ void main() {
     expect(await ds.countDays('u1'), 0);
     expect(await ds.countDays('u2'), 1);
   });
+
+  test('addGlassesForDay toplu bardak ekler ve mevcut gune toplar', () async {
+    final first = await ds.addGlassesForDay(
+      userId: 'u1',
+      day: '2026-09-13',
+      count: 3,
+      now: morning,
+      goal: 10,
+    );
+    expect(first.glasses, 3);
+    final second = await ds.addGlassesForDay(
+      userId: 'u1',
+      day: '2026-09-13',
+      count: 2,
+      now: noon,
+      goal: 12,
+    );
+    expect(second.glasses, 5);
+    expect(second.goalGlasses, 10);
+    expect(second.lastGlassAt, noon);
+  });
 }

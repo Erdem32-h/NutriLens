@@ -184,6 +184,42 @@ class WaterController {
     return day;
   }
 
+  /// Flushes any `+1 Su` taps recorded natively by the home-screen widget
+  /// without launching the app. Returns total glasses applied.
+  Future<int> syncPendingFromWidget(WaterReminderCopy copy) async {
+    final userId = _ref.read(effectiveUserIdProvider);
+    if (userId == null) return 0;
+    final pending = await HomeWidgetService.consumePendingWaterQueue();
+    if (pending.isEmpty) return 0;
+
+    final now = _now();
+    final goal = await _resolvedGoal();
+    var totalAdded = 0;
+    for (final entry in pending.entries) {
+      if (entry.value <= 0) continue;
+      await _ds.addGlassesForDay(
+        userId: userId,
+        day: entry.key,
+        count: entry.value,
+        now: now,
+        goal: goal,
+      );
+      totalAdded += entry.value;
+    }
+    if (totalAdded <= 0) return 0;
+
+    _invalidate();
+    _refreshHomeWidget(userId);
+    _ref
+        .read(analyticsServiceProvider)
+        .track(
+          FunnelEvents.waterGlassAdded,
+          props: {'source': 'home_widget', 'count': totalAdded},
+        );
+    await rescheduleReminders(copy);
+    return totalAdded;
+  }
+
   Future<WaterDay?> removeGlass(WaterReminderCopy copy) async {
     final userId = _ref.read(effectiveUserIdProvider);
     if (userId == null) {

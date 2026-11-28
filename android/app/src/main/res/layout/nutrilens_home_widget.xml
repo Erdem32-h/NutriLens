@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  RemoteViews-safe layout: only view types that AppWidgetHost can inflate,
-  no negative margins, no styled drawables that need themed resources.
-  Keep it boring; flash is not worth a "Can't load widget" toast.
+  RemoteViews-safe layout (API 23+): only LinearLayout, FrameLayout, TextView,
+  ImageView and ProgressBar — no bare <View>/<Space>, no negative margins, no
+  themed attributes.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
@@ -12,68 +12,128 @@
     android:padding="14dp"
     android:background="@drawable/nutrilens_widget_background">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- Header row: eyebrow + meal count pill -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="BUGÜN"
-        android:textColor="#88FFFFFF"
-        android:textSize="11sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/widget_kcal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:text="0"
-        android:textColor="#FFFFFFFF"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="BUGÜN"
+            android:textColor="#99FFFFFF"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
 
-    <TextView
-        android:id="@+id/widget_kcal_unit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="kcal"
-        android:textColor="#AAFFFFFF"
-        android:textSize="12sp" />
+        <TextView
+            android:id="@+id/widget_meal_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:text="0 öğün"
+            android:textColor="#E6FFFFFF"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:background="@drawable/nutrilens_widget_pill_background" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/widget_meal_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="0 öğün · bugün"
-        android:textColor="#BBFFFFFF"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/widget_water_status"
-        android:layout_width="wrap_content"
+    <!-- Hero kcal row (single horizontal line saves vertical space) -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:text="💧 0/10 bardak"
-        android:textColor="#D6ECFF"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:gravity="bottom">
 
+        <TextView
+            android:id="@+id/widget_kcal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#FFFFFFFF"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:includeFontPadding="false" />
+
+        <TextView
+            android:id="@+id/widget_kcal_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="3dp"
+            android:text="kcal"
+            android:textColor="#B3FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Translucent stats glass panel: water progress + macro bars -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:orientation="vertical">
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:orientation="vertical"
+        android:background="@drawable/nutrilens_widget_panel_background">
 
+        <!-- Water row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/widget_water_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💧 0/10"
+                android:textColor="#E0F2FE"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:layout_width="8dp"
+                android:layout_height="1dp" />
+
+            <ProgressBar
+                android:id="@+id/widget_water_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="6dp"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/nutrilens_widget_progress_water" />
+        </LinearLayout>
+
+        <!-- Macro bars -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
             <TextView
                 android:id="@+id/widget_protein_label"
-                android:layout_width="52dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:text="P %0"
-                android:textColor="#BBFFFFFF"
-                android:textSize="10sp" />
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
             <ProgressBar
                 android:id="@+id/widget_protein_bar"
                 style="?android:attr/progressBarStyleHorizontal"
@@ -81,23 +141,26 @@
                 android:layout_weight="1"
                 android:layout_height="4dp"
                 android:max="100"
-                android:progressTint="#6366F1"
-                android:progressBackgroundTint="#33FFFFFF" />
+                android:progress="0"
+                android:progressDrawable="@drawable/nutrilens_widget_progress_protein" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="4dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
+
             <TextView
                 android:id="@+id/widget_carb_label"
-                android:layout_width="52dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:text="K %0"
-                android:textColor="#BBFFFFFF"
-                android:textSize="10sp" />
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
             <ProgressBar
                 android:id="@+id/widget_carb_bar"
                 style="?android:attr/progressBarStyleHorizontal"
@@ -105,23 +168,26 @@
                 android:layout_weight="1"
                 android:layout_height="4dp"
                 android:max="100"
-                android:progressTint="#F59E0B"
-                android:progressBackgroundTint="#33FFFFFF" />
+                android:progress="0"
+                android:progressDrawable="@drawable/nutrilens_widget_progress_carb" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="4dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
+
             <TextView
                 android:id="@+id/widget_fat_label"
-                android:layout_width="52dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:text="Y %0"
-                android:textColor="#BBFFFFFF"
-                android:textSize="10sp" />
+                android:textColor="#CCFFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
             <ProgressBar
                 android:id="@+id/widget_fat_bar"
                 style="?android:attr/progressBarStyleHorizontal"
@@ -129,52 +195,77 @@
                 android:layout_weight="1"
                 android:layout_height="4dp"
                 android:max="100"
-                android:progressTint="#EC4899"
-                android:progressBackgroundTint="#33FFFFFF" />
+                android:progress="0"
+                android:progressDrawable="@drawable/nutrilens_widget_progress_fat" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Spacer pushes the "Tara" button to the bottom edge. AppWidget
-         RemoteViews only allows a small allow-list of view classes;
-         bare <View> and <Space> are rejected, but an empty FrameLayout
-         with layout_weight works fine. -->
+    <!-- Spacer pushes action pills to the bottom edge -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <!-- Action pills: Tara (opens app) + +1 Su (in-place background broadcast) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
-        <TextView
+        <LinearLayout
             android:id="@+id/widget_scan_button"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="38dp"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:text="Tara"
-            android:textColor="#1A1A1A"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:background="@drawable/nutrilens_widget_button_background" />
+            android:background="@drawable/nutrilens_widget_button_background">
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/ic_widget_scan"
+                android:contentDescription="Tara" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="Tara"
+                android:textColor="#0F2E1E"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <FrameLayout
             android:layout_width="8dp"
             android:layout_height="1dp" />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/widget_water_button"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="38dp"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:text="+1 Su"
-            android:textColor="#1E3A5F"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:background="@drawable/nutrilens_widget_water_button_background" />
+            android:background="@drawable/nutrilens_widget_water_button_background">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_widget_drop"
+                android:contentDescription="+1 Su" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="+1 Su"
+                android:textColor="#0C4A6E"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

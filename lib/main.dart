@@ -334,6 +334,7 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
   static String _dayStamp(DateTime dt) => '${dt.year}-${dt.month}-${dt.day}';
 
   void _handleResume() {
+    unawaited(_syncPendingWidgetWater());
     final today = _dayStamp(DateTime.now());
     if (today == _lastActiveDay) return;
     _lastActiveDay = today;
@@ -344,6 +345,19 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
     ref.invalidate(todayCalorieTotalProvider);
     ref.invalidate(waterTodayProvider);
     ref.invalidate(waterWeekProvider);
+  }
+
+  Future<void> _syncPendingWidgetWater() async {
+    if (!mounted) return;
+    try {
+      final locale = ref.read(localeProvider);
+      final l10n = lookupAppLocalizations(locale);
+      await ref
+          .read(waterControllerProvider)
+          .syncPendingFromWidget(waterReminderCopy(l10n));
+    } catch (e) {
+      debugPrint('[HomeWidget] pending water sync failed: $e');
+    }
   }
 
   @override
@@ -394,6 +408,9 @@ class _NutriLensAppState extends ConsumerState<NutriLensApp> {
     //   2. `widgetClicked` stream fires while the app is already alive.
     HomeWidget.initiallyLaunchedFromHomeWidget().then(_handleWidgetUri);
     _widgetClicked = HomeWidget.widgetClicked.listen(_handleWidgetUri);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_syncPendingWidgetWater());
+    });
 
     // Password-reset deep-link: supabase_flutter intercepts the
     // `nutrilens://auth/reset` URI, exchanges the recovery token for a

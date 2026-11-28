@@ -14,6 +14,16 @@ abstract interface class WaterLocalDataSource {
     required int goal,
   });
 
+  /// Upserts [day]'s row by +[count] glasses (used to flush native widget taps
+  /// recorded while the app was closed/backgrounded).
+  Future<WaterDay> addGlassesForDay({
+    required String userId,
+    required String day,
+    required int count,
+    required DateTime now,
+    required int goal,
+  });
+
   /// −1 glass, floored at 0. Never creates a row.
   Future<WaterDay> removeGlass({
     required String userId,
@@ -75,10 +85,27 @@ final class WaterLocalDataSourceImpl implements WaterLocalDataSource {
     required String userId,
     required DateTime now,
     required int goal,
+  }) => addGlassesForDay(
+    userId: userId,
+    day: waterDayKey(now),
+    count: 1,
+    now: now,
+    goal: goal,
+  );
+
+  @override
+  Future<WaterDay> addGlassesForDay({
+    required String userId,
+    required String day,
+    required int count,
+    required DateTime now,
+    required int goal,
   }) {
-    final day = waterDayKey(now);
     return _db.transaction(() async {
       final existing = await getDay(userId, day);
+      if (count <= 0) {
+        return existing ?? WaterDay(day: day, glasses: 0, goalGlasses: goal);
+      }
       if (existing == null) {
         await _db
             .into(_db.waterLogs)
@@ -86,7 +113,7 @@ final class WaterLocalDataSourceImpl implements WaterLocalDataSource {
               WaterLogsCompanion.insert(
                 userId: userId,
                 day: day,
-                glasses: const Value(1),
+                glasses: Value(count),
                 goalGlasses: goal,
                 lastGlassAt: Value(now),
               ),
@@ -96,7 +123,7 @@ final class WaterLocalDataSourceImpl implements WaterLocalDataSource {
           _db.waterLogs,
         )..where((t) => _isDay(t, userId, day))).write(
           WaterLogsCompanion(
-            glasses: Value(existing.glasses + 1),
+            glasses: Value(existing.glasses + count),
             lastGlassAt: Value(now),
           ),
         );
